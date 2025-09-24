@@ -1,7 +1,8 @@
-# Ignore Data folder and its contents
+# Ignore system files
+*.DS_Store
+.DS_Store
 
-
-# Ignore common data file types
+# Ignore large data files (only specific types that are truly large)
 *.tif
 *.tiff
 *.zip
@@ -11,6 +12,18 @@
 *.nc
 *.bin
 *.dat
-*.DS_Store
-*.xml
-*.pdf
+
+# Allow documentation and config files
+!*.pdf
+!*.xml
+!Docs/
+
+# Ignore specific large data directories but allow structure
+fms_v2/data/processed/*
+fms_v2/data/training/*
+fms_v2/logs/*
+fms_v2/outputs/models/*
+fms_v2/outputs/rasters/*
+
+# Keep directory structure by allowing .gitkeep files
+!.gitkeep
