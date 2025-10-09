@@ -26,4 +26,6 @@ fms_v2/outputs/models/*
 fms_v2/outputs/rasters/*
 
 # Keep directory structure by allowing .gitkeep files
-!.gitkeep
+!.gitkeepopen-cd/
+data/
+work_dirs/
