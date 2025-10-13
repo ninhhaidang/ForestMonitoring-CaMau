@@ -1,478 +1,636 @@
-# 🌲 Phát Hiện Mất Rừng Cà Mau Sử Dụng Deep Learning
+# Phát Hiện Mất Rừng Cà Mau Sử Dụng SNUNet-CD
 
-[![Python](https://img.shields.io/badge/Python-3.8.20-blue.svg)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-1.13.1+cu117-red.svg)](https://pytorch.org/)
-[![Open-CD](https://img.shields.io/badge/Framework-Open--CD-green.svg)](https://github.com/likyoo/open-cd)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+**Ninh Hải Đăng (21021411) - Đồ Án Tốt Nghiệp - 2025**
 
----
-
-## 📖 Giới Thiệu
-
-Dự án tốt nghiệp sử dụng Deep Learning (SNUNet-CD) để phát hiện mất rừng ngập mặn tại tỉnh Cà Mau, Việt Nam với chu kỳ giám sát 2 lần/tháng.
-
-### 🎯 Mục Tiêu
-- Phát hiện tự động các khu vực mất rừng ngập mặn tại Cà Mau (7,942.39 km²)
-- Sử dụng dữ liệu đa nguồn: Sentinel-2 (optical) + Sentinel-1 (SAR)
-- Chu kỳ giám sát: 2 lần/tháng (đầu-giữa tháng và giữa-cuối tháng)
-
-### 📊 Dữ Liệu
-- **Sentinel-2 (MSI):** 7 bands (B4, B8, B11, B12) + 3 indices (NDVI, NBR, NDMI)
-- **Sentinel-1 (SAR):** VH polarization + Ratio (VV-VH)
-- **Thời điểm:** T1 (30/01/2024) → T2 (28/02/2025)
-- **Training data:** 635 điểm mất rừng + 650 điểm không mất rừng (1285 điểm ground truth)
-
-### 🧠 Model
-- **Architecture:** SNUNet-CD (Siamese Nested U-Net)
-- **Framework:** Open-CD 1.1.0 (OpenMMLab ecosystem)
-- **Input:** 14-18 channels (Phase 1: S2 only, Phase 2: S2+S1)
-- **Output:** Binary change detection map
+Phát hiện mất rừng ngập mặn tự động sử dụng Deep Learning kết hợp ảnh vệ tinh đa thời gian (Sentinel-2 + Sentinel-1).
 
 ---
 
-## 🗂️ Cấu Trúc Thư Mục (Đơn Giản Hóa)
+## 📊 Dữ Liệu
 
+### Ground Truth
+- **1,285 điểm** thực địa (shapefile + CSV)
+- **635 điểm mất rừng** (49.4%)
+- **650 điểm không mất** (50.6%)
+- Chia: 80% train (1,028) / 10% val (128) / 10% test (129)
+
+### Sentinel-2 (Quang học)
+- **T1:** 30/01/2024 → **T2:** 28/02/2025
+- **4 bands:** B4 (Đỏ), B8 (Cận hồng ngoại), B11 (SWIR1), B12 (SWIR2)
+- **3 chỉ số:** NDVI (thực vật), NBR (cháy rừng), NDMI (độ ẩm)
+- **Độ phân giải:** 10-20m
+- **Files:** 2 file × 1.5GB GeoTIFF
+
+### Sentinel-1 (SAR)
+- **T1:** 04/02/2024 → **T2:** 22/02/2025
+- **2 features:** VH polarization, Ratio (VV-VH)
+- **Độ phân giải:** 10m
+- **Files:** 2 file × 1.5GB GeoTIFF
+
+### Channels Input
+
+**Phase 1 (chỉ S2): 14 channels**
 ```
-25-26_HKI_DATN_21021411_DangNH/
-│
-├── � notebooks/                         # ⭐ Interactive analysis (Jupyter)
-│   ├── 01_explore_data.ipynb            # Visualize S2 + S1 data
-│   ├── 02_analyze_ground_truth.ipynb    # Phân tích 1285 điểm thực địa
-│   ├── 03_training_workflow.ipynb       # Monitor training process
-│   ├── 04_evaluation.ipynb              # Analyze metrics & results
-│   └── 05_final_maps.ipynb              # Tạo bản đồ change detection
-│
-├── 📁 configs/                           # Training configurations
-│   ├── snunet_camau_s2s1.py             # Config Phase 2: S2+S1 (18 channels)
-│   └── snunet_camau_v3.py               # Config mới nhất
-│
-├── 📁 data/                              # ⭐ Dữ liệu chính
-│   │
-│   ├── 📁 ground_truth/                 # Ground truth points
-│   │   ├── Training_Points__SHP.shp     # 1285 điểm (shapefile)
-│   │   └── Training_Points_CSV.csv      # 1285 điểm (CSV format)
-│   │
-│   ├── 📁 sentinel2/                    # Dữ liệu quang học
-│   │   ├── 📁 raw/                      # GeoTIFF gốc
-│   │   └── 📁 processed/                # Sau xử lý
-│   │
-│   ├── 📁 sentinel1/                    # Dữ liệu SAR
-│   │   ├── 📁 raw/                      # SAR gốc
-│   │   └── 📁 processed/                # Sau xử lý
-│   │
-│   └── 📁 labels/                       # ⭐ Training samples
-│       ├── 📁 train/                    # 80% (~1028 samples)
-│       ├── 📁 val/                      # 10% (~128 samples)
-│       └── 📁 test/                     # 10% (~129 samples)
-│
-├── 📁 open-cd/                           # Open-CD framework (cloned)
-│   ├── configs/                         # Config templates
-│   ├── opencd/                          # Source code
-│   └── tools/
-│       ├── train.py                     # ⭐ Training script
-│       └── test.py                      # ⭐ Testing script
-│
-├── 📁 outputs/                           # ⭐ All results (gộp results + work_dirs)
-│   │
-│   ├── 📁 checkpoints/                  # Model weights
-│   │   └── best_model.pth
-│   │
-│   ├── 📁 logs/                         # Training logs
-│   │   ├── train.log
-│   │   └── tensorboard/
-│   │
-│   ├── 📁 metrics/                      # Performance metrics
-│   │   ├── test_metrics.json
-│   │   └── confusion_matrix.csv
-│   │
-│   └── 📁 visualizations/               # Hình ảnh & bản đồ
-│       ├── 📁 maps/                     # Change detection maps
-│       ├── 📁 figures/                  # Charts & plots
-│       └── 📁 comparisons/              # Model comparisons
-│
-├── 📁 scripts/                           # Automation scripts
-│   ├── 01_verify_data.py                # Verify data quality
-│   ├── 05_create_samples_from_points.py # ⭐ Tạo training samples
-│   ├── 06_visualize_samples.py          # Visualize samples
-│   ├── compute_normalization_stats.py   # Compute stats
-│   ├── test_setup.py                    # Test environment
-│   └── verify_environment.py            # Verify setup
-│
-├── 📁 work_dirs/                         # Training runs (auto-generated)
-│   ├── snunet_camau/
-│   ├── snunet_camau_s2s1/
-│   └── ablation_studies/
-│
-├── � environment.yml                    # Conda environment
-├── 📄 requirements.txt                   # Pip requirements
-├── 📄 README.md                          # ⭐ File này
-└── 📄 LICENSE                            # MIT License
+Trước T1: [B4, B8, B11, B12, NDVI, NBR, NDMI] = 7 channels
+Sau T2:   [B4, B8, B11, B12, NDVI, NBR, NDMI] = 7 channels
+Tổng: 14 channels
 ```
 
-### � Đơn Giản Hóa Chính:
-- ✅ **Gộp results → outputs/** (checkpoints, logs, metrics, visualizations)
-- ✅ **5 notebooks chính** thay vì nhiều notebooks rời rạc
-- ✅ **Giảm số lượng scripts** (từ 10 → 6 scripts cốt lõi)
-- ✅ **Cấu trúc rõ ràng hơn**, dễ navigate hơn
+**Phase 2 (S2+S1): 18 channels**
+```
+Trước T1: [B4, B8, B11, B12, NDVI, NBR, NDMI, VH, Ratio] = 9 channels
+Sau T2:   [B4, B8, B11, B12, NDVI, NBR, NDMI, VH, Ratio] = 9 channels
+Tổng: 18 channels
+```
 
 ---
 
-## 🔄 Workflow - Từ Đầu Đến Cuối
+## 🧠 Model & Training
 
-```
-1️⃣ 📊 Explore Data (Notebook 01)
-   ├─ Visualize Sentinel-2 (7 bands + indices)
-   ├─ Visualize Sentinel-1 (SAR data)
-   └─ Check data quality
-   ↓
+### Kiến Trúc: SNUNet-CD
+```python
+SNUNet-CD (Siamese Nested U-Net)
+├── Encoder: Siamese (shared weights)
+│   ├── in_channels: 7 (Phase 1) hoặc 9 (Phase 2)
+│   ├── width: 16
+│   ├── depth: 4 blocks
+│   └── channels: [16, 32, 64, 128]
+├── ECAM: Enhanced Channel Attention Module
+├── Decoder: Nested với dense skip connections
+│   └── channels: [128, 64, 32, 16]
+└── Head: 2 classes (binary change detection)
 
-2️⃣ 📍 Analyze Ground Truth (Notebook 02)
-   ├─ Load 1285 điểm thực địa
-   ├─ Check class balance (635 loss / 650 no change)
-   └─ Spatial distribution analysis
-   ↓
-
-3️⃣ 🔨 Prepare Training Samples
-   [scripts/05_create_samples_from_points.py]
-   ├─ Extract patches around ground truth points
-   ├─ Split: 80% train, 10% val, 10% test
-   └─ Save to data/labels/
-   ↓
-
-4️⃣ 🎯 Training (Notebook 03)
-   [open-cd/tools/train.py + configs/snunet_camau_s2s1.py]
-   ├─ Train SNUNet-CD model
-   ├─ Monitor with TensorBoard
-   └─ Save checkpoints → outputs/checkpoints/
-   ↓
-
-5️⃣ 📈 Evaluation (Notebook 04)
-   [open-cd/tools/test.py]
-   ├─ Test on test set
-   ├─ Calculate metrics (Accuracy, F1, IoU, Precision, Recall)
-   ├─ Confusion matrix
-   └─ Save results → outputs/metrics/
-   ↓
-
-6️⃣ 🗺️ Create Final Maps (Notebook 05)
-   [Inference on full Ca Mau province]
-   ├─ Run inference on entire area
-   ├─ Generate change detection map
-   ├─ Calculate deforestation statistics
-   └─ Export → outputs/visualizations/maps/
-   ↓
-
-7️⃣ 📄 Report & Presentation
-   └─ Compile results for thesis
+Số parameters: ~1.2M
 ```
 
-### 🎯 Notebook Workflow:
-1. **`01_explore_data.ipynb`** → Khám phá dữ liệu Sentinel
-2. **`02_analyze_ground_truth.ipynb`** → Phân tích 1285 điểm
-3. **`03_training_workflow.ipynb`** → Monitor training
-4. **`04_evaluation.ipynb`** → Đánh giá model
-5. **`05_final_maps.ipynb`** → Tạo bản đồ cuối cùng
+### Config Training
+```python
+# Hyperparameters
+optimizer: AdamW(lr=0.01, weight_decay=0.0005)
+scheduler: PolynomialLR(power=0.9, min_lr=1e-4)
+loss: CrossEntropyLoss
+batch_size: 8
+patch_size: 256×256
+max_iterations: 40,000
+validation_interval: 4,000
+workers: 4
+
+# Data Augmentation
+RandomRotate(prob=0.5, degree=180)
+RandomCrop(256×256)
+RandomFlip(horizontal + vertical, prob=0.5)
+Normalize(mean=[...], std=[...])
+```
+
+### Metrics Đánh Giá
+- Overall Accuracy (mục tiêu: >90%)
+- F1-Score (mục tiêu: >0.85)
+- IoU (mục tiêu: >0.75)
+- Precision (mục tiêu: >0.88)
+- Recall (mục tiêu: >0.82)
 
 ---
 
-## 🚀 Quick Start
+## 💻 Môi Trường
 
-### 1. Cài Đặt Môi Trường
+### Phần Cứng
+```
+CPU: Intel Xeon E5-2678 v3 (12 cores @ 2.5GHz)
+RAM: 32GB DDR3 ECC
+GPU: NVIDIA RTX A4000 (16GB VRAM, 6144 CUDA cores)
+Storage: 4TB HDD
+OS: Windows 11 Pro
+```
 
+### Thư Viện & Phiên Bản
+```yaml
+# Core
+Python: 3.8.20
+PyTorch: 1.13.1+cu117
+CUDA: 11.7
+cuDNN: 8.5.0
+
+# Framework
+Open-CD: 1.1.0
+  ├── MMSegmentation: 1.2.2
+  ├── MMEngine: 0.10.4
+  ├── MMCV: 2.1.0
+  └── MMPretrain: 1.2.0
+
+# Geospatial
+GDAL: 3.9.2
+rasterio: 1.3.11
+geopandas: 0.14.4
+shapely: 2.0.4
+
+# Image Processing
+opencv-python: 4.12.0
+albumentations: 1.4.18
+pillow: 10.4.0
+
+# Scientific
+numpy: 1.24.4
+scipy: 1.13.1
+pandas: 2.0.3
+scikit-learn: 1.3.2
+
+# Visualization
+matplotlib: 3.7.5
+seaborn: 0.13.2
+```
+
+### Cài Đặt
 ```bash
-# Clone repository
-git clone <repo-url>
-cd 25-26_HKI_DATN_21021411_DangNH
-
-# Tạo môi trường conda
+# Tạo environment
 conda env create -f environment.yml
 conda activate dang
 
-# Cài đặt Open-CD framework
-cd open-cd
-pip install -v -e .
-cd ..
+# Cài Open-CD
+cd open-cd && pip install -v -e . && cd ..
 
-# Verify môi trường
-python scripts/verify_environment.py
-
-# Kết quả mong đợi:
-# ✅ Python: 3.8.20
-# ✅ PyTorch: 1.13.1+cu117
-# ✅ CUDA available: True
-# ✅ GPU: NVIDIA RTX A4000
-# ✅ Open-CD: 1.1.0
-```
-
-### 2. Chuẩn Bị Dữ Liệu
-
-```bash
-# Verify Sentinel-2 data
-python scripts/01_verify_s2_data.py
-
-# Download Sentinel-1 (nếu chưa có)
-python scripts/02_download_s1_data.py
-
-# Preprocess data
-python scripts/03_preprocess_s2.py
-python scripts/04_preprocess_s1.py
-
-# Tạo training samples từ ground truth points
-python scripts/05_create_samples_from_points.py
-```
-
-### 3. Training Model
-
-#### Phase 1: Sentinel-2 Only (14 channels)
-
-```bash
-# Training
-python open-cd/tools/train.py configs/snunet_camau_s2only.py
-
-# Testing
-python open-cd/tools/test.py configs/snunet_camau_s2only.py \
-    work_dirs/snunet_camau/latest.pth
-```
-
-#### Phase 2: Sentinel-2 + Sentinel-1 (18 channels)
-
-```bash
-# Merge S2 + S1 data
-python scripts/06_merge_s2_s1.py
-
-# Training với 18 channels
-python open-cd/tools/train.py configs/snunet_camau_s2s1.py
-
-# Testing
-python open-cd/tools/test.py configs/snunet_camau_s2s1.py \
-    work_dirs/snunet_camau/latest.pth
-```
-
-### 4. Inference & Visualization
-
-```bash
-# Inference trên toàn tỉnh Cà Mau
-python scripts/09_inference.py
-
-# Tạo bản đồ và biểu đồ
-jupyter notebook notebooks/06_create_final_maps.ipynb
+# Verify
+python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
+# Expected: 1.13.1+cu117 True
 ```
 
 ---
 
-## 📊 Feature Set
+## 📁 Cấu Trúc Dự Án
 
-### Phase 1: Sentinel-2 Only (14 channels)
-
-| # | Feature | Thời điểm | Mô tả |
-|---|---------|-----------|-------|
-| 1 | b_B4 | Before (T1) | Red band |
-| 2 | b_B8 | Before | Near-Infrared |
-| 3 | b_B11 | Before | SWIR 1 |
-| 4 | b_B12 | Before | SWIR 2 |
-| 5 | b_NDVI | Before | Vegetation index |
-| 6 | b_NBR | Before | Normalized Burn Ratio |
-| 7 | b_NDMI | Before | Moisture index |
-| 8 | a_B4 | After (T2) | Red band |
-| 9 | a_B8 | After | Near-Infrared |
-| 10 | a_B11 | After | SWIR 1 |
-| 11 | a_B12 | After | SWIR 2 |
-| 12 | a_NDVI | After | Vegetation index |
-| 13 | a_NBR | After | Normalized Burn Ratio |
-| 14 | a_NDMI | After | Moisture index |
-
-### Phase 2: Sentinel-2 + Sentinel-1 (18 channels)
-
-**Thêm 4 channels từ Sentinel-1:**
-
-| # | Feature | Thời điểm | Mô tả |
-|---|---------|-----------|-------|
-| 15 | b_VH | Before (T1) | VH polarization (dB) |
-| 16 | b_R | Before | Ratio: VV - VH (dB) |
-| 17 | a_VH | After (T2) | VH polarization (dB) |
-| 18 | a_R | After | Ratio: VV - VH (dB) |
+```
+├── data/
+│   ├── raw/                          # ✅ ĐÃ CÓ
+│   │   ├── sentinel2/                # 2 files (3GB)
+│   │   │   ├── S2_2024_01_30.tif    # Before T1
+│   │   │   └── S2_2025_02_28.tif    # After T2
+│   │   ├── sentinel1/                # 2 files (3GB)
+│   │   │   ├── S1_2024_02_04_matched_S2_2024_01_30.tif
+│   │   │   └── S1_2025_02_22_matched_S2_2025_02_28.tif
+│   │   └── ground_truth/             # 11 files
+│   │       ├── Training_Points_CSV.csv
+│   │       └── Training_Points__SHP.*
+│   ├── processed/                    # ⏳ CẦN TẠO
+│   │   ├── phase1_s2only/
+│   │   └── phase2_s2s1/
+│   └── samples/                      # ⏳ CẦN TẠO
+│       ├── phase1_s2only/train|val|test/
+│       └── phase2_s2s1/train|val|test/
+│
+├── notebooks/                        # ⏳ CẦN CHẠY
+│   ├── 01_exploration/
+│   ├── 02_preprocessing/
+│   ├── 03_phase1_s2only/
+│   ├── 04_phase2_s2s1/
+│   └── 05_comparison/
+│
+├── configs/                          # ✅ ĐÃ CÓ
+│   ├── phase1_snunet_s2only.py       # Config 14 channels
+│   └── phase2_snunet_s2s1.py         # Config 18 channels
+│
+├── src/                              # ✅ ĐÃ CÓ
+│   ├── data_utils.py                 # Load, visualize, tính indices
+│   ├── training_utils.py             # Checkpoint, logging
+│   └── evaluation_utils.py           # Metrics, confusion matrix
+│
+├── experiments/                      # ⏳ SAU KHI TRAIN
+│   ├── phase1_s2only/
+│   │   ├── checkpoints/              # Model weights
+│   │   ├── logs/                     # Training logs
+│   │   ├── metrics/                  # JSON metrics
+│   │   └── predictions/              # Predictions mẫu
+│   └── phase2_s2s1/
+│
+├── results/                          # ⏳ SAU KHI INFERENCE
+│   ├── maps/                         # Bản đồ change detection
+│   ├── statistics/                   # Thống kê
+│   └── figures/                      # Hình ảnh cho báo cáo
+│
+├── thesis/                           # ⏳ CHO BÁO CÁO
+│   ├── figures/
+│   ├── tables/
+│   └── slides/
+│
+├── docs/                             # ✅ ĐÃ CÓ
+│   ├── 00_project_overview.md
+│   ├── 01_data_guide.md
+│   └── 02_training_guide.md
+│
+└── open-cd/                          # ✅ ĐÃ CÓ (cloned)
+    └── tools/
+        ├── train.py
+        └── test.py
+```
 
 ---
 
-## 💻 Hệ Thống & Môi Trường
+## ✅ Tiến Độ Thực Hiện
 
-### Phần cứng
-- **CPU:** Intel Xeon E5-2678 v3
-- **RAM:** 32GB DDR3 ECC
-- **GPU:** NVIDIA RTX A4000
-  - VRAM: 16GB
-  - CUDA Cores: 6144
-  - CUDA Version: 11.7
-- **Storage:** 4TB HDD
+### ĐÃ HOÀN THÀNH ✅ (3 tuần trước)
 
-### Phần mềm
-- **OS:** Windows
-- **Python:** 3.8.20
-- **PyTorch:** 1.13.1+cu117
-- **CUDA:** 11.7
-- **NumPy:** 1.24.4
-- **Framework:** Open-CD 1.1.0 (MMSegmentation-based)
+- [x] **Setup môi trường**
+  - [x] Cài Python 3.8.20, PyTorch 1.13.1+cu117, CUDA 11.7
+  - [x] Cài Open-CD 1.1.0 và dependencies
+  - [x] Verify GPU RTX A4000 hoạt động tốt
 
-### OpenMMLab Ecosystem
-- **mmengine:** 0.10.4
-- **mmcv:** 2.1.0
-- **mmdet:** 3.3.0
-- **mmseg:** 1.2.2
-- **mmpretrain:** 1.2.0
+- [x] **Thu thập dữ liệu**
+  - [x] Sentinel-2: 2 files (3GB) - T1, T2
+  - [x] Sentinel-1: 2 files (3GB) - matched với S2
+  - [x] Ground truth: 1,285 điểm (shapefile + CSV)
 
-### Data Processing Libraries
-- **OpenCV:** 4.12.0
-- **Rasterio:** 1.3.11
-- **GDAL:** 3.9.2
-- **Albumentations:** 1.4.18
+- [x] **Thiết kế dự án**
+  - [x] Cấu trúc thư mục rõ ràng
+  - [x] Migration từ cấu trúc cũ
+  - [x] Cleanup các file không cần thiết
 
-### Development Tools
-- **Jupyter Notebook:** 7.2.2
-- **JupyterLab:** 4.2.5
+- [x] **Tạo config files**
+  - [x] `configs/phase1_snunet_s2only.py` (14 channels)
+  - [x] `configs/phase2_snunet_s2s1.py` (18 channels)
 
-### Môi trường Conda
+- [x] **Viết utility functions**
+  - [x] `src/data_utils.py` (load, visualize, NDVI/NBR/NDMI)
+  - [x] `src/training_utils.py` (checkpoint handling)
+  - [x] `src/evaluation_utils.py` (metrics, confusion matrix)
+
+- [x] **Documentation**
+  - [x] README.md (file này)
+  - [x] docs/ (3 files hướng dẫn)
+
+---
+
+## 📅 TIMELINE 1 TUẦN (7 NGÀY)
+
+### NGÀY 1 (Thứ 2): Khám Phá & Tiền Xử Lý ⏳
+**Thời gian: 8-10 giờ**
+
+**Sáng (4h):**
+- [ ] **1.1. Explore Sentinel-2** (1.5h)
+  - Load T1, T2
+  - Visualize RGB composite
+  - Tính NDVI, NBR, NDMI
+  - Phân tích thống kê
+  
+- [ ] **1.2. Explore Sentinel-1** (1h)
+  - Load SAR data
+  - Visualize VH backscatter
+  - So sánh T1 vs T2
+  
+- [ ] **1.3. Analyze Ground Truth** (1.5h)
+  - Load 1,285 điểm
+  - Visualize phân bố không gian
+  - Verify class balance
+
+**Chiều (4-6h):**
+- [ ] **2.1. Preprocess Phase 1** (2h)
+  - Extract 4 bands từ S2
+  - Compute 3 indices
+  - Normalize [0,1]
+  - Save → `data/processed/phase1_s2only/`
+  
+- [ ] **2.2. Preprocess Phase 2** (2h)
+  - Merge S2 (7ch) + S1 (2ch)
+  - Verify co-registration
+  - Save → `data/processed/phase2_s2s1/`
+
+**Kết quả:** Data đã sẵn sàng để tạo training samples
+
+---
+
+### NGÀY 2 (Thứ 3): Tạo Training Samples ⏳
+**Thời gian: 6-8 giờ**
+
+- [ ] **2.3. Create Training Samples** (6-8h)
+  - Extract 256×256 patches xung quanh 1,285 ground truth points
+  - Implement coordinate transformation (lat/lon → pixel)
+  - Stratified split: 80/10/10
+  - Save patches:
+    - `data/samples/phase1_s2only/train/` (1,028 patches)
+    - `data/samples/phase1_s2only/val/` (128 patches)
+    - `data/samples/phase1_s2only/test/` (129 patches)
+    - `data/samples/phase2_s2s1/train/` (same split)
+  - Visualize một số samples để verify
+  - Test dataloader với Open-CD
+
+**Kết quả:** 1,285 × 2 phases = 2,570 training patches sẵn sàng
+
+---
+
+### NGÀY 3 (Thứ 4): Training Phase 1 (Buổi 1) ⏳
+**Thời gian: Training chạy 12-16h, monitor 2-3h**
+
+**Sáng:**
+- [ ] **Bắt đầu training Phase 1** (10-15 phút setup)
+  ```bash
+  python open-cd/tools/train.py configs/phase1_snunet_s2only.py
+  ```
+- [ ] Setup TensorBoard monitoring
+  ```bash
+  tensorboard --logdir experiments/phase1_s2only/logs
+  ```
+- [ ] Verify training bắt đầu:
+  - Loss giảm
+  - GPU utilization ~90%
+  - No errors
+
+**Trong ngày:**
+- [ ] Monitor training mỗi 2-3h
+- [ ] Check validation metrics (mỗi 4k iterations)
+- [ ] **Training chạy qua đêm** (40k iterations ≈ 12-16h)
+
+**Chiều (tùy chọn):**
+- [ ] Chuẩn bị notebook evaluation
+- [ ] Viết script để parse logs
+- [ ] Chuẩn bị visualizations
+
+**Kết quả buổi sáng ngày 4:** Phase 1 training hoàn thành
+
+---
+
+### NGÀY 4 (Thứ 5): Evaluate Phase 1 & Start Phase 2 ⏳
+**Thời gian: 3h evaluate + Training Phase 2 chạy qua đêm**
+
+**Sáng (3h):**
+- [ ] **Evaluate Phase 1** 
+  - Chờ training Phase 1 hoàn thành (~7-8h sáng)
+  - Run test:
+    ```bash
+    python open-cd/tools/test.py \
+        configs/phase1_snunet_s2only.py \
+        experiments/phase1_s2only/checkpoints/best_model.pth
+    ```
+  - Phân tích metrics:
+    - Overall Accuracy
+    - F1-Score
+    - IoU
+    - Precision/Recall
+  - Plot confusion matrix
+  - Visualize predictions (10-20 samples)
+  - Save results → `experiments/phase1_s2only/metrics/`
+
+**Trưa (1h):**
+- [ ] Tổng kết Phase 1
+- [ ] Note các vấn đề/cải thiện
+
+**Chiều (10-15 phút + chạy qua đêm):**
+- [ ] **Bắt đầu training Phase 2**
+  ```bash
+  python open-cd/tools/train.py configs/phase2_snunet_s2s1.py
+  ```
+- [ ] Setup monitoring
+- [ ] Verify training bắt đầu
+- [ ] **Training chạy qua đêm** (40k iterations ≈ 12-16h)
+
+**Kết quả buổi sáng ngày 5:** Phase 2 training hoàn thành
+
+---
+
+### NGÀY 5 (Thứ 6): Evaluate Phase 2 & So Sánh ⏳
+**Thời gian: 6-8 giờ**
+
+**Sáng (3h):**
+- [ ] **Evaluate Phase 2**
+  - Chờ training hoàn thành (~7-8h sáng)
+  - Run test
+  - Phân tích metrics
+  - Plot confusion matrix
+  - Visualize predictions
+  - Save results
+
+**Chiều (3-5h):**
+- [ ] **So sánh Phase 1 vs Phase 2**
+  - Tạo comparison table:
+    | Metric | Phase 1 | Phase 2 | Δ |
+    |--------|---------|---------|---|
+    | Accuracy | ... | ... | ... |
+    | F1-Score | ... | ... | ... |
+  - Confusion matrices side-by-side
+  - Sample predictions comparison
+  - Statistical significance test (t-test)
+  - Error analysis:
+    - Identify failure cases
+    - Analyze where S1 helps
+  - Save report → `results/statistics/comparison.md`
+
+**Kết quả:** Hiểu rõ Phase 2 cải thiện bao nhiêu so với Phase 1
+
+---
+
+### NGÀY 6 (Thứ 7): Inference Toàn Tỉnh ⏳
+**Thời gian: 6-10 giờ (tùy diện tích inference)**
+
+- [ ] **Inference trên toàn bộ tỉnh Cà Mau**
+  - Chọn best model (Phase 1 hoặc Phase 2)
+  - Implement sliding window inference (256×256 với overlap)
+  - Run inference trên toàn bộ region (có thể mất 4-8h)
+  - Merge predictions → bản đồ change detection
+  
+- [ ] **Tính toán thống kê**
+  - Tổng diện tích mất rừng (km²)
+  - Phân bố theo vùng
+  - Temporal analysis
+  - Export → `results/statistics/deforestation_stats.csv`
+
+- [ ] **Tạo visualizations**
+  - Change detection map (GeoTIFF + PNG)
+  - Heatmap thay đổi
+  - Comparison with ground truth overlay
+  - Save → `results/maps/` và `results/figures/`
+
+**Kết quả:** Bản đồ change detection hoàn chỉnh cho toàn tỉnh
+
+---
+
+### NGÀY 7 (Chủ Nhật): Finalize & Documentation ⏳
+**Thời gian: 6-8 giờ**
+
+**Sáng (3-4h):**
+- [ ] **Tổng hợp kết quả**
+  - Compile tất cả metrics
+  - Tạo summary tables
+  - Export figures chất lượng cao cho thesis
+  - Organize trong `thesis/figures/` và `thesis/tables/`
+
+**Chiều (3-4h):**
+- [ ] **Update documentation**
+  - Update README với actual results
+  - Ghi chú lessons learned
+  - Document final metrics
+  - List limitations & future work
+  
+- [ ] **Prepare presentation materials**
+  - Key findings slides
+  - Demo materials
+  - Screenshots và visualizations
+
+- [ ] **Backup & Archive**
+  - Backup toàn bộ code + data quan trọng
+  - Archive experiments
+  - Clean up temporary files
+
+**Kết quả:** Dự án hoàn thành, sẵn sàng báo cáo
+
+---
+
+## 🚀 Quick Commands
+
+### Environment
 ```bash
-# Activate environment
 conda activate dang
+conda deactivate
+```
 
-# Verify packages
-conda list
+### GPU Check
+```bash
+nvidia-smi
+nvidia-smi -l 1  # Monitor mỗi 1 giây
+```
 
-# Check GPU
-python -c "import torch; print(f'CUDA: {torch.cuda.is_available()}')"
+### Training
+```bash
+# Phase 1 (S2 only)
+python open-cd/tools/train.py configs/phase1_snunet_s2only.py
+
+# Phase 2 (S2+S1)
+python open-cd/tools/train.py configs/phase2_snunet_s2s1.py
+```
+
+### Testing
+```bash
+# Phase 1
+python open-cd/tools/test.py \
+    configs/phase1_snunet_s2only.py \
+    experiments/phase1_s2only/checkpoints/best_model.pth
+
+# Phase 2
+python open-cd/tools/test.py \
+    configs/phase2_snunet_s2s1.py \
+    experiments/phase2_s2s1/checkpoints/best_model.pth
+```
+
+### Monitoring
+```bash
+# TensorBoard
+tensorboard --logdir experiments/phase1_s2only/logs
+tensorboard --logdir experiments/phase2_s2s1/logs
+
+# Check logs
+Get-Content experiments\phase1_s2only\*.log -Tail 50
+```
+
+### Jupyter
+```bash
+jupyter lab
+jupyter notebook
 ```
 
 ---
 
-## 📈 Dataset Statistics
+## 📊 Expected Results (Dự Kiến)
 
-### Ground Truth Points
+### Phase 1 (S2 only)
+- **Accuracy:** ~88-92%
+- **F1-Score:** ~0.83-0.87
+- **IoU:** ~0.72-0.78
+- **Training time:** ~12-16h (40k iterations)
 
-| Category | Số lượng | Tỷ lệ |
-|----------|----------|-------|
-| **Mất rừng (label=1)** | 635 | 49.4% |
-| **Không mất rừng (label=0)** | 650 | 50.6% |
-| **Tổng cộng** | **1285** | **100%** |
+### Phase 2 (S2 + S1)
+- **Accuracy:** ~90-94% (+2-4%)
+- **F1-Score:** ~0.86-0.91 (+0.03-0.05)
+- **IoU:** ~0.76-0.82 (+0.04-0.06)
+- **Training time:** ~12-16h (40k iterations)
 
-✅ **Dataset balanced:** Tỷ lệ gần như 1:1 rất lý tưởng cho binary classification!
-
-### Training/Validation/Test Split
-
-| Split | Số lượng | Tỷ lệ | Mô tả |
-|-------|----------|-------|-------|
-| **Train** | ~1028 | 80% | Dùng để training model |
-| **Validation** | ~128 | 10% | Dùng để tune hyperparameters |
-| **Test** | ~129 | 10% | Dùng để đánh giá cuối cùng |
-| **Tổng** | **1285** | **100%** | Ground truth points |
+### Improvement với S1
+- Giảm false positives (precision tăng)
+- Giảm false negatives trong vùng mây (recall tăng)
+- Robust hơn với điều kiện thời tiết
 
 ---
 
-## 📈 Kết Quả Dự Kiến
+## 📝 Files Quan Trọng
 
-### Metrics
-- **Overall Accuracy:** > 90%
-- **F1-Score (Forest Loss):** > 0.85
-- **IoU (Intersection over Union):** > 0.75
-- **Precision:** > 0.88
-- **Recall:** > 0.82
+### Configs
+```python
+# configs/phase1_snunet_s2only.py
+model = dict(
+    backbone=dict(in_channels=7),  # S2 only
+    decode_head=dict(num_classes=2)
+)
+data = dict(
+    samples_per_gpu=8,
+    data_root='data/samples/phase1_s2only'
+)
+optimizer = dict(type='AdamW', lr=0.01)
+runner = dict(max_iters=40000)
+```
 
-### Outputs
-- ✅ Bản đồ change detection toàn tỉnh Cà Mau
-- ✅ Diện tích mất rừng theo từng khu vực
-- ✅ Thống kê biến động rừng ngập mặn
-- ✅ So sánh hiệu quả S2 vs S2+S1
-- ✅ Báo cáo kỹ thuật chi tiết
+```python
+# configs/phase2_snunet_s2s1.py
+model = dict(
+    backbone=dict(in_channels=9),  # S2 + S1
+)
+data = dict(
+    data_root='data/samples/phase2_s2s1'
+)
+# Còn lại giống Phase 1
+```
 
----
+### Utility Functions
+```python
+# src/data_utils.py
+load_geotiff(filepath)              # Load GeoTIFF
+visualize_rgb(data, bands)          # Visualize RGB
+calculate_ndvi(nir, red)            # NDVI
+calculate_nbr(nir, swir2)           # NBR
+calculate_ndmi(nir, swir1)          # NDMI
 
-## 📝 To-Do List
-
-### Đã hoàn thành ✅
-- [x] Setup môi trường (PyTorch, CUDA, Open-CD)
-- [x] Thiết kế cấu trúc thư mục dự án
-- [x] Xác định feature set (14-18 channels)
-- [x] Thu thập dữ liệu Sentinel-2 (2 thời điểm)
-- [x] Thu thập ground truth points (1285 điểm)
-- [x] Verify môi trường làm việc
-
-### Đang thực hiện 🔄
-- [ ] Verify và organize dữ liệu S2
-- [ ] Download dữ liệu Sentinel-1
-- [ ] Tạo training samples từ 1285 ground truth points
-- [ ] Viết config files cho SNUNet-CD
-
-### Kế hoạch tiếp theo 📋
-- [ ] Training Phase 1 (S2 only - 14 channels)
-- [ ] Đánh giá kết quả Phase 1
-- [ ] Bổ sung S1 data (Phase 2: S2+S1 - 18 channels)
-- [ ] Training Phase 2
-- [ ] So sánh hiệu quả S2 vs S2+S1
-- [ ] Inference trên toàn tỉnh Cà Mau
-- [ ] Viết báo cáo tốt nghiệp và presentation
-
----
-
-## 🔍 Thông Tin Thêm
-
-### Kích thước dữ liệu dự kiến
-- **data/:** ~15-20 GB
-- **work_dirs/:** ~3-5 GB
-- **results/:** ~2-3 GB
-- **Total:** ~25-30 GB
-
-### Git Large Files
-Do file dữ liệu quá lớn, các file sau đã được thêm vào `.gitignore`:
-- Tất cả file `.tif`, `.tiff` trong `data/`
-- Checkpoints `.pth` trong `work_dirs/`
-- Large visualizations trong `results/`
-
-Sử dụng Git LFS nếu cần version control cho files lớn.
+# src/evaluation_utils.py
+calculate_metrics(y_true, y_pred)   # All metrics
+plot_confusion_matrix(y_true, y_pred)
+```
 
 ---
 
-## 📚 Tài Liệu Tham Khảo
+## ⏰ Thời Gian Ước Tính Chi Tiết
 
-### Papers
-- [SNUNet-CD: A Densely Connected Siamese Network for Change Detection](https://ieeexplore.ieee.org/document/9355573)
-- [Open-CD: A Comprehensive Toolbox for Change Detection](https://github.com/likyoo/open-cd)
+| Ngày | Task | Giờ làm | Giờ chờ | Tổng |
+|------|------|---------|---------|------|
+| **1** | Explore + Preprocess | 8-10h | - | 8-10h |
+| **2** | Create samples | 6-8h | - | 6-8h |
+| **3** | Start Phase 1 training | 0.5h | 12-16h | ~16h |
+| **4** | Eval P1 + Start P2 | 3h | 12-16h | ~19h |
+| **5** | Eval P2 + Compare | 6-8h | - | 6-8h |
+| **6** | Inference | 6-10h | - | 6-10h |
+| **7** | Finalize | 6-8h | - | 6-8h |
+| **Tổng** | | **36-50h** làm việc | **24-32h** chờ training |
 
-### Data Sources
-- [Sentinel-2 User Guide](https://sentinels.copernicus.eu/web/sentinel/user-guides/sentinel-2-msi)
-- [Sentinel-1 User Guide](https://sentinels.copernicus.eu/web/sentinel/user-guides/sentinel-1-sar)
-- [Copernicus Data Space](https://dataspace.copernicus.eu/)
-
-### Frameworks & Libraries
-- [Open-CD Documentation](https://github.com/likyoo/open-cd)
-- [MMSegmentation Documentation](https://mmsegmentation.readthedocs.io/)
-- [PyTorch Documentation](https://pytorch.org/docs/)
-- [Rasterio Documentation](https://rasterio.readthedocs.io/)
-- [GDAL Documentation](https://gdal.org/)
-
----
-
-## 📄 License
-
-MIT License - xem file [LICENSE](LICENSE)
+**Lưu ý:** 
+- Training chạy tự động qua đêm → tiết kiệm thời gian
+- Ngày 3-4 có thể làm việc khác trong khi training
+- Cần monitor định kỳ để catch errors
 
 ---
 
-## 👤 Tác Giả
+## 🎯 Checklist Tổng Quan
 
-**Ninh Hải Đăng**  
-MSSV: 21021411  
-Khóa: 2021-2025  
-Đồ Án Tốt Nghiệp - Học kỳ I 2025-2026  
-Viện Công nghệ Hàng không Vũ trụ  
-Trường Đại học Công nghệ - Đại học Quốc gia Hà Nội
+### Tuần Này (7 Ngày)
+- [ ] Ngày 1: Explore & Preprocess data
+- [ ] Ngày 2: Create training samples
+- [ ] Ngày 3: Training Phase 1 (qua đêm)
+- [ ] Ngày 4: Evaluate Phase 1 + Training Phase 2 (qua đêm)
+- [ ] Ngày 5: Evaluate Phase 2 + Comparison
+- [ ] Ngày 6: Inference toàn tỉnh
+- [ ] Ngày 7: Finalize & Documentation
+
+### Deliverables
+- [ ] Trained models (2 phases)
+- [ ] Metrics reports (JSON + markdown)
+- [ ] Change detection maps
+- [ ] Statistics & analysis
+- [ ] Visualizations cho thesis
+- [ ] Updated documentation
 
 ---
 
-## 📧 Liên Hệ
-
-Nếu có câu hỏi hoặc góp ý về dự án, vui lòng liên hệ qua:
-- 📧 Email: ninhhaidangg@gmail.com
-- 💻 GitHub: [@ninhhaidang](https://github.com/ninhhaidang)
-
----
-
-*Cập nhật lần cuối: 13/10/2025*
+**Cập nhật lần cuối:** 13/10/2025  
+**Trạng thái:** Chuẩn bị bắt đầu (Ngày 1/7)  
+**Timeline:** 1 tuần (aggressive)  
+**Tiến độ hiện tại:** Setup hoàn tất, sẵn sàng execution
