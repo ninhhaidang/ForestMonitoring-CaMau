@@ -30,200 +30,148 @@ Dự án tốt nghiệp sử dụng Deep Learning (SNUNet-CD) để phát hiện
 
 ---
 
-## 🗂️ Cấu Trúc Thư Mục
+## 🗂️ Cấu Trúc Thư Mục (Đơn Giản Hóa)
 
 ```
 25-26_HKI_DATN_21021411_DangNH/
 │
+├── � notebooks/                         # ⭐ Interactive analysis (Jupyter)
+│   ├── 01_explore_data.ipynb            # Visualize S2 + S1 data
+│   ├── 02_analyze_ground_truth.ipynb    # Phân tích 1285 điểm thực địa
+│   ├── 03_training_workflow.ipynb       # Monitor training process
+│   ├── 04_evaluation.ipynb              # Analyze metrics & results
+│   └── 05_final_maps.ipynb              # Tạo bản đồ change detection
+│
 ├── 📁 configs/                           # Training configurations
-│   ├── snunet_camau_s2only.py           # Config Phase 1: S2 only (14 channels)
 │   ├── snunet_camau_s2s1.py             # Config Phase 2: S2+S1 (18 channels)
-│   └── snunet_baseline.py               # Baseline comparison
+│   └── snunet_camau_v3.py               # Config mới nhất
 │
-├── 📁 data/                              # ⭐ Dữ liệu chính của dự án
+├── 📁 data/                              # ⭐ Dữ liệu chính
 │   │
-│   ├── 📁 ground_truth/                 # Ground truth points (thực địa)
-│   │   ├── training_points.shp          # 1285 điểm label (shapefile/geojson/csv)
-│   │   │                                # - 635 điểm mất rừng (label=1)
-│   │   │                                # - 650 điểm không mất rừng (label=0)
-│   │   └── README.txt                   # Mô tả cấu trúc dữ liệu
+│   ├── 📁 ground_truth/                 # Ground truth points
+│   │   ├── Training_Points__SHP.shp     # 1285 điểm (shapefile)
+│   │   └── Training_Points_CSV.csv      # 1285 điểm (CSV format)
 │   │
-│   ├── 📁 sentinel2/                    # Dữ liệu vệ tinh quang học
-│   │   ├── 📁 raw/                      # File GeoTIFF gốc (chưa xử lý)
-│   │   │   ├── S2_2024_01_30.tif       # T1: 7 bands (B4,B8,B11,B12,NDVI,NBR,NDMI)
-│   │   │   └── S2_2025_02_28.tif       # T2: 7 bands
-│   │   │
-│   │   └── 📁 processed/                # Sau xử lý (clipped, normalized, cloud masked)
-│   │       ├── S2_T1_processed.tif
-│   │       └── S2_T2_processed.tif
+│   ├── 📁 sentinel2/                    # Dữ liệu quang học
+│   │   ├── 📁 raw/                      # GeoTIFF gốc
+│   │   └── 📁 processed/                # Sau xử lý
 │   │
-│   ├── 📁 sentinel1/                    # Dữ liệu SAR (tất cả thời tiết)
-│   │   ├── 📁 raw/                      # File SAR gốc (GRD format)
-│   │   │   ├── S1_2024_01_30.tif       # T1: 2 bands (VH, R=VV-VH)
-│   │   │   └── S1_2025_02_28.tif       # T2: 2 bands (VH, R=VV-VH)
-│   │   │
-│   │   └── 📁 processed/                # Sau calibration & filtering
-│   │       ├── S1_T1_calibrated.tif    # Radiometric calibrated, speckle filtered
-│   │       └── S1_T2_calibrated.tif
+│   ├── 📁 sentinel1/                    # Dữ liệu SAR
+│   │   ├── 📁 raw/                      # SAR gốc
+│   │   └── 📁 processed/                # Sau xử lý
 │   │
-│   ├── 📁 labels/                       # ⭐ Training/validation/test samples
-│   │   │                                # Được tạo từ ground_truth + sentinel data
-│   │   ├── 📁 train/                    # 80% data (~1028 samples)
-│   │   │   ├── sample_0001_img.tif     # Multi-channel image (14 or 18 bands)
-│   │   │   ├── sample_0001_mask.tif    # Binary mask (0=no change, 1=forest loss)
-│   │   │   ├── sample_0002_img.tif
-│   │   │   ├── sample_0002_mask.tif
-│   │   │   └── ...
-│   │   │
-│   │   ├── 📁 val/                      # 10% data (~128 samples)
-│   │   │   └── (tương tự train/)
-│   │   │
-│   │   └── 📁 test/                     # 10% data (~129 samples)
-│   │       └── (tương tự train/)
-│   │
-│   └── 📁 augmented/                    # Dữ liệu tăng cường (optional)
-│       └── (augmented samples nếu cần thêm data)
-│
-├── 📁 notebooks/                         # Jupyter notebooks
-│   ├── 01_explore_s2_data.ipynb         # Khám phá dữ liệu Sentinel-2
-│   ├── 02_explore_s1_data.ipynb         # Khám phá dữ liệu Sentinel-1
-│   ├── 03_visualize_training_points.ipynb
-│   ├── 04_data_statistics.ipynb         # Thống kê dataset
-│   ├── 05_model_demo.ipynb              # Demo model inference
-│   └── 06_create_final_maps.ipynb       # Tạo bản đồ kết quả cuối
+│   └── 📁 labels/                       # ⭐ Training samples
+│       ├── 📁 train/                    # 80% (~1028 samples)
+│       ├── 📁 val/                      # 10% (~128 samples)
+│       └── 📁 test/                     # 10% (~129 samples)
 │
 ├── 📁 open-cd/                           # Open-CD framework (cloned)
-│   ├── configs/                         # Config templates của Open-CD
-│   │   ├── snunet/                      # SNUNet-CD configs
-│   │   ├── changeformer/                # Các model khác
-│   │   └── _base_/                      # Base configurations
-│   │
+│   ├── configs/                         # Config templates
 │   ├── opencd/                          # Source code
-│   │   ├── models/                      # Model architectures
-│   │   ├── datasets/                    # Dataset loaders
-│   │   ├── evaluation/                  # Evaluation metrics
-│   │   └── ...
-│   │
 │   └── tools/
-│       ├── train.py                     # ⭐ Script training chính
-│       ├── test.py                      # ⭐ Script testing chính
-│       └── ...
+│       ├── train.py                     # ⭐ Training script
+│       └── test.py                      # ⭐ Testing script
 │
-├── 📁 results/                           # ⭐ Tất cả outputs của dự án
+├── 📁 outputs/                           # ⭐ All results (gộp results + work_dirs)
 │   │
-│   ├── 📁 visualizations/               # Hình ảnh, bản đồ, biểu đồ
-│   │   ├── 📁 maps/                     # Bản đồ change detection
-│   │   │   ├── camau_forest_loss_2024_2025.tif
-│   │   │   ├── camau_forest_loss_rgb.png
-│   │   │   └── camau_deforestation_overlay.png
-│   │   │
-│   │   ├── 📁 figures/                  # Biểu đồ, curves
-│   │   │   ├── training_curves.png     # Loss & accuracy curves
-│   │   │   ├── confusion_matrix.png
-│   │   │   ├── roc_curve.png
-│   │   │   └── sample_predictions.png
-│   │   │
-│   │   └── 📁 comparisons/              # So sánh models
-│   │       ├── before_after_comparison.png
-│   │       ├── s2_vs_s2s1_comparison.png
-│   │       └── model_comparison.png
+│   ├── 📁 checkpoints/                  # Model weights
+│   │   └── best_model.pth
 │   │
-│   ├── 📁 metrics/                      # Metrics và statistics
-│   │   ├── test_metrics.json            # Overall Accuracy, F1, IoU, etc.
-│   │   ├── confusion_matrix.csv
-│   │   ├── per_class_metrics.csv
-│   │   └── deforestation_statistics.xlsx
+│   ├── 📁 logs/                         # Training logs
+│   │   ├── train.log
+│   │   └── tensorboard/
 │   │
-│   ├── 📁 models/                       # Model weights cuối cùng
-│   │   ├── snunet_camau_best.pth       # Best model checkpoint
-│   │   └── model_info.json             # Model metadata
+│   ├── 📁 metrics/                      # Performance metrics
+│   │   ├── test_metrics.json
+│   │   └── confusion_matrix.csv
 │   │
-│   └── 📁 reports/                      # Báo cáo và presentation
-│       ├── final_report.pdf             # Báo cáo tốt nghiệp
-│       ├── presentation.pptx            # Slide thuyết trình
-│       └── technical_report.md          # Chi tiết kỹ thuật
+│   └── 📁 visualizations/               # Hình ảnh & bản đồ
+│       ├── 📁 maps/                     # Change detection maps
+│       ├── 📁 figures/                  # Charts & plots
+│       └── 📁 comparisons/              # Model comparisons
 │
-├── 📁 scripts/                           # Python scripts automation
-│   ├── 01_verify_s2_data.py            # Verify Sentinel-2 data
-│   ├── 02_download_s1_data.py          # Download Sentinel-1
-│   ├── 03_preprocess_s2.py             # Preprocess S2
-│   ├── 04_preprocess_s1.py             # Preprocess S1
-│   ├── 05_create_samples_from_points.py # ⭐ Tạo train/val/test từ ground truth
-│   ├── 06_merge_s2_s1.py               # Merge S2+S1 → 18 channels
-│   ├── 07_train.py                     # Wrapper cho training
-│   ├── 08_test.py                      # Wrapper cho testing
-│   ├── 09_inference.py                 # Inference toàn tỉnh Cà Mau
-│   └── 10_calculate_metrics.py         # Tính toán metrics
+├── 📁 scripts/                           # Automation scripts
+│   ├── 01_verify_data.py                # Verify data quality
+│   ├── 05_create_samples_from_points.py # ⭐ Tạo training samples
+│   ├── 06_visualize_samples.py          # Visualize samples
+│   ├── compute_normalization_stats.py   # Compute stats
+│   ├── test_setup.py                    # Test environment
+│   └── verify_environment.py            # Verify setup
 │
-├── 📁 work_dirs/                         # Training outputs (auto-generated)
-│   │
-│   ├── 📁 snunet_camau/                 # Main experiment
-│   │   ├── 20251013_100000/            # Timestamp của mỗi training run
-│   │   │   ├── checkpoints/
-│   │   │   │   ├── epoch_10.pth
-│   │   │   │   ├── epoch_20.pth
-│   │   │   │   ├── ...
-│   │   │   │   └── best_model.pth      # Best checkpoint
-│   │   │   │
-│   │   │   ├── logs/
-│   │   │   │   ├── train.log
-│   │   │   │   └── val.log
-│   │   │   │
-│   │   │   └── tensorboard/
-│   │   │       └── events.out.tfevents.* # TensorBoard logs
-│   │   │
-│   │   └── 20251014_143000/             # Another training run
-│   │       └── ...
-│   │
-│   └── 📁 ablation_studies/             # Ablation experiments
-│       ├── 📁 s2_only/                  # Training chỉ dùng S2 (14 channels)
-│       └── 📁 s1_only/                  # Training chỉ dùng S1 (4 channels)
+├── 📁 work_dirs/                         # Training runs (auto-generated)
+│   ├── snunet_camau/
+│   ├── snunet_camau_s2s1/
+│   └── ablation_studies/
 │
-├── 📄 .gitignore                         # Git ignore rules
-├── 📄 conda_packages.txt                 # Conda packages list
-├── 📄 environment.yml                    # Conda environment config
-├── 📄 LICENSE                            # MIT License
-├── 📄 PROJECT_REPORT.md                  # Báo cáo chi tiết dự án
-├── 📄 README.md                          # File này
-└── 📄 requirements.txt                   # Pip requirements
+├── � environment.yml                    # Conda environment
+├── 📄 requirements.txt                   # Pip requirements
+├── 📄 README.md                          # ⭐ File này
+└── 📄 LICENSE                            # MIT License
 ```
+
+### � Đơn Giản Hóa Chính:
+- ✅ **Gộp results → outputs/** (checkpoints, logs, metrics, visualizations)
+- ✅ **5 notebooks chính** thay vì nhiều notebooks rời rạc
+- ✅ **Giảm số lượng scripts** (từ 10 → 6 scripts cốt lõi)
+- ✅ **Cấu trúc rõ ràng hơn**, dễ navigate hơn
 
 ---
 
 ## 🔄 Workflow - Từ Đầu Đến Cuối
 
 ```
-1️⃣ Ground Truth Points
-   data/ground_truth/training_points.shp (1285 điểm)
+1️⃣ 📊 Explore Data (Notebook 01)
+   ├─ Visualize Sentinel-2 (7 bands + indices)
+   ├─ Visualize Sentinel-1 (SAR data)
+   └─ Check data quality
    ↓
 
-2️⃣ Tạo Training Samples
+2️⃣ 📍 Analyze Ground Truth (Notebook 02)
+   ├─ Load 1285 điểm thực địa
+   ├─ Check class balance (635 loss / 650 no change)
+   └─ Spatial distribution analysis
+   ↓
+
+3️⃣ 🔨 Prepare Training Samples
    [scripts/05_create_samples_from_points.py]
-   ↓
-   data/labels/train, val, test (patches 128x128 hoặc 256x256)
-   ↓
-
-3️⃣ Training Model
-   [open-cd/tools/train.py + configs/snunet_camau.py]
-   ↓
-   work_dirs/snunet_camau/checkpoints/best_model.pth
+   ├─ Extract patches around ground truth points
+   ├─ Split: 80% train, 10% val, 10% test
+   └─ Save to data/labels/
    ↓
 
-4️⃣ Testing & Evaluation
+4️⃣ 🎯 Training (Notebook 03)
+   [open-cd/tools/train.py + configs/snunet_camau_s2s1.py]
+   ├─ Train SNUNet-CD model
+   ├─ Monitor with TensorBoard
+   └─ Save checkpoints → outputs/checkpoints/
+   ↓
+
+5️⃣ 📈 Evaluation (Notebook 04)
    [open-cd/tools/test.py]
-   ↓
-   results/metrics/test_metrics.json
-   ↓
-
-5️⃣ Inference Toàn Tỉnh
-   [scripts/09_inference.py]
-   ↓
-   results/visualizations/maps/camau_forest_loss.tif
+   ├─ Test on test set
+   ├─ Calculate metrics (Accuracy, F1, IoU, Precision, Recall)
+   ├─ Confusion matrix
+   └─ Save results → outputs/metrics/
    ↓
 
-6️⃣ Báo Cáo & Presentation
-   results/reports/final_report.pdf
+6️⃣ 🗺️ Create Final Maps (Notebook 05)
+   [Inference on full Ca Mau province]
+   ├─ Run inference on entire area
+   ├─ Generate change detection map
+   ├─ Calculate deforestation statistics
+   └─ Export → outputs/visualizations/maps/
+   ↓
+
+7️⃣ 📄 Report & Presentation
+   └─ Compile results for thesis
 ```
+
+### 🎯 Notebook Workflow:
+1. **`01_explore_data.ipynb`** → Khám phá dữ liệu Sentinel
+2. **`02_analyze_ground_truth.ipynb`** → Phân tích 1285 điểm
+3. **`03_training_workflow.ipynb`** → Monitor training
+4. **`04_evaluation.ipynb`** → Đánh giá model
+5. **`05_final_maps.ipynb`** → Tạo bản đồ cuối cùng
 
 ---
 

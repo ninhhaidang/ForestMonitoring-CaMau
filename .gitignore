@@ -1,31 +1,48 @@
-# Ignore system files
-*.DS_Store
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data files (large files)
+data/raw/*.tif
+data/raw/*.tiff
+data/processed/**/*.tif
+data/processed/**/*.tiff
+data/samples/**/*.tif
+data/samples/**/*.tiff
+
+# Model checkpoints
+experiments/**/checkpoints/*.pth
+experiments/**/logs/
+
+# Results
+results/**/*.tif
+results/**/*.tiff
+
+# Backup
+backup_*/
+
+# OS
 .DS_Store
+Thumbs.db
 
-# Ignore large data files (only specific types that are truly large)
-*.tif
-*.tiff
-*.zip
-*.tar
-*.gz
-*.h5
-*.nc
-*.bin
-*.dat
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
 
-# Allow documentation and config files
-!*.pdf
-!*.xml
-!Docs/
-
-# Ignore specific large data directories but allow structure
-fms_v2/data/processed/*
-fms_v2/data/training/*
-fms_v2/logs/*
-fms_v2/outputs/models/*
-fms_v2/outputs/rasters/*
-
-# Keep directory structure by allowing .gitkeep files
-!.gitkeepopen-cd/
-data/
-work_dirs/
+# Conda
+*.conda
+*.tar.bz2
