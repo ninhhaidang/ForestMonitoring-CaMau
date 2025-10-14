@@ -18,14 +18,9 @@ build/
 *.tif
 *.tiff
 
-
 # Model checkpoints
 experiments/**/checkpoints/*.pth
 experiments/**/logs/
-
-# Results
-results/**/*.tif
-results/**/*.tiff
 
 # Backup
 backup_*/
