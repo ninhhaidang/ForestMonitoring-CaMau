@@ -15,12 +15,9 @@ build/
 *.ipynb_checkpoints
 
 # Data files (large files)
-data/raw/*.tif
-data/raw/*.tiff
-data/processed/**/*.tif
-data/processed/**/*.tiff
-data/samples/**/*.tif
-data/samples/**/*.tiff
+*.tif
+*.tiff
+
 
 # Model checkpoints
 experiments/**/checkpoints/*.pth
