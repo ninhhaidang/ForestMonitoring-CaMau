@@ -49,7 +49,7 @@ Phase VIII: Documentation (1 giờ)
 ## ✅ BƯỚC 0: Kiểm tra Environment (15 phút)
 
 ### 0.1. Verify Open-CD Installation
-- [ ] Activate conda environment: `conda activate opencd`
+- [ ] Activate conda environment: `conda activate dang`
 - [ ] Test Python imports: `import opencd, torch, mmcv`
 - [ ] Check PyTorch + CUDA: `torch.cuda.is_available()` → True
 - [ ] Verify GPU: `nvidia-smi` → RTX A4000 visible
@@ -893,11 +893,11 @@ loss_decode=[
 #### 14.1.1: Open Two Terminals
 **Terminal 1: Training**
 - [ ] `cd open-cd`
-- [ ] `conda activate opencd`
+- [ ] `conda activate dang`
 
 **Terminal 2: Monitoring**
 - [ ] `cd project_root`
-- [ ] `conda activate opencd`
+- [ ] `conda activate dang`
 
 ### 14.2. Launch TensorBoard (Terminal 2)
 - [ ] Run: `tensorboard --logdir experiments/phase1_s2only/vis_data`
