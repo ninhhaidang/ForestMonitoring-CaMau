@@ -13,14 +13,33 @@ build/
 # Jupyter Notebook
 .ipynb_checkpoints/
 *.ipynb_checkpoints
+*.ipynb
 
-# Data files (large files)
+# Data files (large files - do not commit)
 *.tif
 *.tiff
+data/processed/
+data/raw/
 
-# Model checkpoints
-experiments/**/checkpoints/*.pth
-experiments/**/logs/
+# Model checkpoints (large files - do not commit)
+*.pth
+*.pkl
+experiments/**/
+results/**/
+
+# Logs
+*.log
+*.out
+
+# Open-CD framework (cloned separately)
+open-cd/
+
+# IDE & Tools
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
 
 # Backup
 backup_*/
@@ -29,12 +48,11 @@ backup_*/
 .DS_Store
 Thumbs.db
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
 # Conda
 *.conda
 *.tar.bz2
+
+# Temporary files
+nul
+output.txt
+test_*.py
