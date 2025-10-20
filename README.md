@@ -1,288 +1,358 @@
-# CA MAU FOREST CHANGE DETECTION
-**Author:** Ninh Hai Dang (21021411)
-**Institution:** University of Engineering and Technology, VNU
-**Year:** 2024-2025
+# 🌳 Forest Change Detection - Ca Mau Mangrove
 
-Automatic mangrove forest change detection using Deep Learning with comparison of 3 state-of-the-art models and multi-sensor satellite imagery (Sentinel-2 + Sentinel-1).
+**Phát hiện mất rừng ngập mặn Cà Mau sử dụng Deep Learning với dữ liệu đa nguồn vệ tinh**
 
----
-
-## 🎯 PROJECT OBJECTIVE
-
-Compare performance of **3 state-of-the-art change detection models**:
-1. **BAN** (Bi-temporal Adapter Network) - IEEE TGRS 2024
-2. **TinyCDv2** - Ultra-lightweight efficient model (2024-2025)
-3. **Changer** (Feature Interaction Network) - IEEE TGRS 2023
-
-**Approach:** Multi-sensor fusion (Sentinel-1 SAR + Sentinel-2 Optical) for robust change detection.
+**Sinh viên**: Ninh Hải Đăng (MSSV: 21021411)
+**Trường**: Đại học Công nghệ - ĐHQGHN
+**Năm học**: 2025-2026
 
 ---
 
-## 📊 DATASET
+## 📋 MỤC ĐÍCH DỰ ÁN
 
-### Ground Truth
-- **1,285 samples** total
-  - Train: 1,028 (80%)
-  - Val: 128 (10%)
-  - Test: 129 (10%)
-- **Study area:** Ca Mau mangrove forest, Vietnam
-- **Time period:** January 2024 → February 2025
+### Vấn đề:
+Phát hiện và lập bản đồ **mất rừng ngập mặn** tại khu vực Cà Mau trong giai đoạn 2024-2025 bằng phương pháp học sâu (Deep Learning).
 
-### Satellite Data
+### Giải pháp:
+Sử dụng **3 mô hình Deep Learning nhẹ** (PyTorch) để phân loại từng pixel trên ảnh vệ tinh:
+- **Pixel = 0**: Không mất rừng (rừng còn nguyên vẹn)
+- **Pixel = 1**: Mất rừng (phá rừng/chuyển đổi đất)
 
-**Sentinel-2 (Optical):**
-- 4 bands: B4 (Red), B8 (NIR), B11 (SWIR1), B12 (SWIR2)
-- 3 indices: NDVI, NBR, NDMI
-- Resolution: 10-20m
+### Đầu vào (INPUT):
+1. **4 ảnh vệ tinh GeoTIFF** (toàn bộ vùng Cà Mau):
+   - Sentinel-1 Time 1 (2024-02-04): 2 bands (VH, VH/VV Ratio)
+   - Sentinel-1 Time 2 (2025-02-22): 2 bands (VH, VH/VV Ratio)
+   - Sentinel-2 Time 1 (2024-01-30): 7 bands (B4, B8, B11, B12, NDVI, NBR, NDMI)
+   - Sentinel-2 Time 2 (2025-02-28): 7 bands (B4, B8, B11, B12, NDVI, NBR, NDMI)
 
-**Sentinel-1 (SAR):**
-- 2 features: VH polarization, Ratio (VV-VH)
-- Resolution: 10m
+2. **1 file CSV** với 1,285 điểm training (tọa độ x, y + nhãn):
+   - 650 điểm "không mất rừng" (label = 0)
+   - 635 điểm "mất rừng" (label = 1)
 
-**Total Input:** 18 channels (9 per timestep × 2 timesteps)
-
----
-
-## 🧠 MODEL ARCHITECTURES
-
-| Model | Type | Parameters | Input Size | Speed | Expected F1 |
-|-------|------|-----------|-----------|-------|-------------|
-| **BAN** | Transformer | ~8M | 512×512 | ~2s/tile | 0.90-0.92 |
-| **TinyCDv2** | CNN (Lightweight) | ~1.5M | 256×256 | ~0.5s/tile | 0.87-0.89 |
-| **Changer** | CNN+FI | ~10M | 256×256 | ~2.5s/tile | 0.89-0.91 |
-
-### Why These 3 Models?
-
-After analyzing 18 models in Open-CD framework, selected based on:
-- ✅ State-of-the-art (2023-2025)
-- ✅ Diverse approaches (Transformer vs CNN vs Hybrid)
-- ✅ Suitable for limited data (1,200 samples)
-- ✅ Multi-sensor fusion capability
+### Đầu ra (OUTPUT):
+1. **probability_map.tif** - Bản đồ xác suất mất rừng (giá trị 0.0 → 1.0)
+2. **binary_map.tif** - Bản đồ phân loại nhị phân (0 = không mất, 1 = mất rừng)
+3. **visualization.png** - Bản đồ màu (Xanh lá = không mất, Đỏ = mất rừng)
 
 ---
 
-## 💻 ENVIRONMENT
+## 🔬 PHƯƠNG PHÁP
 
-### Hardware
+### 1. Chuẩn bị dữ liệu:
+- Extract patches 256×256 pixels tại tọa độ (x,y) từ CSV
+- Mỗi patch chứa **18 bands tổng cộng**:
+  - Time 1: 9 bands (2 S1 + 7 S2)
+  - Time 2: 9 bands (2 S1 + 7 S2)
+- Split: 80% train (1,028), 10% val (128), 10% test (129)
+
+### 2. Training:
+So sánh **3 mô hình Deep Learning nhẹ** từ thư viện `segmentation_models_pytorch`:
+
+| Mô hình | Encoder | Params | Tốc độ | Đặc điểm |
+|---------|---------|--------|--------|----------|
+| **UNet-EfficientNet-B0** | EfficientNet-B0 | ~5M | Nhanh | ⭐ Cân bằng tốt |
+| **UNet-MobileNetV2** | MobileNetV2 | ~2M | Rất nhanh | Nhẹ nhất, phù hợp mobile |
+| **FPN-EfficientNet-B0** | EfficientNet-B0 | ~6M | Trung bình | Accuracy cao nhất |
+
+**Training config:**
+- Loss: CrossEntropyLoss (binary classification)
+- Optimizer: AdamW
+- Learning rate: 1e-4
+- Batch size: 16
+- Epochs: 50 (với early stopping)
+- Augmentation: Random flip, rotation
+
+### 3. Inference (Whole Scene):
+- **Sliding window 256×256** với overlap trên toàn bộ 4 ảnh GeoTIFF gốc
+- Merge predictions từ tất cả windows → Probability map (0.0-1.0)
+- Apply threshold (0.5) → Binary map (0/1)
+
+### 4. Tạo bản đồ cuối cùng:
+- Save probability map dạng GeoTIFF (float32)
+- Save binary map dạng GeoTIFF (uint8)
+- Colorize và export PNG (visualization)
+
+---
+
+## 📁 CẤU TRÚC DỮ LIỆU
+
 ```
-CPU: Intel Xeon E5-2678 v3 (12 cores @ 2.5GHz)
-RAM: 32GB DDR3 ECC
-GPU: NVIDIA RTX A4000 16GB VRAM
-Storage: 4TB HDD
-OS: Windows 11 Pro
+project/
+│
+├── 📂 data/
+│   └── raw/                          # Data gốc
+│       ├── sentinel1/
+│       │   ├── S1_2024_02_04_matched_S2_2024_01_30.tif  (490MB)
+│       │   └── S1_2025_02_22_matched_S2_2025_02_28.tif  (489MB)
+│       ├── sentinel2/
+│       │   ├── S2_2024_01_30.tif                        (1.5GB)
+│       │   └── S2_2025_02_28.tif                        (1.5GB)
+│       └── ground_truth/
+│           └── Training_Points_CSV.csv                  (1,285 points)
+│
+├── 📂 notebooks/                     # Jupyter notebooks chính
+│   ├── 1_train_models.ipynb         # Train 3 models
+│   ├── 2_inference_wholescene.ipynb # Whole scene inference
+│   └── 3_create_maps.ipynb          # Generate final outputs
+│
+├── 📂 src/                           # Source code modules
+│   ├── dataset.py                    # PyTorch Dataset
+│   ├── models.py                     # Model definitions
+│   └── utils.py                      # Helper functions
+│
+├── 📂 models/                        # Saved models
+│   ├── unet_efficientnet/
+│   │   └── best_model.pth
+│   ├── unet_mobilenet/
+│   │   └── best_model.pth
+│   └── fpn_efficientnet/
+│       └── best_model.pth
+│
+└── 📂 results/                       # Outputs
+    └── whole_scene/
+        ├── probability_map.tif       # 🎯 Xác suất [0.0-1.0]
+        ├── binary_map.tif            # 🎯 Nhị phân [0,1]
+        └── visualization.png         # 🎯 Visualization (RGB)
 ```
 
-### Software
-```
-Python: 3.8.20
-PyTorch: 1.13.1+cu117
-CUDA: 11.7
-Open-CD: 1.1.0
-MMCV: 2.1.0
-MMSegmentation: 1.2.2
-Rasterio: 1.3.11
-```
+---
 
-### Installation
+## 🚀 HƯỚNG DẪN SỬ DỤNG
+
+### Bước 0: Cài đặt môi trường
+
 ```bash
-# Create conda environment
+# Option 1: Sử dụng Conda (Recommended)
 conda env create -f environment.yml
 conda activate dang
 
-# Install Open-CD
-git clone https://github.com/likyoo/open-cd.git
-cd open-cd && pip install -v -e . && cd ..
-
-# Verify installation
-python -c "import torch; print('CUDA:', torch.cuda.is_available())"
+# Option 2: Sử dụng pip
+pip install -r requirements.txt
+pip install segmentation-models-pytorch
 ```
+
+**Yêu cầu:**
+- Python 3.8+
+- PyTorch 1.13+ (CUDA 11.7+)
+- GPU NVIDIA (16GB VRAM khuyến nghị)
+- RAM: 32GB
+- Disk: ~10GB trống
 
 ---
 
-## 📁 PROJECT STRUCTURE
+### Bước 1: Train Models
 
-```
-Ca_Mau_Forest_Change_Detection/
-├── data/
-│   ├── raw/                    # Original satellite imagery (6GB)
-│   │   ├── sentinel2/          # S2: 2 files
-│   │   ├── sentinel1/          # S1: 2 files
-│   │   └── ground_truth/       # 1,285 points
-│   └── processed/              # Training patches (18 channels)
-│       ├── train/              # 1,028 samples
-│       ├── val/                # 128 samples
-│       └── test/               # 129 samples
-│
-├── configs/                    # Model configurations
-│   ├── ban_camau.py           # BAN config
-│   ├── tinycdv2_camau.py      # TinyCDv2 config
-│   └── changer_camau.py       # Changer config
-│
-├── src/                        # Source code
-│   ├── data_utils.py          # Data preprocessing
-│   ├── custom_transforms.py   # Custom TIFF loader
-│   └── simple_model.py        # Model architectures
-│
-├── experiments/                # Training outputs
-│   ├── ban/                   # BAN experiments
-│   ├── tinycdv2/              # TinyCDv2 experiments
-│   └── changer/               # Changer experiments
-│
-├── results/                    # Evaluation results
-│
-├── open-cd/                    # Open-CD framework
-│
-├── train_camau.py             # Training script
-├── PROJECT_STATUS.md          # Current project status
-├── ENVIRONMENT_CHECK.md       # Environment validation
-└── README.md                  # This file
-```
-
----
-
-## 🚀 USAGE
-
-### 1. Data Preprocessing
-Data has been preprocessed into 256×256 patches with 9 channels per timestep.
-
-### 2. Training
-
-**Train TinyCDv2 (Recommended first - fastest):**
 ```bash
-python train_camau.py configs/tinycdv2_camau.py --work-dir experiments/tinycdv2
+jupyter notebook notebooks/1_train_models.ipynb
 ```
 
-**Train BAN:**
+**Notebook này sẽ:**
+1. Load patches từ CSV coordinates
+2. Tạo PyTorch DataLoader (train/val split)
+3. Train 3 models với real-time monitoring:
+   - Loss/Accuracy curves (live update)
+   - Sample predictions visualization
+   - Progress bars
+4. Save best model checkpoint vào `models/{model_name}/`
+
+**Output:**
+- `models/unet_efficientnet/best_model.pth`
+- `models/unet_mobilenet/best_model.pth`
+- `models/fpn_efficientnet/best_model.pth`
+- Training history plots
+
+**Thời gian**: ~30-60 phút/model (GPU)
+
+---
+
+### Bước 2: Inference Whole Scene
+
 ```bash
-python train_camau.py configs/ban_camau.py --work-dir experiments/ban
+jupyter notebook notebooks/2_inference_wholescene.ipynb
 ```
 
-**Train Changer:**
+**Notebook này sẽ:**
+1. Load best model
+2. Load 4 ảnh GeoTIFF gốc (toàn bộ vùng)
+3. Sliding window 256×256 với overlap
+4. Predict từng window
+5. Merge predictions → Probability map (numpy array)
+6. Visualize progress real-time
+
+**Output:**
+- Probability map (numpy array, sẽ save ở bước 3)
+- Preview visualization
+
+**Thời gian**: ~10-30 phút (tùy kích thước ảnh)
+
+---
+
+### Bước 3: Create Final Maps
+
 ```bash
-python train_camau.py configs/changer_camau.py --work-dir experiments/changer
+jupyter notebook notebooks/3_create_maps.ipynb
 ```
 
-### 3. Monitoring
-```bash
-# View training logs
-tail -f experiments/[model]/[timestamp]/[timestamp].log
+**Notebook này sẽ:**
+1. Load probability map từ bước 2
+2. Apply threshold (0.5) → Binary map
+3. Colorize (0 → Green, 1 → Red)
+4. Save 3 outputs dạng GeoTIFF/PNG
 
-# Check GPU usage (Windows)
-# Task Manager → Performance → GPU
+**Output:**
+- `results/whole_scene/probability_map.tif` (Float32, 0.0-1.0)
+- `results/whole_scene/binary_map.tif` (UInt8, 0-1)
+- `results/whole_scene/visualization.png` (RGB)
+
+**Thời gian**: ~5 phút
+
+---
+
+## 📊 KẾT QUẢ KỲ VỌNG
+
+### Metrics (Test set - 129 patches):
+- **Accuracy**: 85-90%
+- **F1-Score**: 0.85-0.90
+- **IoU**: 0.75-0.85
+
+### Bản đồ cuối cùng:
+- Probability map: Xác suất mất rừng tại mỗi pixel
+- Binary map: Phân loại rõ ràng (0/1)
+- Visualization: Trực quan, dễ hiểu cho báo cáo
+
+### Statistics ví dụ:
+```
+Tổng pixels: 50,000,000
+Không mất rừng (0): 30,000,000 (60%)
+Mất rừng (1): 20,000,000 (40%)
 ```
 
-### 4. Evaluation
-```bash
-# Evaluate on test set
-python open-cd/tools/test.py \
-    configs/[model]_camau.py \
-    experiments/[model]/[timestamp]/best_checkpoint.pth
+---
+
+## 🔧 TECHNICAL DETAILS
+
+### Multi-Sensor Data Fusion:
+- **Sentinel-1 (SAR)**: Không bị ảnh hưởng mây, nhạy với cấu trúc thực vật
+- **Sentinel-2 (Optical)**: Phổ phản xạ chi tiết, indices thực vật (NDVI, NBR, NDMI)
+- **Fusion**: Concat 18 bands → Single input tensor
+
+### Model Architecture:
+```python
+# UNet-EfficientNet Example
+Input: (B, 18, 256, 256)  # 18 bands, 256x256 patch
+  ↓
+Encoder: EfficientNet-B0 (pretrained on ImageNet, adapted to 18 channels)
+  ↓
+Decoder: UNet decoder with skip connections
+  ↓
+Output: (B, 2, 256, 256)  # 2 classes (no change, change)
+  ↓
+Softmax → Probability map: (B, 256, 256) values in [0.0, 1.0]
+```
+
+### Sliding Window Strategy:
+```
+Window size: 256×256
+Overlap: 32 pixels
+Step: 224 pixels
+Total windows: ~5,000-10,000 (depends on scene size)
 ```
 
 ---
 
-## 🔬 KEY INNOVATIONS
+## 📚 THƯ VIỆN SỬ DỤNG
 
-1. **Multi-sensor Fusion:** Combining Sentinel-1 SAR + Sentinel-2 Optical for robust detection
-2. **9-channel Input:** Custom data pipeline handling B4, B8, B11, B12, NDVI, NBR, NDMI, VH, Ratio
-3. **Custom TIFF Loader:** Rasterio-based loader for >4 channel images (OpenCV limitation)
-4. **Model Comparison:** Systematic evaluation of 3 SOTA architectures
-5. **Real-world Application:** Operational mangrove forest monitoring in Ca Mau
+### Core Libraries:
+- **PyTorch** (1.13+): Deep learning framework
+- **segmentation_models_pytorch**: Pre-built segmentation models
+- **rasterio**: Read/write GeoTIFF
+- **albumentations**: Data augmentation
+- **pandas**: CSV processing
+- **matplotlib/seaborn**: Visualization
 
----
+### Model Library:
+```python
+import segmentation_models_pytorch as smp
 
-## 📊 EXPECTED RESULTS
-
-### Quantitative Metrics
-- **Overall Accuracy:** 87-92%
-- **F1 Score:** 0.87-0.92
-- **IoU:** 0.77-0.85
-- **Precision:** 0.85-0.90
-- **Recall:** 0.85-0.90
-
-### Model Comparison
-Will compare 3 models on:
-- Accuracy metrics (F1, IoU, Precision, Recall)
-- Inference speed
-- Model size
-- Robustness to cloud/shadow
-- Multi-sensor fusion effectiveness
+model = smp.Unet(
+    encoder_name='efficientnet-b0',
+    encoder_weights='imagenet',
+    in_channels=18,
+    classes=2
+)
+```
 
 ---
 
-## 🎓 THESIS CONTRIBUTIONS
+## 🎯 SO SÁNH 3 MODELS
 
-1. **Comprehensive Comparison:** First systematic comparison of BAN, TinyCDv2, and Changer on mangrove forest
-2. **Multi-sensor Dataset:** Novel 9-channel dataset combining S1+S2 for Vietnam mangrove
-3. **Practical Application:** Operational deployment recommendations for mangrove monitoring
-4. **Reproducible Research:** Clean code, detailed documentation, open-source
-
----
-
-## ⚠️ TECHNICAL NOTES
-
-### Custom Data Pipeline
-- **Challenge:** OpenCV TIFF decoder only supports ≤4 channels
-- **Solution:** Custom `MultiImgLoadRasterioFromFile` transform using Rasterio
-- **Location:** `src/custom_transforms.py`
-
-### PhotoMetric Augmentation
-- **Removed:** Not compatible with >3 channel images
-- **Kept:** Geometric augmentations (rotation, flip)
-
-### Pretrained Weights
-- **BAN:** CLIP ViT-B/16 + MiT-B0
-- **TinyCDv2:** EfficientNet-B4 (ImageNet)
-- **Changer:** MiT-B0 (SegFormer)
+| Tiêu chí | UNet-EfficientNet | UNet-MobileNet | FPN-EfficientNet |
+|----------|-------------------|----------------|------------------|
+| **Params** | ~5M | ~2M | ~6M |
+| **Inference Speed** | ⚡⚡⚡ | ⚡⚡⚡⚡ | ⚡⚡ |
+| **Accuracy** | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| **Memory (VRAM)** | ~4GB | ~2GB | ~6GB |
+| **Training Time** | ~45 min | ~30 min | ~60 min |
+| **Best For** | Cân bằng | Production, Mobile | Highest Accuracy |
 
 ---
 
-## 📈 TIMELINE
+## ⚠️ LƯU Ý
 
-- **Week 1:** Environment setup + Data preprocessing ✅
-- **Week 2:** Model training (BAN, TinyCDv2, Changer) ⏳
-- **Week 3:** Evaluation + Comparison + Analysis
-- **Week 4:** Thesis writing + Presentation preparation
+### 1. Data Location:
+- Đảm bảo 4 ảnh TIFF + CSV trong `data/raw/`
+- Kiểm tra tọa độ CSV khớp với coordinate system của ảnh
 
-**Current Status:** Ready to train 3 models
+### 2. GPU Memory:
+- UNet-MobileNet: OK với GPU 8GB
+- UNet-EfficientNet: Cần GPU 12GB
+- FPN-EfficientNet: Cần GPU 16GB
+- Giảm batch_size nếu bị OOM
 
----
-
-## 📚 REFERENCES
-
-### Papers
-1. **BAN:** "Bi-temporal Adapter Network for Remote Sensing Change Detection", IEEE TGRS 2024
-2. **TinyCDv2:** "Tiny Change Detection v2" (Under Review, 2024-2025)
-3. **Changer:** "Changer: Feature Interaction is What You Need for Change Detection", IEEE TGRS 2023
-4. **Open-CD:** Li et al., "Open-CD: A Comprehensive Toolbox for Change Detection", 2024
-
-### Resources
-- **Open-CD:** https://github.com/likyoo/open-cd
-- **Sentinel Data:** https://scihub.copernicus.eu/
+### 3. Whole Scene Inference:
+- Có thể mất 10-30 phút tùy kích thước ảnh
+- Progress bar sẽ hiển thị tiến độ
+- Nếu quá lâu, có thể chỉ inference một phần ảnh
 
 ---
 
-## 📞 CONTACT
+## 📝 CITATION
 
-**Ninh Hải Đăng**
-Student ID: 21021411
-Email: ninhhaidangg@gmail.com
-GitHub: ninhhaidang
+```bibtex
+@thesis{dang2025forest,
+  title={Forest Change Detection in Ca Mau using Multi-Sensor Deep Learning},
+  author={Ninh Hải Đăng},
+  school={VNU University of Engineering and Technology},
+  year={2025},
+  type={Bachelor's Thesis}
+}
+```
 
-**Project Status:** Environment validated, ready for training
-**Last Updated:** 2025-10-17
+---
+
+## 📧 LIÊN HỆ
+
+**Sinh viên**: Ninh Hải Đăng
+**MSSV**: 21021411
+**Email**: ninhhaidangg@gmail.com
+**Trường**: Đại học Công nghệ - ĐHQGHN
 
 ---
 
 ## 📄 LICENSE
 
-This project is for academic purposes as part of a Bachelor's thesis at University of Engineering and Technology, VNU.
+MIT License - Xem file LICENSE
 
 ---
 
 ## 🙏 ACKNOWLEDGMENTS
 
-- **Open-CD Team** for the comprehensive change detection framework
-- **PyTorch Team** for the excellent deep learning framework
-- **Rasterio Contributors** for geospatial data handling
-- **NVIDIA** for CUDA support enabling GPU training
+- **segmentation_models_pytorch**: https://github.com/qubvel/segmentation_models.pytorch
+- **PyTorch**: https://pytorch.org/
+- **Sentinel Hub**: Dữ liệu vệ tinh Sentinel-1/2
+- **VNU-UET**: Hỗ trợ tài nguyên và hướng dẫn
+
+---
+
+**Last Updated**: 2025-10-18
+**Status**: ✅ Ready for development
