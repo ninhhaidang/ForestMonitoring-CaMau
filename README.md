@@ -526,18 +526,24 @@ ca-mau-deforestation/
 │       ├── val/                       ⚠️ TRỐNG
 │       └── test/                      ⚠️ TRỐNG
 │
-├── src/                               ✅ (ĐÃ TẠO THƯ MỤC - CẦN VIẾT CODE)
-│   ├── prepare_data.py               ⬜ Tiền xử lý và extract patches
-│   ├── models.py                     ⬜ 3 kiến trúc mô hình
-│   ├── dataset.py                    ⬜ PyTorch Dataset
-│   ├── train.py                      ⬜ Script huấn luyện
-│   ├── evaluate.py                   ⬜ Đánh giá và so sánh
-│   └── predict.py                    ⬜ Dự đoán toàn ảnh
+├── src/                               ✅ (PYTHON MODULES - Dùng trong notebooks)
+│   ├── __init__.py                   ✅ Package initialization
+│   ├── utils.py                      ✅ Load data & metadata
+│   ├── preprocessing.py              ✅ Normalize, NaN handling, patch extraction
+│   ├── visualization.py              ✅ Plotting functions
+│   ├── models.py                     ✅ 3 CNN architectures (30K-120K params)
+│   ├── README.md                     ✅ Module documentation
+│   ├── dataset.py                    ✅ PyTorch Dataset class
+│   ├── train.py                      ⬜ Script huấn luyện (TODO)
+│   ├── evaluate.py                   ⬜ Đánh giá (TODO)
+│   └── predict.py                    ⬜ Inference (TODO)
 │
-├── notebooks/                         ✅ (ĐÃ TẠO)
-│   ├── 01_data_exploration.ipynb     ✅ Khám phá dữ liệu
-│   ├── 02_training_analysis.ipynb    ⬜ Phân tích quá trình train
-│   ├── 03_results_visualization.ipynb ⬜ Trực quan hóa kết quả
+├── notebooks/                         ✅ (JUPYTER NOTEBOOKS)
+│   ├── 00_module_usage_example.ipynb ✅ Hướng dẫn import & sử dụng modules
+│   ├── 01_data_exploration.ipynb     ✅ Khám phá dữ liệu (metadata, stats, viz)
+│   ├── 02_create_patches_dataset.ipynb ✅ Tạo patches dataset (128×128×18)
+│   ├── 03_training_analysis.ipynb    ⬜ Phân tích quá trình train (TODO)
+│   ├── 04_results_visualization.ipynb ⬜ Trực quan hóa kết quả (TODO)
 │   └── README.md                     ✅ Hướng dẫn sử dụng notebooks
 │
 ├── checkpoints/                       ✅ (ĐÃ TẠO - Chờ model weights)
@@ -697,26 +703,56 @@ jupyter nbconvert --execute --to notebook notebooks/01_data_exploration.ipynb
 
 ### Bước 1: Chuẩn Bị Dữ Liệu
 
-Extract patches 128×128×18 từ ảnh Sentinel:
+Extract patches 128×128×18 từ ảnh Sentinel.
+
+**Lựa chọn A: Sử dụng Jupyter Notebook (Khuyến nghị)**
 
 ```bash
-python src/prepare_data.py \
-    --sentinel1_dir data/raw/sentinel1 \
-    --sentinel2_dir data/raw/sentinel2 \
-    --labels_csv data/raw/ground_truth/Training_Points_CSV.csv \
-    --output_dir data/patches \
-    --patch_size 128 \
-    --train_ratio 0.70 \
-    --val_ratio 0.15 \
-    --augment
+# Kích hoạt môi trường
+conda activate dang
+
+# Khởi động JupyterLab
+jupyter lab
+
+# Mở và chạy notebook: notebooks/02_create_patches_dataset.ipynb
+```
+
+Notebook này sẽ:
+- ✅ Load 4 file TIFF (~4GB)
+- ✅ Stack thành 18 channels
+- ✅ Extract 1,285 patches tại các điểm ground truth
+- ✅ Handle NaN values
+- ✅ Normalize tất cả các bands
+- ✅ Split train/val/test (70/15/15)
+- ✅ Lưu thành file .npy
+- ✅ Visualize sample patches
+
+**Lựa chọn B: Sử dụng Script Python**
+
+```bash
+python -c "from src.preprocessing import create_patches_dataset; \
+create_patches_dataset( \
+    s1_2024_path='data/raw/sentinel1/S1_2024_02_04_matched_S2_2024_01_30.tif', \
+    s1_2025_path='data/raw/sentinel1/S1_2025_02_22_matched_S2_2025_02_28.tif', \
+    s2_2024_path='data/raw/sentinel2/S2_2024_01_30.tif', \
+    s2_2025_path='data/raw/sentinel2/S2_2025_02_28.tif', \
+    ground_truth_csv='data/raw/ground_truth/Training_Points_CSV.csv', \
+    output_dir='data/patches', \
+    patch_size=128, \
+    train_ratio=0.70, \
+    val_ratio=0.15, \
+    test_ratio=0.15, \
+    normalize=True, \
+    handle_nan_method='fill', \
+    random_seed=42)"
 ```
 
 **Output:**
 - ~900 training patches
-- ~190 validation patches  
+- ~190 validation patches
 - ~195 test patches
 
-**Thời gian dự kiến:** 5-10 phút
+**Thời gian dự kiến:** 10-15 phút
 
 ---
 
