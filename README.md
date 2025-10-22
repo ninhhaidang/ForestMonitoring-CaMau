@@ -503,58 +503,60 @@ probability_map = output / count  # Average overlaps
 ```
 ca-mau-deforestation/
 │
-├── README.md                          # File này
-├── requirements.txt                   # Python dependencies
-├── environment.yml                    # Conda environment
-├── LICENSE                            # MIT License
+├── README.md                          # File này ✅
+├── requirements.txt                   # Python dependencies (pip) ✅
+├── environment.yml                    # Conda environment export ✅
+├── DATA_METADATA_REPORT.md            # Báo cáo chi tiết metadata ✅
+├── LICENSE                            # MIT License ✅
 │
 ├── data/
-│   ├── raw/                           # Dữ liệu thô
-│   │   ├── sentinel1/
-│   │   │   ├── S1_2024_02_04_matched_S2_2024_01_30.tif
-│   │   │   └── S1_2025_02_22_matched_S2_2025_02_28.tif
-│   │   ├── sentinel2/
-│   │   │   ├── S2_2024_01_30.tif
-│   │   │   └── S2_2025_02_28.tif
-│   │   └── ground_truth/
-│   │       ├── Training_Points_CSV.csv
-│   │       └── Training_Points__SHP.*
+│   ├── raw/                           # Dữ liệu thô ✅
+│   │   ├── sentinel1/                 ✅
+│   │   │   ├── S1_2024_02_04_matched_S2_2024_01_30.tif      (490 MB) ✅
+│   │   │   └── S1_2025_02_22_matched_S2_2025_02_28.tif      (489 MB) ✅
+│   │   ├── sentinel2/                 ✅
+│   │   │   ├── S2_2024_01_30.tif                            (1.5 GB) ✅
+│   │   │   └── S2_2025_02_28.tif                            (1.5 GB) ✅
+│   │   └── ground_truth/              ✅
+│   │       ├── Training_Points_CSV.csv       (1,285 points) ✅
+│   │       └── Training_Points__SHP.*        (Shapefile)    ✅
 │   │
-│   └── patches/                       # Patches đã extract (sẽ tạo)
-│       ├── train/
-│       ├── val/
-│       └── test/
+│   └── patches/                       # Patches đã extract ⚠️ (CHƯA TẠO)
+│       ├── train/                     ⚠️ TRỐNG
+│       ├── val/                       ⚠️ TRỐNG
+│       └── test/                      ⚠️ TRỐNG
 │
-├── src/
-│   ├── prepare_data.py               # Tiền xử lý và extract patches
-│   ├── models.py                     # 3 kiến trúc mô hình
-│   ├── dataset.py                    # PyTorch Dataset
-│   ├── train.py                      # Script huấn luyện
-│   ├── evaluate.py                   # Đánh giá và so sánh
-│   └── predict.py                    # Dự đoán toàn ảnh
+├── src/                               ✅ (ĐÃ TẠO THƯ MỤC - CẦN VIẾT CODE)
+│   ├── prepare_data.py               ⬜ Tiền xử lý và extract patches
+│   ├── models.py                     ⬜ 3 kiến trúc mô hình
+│   ├── dataset.py                    ⬜ PyTorch Dataset
+│   ├── train.py                      ⬜ Script huấn luyện
+│   ├── evaluate.py                   ⬜ Đánh giá và so sánh
+│   └── predict.py                    ⬜ Dự đoán toàn ảnh
 │
-├── notebooks/
-│   ├── 01_data_exploration.ipynb     # Khám phá dữ liệu
-│   ├── 02_training_analysis.ipynb    # Phân tích quá trình train
-│   └── 03_results_visualization.ipynb # Trực quan hóa kết quả
+├── notebooks/                         ✅ (ĐÃ TẠO)
+│   ├── 01_data_exploration.ipynb     ✅ Khám phá dữ liệu
+│   ├── 02_training_analysis.ipynb    ⬜ Phân tích quá trình train
+│   ├── 03_results_visualization.ipynb ⬜ Trực quan hóa kết quả
+│   └── README.md                     ✅ Hướng dẫn sử dụng notebooks
 │
-├── checkpoints/                       # Model weights (sẽ tạo sau training)
-│   ├── spatial_cnn_best.pth
-│   ├── multiscale_cnn_best.pth
-│   └── shallow_unet_best.pth
+├── checkpoints/                       ✅ (ĐÃ TẠO - Chờ model weights)
+│   ├── spatial_cnn_best.pth          ⬜
+│   ├── multiscale_cnn_best.pth       ⬜
+│   └── shallow_unet_best.pth         ⬜
 │
-├── outputs/                           # Kết quả dự đoán (sẽ tạo)
-│   ├── probability_maps/
-│   ├── binary_maps/
-│   └── statistics/
+├── outputs/                           ✅ (ĐÃ TẠO - Chờ inference)
+│   ├── probability_maps/             ⬜
+│   ├── binary_maps/                  ⬜
+│   └── statistics/                   ⬜
 │
-├── logs/                              # Training logs (sẽ tạo)
-│   └── training_history.csv
+├── logs/                              ✅ (ĐÃ TẠO - Chờ training)
+│   └── training_history.csv          ⬜
 │
-└── figures/                           # Các hình ảnh, biểu đồ (sẽ tạo)
-    ├── training_curves/
-    ├── confusion_matrices/
-    └── maps/
+└── figures/                           ✅ (ĐÃ TẠO - Chờ plots)
+    ├── training_curves/              ⬜
+    ├── confusion_matrices/           ⬜
+    └── maps/                         ⬜
 ```
 
 ---
@@ -563,52 +565,135 @@ ca-mau-deforestation/
 
 ### Yêu Cầu Hệ Thống
 
-- **OS**: Linux/Windows 10+/macOS
-- **Python**: 3.8 trở lên
-- **CUDA**: 11.8+ (cho GPU)
+- **OS**: Windows 10+ / Linux / macOS
+- **Python**: 3.8.20 (đã test)
+- **CUDA**: 11.7 (cho GPU)
 - **GPU**: NVIDIA với ≥8GB VRAM (đã test trên RTX A4000 16GB)
+- **RAM**: ≥16GB (khuyến nghị 32GB)
+- **Disk**: ~20GB (data + checkpoints + outputs)
 
-### Bước 1: Clone Repository
+### Môi Trường Đã Cài Đặt (Current Setup)
+
+Dự án đã có môi trường conda hoàn chỉnh tên **`dang`** với các thư viện chính:
+
+| Thư viện | Phiên bản | Mục đích |
+|----------|-----------|----------|
+| PyTorch | 1.13.1+cu117 | Deep learning framework |
+| GDAL | 3.6.2 | Xử lý dữ liệu địa không gian |
+| Rasterio | 1.3.11 | Đọc/ghi file GeoTIFF |
+| NumPy | 1.24.4 | Tính toán mảng số học |
+| OpenCV | 4.12.0.88 | Xử lý ảnh |
+| Albumentations | 1.4.18 | Data augmentation |
+| Scikit-learn | 1.3.2 | Machine learning utilities |
+| MMSegmentation | 1.2.2 | Segmentation framework (optional) |
+| JupyterLab | 4.2.5 | Môi trường notebook |
+
+### Bước 1: Clone Repository (nếu chưa có)
 
 ```bash
 git clone https://github.com/ninhhaidang/ca-mau-deforestation.git
 cd ca-mau-deforestation
 ```
 
-### Bước 2: Tạo Môi Trường
+### Bước 2: Kích Hoạt Môi Trường
 
-**Lựa chọn A: Conda (Khuyến nghị)**
+Môi trường `dang` đã được cài đặt sẵn:
 
 ```bash
-conda env create -f environment.yml
+conda activate dang
+```
+
+### Bước 3: (Tùy chọn) Cài Đặt Môi Trường Mới
+
+Nếu muốn tạo môi trường mới từ đầu:
+
+**Lựa chọn A: Từ environment.yml (Conda - Khuyến nghị)**
+
+```bash
+# Tạo môi trường mới tên 'camau-forest'
+conda env create -f environment.yml -n camau-forest
 conda activate camau-forest
 ```
 
-**Lựa chọn B: venv + pip**
+**Lựa chọn B: Từ requirements.txt (pip)**
 
 ```bash
+# Tạo virtual environment
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Cài đặt PyTorch với CUDA 11.7 trước
+pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 torchaudio==0.13.1+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
+
+# Cài đặt các thư viện còn lại
 pip install -r requirements.txt
 ```
 
-### Bước 3: Kiểm Tra Cài Đặt
+⚠️ **Lưu ý:**
+- GDAL/Rasterio cài đặt qua conda dễ hơn pip (trên Windows)
+- Nếu dùng pip, có thể cần cài GDAL wheel từ [Christoph Gohlke's site](https://www.lfd.uci.edu/~gohlke/pythonlibs/#gdal)
+
+### Bước 4: Kiểm Tra Cài Đặt
 
 ```bash
-python -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
+# Kiểm tra PyTorch và CUDA
+python -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}'); print(f'CUDA version: {torch.version.cuda}')"
+
+# Kiểm tra Rasterio
 python -c "import rasterio; print(f'Rasterio: {rasterio.__version__}')"
+
+# Kiểm tra GDAL
+python -c "import osgeo.gdal as gdal; print(f'GDAL: {gdal.__version__}')"
 ```
 
-Kết quả mong đợi:
+**Kết quả mong đợi:**
 ```
-PyTorch: 2.0.1+cu118
+PyTorch: 1.13.1+cu117
 CUDA available: True
-Rasterio: 1.3.8
+CUDA version: 11.7
+Rasterio: 1.3.11
+GDAL: 3.6.2
 ```
 
 ---
 
 ## 🚀 Hướng Dẫn Sử Dụng
+
+### Bước 0: Khám Phá Dữ Liệu (Tùy chọn)
+
+Trước khi preprocessing, khuyến nghị chạy notebook để khám phá dữ liệu:
+
+```bash
+# Kích hoạt môi trường
+conda activate dang
+
+# Khởi động JupyterLab
+jupyter lab
+
+# Mở notebook: notebooks/01_data_exploration.ipynb
+# Hoặc chạy từ command line:
+jupyter nbconvert --execute --to notebook notebooks/01_data_exploration.ipynb
+```
+
+**Notebook này sẽ:**
+- ✅ Kiểm tra metadata của 4 ảnh TIFF
+- ✅ Phân tích statistics (min, max, mean, std, NaN%)
+- ✅ Visualize bands và vegetation indices
+- ✅ So sánh 2024 vs 2025
+- ✅ Tạo báo cáo và figures
+
+**Outputs:**
+- `data/metadata_summary.csv`
+- `figures/band_nan_comparison.png`
+- `figures/band_mean_comparison.png`
+- `figures/indices_2024_vs_2025.png`
+- `figures/sample_band_images.png`
+
+**Thời gian:** ~2-3 phút
+
+**Chi tiết:** Xem `notebooks/README.md`
+
+---
 
 ### Bước 1: Chuẩn Bị Dữ Liệu
 
