@@ -1,149 +1,962 @@
-# 🌳 Forest Change Detection - Ca Mau Mangrove
+# 🌲 Ứng Dụng Viễn Thám và Học Sâu Trong Giám Sát Biến Động Rừng Tỉnh Cà Mau
 
-**Phát hiện mất rừng ngập mặn Cà Mau sử dụng Deep Learning với dữ liệu đa nguồn vệ tinh**
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-red.svg)](https://pytorch.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**Sinh viên**: Ninh Hải Đăng (MSSV: 21021411)
-**Trường**: Đại học Công nghệ - ĐHQGHN
-**Năm học**: 2025-2026
-
----
-
-## 📋 PROJECT STATUS
-
-**Current Status:** Clean Slate - Ready for New Approach
-
-Previous PyTorch approach has been archived to `_archive_pytorch_approach/`.
+> **Đồ Án Tốt Nghiệp**  
+> Sinh viên: Ninh Hải Đăng (MSSV: 21021411)  
+> Viện Công nghệ Hàng không Vũ trụ  
+> Trường Đại học Công nghệ - Đại học Quốc gia Hà Nội  
+> Email: ninhhaidangg@gmail.com | GitHub: [@ninhhaidang](https://github.com/ninhhaidang)
 
 ---
 
-## 📁 DATA STRUCTURE
+## 📋 Mục Lục
 
-### Input Data (Preserved)
+- [Tóm Tắt](#tóm-tắt)
+- [Giới Thiệu](#giới-thiệu)
+- [Khu Vực Nghiên Cứu](#khu-vực-nghiên-cứu)
+- [Phương Pháp Nghiên Cứu](#phương-pháp-nghiên-cứu)
+- [Cấu Trúc Dự Án](#cấu-trúc-dự-án)
+- [Cài Đặt](#cài-đặt)
+- [Hướng Dẫn Sử Dụng](#hướng-dẫn-sử-dụng)
+- [Kiến Trúc Mô Hình](#kiến-trúc-mô-hình)
+- [Kết Quả](#kết-quả)
+- [Thảo Luận](#thảo-luận)
+- [Hướng Phát Triển](#hướng-phát-triển)
+- [Tài Liệu Tham Khảo](#tài-liệu-tham-khảo)
+- [Lời Cảm Ơn](#lời-cảm-ơn)
+- [Giấy Phép](#giấy-phép)
+
+---
+
+## 📖 Tóm Tắt
+
+Giám sát biến động rừng là nhiệm vụ quan trọng đối với bảo tồn môi trường và quản lý tài nguyên rừng. Tỉnh Cà Mau với hệ sinh thái rừng ngập mặn đặc trưng đang đối mặt với nhiều áp lực từ hoạt động nuôi trồng thủy sản và biến đổi khí hậu, đòi hỏi phương pháp giám sát hiệu quả và kịp thời.
+
+Các phương pháp học máy truyền thống (Random Forest, Gradient Boosting, SVM) đạt độ chính xác cao trong phân loại từng pixel nhưng gặp phải vấn đề nhiễu muối tiêu (salt-and-pepper noise) do thiếu nhận thức về ngữ cảnh không gian. Điều này dẫn đến bản đồ kết quả có nhiều pixel bị phân loại sai rời rạc, làm giảm chất lượng thông tin cho quản lý rừng.
+
+Đồ án này đề xuất **khung deep learning đa thời gian** tận dụng dữ liệu SAR Sentinel-1 và đa phổ Sentinel-2 để phát hiện các khu vực biến động rừng tại tỉnh Cà Mau giữa hai thời điểm 2024 và 2025. Ba kiến trúc mạng nơ-ron tích chập nông (shallow CNN) được triển khai và so sánh:
+
+1. **Spatial Context CNN** (~30K tham số) - Gần nhất với phương pháp ML, bổ sung làm mượt không gian
+2. **Multi-Scale CNN** (~80K tham số) - Cân bằng, học đặc trưng đa tỷ lệ  
+3. **Shallow U-Net** (~120K tham số) - Kiến trúc encoder-decoder cho tính liên kết không gian tối ưu
+
+Khung nghiên cứu xử lý 18 kênh phổ (9 kênh × 2 thời điểm) sử dụng các patches 128×128 pixels, huấn luyện trên 1.285 điểm có nhãn với các lớp cân bằng (49,4% mất rừng vs 50,6% không mất rừng). Các mô hình được tối ưu hóa cho GPU NVIDIA RTX A4000 16GB và tạo ra bản đồ xác suất liên tục (0-1), kỳ vọng sẽ giảm nhiễu đáng kể so với phương pháp ML truyền thống.
+
+**Từ khóa:** Giám sát rừng, Cà Mau, Rừng ngập mặn, Phân tích đa thời gian, Deep Learning, Sentinel-1/2, Viễn thám, CNN
+
+---
+
+## 🎯 Giới Thiệu
+
+### Bối Cảnh
+
+Tỉnh Cà Mau nằm ở cực Nam Việt Nam, sở hữu hệ sinh thái rừng ngập mặn rộng lớn với vai trò quan trọng trong việc bảo vệ bờ biển, duy trì đa dạng sinh học và lưu trữ carbon. Tuy nhiên, rừng ngập mặn Cà Mau đang đối mặt với nhiều thách thức:
+
+- **Chuyển đổi mục đích sử dụng đất**: Mở rộng diện tích nuôi trồng thủy sản (tôm, cua)
+- **Biến đổi khí hậu**: Xâm nhập mặn, nước biển dâng, bão lũ
+- **Khai thác không bền vững**: Chặt phá để lấy gỗ, than
+- **Suy thoái tự nhiên**: Già cỗi, bệnh hại
+
+Việc giám sát biến động rừng truyền thống dựa vào điều tra thực địa tốn kém và không thể cập nhật thường xuyên trên diện rộng. Viễn thám vệ tinh cung cấp giải pháp hiệu quả nhưng cần phương pháp xử lý tiên tiến để tạo thông tin chính xác và kịp thời.
+
+### Phát Biểu Bài Toán
+
+**Đầu vào:**
+- **Dữ liệu**: Ảnh Sentinel-1 (SAR: VH, VV) và Sentinel-2 (đa phổ: B4, B8, B11, B12 và các chỉ số NDVI, NBR, NDMI) từ hai thời điểm (2024 và 2025)
+- **Khu vực**: Tỉnh Cà Mau
+- **Ground truth**: 1.285 điểm có nhãn (635 điểm mất rừng, 650 điểm không mất rừng)
+- **Thách thức**: Phương pháp ML hiện tại (RF/GBT/SVM) đạt độ chính xác cao (>90%) nhưng tạo bản đồ có nhiễu pixel rời rạc
+
+**Mục tiêu:**
+1. Phát triển các mô hình deep learning nông phù hợp với dữ liệu hạn chế
+2. Tích hợp ngữ cảnh không gian để giảm nhiễu muối tiêu
+3. Duy trì hoặc cải thiện độ chính xác so với ML baseline
+4. Tạo bản đồ xác suất mượt, dễ diễn giải cho công tác quản lý
+5. So sánh ba kiến trúc với độ phức tạp khác nhau
+
+### Câu Hỏi Nghiên Cứu
+
+1. Liệu các kiến trúc CNN nông có thể học được đặc trưng không gian hiệu quả với chỉ ~1.300 mẫu huấn luyện?
+2. Kích thước vùng tiếp nhận (receptive field) nào phù hợp nhất cho đặc điểm rừng ngập mặn Cà Mau?
+3. Kiến trúc nào cân bằng tốt nhất giữa độ chính xác, độ mượt và tốc độ tính toán?
+4. Dữ liệu đa nguồn (SAR + đa phổ) và đa thời gian có cải thiện khả năng phát hiện biến động so với đơn nguồn?
+
+---
+
+## 🗺️ Khu Vực Nghiên Cứu
+
+### Vị Trí Địa Lý
+
+- **Tỉnh**: Cà Mau
+- **Vị trí**: Cực Nam Việt Nam (8°30' - 9°30' Bắc, 104°45' - 105°30' Đông)
+- **Diện tích tự nhiên**: ~5.331 km²
+- **Đặc điểm**: Địa hình thấp, nhiều sông rạch, chịu ảnh hưởng triều cường
+
+### Đặc Điểm Rừng
+
+- **Loại rừng chính**: Rừng ngập mặn (mangrove forest)
+- **Các loài ưu thế**: Đước (Rhizophora), Tràm (Melaleuca), Mắm (Avicennia)
+- **Diện tích rừng**: ~40.000 ha (số liệu tham khảo, cần cập nhật)
+- **Phân bố**: Tập trung ven biển và ven sông
+
+### Áp Lực Lên Rừng
+
+1. **Nuôi trồng thủy sản**: Chuyển đổi rừng thành ao nuôi tôm
+2. **Khai thác gỗ**: Lấy gỗ xây dựng, làm than
+3. **Biến đổi khí hậu**: Nước biển dâng, xâm nhập mặn
+4. **Phát triển cơ sở hạ tầng**: Xây dựng đường, khu dân cư
+
+---
+
+## 🔬 Phương Pháp Nghiên Cứu
+
+### Thu Thập và Tiền Xử Lý Dữ Liệu
+
+#### Đặc Tả Dữ Liệu Đầu Vào
+
+**Sentinel-1 (SAR C-band):**
+- **Kênh**: 
+  - VH (phân cực chéo Vertical-Horizontal)
+  - R = VV - VH (tỷ số phân cực)
+- **Độ phân giải không gian**: 10m
+- **Ngày thu thập**: 
+  - Thời điểm 1: 04/02/2024
+  - Thời điểm 2: 22/02/2025
+- **Ưu điểm**: Xuyên mây, hoạt động cả ngày đêm, nhạy cảm với cấu trúc thảm thực vật
+- **Tiền xử lý**: 
+  - Hiệu chuẩn bức xạ (radiometric calibration)
+  - Lọc nhiễu đốm (speckle filtering) - Lee filter
+  - Hiệu chính địa hình (terrain correction) - Range-Doppler
+
+**Sentinel-2 (Multispectral):**
+- **Kênh gốc**:
+  - B4 (Red): 665 nm, 10m
+  - B8 (NIR): 842 nm, 10m  
+  - B11 (SWIR1): 1.610 nm, 20m → nội suy về 10m
+  - B12 (SWIR2): 2.190 nm, 20m → nội suy về 10m
+- **Chỉ số tính toán**:
+  - NDVI = (B8 - B4) / (B8 + B4) - Chỉ số thực vật
+  - NBR = (B8 - B12) / (B8 + B12) - Chỉ số cháy
+  - NDMI = (B8 - B11) / (B8 + B11) - Chỉ số độ ẩm
+- **Ngày thu thập**:
+  - Thời điểm 1: 30/01/2024
+  - Thời điểm 2: 28/02/2025
+- **Độ che phủ mây**: <10%
+- **Tiền xử lý**:
+  - Hiệu chính khí quyển (atmospheric correction) - Sen2Cor
+  - Loại bỏ mây (cloud masking)
+  - Resample B11, B12 về 10m
+
+#### Stack Đặc Trưng Đa Thời Gian
+
+**Tổng cộng: 18 kênh phổ**
+
+| STT | Tên Kênh | Nguồn | Thời điểm | Ý nghĩa |
+|-----|----------|-------|-----------|---------|
+| 1 | VH_2024 | S1 | 2024 | Backscatter phân cực chéo |
+| 2 | R_2024 | S1 | 2024 | Tỷ số VV/VH |
+| 3 | B4_2024 | S2 | 2024 | Phản xạ vùng đỏ |
+| 4 | B8_2024 | S2 | 2024 | Phản xạ cận hồng ngoại |
+| 5 | B11_2024 | S2 | 2024 | Phản xạ SWIR1 |
+| 6 | B12_2024 | S2 | 2024 | Phản xạ SWIR2 |
+| 7 | NDVI_2024 | S2 | 2024 | Độ xanh thực vật |
+| 8 | NBR_2024 | S2 | 2024 | Chỉ số cháy |
+| 9 | NDMI_2024 | S2 | 2024 | Chỉ số độ ẩm |
+| 10-18 | [Lặp lại] | - | 2025 | Cùng 9 kênh năm 2025 |
+
+**Lý do sử dụng đa thời gian:**
+- Phát hiện **thay đổi** giữa hai thời điểm chính xác hơn so với phân loại đơn thời điểm
+- Giảm ảnh hưởng của biến động theo mùa (phenology)
+- Tăng độ tin cậy thông qua so sánh trực tiếp
+
+#### Trích Xuất Patches
+
+**Quy trình:**
+1. **Đầu vào**: File CSV chứa tọa độ UTM (x, y) và nhãn (0/1) của 1.285 điểm
+2. **Trích xuất**: Với mỗi điểm (x, y):
+   - Cắt vùng 128×128 pixels (1,28 km × 1,28 km) xung quanh điểm làm tâm
+   - Lấy đầy đủ 18 kênh phổ → patch có kích thước 128×128×18
+3. **Lưu trữ**: Mỗi patch lưu thành file `.npy` (NumPy array)
+
+**Lý do chọn 128×128 pixels:**
+- **Ngữ cảnh không gian**: 1,28×1,28 km đủ lớn để bao quát mẫu rừng/không rừng xung quanh
+- **Bộ nhớ GPU**: Phù hợp với batch size 16-32 trên GPU 16GB
+- **Receptive field**: Cho phép model học đặc trưng từ vùng lân cận rộng
+
+**Phân bố lớp:**
+- Lớp 0 (Không mất rừng): 650 mẫu (50,6%)
+- Lớp 1 (Mất rừng): 635 mẫu (49,4%)
+- **Nhận xét**: Dữ liệu cân bằng tốt, không cần weighted loss
+
+#### Tăng Cường Dữ Liệu (Data Augmentation)
+
+Do số lượng mẫu hạn chế (~1.300), áp dụng augmentation để tăng tính đa dạng:
+
+| Kỹ thuật | Tham số | Mục đích |
+|----------|---------|----------|
+| **Rotation** | 90°, 180°, 270° | Bất biến với hướng quay |
+| **Horizontal Flip** | p=0.5 | Tăng tính đối xứng |
+| **Vertical Flip** | p=0.5 | Tăng tính đối xứng |
+| **Gaussian Noise** | σ=0.01 | Tăng tính robust với nhiễu |
+
+**Kích thước tập hiệu quả**: ~2.500-3.000 mẫu sau augmentation
+
+#### Chia Tập Train/Validation/Test
 
 ```
-data/raw/
-├── sentinel1/
-│   ├── S1_2024_02_04_matched_S2_2024_01_30.tif  (490MB)
-│   └── S1_2025_02_22_matched_S2_2025_02_28.tif  (489MB)
-├── sentinel2/
-│   ├── S2_2024_01_30.tif                        (1.5GB)
-│   └── S2_2025_02_28.tif                        (1.5GB)
-└── ground_truth/
-    └── Training_Points_CSV.csv                  (1,285 points)
+Tổng: 1.285 patches
+├── Training:   70% ≈ 900 patches   (huấn luyện model)
+├── Validation: 15% ≈ 190 patches   (tuning hyperparameters, early stopping)
+└── Test:       15% ≈ 195 patches   (đánh giá cuối cùng)
 ```
 
-### Data Specifications
-
-**Sentinel-1 (SAR):**
-- 2 time points: 2024-02-04, 2025-02-22
-- 2 bands each: VH, VH/VV Ratio
-- Not affected by clouds
-
-**Sentinel-2 (Optical):**
-- 2 time points: 2024-01-30, 2025-02-28
-- 7 bands each: B4, B8, B11, B12, NDVI, NBR, NDMI
-- High spectral resolution
-
-**Ground Truth:**
-- 1,285 labeled points
-- 650 points: No change (label = 0)
-- 635 points: Deforestation (label = 1)
-- Format: `id,label,x,y` (coordinates in image CRS)
+**Chia phân tầng (stratified split)**: Đảm bảo tỷ lệ class 0/1 giống nhau ở cả 3 tập
 
 ---
 
-## 🎯 PROJECT GOAL
+### Kiến Trúc Mô Hình
 
-**Objective:** Detect and map mangrove deforestation in Ca Mau region (2024-2025)
+#### Mô Hình 1: Spatial Context CNN
 
-**Approach:** TBD (To Be Determined)
+**Triết lý thiết kế:**
+- Giữ đơn giản như ML nhưng thêm khả năng học không gian
+- "RF + spatial smoothing"
 
-**Expected Output:**
-1. `probability_map.tif` - Probability of deforestation (0.0-1.0)
-2. `binary_map.tif` - Binary classification (0/1)
-3. `visualization.png` - Colored map (Green=No change, Red=Deforestation)
+**Kiến trúc chi tiết:**
+
+```
+┌──────────────────────────────────────────┐
+│ INPUT: 128×128×18                        │
+└──────────────┬───────────────────────────┘
+               ↓
+┌──────────────────────────────────────────┐
+│ Conv2D(kernel=3×3, filters=32)           │
+│ BatchNorm → ReLU                         │
+└──────────────┬───────────────────────────┘
+               ↓
+┌──────────────────────────────────────────┐
+│ Conv2D(kernel=3×3, filters=32)           │
+│ BatchNorm → ReLU                         │
+└──────────────┬───────────────────────────┘
+               ↓
+┌──────────────────────────────────────────┐
+│ Conv2D(kernel=1×1, filters=1)            │
+│ Sigmoid (output probability [0,1])       │
+└──────────────┬───────────────────────────┘
+               ↓
+┌──────────────────────────────────────────┐
+│ OUTPUT: 128×128×1 (probability map)      │
+└──────────────────────────────────────────┘
+```
+
+**Thông số:**
+- Số lớp tích chập: 3
+- Tổng tham số: ~30.000
+- Vùng tiếp nhận: 5×5 pixels (50m × 50m)
+
+**Đặc điểm:**
+- Conv 3×3 đầu tiên: Học đặc trưng cục bộ
+- Conv 3×3 thứ hai: Mở rộng receptive field
+- Conv 1×1: Giống linear classifier của ML, kết hợp các đặc trưng
+- Không có pooling → giữ nguyên độ phân giải
+
+**Khi nào dùng:**
+- Cần baseline đơn giản để so sánh
+- Tài nguyên tính toán hạn chế
+- Ưu tiên tốc độ hơn chất lượng
 
 ---
 
-## 📚 ARCHIVED APPROACHES
+#### Mô Hình 2: Multi-Scale CNN
 
-### PyTorch Approach (Archived)
+**Triết lý thiết kế:**
+- Học đồng thời ở nhiều tỷ lệ không gian
+- Phù hợp với mảng rừng có kích thước khác nhau
 
-**Location:** `_archive_pytorch_approach/`
+**Kiến trúc chi tiết:**
 
-**What was implemented:**
-- 3 models: UNet-MobileNetV2, UNet-EfficientNet-B0, FPN-EfficientNet-B0
-- Live training monitoring with tqdm
-- Jupyter notebooks for training and inference
-- Batch size optimization for 12GB VRAM
+```
+┌──────────────────────────────────────────┐
+│ INPUT: 128×128×18                        │
+└────────────────┬─────────────────────────┘
+                 ↓
+        ┌────────┴────────┐
+        ↓                 ↓
+┌───────────────┐  ┌──────────────┐
+│   BRANCH 1    │  │   BRANCH 2   │
+│ Conv(3×3, 32) │  │ Conv(5×5, 32)│
+│ BatchNorm     │  │ BatchNorm    │
+│ ReLU          │  │ ReLU         │
+└───────┬───────┘  └──────┬───────┘
+        └────────┬─────────┘
+                 ↓
+         ┌──────────────┐
+         │ CONCATENATE  │
+         │ 32+32=64 ch  │
+         └──────┬───────┘
+                ↓
+┌──────────────────────────────────────────┐
+│ Conv2D(3×3, 64) + BatchNorm + ReLU       │
+└──────────────┬───────────────────────────┘
+               ↓
+┌──────────────────────────────────────────┐
+│ Conv2D(3×3, 64) + BatchNorm + ReLU       │
+└──────────────┬───────────────────────────┘
+               ↓
+┌──────────────────────────────────────────┐
+│ Conv2D(1×1, 1) + Sigmoid                 │
+└──────────────┬───────────────────────────┘
+               ↓
+┌──────────────────────────────────────────┐
+│ OUTPUT: 128×128×1                        │
+└──────────────────────────────────────────┘
+```
 
-**Why archived:**
-- Ready for new approach/framework
-- All code preserved in archive for reference
+**Thông số:**
+- Số lớp tích chập: 5 (2 branches + 3 fusion)
+- Tổng tham số: ~80.000
+- Vùng tiếp nhận: Branch 1 (7×7), Branch 2 (9×9)
+
+**Đặc điểm:**
+- **Branch 1 (3×3)**: Bắt giữ chi tiết nhỏ (cạnh, texture)
+- **Branch 2 (5×5)**: Bắt giữ ngữ cảnh rộng (mảng rừng)
+- **Concatenation**: Kết hợp thông tin đa tỷ lệ
+- **Fusion layers**: Học cách kết hợp tối ưu hai nhánh
+
+**Khi nào dùng:**
+- **Khuyến nghị cho production**
+- Cân bằng accuracy-speed-smoothness
+- Khi kích thước mảng rừng thay đổi nhiều
 
 ---
 
-## 🔧 ENVIRONMENT
+#### Mô Hình 3: Shallow U-Net
 
-### Python Environment
+**Triết lý thiết kế:**
+- Encoder-decoder với skip connections
+- "Shallow" = chỉ 1 level downsampling (không quá sâu)
+
+**Kiến trúc chi tiết:**
+
+```
+┌──────────────────────────────────────────┐
+│ INPUT: 128×128×18                        │
+└──────────────┬───────────────────────────┘
+               ↓
+┌───────────── ENCODER ────────────────────┐
+│ Conv(3×3, 32) → Conv(3×3, 32)            │──┐
+│ BatchNorm, ReLU                          │  │
+│ MaxPool(2×2) ↓ [64×64×32]                │  │
+│                                          │  │
+│ Conv(3×3, 64) → Conv(3×3, 64)            │  │
+│ BatchNorm, ReLU                          │  │
+│ MaxPool(2×2) ↓ [32×32×64]                │  │
+└──────────────┬───────────────────────────┘  │
+               ↓                               │
+┌───────────── BOTTLENECK ─────────────────┐  │
+│ Conv(3×3, 128) → Conv(3×3, 128)          │  │
+│ BatchNorm, ReLU  [32×32×128]             │  │
+└──────────────┬───────────────────────────┘  │
+               ↓                               │
+┌───────────── DECODER ────────────────────┐  │
+│ Upsample(2×2) ↑ [64×64×128]              │  │
+│                                          │  │
+│ Concat ←─────────────────────────────────┘  │
+│ [64×64×(128+64)=192]                     │  │
+│                                          │  │
+│ Conv(3×3, 64) → Conv(3×3, 64)            │  │
+│ BatchNorm, ReLU                          │  │
+│                                          │  │
+│ Upsample(2×2) ↑ [128×128×64]             │  │
+│                                          │  │
+│ Concat ←─────────────────────────────────┘
+│ [128×128×(64+32)=96]                     │
+│                                          │
+│ Conv(3×3, 32) → Conv(3×3, 32)            │
+│ BatchNorm, ReLU                          │
+│                                          │
+│ Conv(1×1, 1) + Sigmoid                   │
+└──────────────┬───────────────────────────┘
+               ↓
+┌──────────────────────────────────────────┐
+│ OUTPUT: 128×128×1                        │
+└──────────────────────────────────────────┘
+```
+
+**Thông số:**
+- Số lớp tích chập: 8-10
+- Tổng tham số: ~120.000
+- Vùng tiếp nhận: 13×13 pixels (130m × 130m)
+
+**Đặc điểm:**
+- **Encoder**: Trích xuất đặc trưng cấp cao thông qua downsampling
+- **Bottleneck**: Biểu diễn ngữ nghĩa ở độ phân giải thấp
+- **Decoder**: Phục hồi độ phân giải thông qua upsampling
+- **Skip connections**: Giữ lại chi tiết không gian từ encoder
+- Chỉ 1 level downsampling (shallow) tránh overfitting với ít data
+
+**Khi nào dùng:**
+- Cần chất lượng bản đồ tốt nhất
+- Độ mượt quan trọng (xuất bản, báo cáo)
+- Có đủ thời gian tính toán
+
+---
+
+### Cấu Hình Huấn Luyện
+
+#### Hàm Loss
+
+**Binary Cross-Entropy (BCE):**
+
+```
+L = -1/N Σ [y_i · log(ŷ_i) + (1-y_i) · log(1-ŷ_i)]
+```
+
+Trong đó:
+- y_i: Nhãn thực tế (0 hoặc 1)
+- ŷ_i: Xác suất dự đoán [0, 1]
+- N: Số pixels trong batch
+
+**Lý do chọn BCE:**
+- Phù hợp cho bài toán phân loại nhị phân
+- Dữ liệu cân bằng (49.4% vs 50.6%) → không cần weighted loss
+- Đơn giản, ổn định trong training
+
+#### Optimizer và Learning Rate
+
+**Optimizer: Adam**
+- β₁ = 0.9 (momentum)
+- β₂ = 0.999 (RMSprop)
+- ε = 1e-8
+- Weight decay (L2 regularization) = 1e-4
+
+**Learning Rate Schedule:**
+- Initial LR: 1e-3
+- **ReduceLROnPlateau**:
+  - Monitor: Validation loss
+  - Factor: 0.5 (giảm một nửa)
+  - Patience: 5 epochs
+  - Min LR: 1e-6
+
+#### Training Configuration
+
+```python
+EPOCHS = 100
+BATCH_SIZE = 16  # Tối ưu cho GPU 16GB
+EARLY_STOPPING_PATIENCE = 10  # Stop nếu val_loss không giảm sau 10 epochs
+```
+
+#### Regularization
+
+1. **Batch Normalization**: Sau mỗi Conv layer
+2. **Dropout**: 0.2 (chỉ Model 3 - U-Net)
+3. **Data Augmentation**: Như mô tả ở trên
+4. **L2 Weight Decay**: 1e-4
+
+---
+
+### Chiến Lược Suy Luận (Inference)
+
+#### Sliding Window với Overlap
+
+**Vấn đề:** Ảnh đầy đủ Cà Mau rất lớn (vd: 20.000 × 20.000 pixels) → không thể input 1 lần
+
+**Giải pháp:** Sliding window với overlap
+
+```
+Bước 1: Chia ảnh thành các cửa sổ 128×128
+Bước 2: Stride = 64 pixels (overlap 50%)
+Bước 3: Dự đoán từng window
+Bước 4: Blend các vùng overlap (average)
+Bước 5: Ghép thành bản đồ hoàn chỉnh
+```
+
+**Code logic:**
+
+```python
+stride = 64  # 50% overlap
+output = zeros_like(image)
+count = zeros_like(image)
+
+for y in range(0, H-128+1, stride):
+    for x in range(0, W-128+1, stride):
+        patch = image[y:y+128, x:x+128, :]
+        prob = model.predict(patch)  # 128×128×1
+        
+        output[y:y+128, x:x+128] += prob
+        count[y:y+128, x:x+128] += 1
+
+probability_map = output / count  # Average overlaps
+```
+
+**Xử lý biên:** Reflect padding cho vùng sát mép
+
+**Output:** Bản đồ xác suất liên tục [0, 1] cho toàn bộ khu vực
+
+---
+
+## 📁 Cấu Trúc Dự Án
+
+```
+ca-mau-deforestation/
+│
+├── README.md                          # File này
+├── requirements.txt                   # Python dependencies
+├── environment.yml                    # Conda environment
+├── LICENSE                            # MIT License
+│
+├── data/
+│   ├── raw/                           # Dữ liệu thô
+│   │   ├── sentinel1/
+│   │   │   ├── S1_2024_02_04_matched_S2_2024_01_30.tif
+│   │   │   └── S1_2025_02_22_matched_S2_2025_02_28.tif
+│   │   ├── sentinel2/
+│   │   │   ├── S2_2024_01_30.tif
+│   │   │   └── S2_2025_02_28.tif
+│   │   └── ground_truth/
+│   │       ├── Training_Points_CSV.csv
+│   │       └── Training_Points__SHP.*
+│   │
+│   └── patches/                       # Patches đã extract (sẽ tạo)
+│       ├── train/
+│       ├── val/
+│       └── test/
+│
+├── src/
+│   ├── prepare_data.py               # Tiền xử lý và extract patches
+│   ├── models.py                     # 3 kiến trúc mô hình
+│   ├── dataset.py                    # PyTorch Dataset
+│   ├── train.py                      # Script huấn luyện
+│   ├── evaluate.py                   # Đánh giá và so sánh
+│   └── predict.py                    # Dự đoán toàn ảnh
+│
+├── notebooks/
+│   ├── 01_data_exploration.ipynb     # Khám phá dữ liệu
+│   ├── 02_training_analysis.ipynb    # Phân tích quá trình train
+│   └── 03_results_visualization.ipynb # Trực quan hóa kết quả
+│
+├── checkpoints/                       # Model weights (sẽ tạo sau training)
+│   ├── spatial_cnn_best.pth
+│   ├── multiscale_cnn_best.pth
+│   └── shallow_unet_best.pth
+│
+├── outputs/                           # Kết quả dự đoán (sẽ tạo)
+│   ├── probability_maps/
+│   ├── binary_maps/
+│   └── statistics/
+│
+├── logs/                              # Training logs (sẽ tạo)
+│   └── training_history.csv
+│
+└── figures/                           # Các hình ảnh, biểu đồ (sẽ tạo)
+    ├── training_curves/
+    ├── confusion_matrices/
+    └── maps/
+```
+
+---
+
+## 🛠️ Cài Đặt
+
+### Yêu Cầu Hệ Thống
+
+- **OS**: Linux/Windows 10+/macOS
+- **Python**: 3.8 trở lên
+- **CUDA**: 11.8+ (cho GPU)
+- **GPU**: NVIDIA với ≥8GB VRAM (đã test trên RTX A4000 16GB)
+
+### Bước 1: Clone Repository
 
 ```bash
-# Using conda
-conda env create -f environment.yml
-conda activate dang
+git clone https://github.com/ninhhaidang/ca-mau-deforestation.git
+cd ca-mau-deforestation
+```
 
-# Or using pip
+### Bước 2: Tạo Môi Trường
+
+**Lựa chọn A: Conda (Khuyến nghị)**
+
+```bash
+conda env create -f environment.yml
+conda activate camau-forest
+```
+
+**Lựa chọn B: venv + pip**
+
+```bash
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Requirements
+### Bước 3: Kiểm Tra Cài Đặt
 
-- Python 3.8+
-- PyTorch 1.13+ (CUDA 11.7+)
-- GPU: NVIDIA with 12GB+ VRAM recommended
-- RAM: 32GB
-- Disk: ~10GB free space
+```bash
+python -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
+python -c "import rasterio; print(f'Rasterio: {rasterio.__version__}')"
+```
 
----
-
-## 📊 NEXT STEPS
-
-1. **Decide on new approach:**
-   - Different framework? (TensorFlow, JAX, etc.)
-   - Different architecture? (Transformers, etc.)
-   - Different methodology? (Classical ML, etc.)
-
-2. **Set up new pipeline**
-
-3. **Train and evaluate**
-
-4. **Generate final maps**
+Kết quả mong đợi:
+```
+PyTorch: 2.0.1+cu118
+CUDA available: True
+Rasterio: 1.3.8
+```
 
 ---
 
-## 📝 NOTES
+## 🚀 Hướng Dẫn Sử Dụng
 
-- All original data is preserved in `data/raw/`
-- Previous work is safely archived in `_archive_pytorch_approach/`
-- Environment files (environment.yml, requirements.txt) are kept for reference
-- .gitignore is configured to exclude large files
+### Bước 1: Chuẩn Bị Dữ Liệu
+
+Extract patches 128×128×18 từ ảnh Sentinel:
+
+```bash
+python src/prepare_data.py \
+    --sentinel1_dir data/raw/sentinel1 \
+    --sentinel2_dir data/raw/sentinel2 \
+    --labels_csv data/raw/ground_truth/Training_Points_CSV.csv \
+    --output_dir data/patches \
+    --patch_size 128 \
+    --train_ratio 0.70 \
+    --val_ratio 0.15 \
+    --augment
+```
+
+**Output:**
+- ~900 training patches
+- ~190 validation patches  
+- ~195 test patches
+
+**Thời gian dự kiến:** 5-10 phút
 
 ---
 
-## 📄 LICENSE
+### Bước 2: Huấn Luyện Mô Hình
 
-MIT License - See LICENSE file
+Huấn luyện từng mô hình:
+
+```bash
+# Mô hình 1: Spatial Context CNN
+python src/train.py \
+    --model spatial_cnn \
+    --data_dir data/patches \
+    --epochs 100 \
+    --batch_size 16 \
+    --lr 0.001 \
+    --checkpoint checkpoints/spatial_cnn_best.pth
+
+# Mô hình 2: Multi-Scale CNN
+python src/train.py \
+    --model multiscale_cnn \
+    --data_dir data/patches \
+    --epochs 100 \
+    --batch_size 16 \
+    --lr 0.001 \
+    --checkpoint checkpoints/multiscale_cnn_best.pth
+
+# Mô hình 3: Shallow U-Net
+python src/train.py \
+    --model shallow_unet \
+    --data_dir data/patches \
+    --epochs 100 \
+    --batch_size 16 \
+    --lr 0.001 \
+    --checkpoint checkpoints/shallow_unet_best.pth
+```
+
+**Output:**
+- Model weights (`.pth` files)
+- Training curves (loss, accuracy over epochs)
+- Validation metrics
+
+**Thời gian dự kiến:** 30-60 phút/model trên RTX A4000
 
 ---
 
-## 📧 CONTACT
+### Bước 3: Đánh Giá và So Sánh
 
-**Sinh viên:** Ninh Hải Đăng
-**MSSV:** 21021411
-**Email:** ninhhaidangg@gmail.com
-**Trường:** Đại học Công nghệ - ĐHQGHN
+Đánh giá 3 models trên test set:
+
+```bash
+python src/evaluate.py \
+    --data_dir data/patches/test \
+    --checkpoints checkpoints/*.pth \
+    --output_dir results
+```
+
+**Output:**
+- `results/comparison_table.csv` - Bảng so sánh metrics
+- `results/confusion_matrices.png` - Ma trận nhầm lẫn
+- `results/roc_curves.png` - Đường cong ROC
+
+**Thời gian:** 2-5 phút
 
 ---
 
-**Last Updated:** 2025-10-22
-**Status:** ✨ Clean slate, ready for new approach
+### Bước 4: Dự Đoán Toàn Ảnh
+
+Tạo bản đồ xác suất cho toàn tỉnh Cà Mau:
+
+```bash
+python src/predict.py \
+    --sentinel1_dir data/raw/sentinel1 \
+    --sentinel2_dir data/raw/sentinel2 \
+    --model checkpoints/shallow_unet_best.pth \
+    --output_dir outputs \
+    --overlap 0.5 \
+    --batch_size 32
+```
+
+**Output:**
+- `outputs/probability_map.tif` - Bản đồ xác suất GeoTIFF [0-1]
+- `outputs/probability_map.png` - Hình ảnh trực quan
+- `outputs/binary_map.tif` - Bản đồ nhị phân (threshold=0.5)
+- `outputs/statistics.txt` - Thống kê diện tích
+
+**Thời gian:** 10-30 phút (tùy kích thước ảnh)
+
+---
+
+## 🏗️ Kiến Trúc Mô Hình - Tóm Tắt
+
+### Bảng So Sánh
+
+| Tiêu Chí | Spatial Context CNN | Multi-Scale CNN | Shallow U-Net |
+|----------|---------------------|-----------------|---------------|
+| **Số lớp** | 3 | 5 | 8-10 |
+| **Tham số** | ~30K | ~80K | ~120K |
+| **Receptive field** | 5×5 px (50m) | 7×7 px (70m) | 13×13 px (130m) |
+| **Độ phức tạp** | ⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| **Gần ML nhất** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
+| **Thời gian train dự kiến** | ~20-30 phút | ~30-45 phút | ~45-60 phút |
+| **Thời gian inference dự kiến** | Nhanh nhất | Trung bình | Chậm nhất |
+
+### Khuyến Nghị Sử Dụng
+
+**Spatial Context CNN:**
+- ✅ Baseline đơn giản
+- ✅ Tài nguyên hạn chế
+- ✅ Cần kết quả nhanh
+
+**Multi-Scale CNN:**
+- ✅ **Production model (khuyến nghị)**
+- ✅ Cân bằng tốt nhất
+- ✅ Đa dạng kích thước mảng rừng
+
+**Shallow U-Net:**
+- ✅ Chất lượng tốt nhất
+- ✅ Bản đồ xuất bản
+- ✅ Có thời gian tính toán
+
+---
+
+## 📊 Kết Quả
+
+> **LƯU Ý QUAN TRỌNG:**  
+> Phần này sẽ được cập nhật sau khi hoàn thành thực nghiệm. Các bảng dưới đây là **template** để điền kết quả thực tế.
+
+### Metrics Định Lượng (Test Set, n≈195)
+
+**Bảng 1: Độ chính xác tổng thể**
+
+| Mô Hình | Accuracy | Precision | Recall | F1-Score | AUC-ROC |
+|---------|----------|-----------|--------|----------|---------|
+| Random Forest (Baseline) | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+| Spatial Context CNN | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+| Multi-Scale CNN | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+| Shallow U-Net | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+
+**Bảng 2: Giảm nhiễu (Qualitative Assessment)**
+
+| Mô Hình | Pixel Nhiễu Rời Rạc* | Điểm Độ Mượt** |
+|---------|----------------------|----------------|
+| Random Forest | _TBD_ | _TBD_ |
+| Spatial Context CNN | _TBD_ | _TBD_ |
+| Multi-Scale CNN | _TBD_ | _TBD_ |
+| Shallow U-Net | _TBD_ | _TBD_ |
+
+*Số pixel nhiễu trên 1000px²  
+**Đánh giá chủ quan (1-5, 5=rất mượt)
+
+### Hiệu Suất Tính Toán
+
+**Bảng 3: Training Performance (RTX A4000 16GB)**
+
+| Mô Hình | Epochs Hội Tụ | Thời Gian Training | GPU Memory |
+|---------|---------------|-------------------|------------|
+| Spatial Context CNN | _TBD_ | _TBD_ | _TBD_ |
+| Multi-Scale CNN | _TBD_ | _TBD_ | _TBD_ |
+| Shallow U-Net | _TBD_ | _TBD_ | _TBD_ |
+
+**Bảng 4: Inference Performance**
+
+| Mô Hình | Thời Gian (toàn ảnh) | Throughput | GPU Memory |
+|---------|---------------------|-----------|------------|
+| Spatial Context CNN | _TBD_ | _TBD_ | _TBD_ |
+| Multi-Scale CNN | _TBD_ | _TBD_ | _TBD_ |
+| Shallow U-Net | _TBD_ | _TBD_ | _TBD_ |
+
+### Phân Tích Định Tính
+
+_(Sẽ cập nhật sau thực nghiệm)_
+
+- So sánh visual giữa 3 models
+- Ví dụ vùng giảm nhiễu tốt
+- Trường hợp khó (edges, vùng chuyển tiếp)
+
+---
+
+## 💬 Thảo Luận
+
+### Đóng Góp Khoa Học
+
+1. **Áp dụng DL cho rừng ngập mặn Việt Nam**: Nghiên cứu đầu tiên sử dụng shallow CNN cho monitoring rừng ngập mặn tại Cà Mau
+2. **Giải quyết vấn đề dữ liệu hạn chế**: Chứng minh shallow networks hiệu quả với ~1.300 samples
+3. **Kết hợp đa nguồn**: SAR + Optical + Multi-temporal trong một framework
+4. **Practical deployment**: Models nhẹ, deploy được trên GPU thông thường
+
+### So Sánh Với Các Nghiên Cứu Trước
+
+| Tiêu Chí | Nghiên Cứu Này | Các Nghiên Cứu Trước |
+|----------|----------------|---------------------|
+| **Khu vực** | Cà Mau, Việt Nam | Chủ yếu nước ngoài |
+| **Loại rừng** | Rừng ngập mặn | Đa dạng |
+| **Model** | Shallow CNN (3-10 layers) | Deep networks (50+ layers) |
+| **Training data** | ~1.300 samples | Thường >10.000 |
+| **Độ phức tạp** | 30K-120K params | >1M params |
+| **Focus** | Giảm nhiễu + chính xác | Chủ yếu chính xác |
+
+### Hạn Chế
+
+1. **Phạm vi thời gian**: Chỉ 2 thời điểm (2024-2025)
+2. **Khu vực**: Chỉ Cà Mau, chưa test khả năng tổng quát
+3. **Training data**: Point labels, chưa phải polygon
+4. **Cloud cover**: Sentinel-2 bị ảnh hưởng bởi mây
+5. **Validation**: Chưa có cross-regional validation
+
+### Ý Nghĩa Thực Tiễn
+
+**Cho Quản Lý Rừng:**
+- Cung cấp bản đồ cập nhật nhanh, chi phí thấp
+- Hỗ trợ phát hiện sớm biến động bất thường
+- Định lượng diện tích mất rừng cho báo cáo
+
+**Cho Nghiên Cứu:**
+- Framework mở rộng cho các khu vực khác
+- Benchmark cho các nghiên cứu sau
+- Code mở, dễ replicate
+
+---
+
+## 🔮 Hướng Phát Triển
+
+### Ngắn Hạn (3-6 tháng)
+
+1. **Mở rộng thời gian**: Tích hợp thêm các thời điểm khác (2023, 2026)
+2. **Tăng training data**: Bổ sung thêm điểm ground truth
+3. **Ensemble**: Kết hợp 3 models để tăng độ tin cậy
+4. **Hyperparameter tuning**: Tối ưu learning rate, batch size, augmentation
+
+### Trung Hạn (6-12 tháng)
+
+1. **Cross-validation**: Test trên các vùng khác (Bạc Liêu, Kiên Giang)
+2. **Temporal extension**: Sử dụng time-series (LSTM/Transformer)
+3. **Multi-task learning**: Phát hiện đồng thời nhiều loại biến động (cháy, chặt phá, suy thoái)
+4. **Weakly supervised**: Giảm nhu cầu labeling chính xác
+
+### Dài Hạn (1-2 năm)
+
+1. **Operational system**: Tự động hóa toàn bộ pipeline từ download ảnh đến cảnh báo
+2. **Google Earth Engine**: Scale lên toàn vùng Đồng bằng sông Cửu Long
+3. **Mobile app**: Ứng dụng di động cho kiểm lâm thực địa
+4. **Carbon accounting**: Kết hợp với mô hình sinh khối để ước tính CO₂
+
+---
+
+## 📚 Tài Liệu Tham Khảo
+
+### Nghiên Cứu Chính
+
+1. Hansen, M. C., et al. (2013). High-Resolution Global Maps of 21st-Century Forest Cover Change. *Science*.
+
+2. Ronneberger, O., Fischer, P., & Brox, T. (2015). U-Net: Convolutional Networks for Biomedical Image Segmentation. *MICCAI*.
+
+3. Kattenborn, T., et al. (2021). Review on CNN in Vegetation Remote Sensing. *ISPRS Journal*.
+
+4. Pham, T. D., et al. (2019). Monitoring Mangrove Biomass Change in Vietnam using SPOT Images and an Object-Based Approach. *GIScience & Remote Sensing*.
+
+### Về Rừng Cà Mau
+
+5. Nguyễn Hữu Đức, et al. (2018). Đánh giá hiện trạng rừng ngập mặn tỉnh Cà Mau. *Tạp chí Khoa học Lâm nghiệp*.
+
+6. Vũ Văn Vụ, et al. (2020). Biến động sử dụng đất rừng ngập mặn ven biển ĐBSCL. *Tạp chí Khoa học ĐHQGHN*.
+
+### Tools và Dữ Liệu
+
+- **Sentinel Data**: European Space Agency Copernicus Programme
+- **PyTorch**: Paszke et al. (2019). *NeurIPS*.
+- **Rasterio**: Geospatial raster I/O for Python
+
+---
+
+## 🙏 Lời Cảm Ơn
+
+Đồ án này được hoàn thành dưới sự hướng dẫn của:
+
+**Giảng viên hướng dẫn:** [Tên Giảng Viên]  
+Viện Công nghệ Hàng không Vũ trụ  
+Trường Đại học Công nghệ, ĐHQGHN
+
+Chân thành cảm ơn:
+- **ĐHQG Hà Nội - ĐH Công Nghệ** - Cung cấp tài nguyên và hỗ trợ
+- **Sở Nông nghiệp và PTNT tỉnh Cà Mau** - Hỗ trợ dữ liệu thực địa (nếu có)
+- **ESA Copernicus** - Dữ liệu Sentinel miễn phí
+- **Cộng đồng PyTorch và GDAL** - Công cụ mã nguồn mở
+- **Gia đình và bạn bè** - Động viên trong suốt quá trình nghiên cứu
+
+---
+
+## 📄 Giấy Phép
+
+Dự án này được phát hành theo giấy phép MIT License. Xem file [LICENSE](LICENSE) để biết chi tiết.
+
+### Trích Dẫn
+
+Nếu bạn sử dụng code hoặc phương pháp này trong nghiên cứu, vui lòng trích dẫn:
+
+```bibtex
+@thesis{ninh2025camau,
+  author       = {Ninh Hải Đăng},
+  title        = {Ứng Dụng Viễn Thám và Học Sâu Trong Giám Sát Biến Động Rừng Tỉnh Cà Mau},
+  school       = {Trường Đại học Công nghệ, ĐHQG Hà Nội},
+  year         = {2025},
+  type         = {Đồ án Tốt nghiệp},
+  address      = {Hà Nội, Việt Nam},
+  note         = {Viện Công nghệ Hàng không Vũ trụ}
+}
+```
+
+---
+
+## 📞 Liên Hệ
+
+**Ninh Hải Đăng**  
+MSSV: 21021411  
+Email: ninhhaidangg@gmail.com  
+GitHub: [@ninhhaidang](https://github.com/ninhhaidang)
+
+**Đơn vị:**  
+Viện Công nghệ Hàng không Vũ trụ  
+Trường Đại học Công nghệ  
+Đại học Quốc gia Hà Nội  
+144 Xuân Thủy, Cầu Giấy, Hà Nội
+
+---
+
+<p align="center">
+  <sub>Xây dựng với ❤️ vì bảo vệ rừng ngập mặn Cà Mau 🌲🦀</sub>
+</p>
