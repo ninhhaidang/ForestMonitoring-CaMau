@@ -13,13 +13,17 @@ build/
 # Jupyter Notebook
 .ipynb_checkpoints/
 *.ipynb_checkpoints
-*.ipynb
 
 # Data files (large files - do not commit)
 *.tif
 *.tiff
 data/processed/
 data/raw/
+data/patches/
+
+# Outputs (large files - do not commit)
+outputs/
+logs/
 
 # Model checkpoints (large files - do not commit)
 *.pth

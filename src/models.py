@@ -58,9 +58,8 @@ class SpatialContextCNN(nn.Module):
         x = self.bn2(x)
         x = F.relu(x)  # (B, 32, 128, 128)
 
-        # Output layer
+        # Output layer (logits, no sigmoid - will use BCEWithLogitsLoss)
         x = self.conv3(x)  # (B, 1, 128, 128)
-        x = torch.sigmoid(x)  # Probability map [0, 1]
 
         return x
 
@@ -137,9 +136,8 @@ class MultiScaleCNN(nn.Module):
         x = self.fusion_bn2(x)
         x = F.relu(x)  # (B, 64, 128, 128)
 
-        # Output layer
+        # Output layer (logits, no sigmoid - will use BCEWithLogitsLoss)
         x = self.output_conv(x)  # (B, 1, 128, 128)
-        x = torch.sigmoid(x)
 
         return x
 
@@ -261,9 +259,8 @@ class ShallowUNet(nn.Module):
         x = self.dec2_bn2(x)
         x = F.relu(x)  # (B, 32, 128, 128)
 
-        # Output layer
+        # Output layer (logits, no sigmoid - will use BCEWithLogitsLoss)
         x = self.output_conv(x)  # (B, 1, 128, 128)
-        x = torch.sigmoid(x)
 
         return x
 

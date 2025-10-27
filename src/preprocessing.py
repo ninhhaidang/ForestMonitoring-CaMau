@@ -315,7 +315,7 @@ def create_patches_dataset(
 
         for idx, row in tqdm(df.iterrows(), total=len(df), desc=f"{split.upper()}", unit="patch"):
             geo_x, geo_y = row['x'], row['y']
-            label = row['label']
+            label = int(row['label'])
 
             # Convert to pixel coordinates
             pixel_x, pixel_y = coord_to_pixel(geo_x, geo_y, transform_s1)
@@ -355,7 +355,7 @@ def create_patches_dataset(
                         patch[:, :, c] = (patch[:, :, c] + 1) / 2
 
             # Save patch
-            filename = f"{split}_{row['id']:04d}_label{label}.npy"
+            filename = f"{split}_{int(row['id']):04d}_label{label}.npy"
             save_path = output_dir / split / filename
             np.save(save_path, patch.astype(np.float32))
 
