@@ -100,7 +100,7 @@ class DeforestationDataset(Dataset):
         Get a single patch and label
 
         Returns:
-            patch: Tensor of shape (C, H, W) - 18 channels, 128x128 pixels
+            patch: Tensor of shape (C, H, W) - 14 channels, 128x128 pixels
             label: Tensor of shape (1,) - binary label (0 or 1)
         """
         # Load patch

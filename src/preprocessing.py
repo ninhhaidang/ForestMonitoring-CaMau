@@ -278,31 +278,23 @@ def create_patches_dataset(
 
     # Load TIFF files
     print("\nLoading TIFF files...")
-    print("  - Sentinel-1 2024 (VH only - band 1)...")
-    with rasterio.open(s1_2024_path) as src:
-        transform_s1 = src.transform
-        s1_2024_vh = src.read(1)  # Read only band 1 (VH): (H, W)
-        s1_2024_vh = np.expand_dims(s1_2024_vh, axis=0)  # (1, H, W)
-
-    print("  - Sentinel-1 2025 (VH only - band 1)...")
-    with rasterio.open(s1_2025_path) as src:
-        s1_2025_vh = src.read(1)  # Read only band 1 (VH): (H, W)
-        s1_2025_vh = np.expand_dims(s1_2025_vh, axis=0)  # (1, H, W)
+    # Skip Sentinel-1 - use only Sentinel-2 data
 
     print("  - Sentinel-2 2024...")
     with rasterio.open(s2_2024_path) as src:
+        transform_s2 = src.transform
         s2_2024 = src.read()  # (7, H, W)
 
     print("  - Sentinel-2 2025...")
     with rasterio.open(s2_2025_path) as src:
         s2_2025 = src.read()  # (7, H, W)
 
-    # Stack all bands: (16, H, W) = 1 VH (2024) + 1 VH (2025) + 7 S2 (2024) + 7 S2 (2025)
-    print("\nStacking 16 bands (2 VH + 14 Sentinel-2)...")
-    all_bands = np.concatenate([s1_2024_vh, s1_2025_vh, s2_2024, s2_2025], axis=0)
+    # Stack only Sentinel-2 bands: (14, H, W) = 7 S2 (2024) + 7 S2 (2025)
+    print("\nStacking 14 bands (Sentinel-2 only)...")
+    all_bands = np.concatenate([s2_2024, s2_2025], axis=0)
     print(f"Stacked shape: {all_bands.shape}")
 
-    # Transpose to (H, W, 16)
+    # Transpose to (H, W, 14)
     all_bands = np.transpose(all_bands, (1, 2, 0))
     print(f"Transposed shape: {all_bands.shape}")
 
@@ -320,7 +312,7 @@ def create_patches_dataset(
             label = int(row['label'])
 
             # Convert to pixel coordinates
-            pixel_x, pixel_y = coord_to_pixel(geo_x, geo_y, transform_s1)
+            pixel_x, pixel_y = coord_to_pixel(geo_x, geo_y, transform_s2)
 
             # Extract patch
             patch = extract_patch(all_bands, pixel_y, pixel_x, patch_size)

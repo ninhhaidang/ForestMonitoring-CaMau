@@ -50,40 +50,32 @@ def load_full_image_stack(
     normalize: bool = True
 ) -> Tuple[np.ndarray, rasterio.Affine, rasterio.crs.CRS]:
     """
-    Load and stack all 4 TIFF files into 16-channel array (VH only from S1)
+    Load and stack all 4 TIFF files into 14-channel array (S2 only)
 
     Returns:
-        data: (H, W, 16) array
+        data: (H, W, 14) array
         transform: Rasterio affine transform
         crs: Coordinate reference system
     """
     print(" Loading TIFF files...")
 
-    # Load S1 2024 (VH only - band 1)
-    with rasterio.open(s1_2024_path) as src:
-        s1_2024_vh = src.read(1)  # Read only band 1 (VH): (H, W)
-        s1_2024_vh = np.expand_dims(s1_2024_vh, axis=0)  # (1, H, W)
-        transform = src.transform
-        crs = src.crs
-        height, width = src.height, src.width
-
-    # Load S1 2025 (VH only - band 1)
-    with rasterio.open(s1_2025_path) as src:
-        s1_2025_vh = src.read(1)  # Read only band 1 (VH): (H, W)
-        s1_2025_vh = np.expand_dims(s1_2025_vh, axis=0)  # (1, H, W)
+    # Skip Sentinel-1 - use only Sentinel-2 data
 
     # Load S2 2024
     with rasterio.open(s2_2024_path) as src:
         s2_2024 = src.read()  # (7, H, W)
+        transform = src.transform
+        crs = src.crs
+        height, width = src.height, src.width
 
     # Load S2 2025
     with rasterio.open(s2_2025_path) as src:
         s2_2025 = src.read()  # (7, H, W)
 
-    # Stack: (16, H, W) = 1 VH (2024) + 1 VH (2025) + 7 S2 (2024) + 7 S2 (2025)
-    all_bands = np.concatenate([s1_2024_vh, s1_2025_vh, s2_2024, s2_2025], axis=0)
+    # Stack only Sentinel-2: (14, H, W) = 7 S2 (2024) + 7 S2 (2025)
+    all_bands = np.concatenate([s2_2024, s2_2025], axis=0)
 
-    # Transpose to (H, W, 16)
+    # Transpose to (H, W, 14)
     all_bands = np.transpose(all_bands, (1, 2, 0))
 
     print(f" Loaded: {all_bands.shape} ({all_bands.dtype})")
@@ -93,18 +85,16 @@ def load_full_image_stack(
     # Handle NaN and normalize
     if normalize:
         print(" Processing bands...")
-        for c in tqdm(range(16), desc="Normalize", unit="band"):
+        for c in tqdm(range(14), desc="Normalize", unit="band"):
             # Handle NaN
             if np.isnan(all_bands[:, :, c]).any():
                 all_bands[:, :, c] = handle_nan(all_bands[:, :, c], method='fill')
 
             # Normalize (same as training)
-            # Channel mapping: 0=S1_VH_2024, 1=S1_VH_2025, 2-8=S2_2024, 9-15=S2_2025
-            if c in [0, 1]:  # S1 VH bands
-                all_bands[:, :, c] = normalize_band(all_bands[:, :, c], method='standardize')
-            elif c in [2, 3, 4, 5, 9, 10, 11, 12]:  # S2 reflectance
+            # Channel mapping: 0-6=S2_2024, 7-13=S2_2025
+            if c in [0, 1, 2, 3, 7, 8, 9, 10]:  # S2 reflectance bands (B,G,R,NIR for both years)
                 all_bands[:, :, c] = normalize_band(all_bands[:, :, c], method='clip', clip_range=(0, 1))
-            else:  # S2 indices (6,7,8,13,14,15)
+            else:  # S2 indices (4,5,6,11,12,13 = NDVI,NBR,NDMI for both years)
                 all_bands[:, :, c] = (all_bands[:, :, c] + 1) / 2
 
     return all_bands, transform, crs
@@ -357,7 +347,7 @@ def main():
         raise FileNotFoundError(f"Model checkpoint not found: {model_path}")
 
     print(f"\n Loading model: {model_path.name}")
-    model = get_model('shallow_unet', in_channels=18)
+    model = get_model('shallow_unet', in_channels=14)
     checkpoint = torch.load(model_path, map_location='cpu')
     model.load_state_dict(checkpoint['model_state_dict'])
     print(f" Model loaded (epoch {checkpoint['epoch']}, val_acc: {checkpoint['val_acc']*100:.2f}%)")
