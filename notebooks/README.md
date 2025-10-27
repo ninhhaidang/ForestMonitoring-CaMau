@@ -59,7 +59,7 @@ Thư mục này chứa các Jupyter notebooks để khám phá dữ liệu, tạ
 - Load ground truth CSV (1,285 points)
 - Call `create_patches_dataset()` từ `src.preprocessing`
   - Load 4 TIFF files (~4GB)
-  - Stack thành 18 channels
+  - Stack thành 16 channels (VH only from S1)
   - Extract patches tại ground truth locations
   - Handle NaN values
   - Normalize bands (mixed strategy)

@@ -25,16 +25,16 @@ class SpatialContextCNN(nn.Module):
     Receptive field: 5x5 pixels (50m x 50m)
 
     Args:
-        in_channels: Number of input channels (default: 18)
+        in_channels: Number of input channels (default: 16 - VH only from S1)
 
     Example:
-        >>> model = SpatialContextCNN(in_channels=18)
-        >>> x = torch.randn(1, 18, 128, 128)
+        >>> model = SpatialContextCNN(in_channels=16)
+        >>> x = torch.randn(1, 16, 128, 128)
         >>> y = model(x)
         >>> print(y.shape)  # torch.Size([1, 1, 128, 128])
     """
 
-    def __init__(self, in_channels: int = 18):
+    def __init__(self, in_channels: int = 16):
         super(SpatialContextCNN, self).__init__()
 
         self.conv1 = nn.Conv2d(in_channels, 32, kernel_size=3, padding=1)
@@ -46,7 +46,7 @@ class SpatialContextCNN(nn.Module):
         self.conv3 = nn.Conv2d(32, 1, kernel_size=1)
 
     def forward(self, x):
-        # x: (B, 18, 128, 128)
+        # x: (B, 16, 128, 128)
 
         # Block 1
         x = self.conv1(x)
@@ -80,16 +80,16 @@ class MultiScaleCNN(nn.Module):
     Receptive field: Branch 1 (7x7), Branch 2 (9x9)
 
     Args:
-        in_channels: Number of input channels (default: 18)
+        in_channels: Number of input channels (default: 16 - VH only from S1)
 
     Example:
-        >>> model = MultiScaleCNN(in_channels=18)
-        >>> x = torch.randn(1, 18, 128, 128)
+        >>> model = MultiScaleCNN(in_channels=16)
+        >>> x = torch.randn(1, 16, 128, 128)
         >>> y = model(x)
         >>> print(y.shape)  # torch.Size([1, 1, 128, 128])
     """
 
-    def __init__(self, in_channels: int = 18):
+    def __init__(self, in_channels: int = 16):
         super(MultiScaleCNN, self).__init__()
 
         # Branch 1: Small receptive field (3x3)
@@ -111,7 +111,7 @@ class MultiScaleCNN(nn.Module):
         self.output_conv = nn.Conv2d(64, 1, kernel_size=1)
 
     def forward(self, x):
-        # x: (B, 18, 128, 128)
+        # x: (B, 16, 128, 128)
 
         # Branch 1: 3x3 convolution
         branch1 = self.branch1_conv(x)
@@ -161,16 +161,16 @@ class ShallowUNet(nn.Module):
     Receptive field: 13x13 pixels (130m x 130m)
 
     Args:
-        in_channels: Number of input channels (default: 18)
+        in_channels: Number of input channels (default: 16 - VH only from S1)
 
     Example:
-        >>> model = ShallowUNet(in_channels=18)
-        >>> x = torch.randn(1, 18, 128, 128)
+        >>> model = ShallowUNet(in_channels=16)
+        >>> x = torch.randn(1, 16, 128, 128)
         >>> y = model(x)
         >>> print(y.shape)  # torch.Size([1, 1, 128, 128])
     """
 
-    def __init__(self, in_channels: int = 18):
+    def __init__(self, in_channels: int = 16):
         super(ShallowUNet, self).__init__()
 
         # Encoder
@@ -209,7 +209,7 @@ class ShallowUNet(nn.Module):
         self.output_conv = nn.Conv2d(32, 1, kernel_size=1)
 
     def forward(self, x):
-        # x: (B, 18, 128, 128)
+        # x: (B, 16, 128, 128)
 
         # Encoder 1
         enc1 = self.enc1_conv1(x)
@@ -283,7 +283,7 @@ def count_parameters(model: nn.Module) -> int:
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
-def get_model(model_name: str, in_channels: int = 18) -> nn.Module:
+def get_model(model_name: str, in_channels: int = 16) -> nn.Module:
     """
     Factory function to get model by name
 
@@ -295,7 +295,7 @@ def get_model(model_name: str, in_channels: int = 18) -> nn.Module:
         Model instance
 
     Example:
-        >>> model = get_model('spatial_cnn', in_channels=18)
+        >>> model = get_model('spatial_cnn', in_channels=16)
         >>> model = get_model('shallow_unet')
     """
     models = {
@@ -310,7 +310,7 @@ def get_model(model_name: str, in_channels: int = 18) -> nn.Module:
     return models[model_name](in_channels=in_channels)
 
 
-def print_model_summary(model: nn.Module, input_size: Tuple[int, int, int, int] = (1, 18, 128, 128)):
+def print_model_summary(model: nn.Module, input_size: Tuple[int, int, int, int] = (1, 16, 128, 128)):
     """
     Print model summary
 
@@ -355,11 +355,11 @@ if __name__ == "__main__":
         print(f"Testing {model_name.upper()}")
         print(f"{'='*80}")
 
-        model = get_model(model_name, in_channels=18)
+        model = get_model(model_name, in_channels=16)
         print_model_summary(model)
 
         # Test forward pass
-        x = torch.randn(2, 18, 128, 128)  # Batch of 2
+        x = torch.randn(2, 16, 128, 128)  # Batch of 2
         y = model(x)
 
         print(f"\n✅ Forward pass successful")

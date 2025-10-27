@@ -50,25 +50,27 @@ def load_full_image_stack(
     normalize: bool = True
 ) -> Tuple[np.ndarray, rasterio.Affine, rasterio.crs.CRS]:
     """
-    Load and stack all 4 TIFF files into 18-channel array
+    Load and stack all 4 TIFF files into 16-channel array (VH only from S1)
 
     Returns:
-        data: (H, W, 18) array
+        data: (H, W, 16) array
         transform: Rasterio affine transform
         crs: Coordinate reference system
     """
     print(" Loading TIFF files...")
 
-    # Load S1 2024
+    # Load S1 2024 (VH only - band 1)
     with rasterio.open(s1_2024_path) as src:
-        s1_2024 = src.read()  # (2, H, W)
+        s1_2024_vh = src.read(1)  # Read only band 1 (VH): (H, W)
+        s1_2024_vh = np.expand_dims(s1_2024_vh, axis=0)  # (1, H, W)
         transform = src.transform
         crs = src.crs
         height, width = src.height, src.width
 
-    # Load S1 2025
+    # Load S1 2025 (VH only - band 1)
     with rasterio.open(s1_2025_path) as src:
-        s1_2025 = src.read()  # (2, H, W)
+        s1_2025_vh = src.read(1)  # Read only band 1 (VH): (H, W)
+        s1_2025_vh = np.expand_dims(s1_2025_vh, axis=0)  # (1, H, W)
 
     # Load S2 2024
     with rasterio.open(s2_2024_path) as src:
@@ -78,10 +80,10 @@ def load_full_image_stack(
     with rasterio.open(s2_2025_path) as src:
         s2_2025 = src.read()  # (7, H, W)
 
-    # Stack: (18, H, W)
-    all_bands = np.concatenate([s1_2024, s1_2025, s2_2024, s2_2025], axis=0)
+    # Stack: (16, H, W) = 1 VH (2024) + 1 VH (2025) + 7 S2 (2024) + 7 S2 (2025)
+    all_bands = np.concatenate([s1_2024_vh, s1_2025_vh, s2_2024, s2_2025], axis=0)
 
-    # Transpose to (H, W, 18)
+    # Transpose to (H, W, 16)
     all_bands = np.transpose(all_bands, (1, 2, 0))
 
     print(f" Loaded: {all_bands.shape} ({all_bands.dtype})")
@@ -91,17 +93,18 @@ def load_full_image_stack(
     # Handle NaN and normalize
     if normalize:
         print(" Processing bands...")
-        for c in tqdm(range(18), desc="Normalize", unit="band"):
+        for c in tqdm(range(16), desc="Normalize", unit="band"):
             # Handle NaN
             if np.isnan(all_bands[:, :, c]).any():
                 all_bands[:, :, c] = handle_nan(all_bands[:, :, c], method='fill')
 
             # Normalize (same as training)
-            if c in [0, 1, 9, 10]:  # S1 bands
+            # Channel mapping: 0=S1_VH_2024, 1=S1_VH_2025, 2-8=S2_2024, 9-15=S2_2025
+            if c in [0, 1]:  # S1 VH bands
                 all_bands[:, :, c] = normalize_band(all_bands[:, :, c], method='standardize')
-            elif c in [2, 3, 4, 5, 11, 12, 13, 14]:  # S2 reflectance
+            elif c in [2, 3, 4, 5, 9, 10, 11, 12]:  # S2 reflectance
                 all_bands[:, :, c] = normalize_band(all_bands[:, :, c], method='clip', clip_range=(0, 1))
-            else:  # S2 indices (6,7,8,15,16,17)
+            else:  # S2 indices (6,7,8,13,14,15)
                 all_bands[:, :, c] = (all_bands[:, :, c] + 1) / 2
 
     return all_bands, transform, crs
