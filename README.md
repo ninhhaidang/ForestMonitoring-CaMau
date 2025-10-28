@@ -37,13 +37,17 @@ Giám sát biến động rừng là nhiệm vụ quan trọng đối với bả
 
 Các phương pháp học máy truyền thống (Random Forest, Gradient Boosting, SVM) đạt độ chính xác cao trong phân loại từng pixel nhưng gặp phải vấn đề nhiễu muối tiêu (salt-and-pepper noise) do thiếu nhận thức về ngữ cảnh không gian. Điều này dẫn đến bản đồ kết quả có nhiều pixel bị phân loại sai rời rạc, làm giảm chất lượng thông tin cho quản lý rừng.
 
-Đồ án này đề xuất **khung deep learning đa thời gian** tận dụng dữ liệu SAR Sentinel-1 và đa phổ Sentinel-2 để phát hiện các khu vực biến động rừng tại tỉnh Cà Mau giữa hai thời điểm 2024 và 2025. Ba kiến trúc mạng nơ-ron tích chập nông (shallow CNN) được triển khai và so sánh:
+Đồ án này đề xuất **khung deep learning đa thời gian** tận dụng dữ liệu đa phổ Sentinel-2 để phát hiện các khu vực biến động rừng tại tỉnh Cà Mau giữa hai thời điểm 2024 và 2025. Ba kiến trúc mạng nơ-ron tích chập nông (shallow CNN) và một mô hình machine learning truyền thống được triển khai và so sánh:
 
+**CNN Models:**
 1. **Spatial Context CNN** (~30K tham số) - Gần nhất với phương pháp ML, bổ sung làm mượt không gian
-2. **Multi-Scale CNN** (~80K tham số) - Cân bằng, học đặc trưng đa tỷ lệ  
+2. **Multi-Scale CNN** (~80K tham số) - Cân bằng, học đặc trưng đa tỷ lệ
 3. **Shallow U-Net** (~120K tham số) - Kiến trúc encoder-decoder cho tính liên kết không gian tối ưu
 
-Khung nghiên cứu xử lý 18 kênh phổ (9 kênh × 2 thời điểm) sử dụng các patches 128×128 pixels, huấn luyện trên 1.285 điểm có nhãn với các lớp cân bằng (49,4% mất rừng vs 50,6% không mất rừng). Các mô hình được tối ưu hóa cho GPU NVIDIA RTX A4000 16GB và tạo ra bản đồ xác suất liên tục (0-1), kỳ vọng sẽ giảm nhiễu đáng kể so với phương pháp ML truyền thống.
+**Traditional ML:**
+4. **Random Forest** (100 trees) - Baseline machine learning cho so sánh
+
+Khung nghiên cứu xử lý 14 kênh phổ (7 kênh × 2 thời điểm từ Sentinel-2) sử dụng các patches 128×128 pixels, huấn luyện trên 1.285 điểm có nhãn với các lớp cân bằng (49,4% mất rừng vs 50,6% không mất rừng). Các mô hình được tối ưu hóa cho GPU NVIDIA RTX A4000 16GB và tạo ra bản đồ xác suất liên tục (0-1), kỳ vọng sẽ giảm nhiễu đáng kể so với phương pháp ML truyền thống.
 
 **Từ khóa:** Giám sát rừng, Cà Mau, Rừng ngập mặn, Phân tích đa thời gian, Deep Learning, Sentinel-1/2, Viễn thám, CNN
 
@@ -65,7 +69,7 @@ Việc giám sát biến động rừng truyền thống dựa vào điều tra 
 ### Phát Biểu Bài Toán
 
 **Đầu vào:**
-- **Dữ liệu**: Ảnh Sentinel-1 (SAR: VH, VV) và Sentinel-2 (đa phổ: B4, B8, B11, B12 và các chỉ số NDVI, NBR, NDMI) từ hai thời điểm (2024 và 2025)
+- **Dữ liệu**: Ảnh Sentinel-2 (đa phổ: B, G, R, NIR và các chỉ số NDVI, NBR, NDMI) từ hai thời điểm (2024 và 2025)
 - **Khu vực**: Tỉnh Cà Mau
 - **Ground truth**: 1.285 điểm có nhãn (635 điểm mất rừng, 650 điểm không mất rừng)
 - **Thách thức**: Phương pháp ML hiện tại (RF/GBT/SVM) đạt độ chính xác cao (>90%) nhưng tạo bản đồ có nhiễu pixel rời rạc
@@ -75,7 +79,7 @@ Việc giám sát biến động rừng truyền thống dựa vào điều tra 
 2. Tích hợp ngữ cảnh không gian để giảm nhiễu muối tiêu
 3. Duy trì hoặc cải thiện độ chính xác so với ML baseline
 4. Tạo bản đồ xác suất mượt, dễ diễn giải cho công tác quản lý
-5. So sánh ba kiến trúc với độ phức tạp khác nhau
+5. So sánh 3 kiến trúc CNN và 1 mô hình Random Forest
 
 ### Câu Hỏi Nghiên Cứu
 
@@ -152,25 +156,29 @@ Việc giám sát biến động rừng truyền thống dựa vào điều tra 
 
 #### Stack Đặc Trưng Đa Thời Gian
 
-**Tổng cộng: 18 kênh phổ**
+**Tổng cộng: 14 kênh phổ (Sentinel-2 only)**
 
 | STT | Tên Kênh | Nguồn | Thời điểm | Ý nghĩa |
 |-----|----------|-------|-----------|---------|
-| 1 | VH_2024 | S1 | 2024 | Backscatter phân cực chéo |
-| 2 | R_2024 | S1 | 2024 | Tỷ số VV/VH |
-| 3 | B4_2024 | S2 | 2024 | Phản xạ vùng đỏ |
-| 4 | B8_2024 | S2 | 2024 | Phản xạ cận hồng ngoại |
-| 5 | B11_2024 | S2 | 2024 | Phản xạ SWIR1 |
-| 6 | B12_2024 | S2 | 2024 | Phản xạ SWIR2 |
-| 7 | NDVI_2024 | S2 | 2024 | Độ xanh thực vật |
-| 8 | NBR_2024 | S2 | 2024 | Chỉ số cháy |
-| 9 | NDMI_2024 | S2 | 2024 | Chỉ số độ ẩm |
-| 10-18 | [Lặp lại] | - | 2025 | Cùng 9 kênh năm 2025 |
+| 1 | Blue_2024 | S2 | 2024 | Phản xạ vùng xanh lam |
+| 2 | Green_2024 | S2 | 2024 | Phản xạ vùng xanh lục |
+| 3 | Red_2024 | S2 | 2024 | Phản xạ vùng đỏ |
+| 4 | NIR_2024 | S2 | 2024 | Phản xạ cận hồng ngoại |
+| 5 | NDVI_2024 | S2 | 2024 | Độ xanh thực vật |
+| 6 | NBR_2024 | S2 | 2024 | Chỉ số cháy |
+| 7 | NDMI_2024 | S2 | 2024 | Chỉ số độ ẩm |
+| 8-14 | [Lặp lại] | S2 | 2025 | Cùng 7 kênh năm 2025 |
 
 **Lý do sử dụng đa thời gian:**
 - Phát hiện **thay đổi** giữa hai thời điểm chính xác hơn so với phân loại đơn thời điểm
 - Giảm ảnh hưởng của biến động theo mùa (phenology)
 - Tăng độ tin cậy thông qua so sánh trực tiếp
+
+**Lý do chỉ dùng Sentinel-2 (không dùng Sentinel-1):**
+- Sentinel-2 đa phổ cung cấp đủ thông tin về thảm thực vật
+- Đơn giản hóa preprocessing (không cần xử lý SAR speckle noise)
+- Giảm số lượng kênh đầu vào → giảm overfitting với dữ liệu hạn chế
+- Sentinel-2 10m resolution phù hợp với kích thước mảng rừng
 
 #### Trích Xuất Patches
 
@@ -178,7 +186,7 @@ Việc giám sát biến động rừng truyền thống dựa vào điều tra 
 1. **Đầu vào**: File CSV chứa tọa độ UTM (x, y) và nhãn (0/1) của 1.285 điểm
 2. **Trích xuất**: Với mỗi điểm (x, y):
    - Cắt vùng 128×128 pixels (1,28 km × 1,28 km) xung quanh điểm làm tâm
-   - Lấy đầy đủ 18 kênh phổ → patch có kích thước 128×128×18
+   - Lấy đầy đủ 14 kênh phổ (S2 only) → patch có kích thước 128×128×14
 3. **Lưu trữ**: Mỗi patch lưu thành file `.npy` (NumPy array)
 
 **Lý do chọn 128×128 pixels:**
@@ -229,7 +237,7 @@ Tổng: 1.285 patches
 
 ```
 ┌──────────────────────────────────────────┐
-│ INPUT: 128×128×18                        │
+│ INPUT: 128×128×14                        │
 └──────────────┬───────────────────────────┘
                ↓
 ┌──────────────────────────────────────────┐
@@ -280,7 +288,7 @@ Tổng: 1.285 patches
 
 ```
 ┌──────────────────────────────────────────┐
-│ INPUT: 128×128×18                        │
+│ INPUT: 128×128×14                        │
 └────────────────┬─────────────────────────┘
                  ↓
         ┌────────┴────────┐
@@ -343,7 +351,7 @@ Tổng: 1.285 patches
 
 ```
 ┌──────────────────────────────────────────┐
-│ INPUT: 128×128×18                        │
+│ INPUT: 128×128×14                        │
 └──────────────┬───────────────────────────┘
                ↓
 ┌───────────── ENCODER ────────────────────┐
@@ -541,9 +549,12 @@ ca-mau-deforestation/
 ├── notebooks/                         ✅ (JUPYTER NOTEBOOKS)
 │   ├── 00_module_usage_example.ipynb ✅ Hướng dẫn import & sử dụng modules
 │   ├── 01_data_exploration.ipynb     ✅ Khám phá dữ liệu (metadata, stats, viz)
-│   ├── 02_create_patches_dataset.ipynb ✅ Tạo patches dataset (128×128×18)
-│   ├── 03_training_analysis.ipynb    ⬜ Phân tích quá trình train (TODO)
-│   ├── 04_results_visualization.ipynb ⬜ Trực quan hóa kết quả (TODO)
+│   ├── 02_create_patches_dataset.ipynb ✅ Tạo patches dataset (128×128×14)
+│   ├── 03_train_models.ipynb         ✅ Huấn luyện 3 CNN models
+│   ├── 04_evaluate_and_visualize_results.ipynb ✅ Đánh giá kết quả trên test set
+│   ├── 05_visualize_full_deforestation_map.ipynb ✅ Inference toàn ảnh (1 model demo)
+│   ├── 06_train_random_forest.ipynb  ✅ Huấn luyện Random Forest model
+│   ├── 07_compare_all_models.ipynb   ✅ So sánh tất cả 4 models (3 CNNs + RF)
 │   └── README.md                     ✅ Hướng dẫn sử dụng notebooks
 │
 ├── checkpoints/                       ✅ (ĐÃ TẠO - Chờ model weights)
@@ -846,15 +857,17 @@ python src/predict.py \
 
 ### Bảng So Sánh
 
-| Tiêu Chí | Spatial Context CNN | Multi-Scale CNN | Shallow U-Net |
-|----------|---------------------|-----------------|---------------|
-| **Số lớp** | 3 | 5 | 8-10 |
-| **Tham số** | ~30K | ~80K | ~120K |
-| **Receptive field** | 5×5 px (50m) | 7×7 px (70m) | 13×13 px (130m) |
-| **Độ phức tạp** | ⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **Gần ML nhất** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| **Thời gian train dự kiến** | ~20-30 phút | ~30-45 phút | ~45-60 phút |
-| **Thời gian inference dự kiến** | Nhanh nhất | Trung bình | Chậm nhất |
+| Tiêu Chí | Spatial Context CNN | Multi-Scale CNN | Shallow U-Net | Random Forest |
+|----------|---------------------|-----------------|---------------|---------------|
+| **Kiểu** | CNN | CNN | CNN | Traditional ML |
+| **Số lớp** | 3 | 5 | 8-10 | N/A (100 trees) |
+| **Tham số** | ~30K | ~80K | ~120K | N/A |
+| **Receptive field** | 5×5 px (50m) | 7×7 px (70m) | 13×13 px (130m) | Toàn patch |
+| **Độ phức tạp** | ⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ |
+| **Gần ML nhất** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| **Thời gian train dự kiến** | ~20-30 phút | ~30-45 phút | ~45-60 phút | ~2-5 phút |
+| **Thời gian inference dự kiến** | Nhanh nhất | Trung bình | Chậm nhất | Trung bình |
+| **GPU cần thiết** | ✅ Có | ✅ Có | ✅ Có | ❌ Không |
 
 ### Khuyến Nghị Sử Dụng
 
@@ -873,6 +886,12 @@ python src/predict.py \
 - ✅ Bản đồ xuất bản
 - ✅ Có thời gian tính toán
 
+**Random Forest:**
+- ✅ Baseline để so sánh
+- ✅ Không cần GPU
+- ✅ Feature importance dễ diễn giải
+- ✅ Huấn luyện nhanh
+
 ---
 
 ## 📊 Kết Quả
@@ -886,7 +905,7 @@ python src/predict.py \
 
 | Mô Hình | Accuracy | Precision | Recall | F1-Score | AUC-ROC |
 |---------|----------|-----------|--------|----------|---------|
-| Random Forest (Baseline) | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+| Random Forest | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
 | Spatial Context CNN | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
 | Multi-Scale CNN | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
 | Shallow U-Net | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
