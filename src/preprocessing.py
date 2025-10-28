@@ -276,18 +276,25 @@ def create_patches_dataset(
 
     print(f"Train: {len(train_df)}, Val: {len(val_df)}, Test: {len(test_df)}")
 
-    # Open TIFF files (but don't load full arrays to save memory)
-    print("\nOpening TIFF files...")
+    # Load TIFF files
+    print("\nLoading TIFF files...")
     print("  - Sentinel-2 2024...")
-    src_s2_2024 = rasterio.open(s2_2024_path)
-    transform_s2 = src_s2_2024.transform
+    with rasterio.open(s2_2024_path) as src:
+        transform_s2 = src.transform
+        s2_2024 = src.read()  # (7, H, W)
 
     print("  - Sentinel-2 2025...")
-    src_s2_2025 = rasterio.open(s2_2025_path)
+    with rasterio.open(s2_2025_path) as src:
+        s2_2025 = src.read()  # (7, H, W)
 
-    print("\n✅ Files opened successfully (memory-efficient mode)")
-    print(f"   Image size: {src_s2_2024.width} × {src_s2_2024.height}")
-    print(f"   S2 bands: 7 × 2 time points = 14 channels total")
+    # Stack only Sentinel-2 bands: (14, H, W) = 7 S2 (2024) + 7 S2 (2025)
+    print("\nStacking 14 bands (Sentinel-2 only)...")
+    all_bands = np.concatenate([s2_2024, s2_2025], axis=0)
+    print(f"Stacked shape: {all_bands.shape}")
+
+    # Transpose to (H, W, 14)
+    all_bands = np.transpose(all_bands, (1, 2, 0))
+    print(f"Transposed shape: {all_bands.shape}")
 
     # Process each split
     counts = {}
@@ -305,31 +312,8 @@ def create_patches_dataset(
             # Convert to pixel coordinates
             pixel_x, pixel_y = coord_to_pixel(geo_x, geo_y, transform_s2)
 
-            # Calculate window for reading
-            half_size = patch_size // 2
-            row_off = max(0, pixel_y - half_size)
-            col_off = max(0, pixel_x - half_size)
-
-            # Check bounds
-            if (row_off + patch_size > src_s2_2024.height or
-                col_off + patch_size > src_s2_2024.width or
-                row_off < 0 or col_off < 0):
-                tqdm.write(f"  ⚠️ Skipping point {row['id']}: out of bounds")
-                continue
-
-            # Read window from both files
-            window = rasterio.windows.Window(col_off, row_off, patch_size, patch_size)
-
-            try:
-                s2_2024_patch = src_s2_2024.read(window=window)  # (7, 128, 128)
-                s2_2025_patch = src_s2_2025.read(window=window)  # (7, 128, 128)
-
-                # Stack and transpose: (14, 128, 128) -> (128, 128, 14)
-                patch = np.concatenate([s2_2024_patch, s2_2025_patch], axis=0)
-                patch = np.transpose(patch, (1, 2, 0))
-            except Exception as e:
-                tqdm.write(f"  ⚠️ Skipping point {row['id']}: read error - {e}")
-                continue
+            # Extract patch
+            patch = extract_patch(all_bands, pixel_y, pixel_x, patch_size)
 
             if patch is None:
                 tqdm.write(f"  ⚠️ Skipping point {row['id']}: out of bounds")
@@ -368,11 +352,6 @@ def create_patches_dataset(
 
         counts[split] = saved_count
         print(f"✅ {split.upper()}: Saved {saved_count}/{len(df)} patches")
-
-    # Close TIFF files
-    src_s2_2024.close()
-    src_s2_2025.close()
-    print("\n✅ Closed TIFF files")
 
     # Save summary
     summary_path = output_dir / 'dataset_summary.txt'
