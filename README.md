@@ -25,6 +25,7 @@
 - [Kết Quả](#kết-quả)
 - [Thảo Luận](#thảo-luận)
 - [Hướng Phát Triển](#hướng-phát-triển)
+- [Tài Liệu](#tài-liệu)
 - [Tài Liệu Tham Khảo](#tài-liệu-tham-khảo)
 - [Lời Cảm Ơn](#lời-cảm-ơn)
 - [Giấy Phép](#giấy-phép)
@@ -540,11 +541,14 @@ ca-mau-deforestation/
 │   ├── preprocessing.py              ✅ Normalize, NaN handling, patch extraction
 │   ├── visualization.py              ✅ Plotting functions
 │   ├── models.py                     ✅ 3 CNN architectures (30K-120K params)
+│   ├── ml_models.py                  ✅ Random Forest model wrapper
 │   ├── README.md                     ✅ Module documentation
-│   ├── dataset.py                    ✅ PyTorch Dataset class
-│   ├── train.py                      ⬜ Script huấn luyện (TODO)
-│   ├── evaluate.py                   ⬜ Đánh giá (TODO)
-│   └── predict.py                    ⬜ Inference (TODO)
+│   └── dataset.py                    ✅ PyTorch Dataset class
+│
+├── docs/                              ✅ (DOCUMENTATION)
+│   ├── DATA_METADATA_REPORT.md       ✅ Metadata report
+│   ├── RANDOM_FOREST_GUIDE.md        ✅ RF guide & salt-pepper noise
+│   └── normalization_fix.md          ✅ Normalization fix documentation
 │
 ├── notebooks/                         ✅ (JUPYTER NOTEBOOKS)
 │   ├── 00_module_usage_example.ipynb ✅ Hướng dẫn import & sử dụng modules
@@ -769,63 +773,62 @@ create_patches_dataset( \
 
 ### Bước 2: Huấn Luyện Mô Hình
 
-Huấn luyện từng mô hình:
-
 ```bash
-# Mô hình 1: Spatial Context CNN
-python src/train.py \
-    --model spatial_cnn \
-    --data_dir data/patches \
-    --epochs 100 \
-    --batch_size 16 \
-    --lr 0.001 \
-    --checkpoint checkpoints/spatial_cnn_best.pth
+# Kích hoạt môi trường
+conda activate dang
 
-# Mô hình 2: Multi-Scale CNN
-python src/train.py \
-    --model multiscale_cnn \
-    --data_dir data/patches \
-    --epochs 100 \
-    --batch_size 16 \
-    --lr 0.001 \
-    --checkpoint checkpoints/multiscale_cnn_best.pth
-
-# Mô hình 3: Shallow U-Net
-python src/train.py \
-    --model shallow_unet \
-    --data_dir data/patches \
-    --epochs 100 \
-    --batch_size 16 \
-    --lr 0.001 \
-    --checkpoint checkpoints/shallow_unet_best.pth
+# Khởi động JupyterLab
+jupyter lab
 ```
 
-**Output:**
-- Model weights (`.pth` files)
-- Training curves (loss, accuracy over epochs)
-- Validation metrics
+**A. Huấn luyện 3 CNN Models:**
+- Mở notebook: `notebooks/03_train_models.ipynb`
+- Chạy tất cả cells (Restart & Run All)
+- Notebook sẽ train cả 3 models: Spatial Context CNN, Multi-Scale CNN, Shallow U-Net
+- Features: Early stopping, training curves, automatic checkpointing
 
-**Thời gian dự kiến:** 30-60 phút/model trên RTX A4000
+**B. Huấn luyện Random Forest:**
+- Mở notebook: `notebooks/06_train_random_forest.ipynb`
+- Chạy tất cả cells
+- Features: Feature importance analysis, confusion matrix, ROC curves
+
+**Output:**
+- `checkpoints/spatial_cnn_best.pth` - Spatial Context CNN weights
+- `checkpoints/multiscale_cnn_best.pth` - Multi-Scale CNN weights
+- `checkpoints/shallow_unet_best.pth` - Shallow U-Net weights
+- `checkpoints/random_forest_best.pkl` - Random Forest model
+- `figures/training_curves/` - Training loss/accuracy curves
+- `logs/training_history.csv` - Training logs
+
+**Thời gian dự kiến:**
+- CNN models: 30-60 phút/model trên RTX A4000
+- Random Forest: 2-5 phút
 
 ---
 
 ### Bước 3: Đánh Giá và So Sánh
 
-Đánh giá 3 models trên test set:
-
 ```bash
-python src/evaluate.py \
-    --data_dir data/patches/test \
-    --checkpoints checkpoints/*.pth \
-    --output_dir results
+jupyter lab
 ```
 
-**Output:**
-- `results/comparison_table.csv` - Bảng so sánh metrics
-- `results/confusion_matrices.png` - Ma trận nhầm lẫn
-- `results/roc_curves.png` - Đường cong ROC
+**A. Đánh giá CNN models trên test set:**
+- Mở notebook: `notebooks/04_evaluate_and_visualize_results.ipynb`
+- Chạy tất cả cells
+- Features: Confusion matrices, ROC curves, sample predictions
 
-**Thời gian:** 2-5 phút
+**B. So sánh tất cả 4 models:**
+- Mở notebook: `notebooks/07_compare_all_models.ipynb`
+- Chạy tất cả cells
+- Features: Side-by-side comparison, model agreement analysis, statistics
+
+**Output:**
+- `figures/roc_curves_all_models.png` - ROC curves comparison
+- `figures/confusion_matrices/` - Confusion matrices cho từng model
+- `figures/sample_predictions/` - Sample predictions
+- `figures/model_agreement_analysis.png` - Agreement heatmap
+
+**Thời gian:** 2-10 phút
 
 ---
 
@@ -833,23 +836,32 @@ python src/evaluate.py \
 
 Tạo bản đồ xác suất cho toàn tỉnh Cà Mau:
 
+**Lựa chọn A: Sử dụng Script (Khuyến nghị cho production)**
+
 ```bash
-python src/predict.py \
-    --sentinel1_dir data/raw/sentinel1 \
-    --sentinel2_dir data/raw/sentinel2 \
-    --model checkpoints/shallow_unet_best.pth \
-    --output_dir outputs \
-    --overlap 0.5 \
-    --batch_size 32
+# Tạo bản đồ full-image với model tốt nhất
+python scripts/inference_full_image.py
+```
+
+**Lựa chọn B: Sử dụng Jupyter Notebook (Khuyến nghị cho exploration)**
+
+```bash
+jupyter lab
+# Mở notebook: notebooks/05_visualize_full_deforestation_map.ipynb
 ```
 
 **Output:**
-- `outputs/probability_map.tif` - Bản đồ xác suất GeoTIFF [0-1]
-- `outputs/probability_map.png` - Hình ảnh trực quan
-- `outputs/binary_map.tif` - Bản đồ nhị phân (threshold=0.5)
-- `outputs/statistics.txt` - Thống kê diện tích
+- `figures/full_probability_map.png` - Bản đồ xác suất [0-1]
+- `figures/full_binary_map.png` - Bản đồ nhị phân (threshold=0.5)
+- `figures/comparison_prob_vs_binary.png` - So sánh probability vs binary
+- `figures/probability_distribution.png` - Phân bố xác suất
 
 **Thời gian:** 10-30 phút (tùy kích thước ảnh)
+
+**Lưu ý:**
+- Script sử dụng sliding window với 50% overlap
+- Cần GPU ≥8GB VRAM
+- Có thể chỉnh model path trong script để dùng model khác
 
 ---
 
@@ -1014,6 +1026,57 @@ _(Sẽ cập nhật sau thực nghiệm)_
 2. **Google Earth Engine**: Scale lên toàn vùng Đồng bằng sông Cửu Long
 3. **Mobile app**: Ứng dụng di động cho kiểm lâm thực địa
 4. **Carbon accounting**: Kết hợp với mô hình sinh khối để ước tính CO₂
+
+---
+
+## 📚 Tài Liệu
+
+Các tài liệu chi tiết về dự án được tổ chức trong thư mục `docs/`:
+
+### 1. [Data Metadata Report](docs/DATA_METADATA_REPORT.md)
+**Mô tả:** Báo cáo chi tiết về metadata của dữ liệu Sentinel-1 và Sentinel-2
+
+**Nội dung:**
+- Thông tin chi tiết về 4 file TIFF (kích thước, độ phân giải, CRS, số lượng bands)
+- Phân tích NaN values trong từng band
+- Thống kê reflectance và vegetation indices (min, max, mean, std)
+- So sánh 2024 vs 2025
+
+**Khi nào đọc:** Trước khi bắt đầu preprocessing hoặc khi cần hiểu rõ đặc điểm dữ liệu
+
+---
+
+### 2. [Random Forest Guide](docs/RANDOM_FOREST_GUIDE.md)
+**Mô tả:** Hướng dẫn sử dụng và hiểu kết quả từ mô hình Random Forest
+
+**Nội dung:**
+- Giải thích về salt-and-pepper noise (nhiễu muối tiêu) và nguyên nhân
+- So sánh Random Forest vs CNN về spatial context
+- Phân tích feature importance (band importance, spatial importance)
+- Cách cải thiện kết quả với morphological filtering
+- Trade-offs giữa Random Forest và CNN
+
+**Khi nào đọc:** Khi cần hiểu tại sao Random Forest tạo bản đồ có nhiễu hoặc cần so sánh với CNN
+
+---
+
+### 3. [Normalization Fix Documentation](docs/normalization_fix.md)
+**Mô tả:** Tài liệu về lỗi normalization và cách sửa chữa
+
+**Nội dung:**
+- **Vấn đề:** NDVI values bị nén về 0.99-1.0 do normalization sai
+- **Root cause:** Vegetation indices bị scale từ [-1,1] sang [0,1] không đúng
+- **Impact:** Mất 97-99% tín hiệu phân biệt giữa mất rừng và không mất rừng
+- **Solution:** Giữ nguyên natural range [-1,1] thay vì scale
+- **Expected improvements:** Cải thiện class separation từ 0.01 lên 0.57 (57x)
+- **Files modified:** `src/preprocessing.py`, `inference_all_models.py`, `inference_full_image.py`
+
+**Khi nào đọc:**
+- Để hiểu tại sao patches được tạo lại
+- Khi viết phần Discussion trong luận văn
+- Khi cần giải thích về data preprocessing trong báo cáo
+
+**Quan trọng:** Tất cả patches đã được tạo lại với normalization đúng. Models cần được train lại để có kết quả chính xác.
 
 ---
 

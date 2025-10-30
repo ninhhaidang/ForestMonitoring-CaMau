@@ -340,8 +340,9 @@ def create_patches_dataset(
                             clip_range=(0, 1)
                         )
                     else:  # S2 indices (4,5,6,11,12,13)
-                        # Scale from [-1, 1] to [0, 1]
-                        patch[:, :, c] = (patch[:, :, c] + 1) / 2
+                        # Keep indices in their natural range [-1, 1]
+                        # Just clip to ensure valid range
+                        patch[:, :, c] = np.clip(patch[:, :, c], -1, 1)
 
             # Save patch
             filename = f"{split}_{int(row['id']):04d}_label{label}.npy"
@@ -351,7 +352,7 @@ def create_patches_dataset(
             saved_count += 1
 
         counts[split] = saved_count
-        print(f"✅ {split.upper()}: Saved {saved_count}/{len(df)} patches")
+        print(f"[OK] {split.upper()}: Saved {saved_count}/{len(df)} patches")
 
     # Save summary
     summary_path = output_dir / 'dataset_summary.txt'
