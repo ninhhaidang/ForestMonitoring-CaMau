@@ -30,6 +30,8 @@
 - [Lời Cảm Ơn](#lời-cảm-ơn)
 - [Giấy Phép](#giấy-phép)
 
+> 📘 **Tài liệu chi tiết:** Xem [MODELS_ARCHITECTURE.md](docs/MODELS_ARCHITECTURE.md) để hiểu sâu hơn về cách hoạt động của 3 models deep learning
+
 ---
 
 ## 📖 Tóm Tắt
@@ -38,15 +40,16 @@ Giám sát biến động rừng là nhiệm vụ quan trọng đối với bả
 
 Các phương pháp học máy truyền thống (Random Forest, Gradient Boosting, SVM) đạt độ chính xác cao trong phân loại từng pixel nhưng gặp phải vấn đề nhiễu muối tiêu (salt-and-pepper noise) do thiếu nhận thức về ngữ cảnh không gian. Điều này dẫn đến bản đồ kết quả có nhiều pixel bị phân loại sai rời rạc, làm giảm chất lượng thông tin cho quản lý rừng.
 
-Đồ án này đề xuất **khung deep learning đa thời gian** tận dụng dữ liệu đa phổ Sentinel-2 để phát hiện các khu vực biến động rừng tại tỉnh Cà Mau giữa hai thời điểm 2024 và 2025. Ba kiến trúc mạng nơ-ron tích chập nông (shallow CNN) và một mô hình machine learning truyền thống được triển khai và so sánh:
+Đồ án này đề xuất **khung deep learning đa thời gian** tận dụng dữ liệu đa phổ Sentinel-2 để phát hiện các khu vực biến động rừng tại tỉnh Cà Mau giữa hai thời điểm 2024 và 2025. Bốn kiến trúc mạng nơ-ron tích chập nông (shallow CNN) và một mô hình machine learning truyền thống được triển khai và so sánh:
 
 **CNN Models:**
-1. **Spatial Context CNN** (~30K tham số) - Gần nhất với phương pháp ML, bổ sung làm mượt không gian
-2. **Multi-Scale CNN** (~80K tham số) - Cân bằng, học đặc trưng đa tỷ lệ
-3. **Shallow U-Net** (~120K tham số) - Kiến trúc encoder-decoder cho tính liên kết không gian tối ưu
+1. **Spatial Context CNN** (~13K tham số) - Gần nhất với phương pháp ML, bổ sung làm mượt không gian
+2. **Multi-Scale CNN** (~90K tham số) - Cân bằng, học đặc trưng đa tỷ lệ
+3. **Shallow U-Net** (~476K tham số) - Kiến trúc encoder-decoder cho tính liên kết không gian tối ưu
+4. **Multi-Scale CNN (NDVI-Weighted)** (~100K tham số) - Tăng cường chú ý vào NDVI change thông qua channel attention và NDVI difference branch
 
 **Traditional ML:**
-4. **Random Forest** (100 trees) - Baseline machine learning cho so sánh
+5. **Random Forest** (100 trees) - Baseline machine learning cho so sánh
 
 Khung nghiên cứu xử lý 14 kênh phổ (7 kênh × 2 thời điểm từ Sentinel-2) sử dụng các patches 128×128 pixels, huấn luyện trên 1.285 điểm có nhãn với các lớp cân bằng (49,4% mất rừng vs 50,6% không mất rừng). Các mô hình được tối ưu hóa cho GPU NVIDIA RTX A4000 16GB và tạo ra bản đồ xác suất liên tục (0-1), kỳ vọng sẽ giảm nhiễu đáng kể so với phương pháp ML truyền thống.
 
