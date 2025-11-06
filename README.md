@@ -13,9 +13,73 @@ Dự án này phát triển một hệ thống tự động giám sát biến đ
 
 ### Mục tiêu
 
-- Phát triển mô hình deep learning để phát hiện mất rừng từ ảnh vệ tinh đa thời gian
+- Phát triển mô hình machine learning để phát hiện mất rừng từ ảnh vệ tinh đa thời gian
 - Kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2) để nâng cao độ chính xác
+- So sánh hiệu suất giữa phương pháp truyền thống (Random Forest) và Deep Learning (CNN)
 - Tạo bản đồ phân loại toàn bộ khu vực rừng tỉnh Cà Mau
+
+---
+
+## 🔄 Pipeline Tổng Quan
+
+```mermaid
+flowchart TD
+    A[📡 Dữ liệu đầu vào] --> B[Sentinel-2<br/>7 bands × 2 kỳ]
+    A --> C[Sentinel-1<br/>2 bands × 2 kỳ]
+    A --> D[Ground Truth<br/>1,285 points]
+    A --> E[Boundary<br/>Shapefile]
+
+    B --> F[🔧 Tiền xử lý]
+    C --> F
+    E --> F
+
+    F --> G[Clip Outliers<br/>Mask NoData]
+    G --> H[Apply Boundary Mask]
+    H --> I[Normalize Values]
+
+    I --> J[📦 Patch Extraction]
+    D --> J
+
+    J --> K[18-channel patches<br/>64×64 pixels<br/>1,285 samples]
+
+    K --> L[📊 Data Split]
+    L --> M[Train: 899<br/>70%]
+    L --> N[Val: 193<br/>15%]
+    L --> O[Test: 193<br/>15%]
+
+    M --> P[🌲 Random Forest<br/>Baseline ML]
+    M --> Q[🧠 Simple CNN<br/>Deep Learning]
+
+    N --> P
+    N --> Q
+
+    P --> R[📈 Evaluation]
+    Q --> R
+
+    O --> R
+
+    R --> S[Metrics:<br/>Accuracy, Precision,<br/>Recall, F1, AUC]
+
+    S --> T{Best Model?}
+
+    T -->|RF better| U[Use RF for inference]
+    T -->|CNN better| V[Use CNN for inference]
+
+    U --> W[🗺️ Full Area Inference]
+    V --> W
+
+    W --> X[Deforestation Map<br/>Cà Mau Province]
+
+    style A fill:#e1f5ff
+    style F fill:#fff4e1
+    style J fill:#f0e1ff
+    style L fill:#e1ffe1
+    style P fill:#ffe1e1
+    style Q fill:#ffe1e1
+    style R fill:#fff9e1
+    style W fill:#e1f5e1
+    style X fill:#90EE90
+```
 
 ---
 
@@ -178,9 +242,9 @@ python -c "from src.preprocessing import create_patches_dataset; create_patches_
 
 ---
 
-## 🧠 Input Data Structure
+## 🧠 Mô hình và Phương pháp
 
-### Input Specification
+### Input Data Specification
 - **18 channels** từ 2 kỳ ảnh:
   - **Kỳ 2024:** 7 bands S2 + 2 bands S1 = 9 channels
   - **Kỳ 2025:** 7 bands S2 + 2 bands S1 = 9 channels
@@ -193,29 +257,259 @@ python -c "from src.preprocessing import create_patches_dataset; create_patches_
   [16-17]: S1 2025 (VV, VH)
   ```
 
-### Model Architecture
+---
 
-> **Status:** Kiến trúc mô hình deep learning chưa được xác định. Sẽ thử nghiệm và lựa chọn sau.
+### 🎯 Phase 1: Baseline Models
+
+Dự án bắt đầu với 2 models cơ bản để thiết lập baseline và so sánh giữa phương pháp truyền thống và deep learning.
+
+#### 🌲 Model 1: Random Forest (Baseline Traditional ML)
+
+**Mục đích:** Baseline để đánh giá liệu deep learning có thực sự vượt trội hơn phương pháp truyền thống không.
+
+**Pipeline:**
+```
+18-channel patch (18, 64, 64)
+    ↓
+Feature Extraction (handcrafted):
+  • Per-channel statistics: mean, std, min, max
+    → 18 channels × 4 stats = 72 features
+  • Per-channel percentiles: 25th, 50th, 75th
+    → 18 channels × 3 = 54 features
+  • Temporal difference features (2025 - 2024):
+    → Mean diff, Std diff per band = ~18 features
+  • Total: ~144 features
+    ↓
+Random Forest Classifier
+  • n_estimators: 500 trees
+  • max_depth: 20
+  • min_samples_split: 10
+  • class_weight: balanced (nếu cần)
+    ↓
+Binary Classification (0: No loss, 1: Deforestation)
+```
+
+**Đặc điểm:**
+- ⏱️ **Training time:** Vài phút
+- 💾 **Memory:** Minimal (~100MB)
+- 📊 **Interpretable:** Feature importance có thể visualize
+- 🎯 **Expected accuracy:** 75-85% (estimation)
+
+**Thư viện:** `scikit-learn`
+
+---
+
+#### 🧠 Model 2: Simple CNN (Baseline Deep Learning)
+
+**Mục đích:** Baseline deep learning để học features tự động từ raw patches.
+
+**Architecture:**
+```python
+SimpleCNN(
+  # Input: (batch, 18, 64, 64)
+
+  # Conv Block 1
+  Conv2d(18, 32, kernel_size=3, padding=1)
+  BatchNorm2d(32)
+  ReLU()
+  MaxPool2d(2, 2)  # → (32, 32, 32)
+  Dropout(0.3)
+
+  # Conv Block 2
+  Conv2d(32, 64, kernel_size=3, padding=1)
+  BatchNorm2d(64)
+  ReLU()
+  MaxPool2d(2, 2)  # → (64, 16, 16)
+  Dropout(0.3)
+
+  # Conv Block 3
+  Conv2d(64, 128, kernel_size=3, padding=1)
+  BatchNorm2d(128)
+  ReLU()
+  MaxPool2d(2, 2)  # → (128, 8, 8)
+  Dropout(0.4)
+
+  # Conv Block 4
+  Conv2d(128, 256, kernel_size=3, padding=1)
+  BatchNorm2d(256)
+  ReLU()
+  MaxPool2d(2, 2)  # → (256, 4, 4)
+  Dropout(0.5)
+
+  # Classifier
+  GlobalAvgPool2d()  # → (256,)
+  Linear(256, 128)
+  ReLU()
+  Dropout(0.5)
+  Linear(128, 2)
+  # Output: (batch, 2) → Softmax
+)
+```
+
+**Đặc điểm:**
+- 📊 **Parameters:** ~1.2M
+- 💾 **VRAM:** ~2.5-3GB với batch_size=24 (AMP enabled)
+- ⏱️ **Training time:** ~5-10 phút/epoch (với cache in RAM)
+- 🎯 **Expected accuracy:** 80-90% (estimation)
+- 🛡️ **Regularization:** Heavy dropout, BatchNorm, L2 weight decay
+
+**Tại sao Simple CNN:**
+- ✅ **Dataset nhỏ (899 training samples):** Model đơn giản chống overfit tốt
+- ✅ **Lightweight:** Fit thoải mái trong GTX 1060 6GB
+- ✅ **Baseline tốt:** Dễ train, dễ debug, dễ so sánh
+- ✅ **Proven:** 4-layer CNN đủ cho binary classification
+
+**Thư viện:** `PyTorch`
+
+---
+
+### 📊 So sánh Models
+
+| Aspect | Random Forest | Simple CNN |
+|--------|--------------|------------|
+| **Approach** | Traditional ML | Deep Learning |
+| **Features** | Handcrafted (144) | Learned automatically |
+| **Parameters** | ~500 trees | ~1.2M weights |
+| **Training Time** | ~5 phút | ~50-100 phút (10 epochs) |
+| **VRAM** | N/A (CPU only) | ~3GB |
+| **Interpretability** | ⭐⭐⭐⭐⭐ High | ⭐⭐ Low |
+| **Scalability** | ⭐⭐ Limited | ⭐⭐⭐⭐ Good |
+| **Expected Acc** | 75-85% | 80-90% |
+
+---
+
+### 🔮 Future Phases (nếu Phase 1 thành công)
+
+Nếu Phase 1 cho kết quả tốt, sẽ thử nghiệm thêm:
+- **Phase 2:** Siamese Network (chuyên biệt cho change detection)
+- **Phase 3:** ResNet18, EfficientNet-B0 (nếu cần capacity cao hơn)
 
 ---
 
 ## ⚙️ Training Configuration
 
-#### Đã xác định:
-- **Mixed Precision (AMP):** Enabled - Tiết kiệm ~40% VRAM, tăng tốc training
-- **Batch size:** 16-24 (tùy model, được test để tận dụng tối đa 6GB VRAM với AMP)
-- **Gradient Accumulation:** 2 steps (Effective batch size = 32-48 tùy batch size thực tế)
-- **Data split:** 70% train, 15% validation, 15% test
-- **DataLoader Strategy:** Cache toàn bộ 1,285 patches trong RAM (~380MB) để tối ưu tốc độ
+### Configuration cho Simple CNN
 
-#### Chưa xác định (sẽ thử nghiệm):
-- **Optimizer:** TBD (Adam, AdamW, SGD, etc.)
-- **Learning rate:** TBD
-- **Learning rate scheduler:** TBD (CosineAnnealing, ReduceLROnPlateau, etc.)
-- **Loss function:** TBD (CrossEntropyLoss, Focal Loss, etc.)
-- **Epochs:** TBD
-- **Early stopping patience:** TBD
-- **Data augmentation:** TBD (Rotation, Flip, Noise, etc.)
+#### ✅ Đã xác định:
+
+**Data Configuration:**
+- **Data split:** 70% train (899), 15% val (193), 15% test (193)
+- **Cache strategy:** Load toàn bộ 1,285 patches vào RAM (~380MB)
+- **Data augmentation:** TBD (có thể thêm RandomFlip, RandomRotation nếu cần)
+
+**Model Training:**
+- **Batch size:** 24 (tối ưu cho Simple CNN với GTX 1060 6GB)
+- **Mixed Precision (AMP):** Enabled - Tiết kiệm ~40% VRAM, tăng tốc training
+- **Gradient Accumulation:** 2 steps → Effective batch size = 48
+
+**Optimization:**
+- **Optimizer:** Adam hoặc AdamW (TBD sau thử nghiệm)
+- **Learning rate:** 1e-3 → 1e-4 (sẽ grid search)
+- **Weight decay (L2):** 1e-4 (chống overfit)
+- **Scheduler:** ReduceLROnPlateau hoặc CosineAnnealing (TBD)
+
+**Regularization:**
+- **Dropout:** 0.3 → 0.5 (progressive, đã có trong architecture)
+- **BatchNorm:** Enabled trong mọi conv blocks
+- **Early stopping:** Patience = 10-15 epochs
+
+**Training Duration:**
+- **Max epochs:** 50-100 (hoặc đến khi early stopping)
+- **Validation frequency:** Mỗi epoch
+
+**Loss Function:**
+- **Primary:** CrossEntropyLoss
+- **Alternative:** Focal Loss (nếu class imbalance sau augmentation)
+
+#### 📊 Expected Training Resources:
+
+| Resource | Simple CNN | Random Forest |
+|----------|-----------|---------------|
+| **VRAM** | ~2.5-3GB | N/A (CPU only) |
+| **RAM** | ~5-10GB | ~2-5GB |
+| **Time/Epoch** | ~5-10 phút | N/A |
+| **Total Time** | ~2-4 giờ (20-40 epochs) | ~5-10 phút |
+
+### Configuration cho Random Forest
+
+**Không cần GPU training configuration.** RF sẽ được train trên CPU với:
+- n_estimators: 500
+- max_depth: 20
+- min_samples_split: 10
+- n_jobs: -1 (dùng all CPU cores)
+
+---
+
+## 🔬 Training Process (Phase 1)
+
+### Flowchart chi tiết:
+
+```mermaid
+flowchart LR
+    A[📦 Patches Dataset<br/>1,285 samples] --> B{Split Data<br/>70/15/15}
+
+    B --> C[🎓 Train Set<br/>899 samples]
+    B --> D[✅ Val Set<br/>193 samples]
+    B --> E[🧪 Test Set<br/>193 samples]
+
+    C --> F1[🌲 Random Forest<br/>Training]
+    C --> F2[🧠 Simple CNN<br/>Training]
+
+    F1 --> G1[Feature<br/>Extraction<br/>144 features]
+    G1 --> H1[RF Model<br/>500 trees]
+
+    F2 --> G2[Mini-batch<br/>BS=24, AMP]
+    G2 --> H2[CNN Forward<br/>+ Backprop]
+    H2 --> I2{Epoch<br/>Complete?}
+
+    I2 -->|No| G2
+    I2 -->|Yes| J2[Validate<br/>on Val Set]
+
+    D --> J1[Validate RF]
+    D --> J2
+
+    H1 --> J1
+
+    J1 --> K1[RF Metrics:<br/>Acc, F1, AUC]
+    J2 --> K2[CNN Metrics:<br/>Acc, F1, AUC]
+
+    K2 --> L2{Early<br/>Stop?}
+    L2 -->|No, Continue| G2
+    L2 -->|Yes| M2[Best CNN<br/>Model]
+
+    K1 --> M1[Final RF<br/>Model]
+    M2 --> N[📊 Final Evaluation<br/>on Test Set]
+    M1 --> N
+
+    E --> N
+
+    N --> O{Compare<br/>Performance}
+
+    O --> P1[RF Results:<br/>Acc, Precision,<br/>Recall, F1, AUC,<br/>Confusion Matrix]
+    O --> P2[CNN Results:<br/>Acc, Precision,<br/>Recall, F1, AUC,<br/>Confusion Matrix]
+
+    P1 --> Q[📝 Analysis &<br/>Report]
+    P2 --> Q
+
+    Q --> R{Decision}
+    R -->|CNN significantly better| S1[✅ Use CNN<br/>Proceed Phase 2]
+    R -->|RF comparable| S2[✅ Use RF<br/>ML sufficient]
+    R -->|Both good| S3[✅ Ensemble<br/>RF + CNN]
+
+    style A fill:#e1f5ff
+    style C fill:#ffe1e1
+    style D fill:#fff4e1
+    style E fill:#e1ffe1
+    style F1 fill:#d4f1d4
+    style F2 fill:#ffd4d4
+    style M1 fill:#90EE90
+    style M2 fill:#FFB6C1
+    style N fill:#FFE4B5
+    style Q fill:#DDA0DD
+    style S1 fill:#98FB98
+    style S2 fill:#98FB98
+    style S3 fill:#98FB98
+```
 
 ---
 
@@ -268,55 +562,152 @@ Các metrics đánh giá sẽ bao gồm:
 
 ## 🔧 Tối ưu hóa cho GTX 1060 6GB + 64GB RAM
 
-Dự án được tối ưu hóa đặc biệt cho cấu hình phần cứng:
+Dự án được tối ưu hóa đặc biệt cho cấu hình phần cứng hiện có.
 
-### GPU Optimization (GTX 1060 6GB):
-- **Mixed Precision Training (AMP):** Enabled
+### GPU Optimization (GTX 1060 6GB) - Simple CNN:
+
+#### Memory Optimization:
+- **Mixed Precision Training (AMP):** ✅ Enabled
   - Giảm ~40% VRAM usage (float16 thay vì float32)
   - Tăng tốc training ~20-30%
-  - Không ảnh hưởng độ chính xác
+  - Không ảnh hưởng độ chính xác kết quả
 
-- **Batch size:** 16-24 (tùy độ phức tạp của model)
-  - Được test để tận dụng tối đa 6GB VRAM
-  - Model nhẹ → batch size lớn hơn
-  - Model nặng → batch size nhỏ hơn
+- **Batch size = 24:**
+  - Tối ưu cho Simple CNN (~1.2M params)
+  - VRAM usage: ~2.5-3GB / 6GB → còn dư ~50%
+  - Thoải mái cho OS + Chrome + VSCode
 
-- **Gradient Accumulation:** 2 steps
-  - Effective batch size = 32-48
-  - Giúp training ổn định hơn với dataset nhỏ (1,285 samples)
-  - Trade-off: chậm hơn ~15-20% nhưng kết quả tốt hơn
+- **Gradient Accumulation = 2 steps:**
+  - Effective batch size = 48
+  - Giúp training ổn định hơn với dataset nhỏ (899 training samples)
+  - Trade-off: chậm hơn ~15-20% nhưng accuracy tốt hơn
 
-### RAM Optimization (64GB):
-- **Cache patches trong RAM:**
-  - Load toàn bộ 1,285 patches vào RAM (~380 MB)
-  - Training CỰC NHANH (không cần đọc disk mỗi epoch)
-  - Dataset nhỏ nên hoàn toàn khả thi
+#### Speed Optimization:
+- **cuDNN autotuner:** Enabled để tìm conv algorithms nhanh nhất
+- **TF32 precision:** Enabled trên Ampere/Ada GPUs (nếu upgrade sau)
 
-- **DataLoader minimal:**
-  - `num_workers = 4` (đủ vì data đã trong RAM)
-  - `pin_memory = True` (tăng tốc CPU → GPU transfer)
-  - `prefetch_factor = 2` (giảm vì không cần prefetch nhiều)
-  - `persistent_workers = True` (giữ workers alive giữa epochs)
+#### VRAM Breakdown (Simple CNN):
+```
+Model weights:       ~5 MB    (1.2M params × 4 bytes)
+Optimizer states:    ~10 MB   (Adam có 2 states)
+Batch activations:   ~800 MB  (24 samples × 18ch × 64×64)
+Gradients:          ~400 MB
+Misc (cuDNN, etc):  ~800 MB
+────────────────────────────
+Total:              ~2.0-2.5 GB / 6 GB (40% usage)
+```
 
-### Estimated Resource Usage:
-- **VRAM:** ~4.5-5.5 GB / 6 GB (~85-95% utilization)
-- **RAM:** ~15-20 GB / 64 GB (patches cache + system + PyTorch)
-- **Training Speed:** ~5-10 giây/epoch (với cached data)
+---
+
+### RAM Optimization (64GB DDR3):
+
+#### Data Caching Strategy:
+- **Cache patches trong RAM:** ✅ Recommended
+  - Load toàn bộ 1,285 patches một lần (~380 MB)
+  - Training CỰC NHANH (không đọc disk mỗi epoch)
+  - Epoch time: ~5-10 phút → ~2-3 giây (300x faster!)
+
+#### DataLoader Configuration:
+```python
+DataLoader(
+    dataset=cached_dataset,
+    batch_size=24,
+    shuffle=True,
+    num_workers=4,         # Đủ vì data đã trong RAM
+    pin_memory=True,       # Tăng tốc CPU → GPU transfer
+    prefetch_factor=2,     # Prefetch 2 batches/worker
+    persistent_workers=True # Không kill workers giữa epochs
+)
+```
+
+#### RAM Breakdown:
+```
+Patches cache:       ~380 MB   (1,285 patches)
+PyTorch + CUDA:      ~3 GB
+OS + Background:     ~8 GB
+Browser + IDE:       ~4 GB
+────────────────────────────
+Total Used:          ~15 GB / 64 GB (25% usage)
+Available:           ~49 GB (dư thừa nhiều!)
+```
+
+---
+
+### Training Speed Estimation:
+
+#### Simple CNN (với cache trong RAM):
+- **Forward pass:** ~50ms (24 samples)
+- **Backward pass:** ~80ms
+- **Total per batch:** ~130ms
+- **Batches per epoch:** 899/24 ≈ 38 batches (với gradient accum = 2 → 19 optimizer steps)
+- **Time per epoch:** ~5-8 phút
+- **Total training (30 epochs):** ~2.5-4 giờ
+
+#### Random Forest (CPU):
+- **Feature extraction:** ~2-3 phút (899 samples)
+- **Training:** ~3-5 phút (500 trees)
+- **Total:** ~5-8 phút
+
+---
+
+### Performance Tips:
+
+1. **Để đạt tốc độ tối đa:**
+   - ✅ Cache data trong RAM (đã enable)
+   - ✅ Dùng `pin_memory=True`
+   - ✅ Dùng AMP (đã enable)
+   - ⚠️ Đóng Chrome tabs không cần thiết khi training
+   - ⚠️ Tắt Windows Update khi training
+
+2. **Monitor trong training:**
+   ```python
+   # Trong training loop
+   nvidia-smi  # Xem VRAM usage
+   htop        # Xem RAM + CPU usage
+   ```
+
+3. **Nếu OOM (Out of Memory):**
+   - Giảm batch_size: 24 → 20 → 16
+   - Tăng gradient accumulation: 2 → 3
+   - Effective batch size vẫn giữ = 48
 
 ---
 
 ## 📚 Thư viện chính
 
-- **PyTorch** 2.0+ - Deep learning framework
-- **torchvision** - Computer vision models
-- **segmentation-models-pytorch** - U-Net implementation
-- **rasterio** - Đọc/ghi GeoTIFF files
-- **geopandas** - Xử lý vector data (shapefiles)
-- **numpy** - Numerical operations
-- **pandas** - Data manipulation
-- **matplotlib, seaborn** - Visualization
-- **scikit-learn** - Metrics và utilities
+### Deep Learning & ML:
+- **PyTorch** 2.0+ - Deep learning framework cho Simple CNN
+- **torchvision** - Computer vision utilities và transforms
+- **scikit-learn** - Random Forest và metrics (Accuracy, Precision, Recall, F1, AUC)
+
+### Geospatial:
+- **rasterio** - Đọc/ghi GeoTIFF files (Sentinel-1, Sentinel-2)
+- **geopandas** - Xử lý vector data (boundary shapefiles)
+- **shapely** - Geometric operations
+
+### Data Processing:
+- **numpy** - Numerical operations và array processing
+- **pandas** - Data manipulation và CSV handling
+
+### Visualization:
+- **matplotlib** - Plotting và visualization
+- **seaborn** - Statistical visualization
+- **plotly** (optional) - Interactive plots
+
+### Utilities:
 - **tqdm** - Progress bars
+- **pyyaml** - Configuration files
+- **tensorboard** (optional) - Training visualization
+
+### Phase 1 Required:
+```bash
+# Minimum requirements cho Phase 1
+pip install torch torchvision
+pip install rasterio geopandas
+pip install scikit-learn
+pip install numpy pandas
+pip install matplotlib seaborn tqdm
+```
 
 ---
 
@@ -343,7 +734,7 @@ Dự án này được phát triển cho mục đích nghiên cứu và giáo d�
 
 ## 🙏 Lời cảm ơn
 
-- Giảng viên hướng dẫn: TS. Hà Minh Cường, ThS, Hoàng Tích Phúc
+- Giảng viên hướng dẫn: TS. Hà Minh Cường, ThS. Hoàng Tích Phúc
 - Phòng thí nghiệm: Geospatial Technology Lab
 - Viện Công nghệ Hàng không Vũ trụ - Trường Đại học Công nghệ, ĐHQGHN
 
