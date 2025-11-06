@@ -105,13 +105,15 @@ def create_dataloaders(patches, labels, batch_size=4, num_workers=4,
         dataset, [train_size, val_size, test_size], generator=generator
     )
 
-    # Create dataloaders
+    # Create dataloaders with optimized settings
     train_loader = DataLoader(
         train_dataset,
         batch_size=batch_size,
         shuffle=True,
         num_workers=num_workers,
-        pin_memory=True
+        pin_memory=PIN_MEMORY,
+        prefetch_factor=PREFETCH_FACTOR if num_workers > 0 else None,
+        persistent_workers=True if num_workers > 0 else False  # Keep workers alive
     )
 
     val_loader = DataLoader(
@@ -119,7 +121,9 @@ def create_dataloaders(patches, labels, batch_size=4, num_workers=4,
         batch_size=batch_size,
         shuffle=False,
         num_workers=num_workers,
-        pin_memory=True
+        pin_memory=PIN_MEMORY,
+        prefetch_factor=PREFETCH_FACTOR if num_workers > 0 else None,
+        persistent_workers=True if num_workers > 0 else False
     )
 
     test_loader = DataLoader(
@@ -127,7 +131,9 @@ def create_dataloaders(patches, labels, batch_size=4, num_workers=4,
         batch_size=batch_size,
         shuffle=False,
         num_workers=num_workers,
-        pin_memory=True
+        pin_memory=PIN_MEMORY,
+        prefetch_factor=PREFETCH_FACTOR if num_workers > 0 else None,
+        persistent_workers=True if num_workers > 0 else False
     )
 
     return train_loader, val_loader, test_loader

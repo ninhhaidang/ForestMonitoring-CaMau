@@ -10,7 +10,7 @@ from tqdm import tqdm
 import pickle
 
 from .config import *
-from .utils import read_geotiff, coords_to_pixel, normalize_image, normalize_sentinel2
+from .utils import read_geotiff, coords_to_pixel, normalize_image, validate_sentinel2_ranges, mask_raster_with_boundary
 
 
 def load_ground_truth():
@@ -40,7 +40,8 @@ def extract_patch_at_point(s1_2024, s1_2025, s2_2024, s2_2025,
         patch_size: Size of patch to extract
 
     Returns:
-        Combined patch of shape (16, patch_size, patch_size) or None if invalid
+        Combined patch of shape (18, patch_size, patch_size) or None if invalid
+        Channel order: [S2_2024 (7), S1_2024 (2), S2_2025 (7), S1_2025 (2)]
     """
     # Convert coordinates to pixel
     col, row = coords_to_pixel(x, y, transform)
@@ -71,13 +72,13 @@ def extract_patch_at_point(s1_2024, s1_2025, s2_2024, s2_2025,
             np.all(s2_2024_patch == 0) or np.all(s2_2025_patch == 0)):
             return None
 
-        # Combine: [S2_2024 (7 bands), S1_2024 (1 band), S2_2025 (7 bands), S1_2025 (1 band)]
+        # Combine: [S2_2024 (7 bands), S1_2024 (2 bands), S2_2025 (7 bands), S1_2025 (2 bands)]
         combined_patch = np.concatenate([
             s2_2024_patch,  # 7 bands
-            s1_2024_patch,  # 1 band
+            s1_2024_patch,  # 2 bands (VV, VH)
             s2_2025_patch,  # 7 bands
-            s1_2025_patch   # 1 band
-        ], axis=0)  # Total: 16 bands
+            s1_2025_patch   # 2 bands (VV, VH)
+        ], axis=0)  # Total: 18 bands
 
         return combined_patch
 
@@ -116,23 +117,31 @@ def create_patches_dataset(patch_size=64, output_dir=None, normalize=True):
     s1_2024, _, _ = read_geotiff(SENTINEL1_2024)
     s1_2025, _, _ = read_geotiff(SENTINEL1_2025)
 
-    # Use only VH band from Sentinel-1
-    s1_2024 = s1_2024[0:1, :, :]  # First band (VH)
-    s1_2025 = s1_2025[0:1, :, :]  # First band (VH)
+    # Use both VV and VH bands from Sentinel-1
+    s1_2024 = s1_2024[0:2, :, :]  # First 2 bands (VV, VH)
+    s1_2025 = s1_2025[0:2, :, :]  # First 2 bands (VV, VH)
 
     print(f"S2_2024 shape: {s2_2024.shape}")
     print(f"S2_2025 shape: {s2_2025.shape}")
     print(f"S1_2024 shape: {s1_2024.shape}")
     print(f"S1_2025 shape: {s1_2025.shape}")
 
+    # Apply forest boundary mask
+    print("\nApplying forest boundary mask...")
+    s2_2024, s2_mask = mask_raster_with_boundary(s2_2024, transform, FOREST_BOUNDARY)
+    s2_2025, _ = mask_raster_with_boundary(s2_2025, transform, FOREST_BOUNDARY)
+    s1_2024, _ = mask_raster_with_boundary(s1_2024, transform, FOREST_BOUNDARY)
+    s1_2025, _ = mask_raster_with_boundary(s1_2025, transform, FOREST_BOUNDARY)
+    print(f"Boundary mask applied - Valid pixels: {np.sum(s2_mask):,} / {s2_mask.size:,} ({np.sum(s2_mask)/s2_mask.size*100:.2f}%)")
+
     # Normalize imagery if requested
     if normalize:
-        print("Normalizing imagery...")
-        # Sentinel-2: Use special normalization to preserve band value ranges
+        print("Validating and normalizing imagery...")
+        # Sentinel-2: Validate ranges (no scaling, just clip outliers)
         # B4, B8, B11, B12: [0, 1], NDVI, NBR, NDMI: [-1, 1]
-        s2_2024 = normalize_sentinel2(s2_2024)
-        s2_2025 = normalize_sentinel2(s2_2025)
-        # Sentinel-1: Use minmax normalization (dB values)
+        s2_2024 = validate_sentinel2_ranges(s2_2024)
+        s2_2025 = validate_sentinel2_ranges(s2_2025)
+        # Sentinel-1: Use minmax normalization (dB values -> [0, 1])
         s1_2024 = normalize_image(s1_2024, method="minmax")
         s1_2025 = normalize_image(s1_2025, method="minmax")
 

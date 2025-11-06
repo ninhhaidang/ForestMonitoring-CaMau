@@ -10,7 +10,7 @@ from torchvision import models
 class SimpleCNN(nn.Module):
     """Simple CNN for binary classification"""
 
-    def __init__(self, in_channels=16, num_classes=2):
+    def __init__(self, in_channels=18, num_classes=2):
         super(SimpleCNN, self).__init__()
 
         self.features = nn.Sequential(
@@ -57,7 +57,7 @@ class SimpleCNN(nn.Module):
 class ResNet18Classifier(nn.Module):
     """ResNet-18 based classifier for binary classification"""
 
-    def __init__(self, in_channels=16, num_classes=2, pretrained=False):
+    def __init__(self, in_channels=18, num_classes=2, pretrained=False):
         super(ResNet18Classifier, self).__init__()
 
         # Load ResNet-18
@@ -79,7 +79,7 @@ class ResNet18Classifier(nn.Module):
 class UNetClassifier(nn.Module):
     """U-Net encoder for classification (using segmentation_models_pytorch)"""
 
-    def __init__(self, in_channels=16, num_classes=2, encoder_name='resnet34'):
+    def __init__(self, in_channels=18, num_classes=2, encoder_name='resnet34'):
         super(UNetClassifier, self).__init__()
 
         # Create U-Net model (we'll use only the encoder part)
@@ -116,7 +116,7 @@ class UNetClassifier(nn.Module):
         return x
 
 
-def get_model(model_name='simple_cnn', in_channels=16, num_classes=2):
+def get_model(model_name='simple_cnn', in_channels=18, num_classes=2):
     """
     Factory function to get model by name
 
@@ -141,7 +141,7 @@ def get_model(model_name='simple_cnn', in_channels=16, num_classes=2):
 if __name__ == "__main__":
     # Test models
     batch_size = 2
-    in_channels = 16
+    in_channels = 18  # Updated: 2 time periods × (7 S2 + 2 S1) = 18 channels
     patch_size = 64
 
     x = torch.randn(batch_size, in_channels, patch_size, patch_size)
