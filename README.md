@@ -310,20 +310,65 @@ TỔNG: 27 features
 ---
 
 ## 🔮 Deep Learning Approach
-Sau khi hoàn thành và đánh giá Random Forest baseline, dự án sẽ mở rộng sang Deep Learning và so sánh performance.
 
-### Kế hoạch Deep Learning
+**✅ Phase 2: IMPLEMENTED!**
 
-**Phase 2: Deep learning Approaches**
+### Patch-based 2D CNN
 
-Các kiến trúc đang cân nhắc:
-- ...
+**Kiến trúc:**
+- **Input:** 3x3 patches (thay vì single pixel)
+- **Spatial context:** Học từ neighborhood 30m × 30m
+- **Architecture:** 2 Conv layers + Global pooling + FC layers
+- **Parameters:** ~50K (lightweight, suitable for small dataset)
+- **Regularization:** Dropout + BatchNorm + Weight Decay + Early Stopping
 
-**Lý do chưa implement:**
-- ✅ Dataset nhỏ (1,285 samples) → risk of overfitting với deep learning
-- ...
-**Next Steps:**
-1. Implement a Deep learing Model
+**Đặc điểm chính:**
+
+1. **Spatial Context**
+   - Sử dụng patches 3×3 → giảm noise "lấm tấm"
+   - CNN học spatial patterns từ vùng lân cận
+   - Kết quả mượt mà hơn Random Forest
+
+2. **Spatial-Aware Splitting**
+   - Cluster nearby points (<50m)
+   - Split theo cluster (không phải individual points)
+   - Tránh data leakage giữa train/test sets
+
+3. **Heavy Regularization**
+   - Dropout (0.5), BatchNorm, Weight Decay
+   - Early stopping (patience=10)
+   - Class weighting cho imbalanced data
+
+**Cách chạy:**
+```bash
+cd src
+python main_dl.py
+
+# Custom settings
+python main_dl.py --epochs 100 --batch-size 64 --device cuda
+```
+
+**Output Files:**
+- `cnn_classification.tif` - Binary classification map
+- `cnn_probability.tif` - Probability map
+- `cnn_model.pth` - Trained PyTorch model
+- `cnn_evaluation_metrics.json` - Performance metrics
+- `cnn_training_history.json` - Training curves
+
+**So sánh với Random Forest:**
+
+| Aspect | Random Forest | CNN (Deep Learning) |
+|--------|--------------|---------------------|
+| **Input** | Single pixel | 3×3 patch |
+| **Spatial context** | ❌ No | ✅ Yes |
+| **Training time** | ~5-10 min | ~15-20 min |
+| **Result smoothness** | ⚠️ Có noise | ✅ Mượt hơn |
+| **Accuracy** | 85-92% | Similar or better |
+| **GPU** | Not needed | Recommended |
+
+**Hướng dẫn chi tiết:** Xem [DEEP_LEARNING_GUIDE.md](DEEP_LEARNING_GUIDE.md)
+
+**Module documentation:** [src/deep_learning/README.md](src/deep_learning/README.md)
 
 ---
 

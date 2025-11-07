@@ -159,6 +159,69 @@ VIZ_CONFIG = {
 }
 
 # ============================================================================
+# DEEP LEARNING CONFIGURATION
+# ============================================================================
+
+DL_CONFIG = {
+    # Model architecture
+    'model_type': 'standard',          # 'standard' or 'deeper'
+    'patch_size': 3,                    # 3x3 patches
+    'n_features': TOTAL_FEATURES,       # 27 features
+    'n_classes': 2,                     # Binary classification
+    'dropout_rate': 0.5,                # Dropout for regularization
+
+    # Training parameters
+    'epochs': 50,                       # Maximum epochs
+    'batch_size': 32,                   # Batch size
+    'learning_rate': 0.001,             # Initial learning rate
+    'weight_decay': 1e-4,               # L2 regularization
+    'early_stopping_patience': 10,      # Early stopping patience
+
+    # Data split (spatial-aware)
+    'cluster_distance': 50.0,           # Clustering threshold (meters)
+    'train_size': 0.70,                 # 70% for training
+    'val_size': 0.15,                   # 15% for validation
+    'test_size': 0.15,                  # 15% for testing
+    'stratify_by_class': True,          # Maintain class balance
+
+    # Normalization
+    'normalize_method': 'standardize',  # 'standardize' or 'minmax'
+
+    # Device
+    'device': 'cuda',                   # 'cuda' or 'cpu'
+
+    # Prediction
+    'pred_batch_size': 1000,            # Batch size for full raster prediction
+    'pred_stride': 1,                   # Stride for sliding window (1 = dense)
+
+    # Class weights (for imbalanced data)
+    'use_class_weights': True,
+    'class_weights': [1.0, 1.0]         # Will be computed from data if needed
+}
+
+# Output files for Deep Learning
+DL_OUTPUT_FILES = {
+    # Rasters
+    'classification_raster': RASTERS_DIR / 'cnn_classification.tif',
+    'probability_raster': RASTERS_DIR / 'cnn_probability.tif',
+
+    # Models
+    'trained_model': MODELS_DIR / 'cnn_model.pth',
+
+    # Data
+    'training_patches': DATA_OUTPUT_DIR / 'cnn_training_patches.npz',
+    'evaluation_metrics': DATA_OUTPUT_DIR / 'cnn_evaluation_metrics.json',
+    'training_history': DATA_OUTPUT_DIR / 'cnn_training_history.json',
+
+    # Plots
+    'training_curves': PLOTS_DIR / 'cnn_training_curves.png',
+    'confusion_matrix': PLOTS_DIR / 'cnn_confusion_matrix.png',
+    'roc_curve': PLOTS_DIR / 'cnn_roc_curve.png',
+    'classification_map': PLOTS_DIR / 'cnn_classification_map.png',
+    'comparison_rf_cnn': PLOTS_DIR / 'comparison_rf_vs_cnn.png'
+}
+
+# ============================================================================
 # EVALUATION METRICS
 # ============================================================================
 
