@@ -29,7 +29,7 @@ flowchart TD
     A --> D[Ground Truth<br/>1,285 points]
     A --> E[Boundary<br/>Shapefile]
 
-    B --> F[🔧 Feature Engineering]
+    B --> F[🔧 Feature Extraction]
     C --> F
     E --> F
     D --> F
@@ -117,7 +117,7 @@ flowchart TD
 │   ├── common/                     # Shared modules
 │   │   ├── config.py               # Configuration
 │   │   ├── data_loader.py          # Data loading
-│   │   ├── feature_engineering.py  # Feature extraction
+│   │   ├── feature_extraction.py   # Feature extraction (27 features)
 │   │   ├── evaluation.py           # Model evaluation
 │   │   ├── visualization.py        # Plotting
 │   │   └── utils.py                # Utilities
@@ -127,10 +127,11 @@ flowchart TD
 │   │   ├── predict.py              # Prediction
 │   │   └── vectorization.py        # Vectorization
 │   │
+│   ├── _deprecated/                # Old files (backup)
 │   ├── main.py                     # Pipeline entry point
 │   └── README.md                   # Source code documentation
 │
-├── notebooks/                      # Jupyter notebooks
+├── notebook/                       # Jupyter notebooks
 │   └── random_forest.ipynb         # Random Forest pipeline notebook
 │
 ├── results/                        # Kết quả outputs
@@ -211,9 +212,9 @@ jupyter lab
 # Chạy tất cả cells từ trên xuống
 ```
 
-**Pipeline sẽ thực hiện 9 bước:**
+**Pipeline sẽ thực hiện các bước:**
 1. ⚙️ Setup & Load Data (~2-5 phút)
-2. 🔧 Feature Engineering (~1-2 phút)
+2. 🔧 Feature Extraction (~1-2 phút) - 27 features
 3. 📊 Extract Training Data (~30 giây)
 4. 🌲 Train Random Forest (~3-5 phút)
 5. 📈 Model Evaluation (~2-3 phút)
@@ -226,35 +227,31 @@ jupyter lab
 
 ---
 
-### Option 2: Chạy từng bước riêng lẻ
+### Option 2: Import modules trực tiếp
 
-```bash
-cd src
+Bạn có thể import và sử dụng các modules riêng lẻ:
 
-# Bước 1-2: Load data
-python step1_2_setup_and_load_data.py
+```python
+# Import common modules
+from common.data_loader import DataLoader
+from common.feature_extraction import FeatureExtraction
+from common.evaluation import ModelEvaluator
+from common.visualization import Visualizer
 
-# Bước 3: Feature engineering
-python step3_feature_engineering.py
+# Import Random Forest modules
+from random_forest.train import RandomForestTrainer, TrainingDataExtractor
+from random_forest.predict import RasterPredictor
+from random_forest.vectorization import Vectorizer
 
-# Bước 4: Extract training data
-python step4_extract_training_data.py
+# Use them
+loader = DataLoader()
+s2_before, s2_after = loader.load_sentinel2()
 
-# Bước 5: Train model
-python step5_train_random_forest.py
-
-# Bước 6: Evaluate model
-python step6_model_evaluation.py
-
-# Bước 7: Predict full raster
-python step7_predict_full_raster.py
-
-# Bước 8: Vectorization (optional)
-python step8_vectorization.py
-
-# Bước 9: Visualization
-python step9_visualization.py
+extractor = FeatureExtraction()
+features, mask = extractor.extract_features(s2_before, s2_after, s1_before, s1_after)
 ```
+
+> **Note:** Old step-by-step files (`step*.py`) đã được chuyển vào `src/_deprecated/` folder.
 
 ---
 
@@ -302,7 +299,7 @@ results/
 
 ## 🧠 Mô hình và Phương pháp
 
-### Feature Engineering - 27 Features
+### Feature Extraction - 27 Features
 
 Thay vì sử dụng patches, dự án hiện tại trích xuất **27 features pixel-wise** từ dữ liệu viễn thám:
 
@@ -337,7 +334,7 @@ TỔNG: 27 features
 
 1. **Setup & Configuration** - Cấu hình paths và parameters
 2. **Load Data** - Load Sentinel-1, Sentinel-2, Ground Truth, Boundary
-3. **Feature Engineering** - Tạo 27 features (before + after + delta)
+3. **Feature Extraction** - Tạo 27 features (before + after + delta)
 4. **Extract Training Data** - Trích xuất features tại ground truth points
 5. **Train Random Forest** - Train model với 100 trees
 6. **Model Evaluation** - Đánh giá trên validation và test sets
@@ -469,7 +466,7 @@ TRAIN_TEST_SPLIT = {
 
 ```mermaid
 flowchart TD
-    A[📂 Load Data<br/>S1, S2, GT, Boundary] --> B[🔧 Feature Engineering<br/>27 features]
+    A[📂 Load Data<br/>S1, S2, GT, Boundary] --> B[🔧 Feature Extraction<br/>27 features]
 
     B --> C[📊 Extract at GT Points<br/>1,285 samples]
 
@@ -731,11 +728,10 @@ Dự án này được phát triển cho mục đích nghiên cứu và giáo d�
 
 ## 📚 Tài liệu tham khảo
 
-- [README_SRC.md](README_SRC.md) - Hướng dẫn chi tiết source code
-- [HOW_TO_RUN_NOTEBOOK.md](HOW_TO_RUN_NOTEBOOK.md) - Hướng dẫn chạy Jupyter notebook
-- [notebooks/random_forest.ipynb](notebooks/random_forest.ipynb) - Interactive notebook cho Random Forest pipeline
+- [src/README.md](src/README.md) - Hướng dẫn chi tiết source code structure
+- [notebook/random_forest.ipynb](notebook/random_forest.ipynb) - Interactive notebook cho Random Forest pipeline
 
 ---
 
 **Cập nhật lần cuối:** 07/01/2025
-**Version:** 2.0 (Random Forest baseline)
+**Version:** 2.0 (Random Forest baseline - Model-centric architecture)
