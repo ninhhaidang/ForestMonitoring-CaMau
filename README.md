@@ -24,43 +24,7 @@ Dự án này phát triển một hệ thống tự động giám sát biến đ
 
 ```mermaid
 flowchart TD
-    A[📡 Dữ liệu đầu vào] --> B[Sentinel-2<br/>7 bands × 2 kỳ]
-    A --> C[Sentinel-1<br/>2 bands × 2 kỳ]
-    A --> D[Ground Truth<br/>1,285 points]
-    A --> E[Boundary<br/>Shapefile]
 
-    B --> F[🔧 Feature Extraction]
-    C --> F
-    E --> F
-    D --> F
-
-    F --> G[27 Features:<br/>S2: 7×3=21<br/>S1: 2×3=6]
-    G --> H[Before + After + Delta]
-
-    H --> I[📊 Extract Training Data]
-    I --> J[Data Split<br/>70/15/15]
-
-    J --> K[🌲 Random Forest<br/>100 trees, 27 features]
-
-    K --> L[📈 Model Evaluation]
-    L --> M[Test Set Metrics:<br/>Accuracy, Precision,<br/>Recall, F1, AUC]
-
-    M --> N[🗺️ Full Area Inference]
-    N --> O[Binary Map + Probability Map]
-
-    O --> P[📐 Vectorization]
-    P --> Q[Deforestation Polygons]
-
-    Q --> R[📊 Final Outputs:<br/>Maps + Vectors + Metrics]
-
-    style A fill:#e1f5ff
-    style F fill:#fff4e1
-    style G fill:#f0e1ff
-    style J fill:#e1ffe1
-    style K fill:#ffe1e1
-    style L fill:#fff9e1
-    style N fill:#e1f5e1
-    style R fill:#90EE90
 ```
 
 ---
@@ -178,7 +142,7 @@ cd 25-26_HKI_DATN_21021411_DangNH
 
 ```bash
 conda env create -f environment.yml
-conda activate dang
+conda activate dangnh
 ```
 
 **Hoặc** sử dụng pip:
@@ -197,7 +161,6 @@ python -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA av
 
 ## 🚀 Sử dụng
 
-### Option 1: Chạy toàn bộ Pipeline (Khuyến nghị)
 
 **Chạy qua Python script:**
 ```bash
@@ -227,33 +190,6 @@ jupyter lab
 
 ---
 
-### Option 2: Import modules trực tiếp
-
-Bạn có thể import và sử dụng các modules riêng lẻ:
-
-```python
-# Import common modules
-from common.data_loader import DataLoader
-from common.feature_extraction import FeatureExtraction
-from common.evaluation import ModelEvaluator
-from common.visualization import Visualizer
-
-# Import Random Forest modules
-from random_forest.train import RandomForestTrainer, TrainingDataExtractor
-from random_forest.predict import RasterPredictor
-from random_forest.vectorization import Vectorizer
-
-# Use them
-loader = DataLoader()
-s2_before, s2_after = loader.load_sentinel2()
-
-extractor = FeatureExtraction()
-features, mask = extractor.extract_features(s2_before, s2_after, s1_before, s1_after)
-```
-
-> **Note:** Old step-by-step files (`step*.py`) đã được chuyển vào `src/_deprecated/` folder.
-
----
 
 ### Skip Vectorization (Nhanh hơn)
 
@@ -301,7 +237,7 @@ results/
 
 ### Feature Extraction - 27 Features
 
-Thay vì sử dụng patches, dự án hiện tại trích xuất **27 features pixel-wise** từ dữ liệu viễn thám:
+Phase hiện tại trích xuất **27 features pixel-wise** từ dữ liệu viễn thám:
 
 **Cấu trúc features:**
 ```
@@ -326,7 +262,7 @@ TỔNG: 27 features
 
 ---
 
-## 🌲 Random Forest Approach (Current)
+## 🌲 Random Forest Approach
 
 ### Pipeline 9 Bước
 
@@ -373,46 +309,21 @@ TỔNG: 27 features
 
 ---
 
-## 🔮 Deep Learning Approach (Future Work)
-
-Sau khi hoàn thành và đánh giá Random Forest baseline, dự án sẽ mở rộng sang Deep Learning để so sánh performance.
+## 🔮 Deep Learning Approach
+Sau khi hoàn thành và đánh giá Random Forest baseline, dự án sẽ mở rộng sang Deep Learning và so sánh performance.
 
 ### Kế hoạch Deep Learning
 
-**Phase 2: CNN-based Approaches**
+**Phase 2: Deep learning Approaches**
 
 Các kiến trúc đang cân nhắc:
-
-1. **Simple CNN** - Baseline deep learning
-   - 3-4 conv layers
-   - Input: Multi-temporal patches
-   - Target: Binary classification
-   - Parameters: ~1-2M
-   - Training time: 1-2 giờ trên GTX 1060
-
-2. **U-Net** - Semantic segmentation
-   - Encoder-decoder architecture
-   - Pixel-wise predictions
-   - Better spatial context
-   - Parameters: ~5-10M
-
-3. **Siamese Network** - Change detection specialist
-   - Twin networks cho before/after
-   - Distance learning
-   - Specialized for temporal analysis
+- ...
 
 **Lý do chưa implement:**
-- ✅ Cần baseline solid với Random Forest trước
-- ✅ Đánh giá xem deep learning có cần thiết không
-- ✅ Nếu RF đạt >90% accuracy, có thể không cần CNN
 - ✅ Dataset nhỏ (1,285 samples) → risk of overfitting với deep learning
-
+- ...
 **Next Steps:**
-1. Hoàn thành Random Forest evaluation
-2. Analyze feature importance
-3. Nếu RF accuracy < 85%, implement CNN
-4. So sánh RF vs CNN performance
-5. Chọn best model cho production
+1. Implement a Deep learing Model
 
 ---
 
@@ -557,144 +468,6 @@ Mô hình Random Forest được đánh giá qua các metrics sau:
 
 ---
 
-## 📝 Preprocessing Pipeline
-
-### 1. Sentinel-2 Preprocessing
-- Đọc 7 bands từ GeoTIFF
-- Xử lý NoData values (convert to NaN)
-- Clip outliers về physical ranges:
-  - Spectral bands (B4, B8, B11, B12): [0, 1]
-  - Spectral indices (NDVI, NBR, NDMI): [-1, 1]
-- Apply boundary mask (chỉ giữ pixels trong vùng rừng)
-
-### 2. Sentinel-1 Preprocessing
-- Đọc VV và VH bands (dB values)
-- Apply boundary mask
-- MinMax normalization: [min, max] → [0, 1]
-
-### 3. Patch Extraction
-- Extract 64×64 patches tại các ground truth points
-- Stack 18 channels: [S2_2024, S1_2024, S2_2025, S1_2025]
-- Reject patches chứa NaN hoặc all-zero values
-- Lưu thành pickle file cho training
-
----
-
-## 🔧 Tối ưu hóa cho Phần cứng
-
-Dự án Random Forest được tối ưu hóa cho cấu hình phần cứng hiện có.
-
-### CPU Optimization (Random Forest):
-
-**Multi-threading:**
-- **n_jobs = -1:** Sử dụng tất cả CPU cores
-- **Parallel tree building:** Mỗi tree được train độc lập
-- **Expected speedup:** Linear với số cores (4-8 cores → 4-8x faster)
-
-**Training Speed:**
-- **Feature extraction:** ~1-2 phút (tại 1,285 ground truth points)
-- **RF training:** ~3-5 phút (100 trees)
-- **Full raster prediction:** ~5-10 phút (batch processing)
-- **Total pipeline:** ~15-30 phút (với vectorization)
-
----
-
-### RAM Optimization (64GB DDR3):
-
-**Memory Usage:**
-```
-Sentinel-2 data:     ~7.6 GB  (7 bands × 2 kỳ)
-Sentinel-1 data:     ~2.2 GB  (2 bands × 2 kỳ)
-Feature stack:       ~3.5 GB  (27 features)
-RF model:            ~100 MB  (100 trees)
-Working memory:      ~2 GB
-OS + Background:     ~8 GB
-────────────────────────────
-Total Used:          ~23 GB / 64 GB (36% usage)
-Available:           ~41 GB (dư thừa)
-```
-
-**Optimization Tips:**
-- ✅ Load data once và reuse
-- ✅ Use batch processing cho full raster prediction
-- ✅ Đóng ứng dụng không cần thiết khi chạy pipeline
-- ✅ Monitor RAM usage với Task Manager
-
----
-
-### Performance Tips:
-
-**1. Tăng tốc độ training:**
-```python
-# Sử dụng all CPU cores
-RF_PARAMS = {
-    'n_jobs': -1,  # -1 = use all cores
-    ...
-}
-```
-
-**2. Giảm memory usage (nếu cần):**
-```python
-# Giảm batch_size trong full raster prediction
-predictor.predict_raster(..., batch_size=5000)  # Thay vì 10000
-```
-
-**3. Skip vectorization (nếu không cần):**
-```python
-# Trong main.py hoặc notebook
-RUN_VECTORIZATION = False  # Tiết kiệm ~2-5 phút
-```
-
-**4. Monitor performance:**
-```bash
-# Windows Task Manager: Ctrl+Shift+Esc
-# Xem CPU usage, RAM usage trong tab Performance
-```
-
----
-
-## 📚 Thư viện chính
-
-### Machine Learning:
-- **scikit-learn** - Random Forest và metrics (Accuracy, Precision, Recall, F1, AUC)
-- **scipy** - Scientific computing và morphological operations
-
-### Geospatial:
-- **rasterio** - Đọc/ghi GeoTIFF files (Sentinel-1, Sentinel-2)
-- **geopandas** - Xử lý vector data (boundary shapefiles)
-- **shapely** - Geometric operations
-
-### Data Processing:
-- **numpy** - Numerical operations và array processing
-- **pandas** - Data manipulation và CSV handling
-
-### Visualization:
-- **matplotlib** - Plotting và visualization
-- **seaborn** - Statistical visualization
-- **plotly** (optional) - Interactive plots
-
-### Utilities:
-- **tqdm** - Progress bars
-- **pyyaml** - Configuration files
-
-### Current Requirements:
-```bash
-# Cài đặt packages cho Random Forest approach
-pip install scikit-learn scipy
-pip install rasterio geopandas shapely
-pip install numpy pandas
-pip install matplotlib seaborn tqdm
-```
-
-### Future Deep Learning Requirements:
-```bash
-# Sẽ cần khi implement CNN/U-Net (Phase 2)
-pip install torch torchvision
-pip install tensorboard  # Training visualization
-```
-
----
-
 ## 🤝 Đóng góp
 
 Dự án này là đồ án tốt nghiệp cá nhân. Mọi đóng góp, ý kiến, và góp ý xin vui lòng liên hệ qua email hoặc tạo issue trên GitHub.
@@ -719,19 +492,11 @@ Dự án này được phát triển cho mục đích nghiên cứu và giáo d�
 ## 🙏 Lời cảm ơn
 
 - Giảng viên hướng dẫn: TS. Hà Minh Cường, ThS. Hoàng Tích Phúc
-- Phòng thí nghiệm: Geospatial Technology Lab
-- Viện Công nghệ Hàng không Vũ trụ - Trường Đại học Công nghệ, ĐHQGHN
+- Công ty TNHH Tư vấn và Phát triển Đồng Xanh (GFD)
 
 ---
 
----
 
-## 📚 Tài liệu tham khảo
-
-- [src/README.md](src/README.md) - Hướng dẫn chi tiết source code structure
-- [notebook/random_forest.ipynb](notebook/random_forest.ipynb) - Interactive notebook cho Random Forest pipeline
-
----
 
 **Cập nhật lần cuối:** 07/01/2025
 **Version:** 2.0 (Random Forest baseline - Model-centric architecture)
