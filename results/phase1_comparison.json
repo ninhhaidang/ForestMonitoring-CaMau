@@ -1,0 +1,25 @@
+{
+  "rf": {
+    "accuracy": 0.8854166666666666,
+    "precision": 0.8476190476190476,
+    "recall": 0.9368421052631579,
+    "f1": 0.89,
+    "auc": 0.9440043407487791,
+    "training_time": 1.2924680709838867,
+    "model_size": "N/A (sklearn)",
+    "inference_speed": "Fast (CPU)"
+  },
+  "cnn": {
+    "accuracy": 0.96875,
+    "precision": 0.967741935483871,
+    "recall": 0.967741935483871,
+    "f1": 0.967741935483871,
+    "auc": 0.9929401542304768,
+    "training_time": 70.39945697784424,
+    "model_size": "0.43M params",
+    "inference_speed": "Fast (GPU/CPU)"
+  },
+  "winner": "Simple CNN",
+  "f1_difference": 0.07774193548387098,
+  "timestamp": "2025-11-07 08:21:08"
+}

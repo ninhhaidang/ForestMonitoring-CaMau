@@ -1,162 +1,146 @@
 """
-Deep learning models for deforestation detection
+Deep learning models for deforestation detection - Phase 1
 """
 import torch
 import torch.nn as nn
-import segmentation_models_pytorch as smp
-from torchvision import models
 
 
 class SimpleCNN(nn.Module):
-    """Simple CNN for binary classification"""
+    """
+    Simple CNN for binary deforestation classification.
+
+    Architecture (from README):
+    - Conv Block 1: 18 → 32 channels
+    - Conv Block 2: 32 → 64 channels
+    - Conv Block 3: 64 → 128 channels
+    - Conv Block 4: 128 → 256 channels
+    - Global Average Pooling
+    - FC: 256 → 128 → 2
+
+    Regularization:
+    - BatchNorm after each conv
+    - Dropout (progressive: 0.3 → 0.5)
+    - Global Average Pooling (reduce parameters)
+
+    Parameters: ~1.2M
+    """
 
     def __init__(self, in_channels=18, num_classes=2):
         super(SimpleCNN, self).__init__()
 
-        self.features = nn.Sequential(
-            # Conv block 1
-            nn.Conv2d(in_channels, 64, kernel_size=3, padding=1),
+        # Conv Block 1: 18 → 32
+        self.conv_block1 = nn.Sequential(
+            nn.Conv2d(in_channels, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2, 2),  # 64 → 32
+            nn.Dropout(0.3)
+        )
+
+        # Conv Block 2: 32 → 64
+        self.conv_block2 = nn.Sequential(
+            nn.Conv2d(32, 64, kernel_size=3, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(2, 2),  # 64 -> 32
+            nn.MaxPool2d(2, 2),  # 32 → 16
+            nn.Dropout(0.3)
+        )
 
-            # Conv block 2
+        # Conv Block 3: 64 → 128
+        self.conv_block3 = nn.Sequential(
             nn.Conv2d(64, 128, kernel_size=3, padding=1),
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(2, 2),  # 32 -> 16
+            nn.MaxPool2d(2, 2),  # 16 → 8
+            nn.Dropout(0.4)
+        )
 
-            # Conv block 3
+        # Conv Block 4: 128 → 256
+        self.conv_block4 = nn.Sequential(
             nn.Conv2d(128, 256, kernel_size=3, padding=1),
             nn.BatchNorm2d(256),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(2, 2),  # 16 -> 8
-
-            # Conv block 4
-            nn.Conv2d(256, 512, kernel_size=3, padding=1),
-            nn.BatchNorm2d(512),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2, 2),  # 8 -> 4
+            nn.MaxPool2d(2, 2),  # 8 → 4
+            nn.Dropout(0.5)
         )
 
+        # Classifier
+        self.global_avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.classifier = nn.Sequential(
-            nn.AdaptiveAvgPool2d((1, 1)),
             nn.Flatten(),
-            nn.Linear(512, 256),
+            nn.Linear(256, 128),
             nn.ReLU(inplace=True),
             nn.Dropout(0.5),
-            nn.Linear(256, num_classes)
+            nn.Linear(128, num_classes)
         )
 
     def forward(self, x):
-        x = self.features(x)
-        x = self.classifier(x)
+        """
+        Forward pass.
+
+        Args:
+            x: Input tensor of shape (batch, 18, 64, 64)
+
+        Returns:
+            Output logits of shape (batch, 2)
+        """
+        x = self.conv_block1(x)  # (batch, 32, 32, 32)
+        x = self.conv_block2(x)  # (batch, 64, 16, 16)
+        x = self.conv_block3(x)  # (batch, 128, 8, 8)
+        x = self.conv_block4(x)  # (batch, 256, 4, 4)
+
+        x = self.global_avg_pool(x)  # (batch, 256, 1, 1)
+        x = self.classifier(x)        # (batch, 2)
+
         return x
 
 
-class ResNet18Classifier(nn.Module):
-    """ResNet-18 based classifier for binary classification"""
-
-    def __init__(self, in_channels=18, num_classes=2, pretrained=False):
-        super(ResNet18Classifier, self).__init__()
-
-        # Load ResNet-18
-        self.resnet = models.resnet18(pretrained=pretrained)
-
-        # Modify first conv layer to accept custom input channels
-        self.resnet.conv1 = nn.Conv2d(
-            in_channels, 64, kernel_size=7, stride=2, padding=3, bias=False
-        )
-
-        # Modify final fc layer for binary classification
-        num_ftrs = self.resnet.fc.in_features
-        self.resnet.fc = nn.Linear(num_ftrs, num_classes)
-
-    def forward(self, x):
-        return self.resnet(x)
-
-
-class UNetClassifier(nn.Module):
-    """U-Net encoder for classification (using segmentation_models_pytorch)"""
-
-    def __init__(self, in_channels=18, num_classes=2, encoder_name='resnet34'):
-        super(UNetClassifier, self).__init__()
-
-        # Create U-Net model (we'll use only the encoder part)
-        self.unet = smp.Unet(
-            encoder_name=encoder_name,
-            encoder_weights=None,  # Random init for custom input channels
-            in_channels=in_channels,
-            classes=num_classes
-        )
-
-        # Replace decoder with global pooling + classifier
-        # Get encoder output channels
-        encoder_channels = self.unet.encoder.out_channels[-1]
-
-        self.encoder = self.unet.encoder
-        self.classifier = nn.Sequential(
-            nn.AdaptiveAvgPool2d((1, 1)),
-            nn.Flatten(),
-            nn.Linear(encoder_channels, 256),
-            nn.ReLU(inplace=True),
-            nn.Dropout(0.5),
-            nn.Linear(256, num_classes)
-        )
-
-    def forward(self, x):
-        # Extract features using encoder
-        features = self.encoder(x)
-
-        # Use the last (deepest) feature map
-        x = features[-1]
-
-        # Classify
-        x = self.classifier(x)
-        return x
-
-
-def get_model(model_name='simple_cnn', in_channels=18, num_classes=2):
+def count_parameters(model):
     """
-    Factory function to get model by name
+    Count the number of trainable parameters in a model.
 
     Args:
-        model_name: 'simple_cnn', 'resnet18', or 'unet'
-        in_channels: Number of input channels
-        num_classes: Number of output classes
+        model: PyTorch model
 
     Returns:
-        PyTorch model
+        total_params: Total number of trainable parameters
+        trainable_params: Number of trainable parameters
     """
-    if model_name == 'simple_cnn':
-        return SimpleCNN(in_channels, num_classes)
-    elif model_name == 'resnet18':
-        return ResNet18Classifier(in_channels, num_classes)
-    elif model_name == 'unet':
-        return UNetClassifier(in_channels, num_classes, encoder_name='resnet34')
-    else:
-        raise ValueError(f"Unknown model name: {model_name}")
+    total_params = sum(p.numel() for p in model.parameters())
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    return total_params, trainable_params
 
 
 if __name__ == "__main__":
-    # Test models
-    batch_size = 2
-    in_channels = 18  # Updated: 2 time periods × (7 S2 + 2 S1) = 18 channels
-    patch_size = 64
+    # Test SimpleCNN
+    print("=" * 60)
+    print("Testing SimpleCNN")
+    print("=" * 60)
 
-    x = torch.randn(batch_size, in_channels, patch_size, patch_size)
+    # Create model
+    model = SimpleCNN(in_channels=18, num_classes=2)
 
-    print("Testing SimpleCNN...")
-    model = SimpleCNN(in_channels=in_channels)
-    out = model(x)
-    print(f"  Input: {x.shape}, Output: {out.shape}")
+    # Count parameters
+    total_params, trainable_params = count_parameters(model)
+    print(f"\nTotal parameters: {total_params:,}")
+    print(f"Trainable parameters: {trainable_params:,}")
+    print(f"Parameters in millions: {total_params / 1e6:.2f}M")
 
-    print("\nTesting ResNet18Classifier...")
-    model = ResNet18Classifier(in_channels=in_channels)
-    out = model(x)
-    print(f"  Input: {x.shape}, Output: {out.shape}")
+    # Test forward pass
+    batch_size = 4
+    dummy_input = torch.randn(batch_size, 18, 64, 64)
+    print(f"\nInput shape: {dummy_input.shape}")
 
-    print("\nTesting UNetClassifier...")
-    model = UNetClassifier(in_channels=in_channels)
-    out = model(x)
-    print(f"  Input: {x.shape}, Output: {out.shape}")
+    output = model(dummy_input)
+    print(f"Output shape: {output.shape}")
+
+    # Test with different batch sizes
+    print("\n" + "=" * 60)
+    print("Testing different batch sizes")
+    print("=" * 60)
+    for bs in [1, 8, 16, 24]:
+        dummy_input = torch.randn(bs, 18, 64, 64)
+        output = model(dummy_input)
+        print(f"Batch size {bs:2d}: Input {tuple(dummy_input.shape)} → Output {tuple(output.shape)}")
+
+    print("\n✓ SimpleCNN test passed!")

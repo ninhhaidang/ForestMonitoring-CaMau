@@ -13,6 +13,11 @@ PATCHES_DIR = DATA_DIR / "patches"
 MODELS_DIR = PROJECT_ROOT / "models"
 FIGURES_DIR = PROJECT_ROOT / "figures"
 LOGS_DIR = PROJECT_ROOT / "logs"
+RESULTS_DIR = PROJECT_ROOT / "results"
+
+# Create directories if they don't exist
+for dir_path in [PATCHES_DIR, MODELS_DIR, FIGURES_DIR, LOGS_DIR, RESULTS_DIR]:
+    dir_path.mkdir(parents=True, exist_ok=True)
 
 # Data paths
 GROUND_TRUTH_CSV = RAW_DATA_DIR / "ground_truth" / "Training_Points_CSV.csv"
@@ -23,24 +28,37 @@ SENTINEL2_2025 = RAW_DATA_DIR / "sentinel-2" / "S2_2025_02_28.tif"
 FOREST_BOUNDARY = RAW_DATA_DIR / "boundary" / "forest_boundary.shp"
 
 # Model parameters
-PATCH_SIZE = 64  # Size of patches to extract (64x64 or 128x128)
+PATCH_SIZE = 64  # Size of patches to extract (64x64)
 
-# Optimized for GTX 1060 5GB + 64GB DDR3 RAM
-BATCH_SIZE = 12  # Optimized for 5GB VRAM (can increase to 16 if no OOM)
-NUM_WORKERS = 12  # Leverage 64GB RAM for data loading
-PREFETCH_FACTOR = 3  # Prefetch more batches with large RAM
+# ============================================================
+# Phase 1: Baseline Models Configuration
+# ============================================================
+
+# CNN Configuration - Optimized for GTX 1060 6GB + 64GB RAM
+BATCH_SIZE = 24  # Optimized for Simple CNN (~1.2M params) with 6GB VRAM
+NUM_WORKERS = 4  # Enough for cached dataset in RAM
+PREFETCH_FACTOR = 2  # Prefetch 2 batches per worker
 PIN_MEMORY = True  # Pin memory for faster GPU transfer
+PERSISTENT_WORKERS = True  # Keep workers alive between epochs
 
 # Gradient accumulation to simulate larger batch size
-ACCUMULATION_STEPS = 3  # Effective batch size = 12 * 3 = 36
+ACCUMULATION_STEPS = 2  # Effective batch size = 24 * 2 = 48
 
-LEARNING_RATE = 1e-4
-NUM_EPOCHS = 50
-EARLY_STOPPING_PATIENCE = 10
+# Learning rate and training
+LEARNING_RATE = 1e-3  # Start learning rate (will use scheduler)
+NUM_EPOCHS = 100  # Max epochs (early stopping will likely stop earlier)
+EARLY_STOPPING_PATIENCE = 15  # Stop if no improvement for 15 epochs
+WEIGHT_DECAY = 1e-4  # L2 regularization
 
-# Mixed precision training (CRITICAL for 5GB VRAM)
-USE_AMP = True  # Automatic Mixed Precision - saves ~40% VRAM
+# Mixed precision training (saves ~40% VRAM)
+USE_AMP = True  # Automatic Mixed Precision
 TORCH_CUDNN_BENCHMARK = True  # Optimize convolution algorithms
+
+# Random Forest Configuration
+RF_N_ESTIMATORS = 500  # Number of trees
+RF_MAX_DEPTH = 20  # Max depth of trees
+RF_MIN_SAMPLES_SPLIT = 10  # Min samples to split
+RF_N_JOBS = -1  # Use all CPU cores
 
 # Data split
 TRAIN_RATIO = 0.7

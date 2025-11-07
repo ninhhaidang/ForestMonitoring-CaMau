@@ -1,0 +1,27 @@
+{
+  "rf": {
+    "deforestation_pixels": 7805939,
+    "deforestation_area_ha": 78059.39,
+    "deforestation_pct": 45.87296954988898,
+    "inference_time_min": 2.1169200857480366
+  },
+  "cnn": {
+    "deforestation_pixels": 2793611,
+    "deforestation_area_ha": 27936.11,
+    "deforestation_pct": 16.417144988864877,
+    "inference_time_min": 0.40793519020080565
+  },
+  "agreement": {
+    "agree_both_no_def": 8953015,
+    "agree_both_def": 2536141,
+    "total_agreement": 11489156,
+    "agreement_pct": 67.51804021808577,
+    "disagree_rf_no_cnn_yes": 257470,
+    "disagree_rf_yes_cnn_no": 5269798,
+    "total_disagreement": 5527268,
+    "disagreement_pct": 32.48195978191423
+  },
+  "forest_area_ha": 170164.24,
+  "forest_area_km2": 1701.6424,
+  "threshold": 0.5
+}
