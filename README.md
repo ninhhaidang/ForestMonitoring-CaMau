@@ -15,7 +15,7 @@ Dự án này phát triển một hệ thống tự động giám sát biến đ
 
 - Phát triển mô hình machine learning để phát hiện mất rừng từ ảnh vệ tinh đa thời gian
 - Kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2) để nâng cao độ chính xác
-- So sánh hiệu suất giữa phương pháp truyền thống (Random Forest) và Deep Learning (CNN)
+- Xây dựng baseline với Random Forest, sau đó mở rộng sang Deep Learning
 - Tạo bản đồ phân loại toàn bộ khu vực rừng tỉnh Cà Mau
 
 ---
@@ -29,56 +29,38 @@ flowchart TD
     A --> D[Ground Truth<br/>1,285 points]
     A --> E[Boundary<br/>Shapefile]
 
-    B --> F[🔧 Tiền xử lý]
+    B --> F[🔧 Feature Engineering]
     C --> F
     E --> F
+    D --> F
 
-    F --> G[Clip Outliers<br/>Mask NoData]
-    G --> H[Apply Boundary Mask]
-    H --> I[Normalize Values]
+    F --> G[27 Features:<br/>S2: 7×3=21<br/>S1: 2×3=6]
+    G --> H[Before + After + Delta]
 
-    I --> J[📦 Patch Extraction]
-    D --> J
+    H --> I[📊 Extract Training Data]
+    I --> J[Data Split<br/>70/15/15]
 
-    J --> K[18-channel patches<br/>64×64 pixels<br/>1,285 samples]
+    J --> K[🌲 Random Forest<br/>100 trees, 27 features]
 
-    K --> L[📊 Data Split]
-    L --> M[Train: 899<br/>70%]
-    L --> N[Val: 193<br/>15%]
-    L --> O[Test: 193<br/>15%]
+    K --> L[📈 Model Evaluation]
+    L --> M[Test Set Metrics:<br/>Accuracy, Precision,<br/>Recall, F1, AUC]
 
-    M --> P[🌲 Random Forest<br/>Baseline ML]
-    M --> Q[🧠 Simple CNN<br/>Deep Learning]
+    M --> N[🗺️ Full Area Inference]
+    N --> O[Binary Map + Probability Map]
 
-    N --> P
-    N --> Q
+    O --> P[📐 Vectorization]
+    P --> Q[Deforestation Polygons]
 
-    P --> R[📈 Evaluation]
-    Q --> R
-
-    O --> R
-
-    R --> S[Metrics:<br/>Accuracy, Precision,<br/>Recall, F1, AUC]
-
-    S --> T{Best Model?}
-
-    T -->|RF better| U[Use RF for inference]
-    T -->|CNN better| V[Use CNN for inference]
-
-    U --> W[🗺️ Full Area Inference]
-    V --> W
-
-    W --> X[Deforestation Map<br/>Cà Mau Province]
+    Q --> R[📊 Final Outputs:<br/>Maps + Vectors + Metrics]
 
     style A fill:#e1f5ff
     style F fill:#fff4e1
-    style J fill:#f0e1ff
-    style L fill:#e1ffe1
-    style P fill:#ffe1e1
-    style Q fill:#ffe1e1
-    style R fill:#fff9e1
-    style W fill:#e1f5e1
-    style X fill:#90EE90
+    style G fill:#f0e1ff
+    style J fill:#e1ffe1
+    style K fill:#ffe1e1
+    style L fill:#fff9e1
+    style N fill:#e1f5e1
+    style R fill:#90EE90
 ```
 
 ---
@@ -132,18 +114,31 @@ flowchart TD
 │   └── patches/                    # Patches đã trích xuất
 │
 ├── src/                            # Source code
-│   ├── config.py                   # Cấu hình chung
-│   ├── utils.py                    # Hàm tiện ích
-│   ├── preprocessing.py            # Tiền xử lý dữ liệu
-│   ├── dataset.py                  # PyTorch Dataset (nếu có)
-│   └── (các module khác sẽ được thêm)
+│   ├── common/                     # Shared modules
+│   │   ├── config.py               # Configuration
+│   │   ├── data_loader.py          # Data loading
+│   │   ├── feature_engineering.py  # Feature extraction
+│   │   ├── evaluation.py           # Model evaluation
+│   │   ├── visualization.py        # Plotting
+│   │   └── utils.py                # Utilities
+│   │
+│   ├── random_forest/              # Random Forest model
+│   │   ├── train.py                # Training
+│   │   ├── predict.py              # Prediction
+│   │   └── vectorization.py        # Vectorization
+│   │
+│   ├── main.py                     # Pipeline entry point
+│   └── README.md                   # Source code documentation
 │
 ├── notebooks/                      # Jupyter notebooks
-│   └── 01_data_exploration.ipynb   # Khám phá dữ liệu
+│   └── random_forest.ipynb         # Random Forest pipeline notebook
 │
-├── models/                         # Thư mục lưu trained models
-├── figures/                        # Visualizations và plots
-├── logs/                           # Training logs
+├── results/                        # Kết quả outputs
+│   ├── rasters/                    # Classification maps
+│   ├── vectors/                    # Deforestation polygons
+│   ├── models/                     # Trained models
+│   ├── data/                       # Metrics và features
+│   └── plots/                      # Visualizations
 │
 ├── environment.yml                 # Conda environment
 ├── requirements.txt                # Python dependencies
@@ -201,339 +196,367 @@ python -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA av
 
 ## 🚀 Sử dụng
 
-### 1. Khám phá dữ liệu (Data Exploration)
+### Option 1: Chạy toàn bộ Pipeline (Khuyến nghị)
 
-Chạy notebook để khám phá và visualize dữ liệu:
-
+**Chạy qua Python script:**
 ```bash
-cd notebooks
-jupyter notebook 01_data_exploration.ipynb
+cd src
+python main.py
 ```
 
-**Notebook này sẽ:**
-- Load và phân tích ground truth points
-- Visualize Sentinel-1 và Sentinel-2 imagery
-- Kiểm tra value ranges và data quality
-- Trích xuất và hiển thị sample patches
-- Tạo các visualizations trong folder `figures/`
-
-**Outputs:**
-- Các visualizations sẽ được lưu trong folder `figures/`
-- Bao gồm: band comparisons, ground truth visualization, sample patches, etc.
-
-### 2. Tiền xử lý dữ liệu (Data Preprocessing)
-
-Trích xuất patches từ toàn bộ ground truth points:
-
+**Hoặc chạy qua Jupyter Notebook:**
 ```bash
-python -c "from src.preprocessing import create_patches_dataset; create_patches_dataset(patch_size=64)"
+jupyter lab
+# Mở file: notebooks/random_forest.ipynb
+# Chạy tất cả cells từ trên xuống
 ```
 
-**Output:**
-- `data/patches/patches_64x64.pkl` - File chứa patches và labels
+**Pipeline sẽ thực hiện 9 bước:**
+1. ⚙️ Setup & Load Data (~2-5 phút)
+2. 🔧 Feature Engineering (~1-2 phút)
+3. 📊 Extract Training Data (~30 giây)
+4. 🌲 Train Random Forest (~3-5 phút)
+5. 📈 Model Evaluation (~2-3 phút)
+6. 🗺️ Predict Full Raster (~5-10 phút)
+7. 📐 Vectorization (~2-5 phút, optional)
+8. 📊 Visualization (~1-2 phút)
+9. ✅ Summary & Results
 
-### 3. Training mô hình
+**Tổng thời gian:** ~15-30 phút
 
-> **Status:** Script training và pipeline chưa được hoàn thiện. Sẽ được develop sau khi xác định kiến trúc model.
+---
 
-### 4. Inference (Dự đoán toàn bộ khu vực)
+### Option 2: Chạy từng bước riêng lẻ
 
-> **Status:** Script inference sẽ được develop sau khi hoàn thành training và chọn được best model.
+```bash
+cd src
+
+# Bước 1-2: Load data
+python step1_2_setup_and_load_data.py
+
+# Bước 3: Feature engineering
+python step3_feature_engineering.py
+
+# Bước 4: Extract training data
+python step4_extract_training_data.py
+
+# Bước 5: Train model
+python step5_train_random_forest.py
+
+# Bước 6: Evaluate model
+python step6_model_evaluation.py
+
+# Bước 7: Predict full raster
+python step7_predict_full_raster.py
+
+# Bước 8: Vectorization (optional)
+python step8_vectorization.py
+
+# Bước 9: Visualization
+python step9_visualization.py
+```
+
+---
+
+### Skip Vectorization (Nhanh hơn)
+
+Nếu không cần vector polygons, skip bước 8:
+
+```bash
+python main.py --skip-vectorization
+```
+
+Hoặc trong notebook:
+```python
+RUN_VECTORIZATION = False
+```
+
+---
+
+### Output Files
+
+Sau khi chạy xong, kiểm tra folder `results/`:
+
+```
+results/
+├── rasters/
+│   ├── rf_classification.tif               # Binary classification map
+│   └── rf_probability.tif                  # Probability map
+├── vectors/
+│   └── rf_deforestation_polygons.geojson   # Deforestation polygons (nếu có)
+├── models/
+│   └── rf_model.pkl                        # Trained Random Forest model
+├── data/
+│   ├── rf_training_data.csv                # Training features
+│   ├── rf_feature_importance.csv           # Feature importance rankings
+│   └── rf_evaluation_metrics.json          # Evaluation metrics
+└── plots/
+    ├── rf_confusion_matrices.png           # Confusion matrices
+    ├── rf_roc_curve.png                    # ROC curve
+    ├── rf_feature_importance.png           # Feature importance plot
+    ├── rf_classification_maps.png          # Classification maps
+    └── rf_cv_scores.png                    # Cross-validation scores
+```
 
 ---
 
 ## 🧠 Mô hình và Phương pháp
 
-### Input Data Specification
-- **18 channels** từ 2 kỳ ảnh:
-  - **Kỳ 2024:** 7 bands S2 + 2 bands S1 = 9 channels
-  - **Kỳ 2025:** 7 bands S2 + 2 bands S1 = 9 channels
-- **Patch size:** 64×64 pixels
-- **Channel order:**
-  ```
-  [0-6]:   S2 2024 (B4, B8, B11, B12, NDVI, NBR, NDMI)
-  [7-8]:   S1 2024 (VV, VH)
-  [9-15]:  S2 2025 (B4, B8, B11, B12, NDVI, NBR, NDMI)
-  [16-17]: S1 2025 (VV, VH)
-  ```
+### Feature Engineering - 27 Features
+
+Thay vì sử dụng patches, dự án hiện tại trích xuất **27 features pixel-wise** từ dữ liệu viễn thám:
+
+**Cấu trúc features:**
+```
+Sentinel-2 (21 features):
+├── Before (7):  B4, B8, B11, B12, NDVI, NBR, NDMI
+├── After (7):   B4, B8, B11, B12, NDVI, NBR, NDMI
+└── Delta (7):   ΔB4, ΔB8, ΔB11, ΔB12, ΔNDVI, ΔNBR, ΔNDMI
+
+Sentinel-1 (6 features):
+├── Before (2):  VV, VH
+├── After (2):   VV, VH
+└── Delta (2):   ΔVV, ΔVH
+
+TỔNG: 27 features
+```
+
+**Lợi ích của cách tiếp cận này:**
+- ✅ Khai thác thông tin temporal (delta features)
+- ✅ Đơn giản, dễ train và interpret
+- ✅ Không cần GPU cho Random Forest
+- ✅ Feature importance giúp hiểu model behavior
 
 ---
 
-### 🎯 Phase 1: Baseline Models
+## 🌲 Random Forest Approach (Current)
 
-Dự án bắt đầu với 2 models cơ bản để thiết lập baseline và so sánh giữa phương pháp truyền thống và deep learning.
+### Pipeline 9 Bước
 
-#### 🌲 Model 1: Random Forest (Baseline Traditional ML)
+**Quy trình xử lý:**
 
-**Mục đích:** Baseline để đánh giá liệu deep learning có thực sự vượt trội hơn phương pháp truyền thống không.
+1. **Setup & Configuration** - Cấu hình paths và parameters
+2. **Load Data** - Load Sentinel-1, Sentinel-2, Ground Truth, Boundary
+3. **Feature Engineering** - Tạo 27 features (before + after + delta)
+4. **Extract Training Data** - Trích xuất features tại ground truth points
+5. **Train Random Forest** - Train model với 100 trees
+6. **Model Evaluation** - Đánh giá trên validation và test sets
+7. **Predict Full Raster** - Dự đoán trên toàn bộ khu vực
+8. **Vectorization** - Convert raster sang polygons (optional)
+9. **Visualization** - Tạo plots và save outputs
 
-**Pipeline:**
-```
-18-channel patch (18, 64, 64)
-    ↓
-Feature Extraction (handcrafted):
-  • Per-channel statistics: mean, std, min, max
-    → 18 channels × 4 stats = 72 features
-  • Per-channel percentiles: 25th, 50th, 75th
-    → 18 channels × 3 = 54 features
-  • Temporal difference features (2025 - 2024):
-    → Mean diff, Std diff per band = ~18 features
-  • Total: ~144 features
-    ↓
-Random Forest Classifier
-  • n_estimators: 500 trees
-  • max_depth: 20
-  • min_samples_split: 10
-  • class_weight: balanced (nếu cần)
-    ↓
-Binary Classification (0: No loss, 1: Deforestation)
-```
-
-**Đặc điểm:**
-- ⏱️ **Training time:** Vài phút
-- 💾 **Memory:** Minimal (~100MB)
-- 📊 **Interpretable:** Feature importance có thể visualize
-- 🎯 **Expected accuracy:** 75-85% (estimation)
-
-**Thư viện:** `scikit-learn`
-
----
-
-#### 🧠 Model 2: Simple CNN (Baseline Deep Learning)
-
-**Mục đích:** Baseline deep learning để học features tự động từ raw patches.
-
-**Architecture:**
+**Cấu hình Random Forest:**
 ```python
-SimpleCNN(
-  # Input: (batch, 18, 64, 64)
-
-  # Conv Block 1
-  Conv2d(18, 32, kernel_size=3, padding=1)
-  BatchNorm2d(32)
-  ReLU()
-  MaxPool2d(2, 2)  # → (32, 32, 32)
-  Dropout(0.3)
-
-  # Conv Block 2
-  Conv2d(32, 64, kernel_size=3, padding=1)
-  BatchNorm2d(64)
-  ReLU()
-  MaxPool2d(2, 2)  # → (64, 16, 16)
-  Dropout(0.3)
-
-  # Conv Block 3
-  Conv2d(64, 128, kernel_size=3, padding=1)
-  BatchNorm2d(128)
-  ReLU()
-  MaxPool2d(2, 2)  # → (128, 8, 8)
-  Dropout(0.4)
-
-  # Conv Block 4
-  Conv2d(128, 256, kernel_size=3, padding=1)
-  BatchNorm2d(256)
-  ReLU()
-  MaxPool2d(2, 2)  # → (256, 4, 4)
-  Dropout(0.5)
-
-  # Classifier
-  GlobalAvgPool2d()  # → (256,)
-  Linear(256, 128)
-  ReLU()
-  Dropout(0.5)
-  Linear(128, 2)
-  # Output: (batch, 2) → Softmax
-)
+{
+    'n_estimators': 100,          # 100 decision trees
+    'max_features': 'sqrt',       # √27 ≈ 5 features per split
+    'max_depth': None,            # Unlimited depth
+    'class_weight': 'balanced',   # Handle class imbalance
+    'oob_score': True,            # Out-of-bag evaluation
+    'random_state': 42            # Reproducibility
+}
 ```
 
 **Đặc điểm:**
-- 📊 **Parameters:** ~1.2M
-- 💾 **VRAM:** ~2.5-3GB với batch_size=24 (AMP enabled)
-- ⏱️ **Training time:** ~5-10 phút/epoch (với cache in RAM)
-- 🎯 **Expected accuracy:** 80-90% (estimation)
-- 🛡️ **Regularization:** Heavy dropout, BatchNorm, L2 weight decay
+- ⏱️ **Training time:** ~5-10 phút
+- 💾 **Memory:** ~2-5GB RAM
+- 📊 **Interpretable:** Feature importance rankings
+- 🎯 **Target accuracy:** > 85%
+- 💻 **Hardware:** CPU-only (không cần GPU)
 
-**Tại sao Simple CNN:**
-- ✅ **Dataset nhỏ (899 training samples):** Model đơn giản chống overfit tốt
-- ✅ **Lightweight:** Fit thoải mái trong GTX 1060 6GB
-- ✅ **Baseline tốt:** Dễ train, dễ debug, dễ so sánh
-- ✅ **Proven:** 4-layer CNN đủ cho binary classification
+**Output Files:**
+- `rf_classification.tif` - Binary classification map (0/1)
+- `rf_probability.tif` - Probability map (0.0-1.0)
+- `rf_deforestation_polygons.geojson` - Vector polygons
+- `rf_model.pkl` - Trained Random Forest model
+- `rf_feature_importance.csv` - Feature importance rankings
+- `rf_evaluation_metrics.json` - Performance metrics
 
-**Thư viện:** `PyTorch`
-
----
-
-### 📊 So sánh Models
-
-| Aspect | Random Forest | Simple CNN |
-|--------|--------------|------------|
-| **Approach** | Traditional ML | Deep Learning |
-| **Features** | Handcrafted (144) | Learned automatically |
-| **Parameters** | ~500 trees | ~1.2M weights |
-| **Training Time** | ~5 phút | ~50-100 phút (10 epochs) |
-| **VRAM** | N/A (CPU only) | ~3GB |
-| **Interpretability** | ⭐⭐⭐⭐⭐ High | ⭐⭐ Low |
-| **Scalability** | ⭐⭐ Limited | ⭐⭐⭐⭐ Good |
-| **Expected Acc** | 75-85% | 80-90% |
+**Thư viện:** `scikit-learn`, `rasterio`, `geopandas`
 
 ---
 
-### 🔮 Future Phases (nếu Phase 1 thành công)
+## 🔮 Deep Learning Approach (Future Work)
 
-Nếu Phase 1 cho kết quả tốt, sẽ thử nghiệm thêm:
-- **Phase 2:** Siamese Network (chuyên biệt cho change detection)
-- **Phase 3:** ResNet18, EfficientNet-B0 (nếu cần capacity cao hơn)
+Sau khi hoàn thành và đánh giá Random Forest baseline, dự án sẽ mở rộng sang Deep Learning để so sánh performance.
+
+### Kế hoạch Deep Learning
+
+**Phase 2: CNN-based Approaches**
+
+Các kiến trúc đang cân nhắc:
+
+1. **Simple CNN** - Baseline deep learning
+   - 3-4 conv layers
+   - Input: Multi-temporal patches
+   - Target: Binary classification
+   - Parameters: ~1-2M
+   - Training time: 1-2 giờ trên GTX 1060
+
+2. **U-Net** - Semantic segmentation
+   - Encoder-decoder architecture
+   - Pixel-wise predictions
+   - Better spatial context
+   - Parameters: ~5-10M
+
+3. **Siamese Network** - Change detection specialist
+   - Twin networks cho before/after
+   - Distance learning
+   - Specialized for temporal analysis
+
+**Lý do chưa implement:**
+- ✅ Cần baseline solid với Random Forest trước
+- ✅ Đánh giá xem deep learning có cần thiết không
+- ✅ Nếu RF đạt >90% accuracy, có thể không cần CNN
+- ✅ Dataset nhỏ (1,285 samples) → risk of overfitting với deep learning
+
+**Next Steps:**
+1. Hoàn thành Random Forest evaluation
+2. Analyze feature importance
+3. Nếu RF accuracy < 85%, implement CNN
+4. So sánh RF vs CNN performance
+5. Chọn best model cho production
 
 ---
 
 ## ⚙️ Training Configuration
 
-### Configuration cho Simple CNN
+### Random Forest Configuration
 
-#### ✅ Đã xác định:
+**Model Parameters:**
+```python
+RF_PARAMS = {
+    'n_estimators': 100,           # Số lượng decision trees
+    'max_features': 'sqrt',        # Features per split: √27 ≈ 5
+    'max_depth': None,             # Không giới hạn độ sâu
+    'min_samples_split': 2,        # Min samples để split node
+    'min_samples_leaf': 1,         # Min samples ở leaf node
+    'bootstrap': True,             # Bootstrap sampling
+    'oob_score': True,             # Out-of-bag score
+    'class_weight': 'balanced',    # Xử lý class imbalance
+    'n_jobs': -1,                  # Dùng tất cả CPU cores
+    'random_state': 42             # Reproducibility
+}
+```
 
-**Data Configuration:**
-- **Data split:** 70% train (899), 15% val (193), 15% test (193)
-- **Cache strategy:** Load toàn bộ 1,285 patches vào RAM (~380MB)
-- **Data augmentation:** TBD (có thể thêm RandomFlip, RandomRotation nếu cần)
+**Data Split Configuration:**
+```python
+TRAIN_TEST_SPLIT = {
+    'train_size': 0.70,      # 70% training (~900 samples)
+    'val_size': 0.15,        # 15% validation (~193 samples)
+    'test_size': 0.15,       # 15% test (~192 samples)
+    'stratify': True,        # Giữ class distribution
+    'random_state': 42       # Reproducibility
+}
+```
 
-**Model Training:**
-- **Batch size:** 24 (tối ưu cho Simple CNN với GTX 1060 6GB)
-- **Mixed Precision (AMP):** Enabled - Tiết kiệm ~40% VRAM, tăng tốc training
-- **Gradient Accumulation:** 2 steps → Effective batch size = 48
+**Cross-Validation:**
+- **Method:** Stratified K-Fold
+- **K:** 5 folds
+- **Metrics:** Accuracy, Precision, Recall, F1-Score, AUC
 
-**Optimization:**
-- **Optimizer:** Adam hoặc AdamW (TBD sau thử nghiệm)
-- **Learning rate:** 1e-3 → 1e-4 (sẽ grid search)
-- **Weight decay (L2):** 1e-4 (chống overfit)
-- **Scheduler:** ReduceLROnPlateau hoặc CosineAnnealing (TBD)
-
-**Regularization:**
-- **Dropout:** 0.3 → 0.5 (progressive, đã có trong architecture)
-- **BatchNorm:** Enabled trong mọi conv blocks
-- **Early stopping:** Patience = 10-15 epochs
-
-**Training Duration:**
-- **Max epochs:** 50-100 (hoặc đến khi early stopping)
-- **Validation frequency:** Mỗi epoch
-
-**Loss Function:**
-- **Primary:** CrossEntropyLoss
-- **Alternative:** Focal Loss (nếu class imbalance sau augmentation)
-
-#### 📊 Expected Training Resources:
-
-| Resource | Simple CNN | Random Forest |
-|----------|-----------|---------------|
-| **VRAM** | ~2.5-3GB | N/A (CPU only) |
-| **RAM** | ~5-10GB | ~2-5GB |
-| **Time/Epoch** | ~5-10 phút | N/A |
-| **Total Time** | ~2-4 giờ (20-40 epochs) | ~5-10 phút |
-
-### Configuration cho Random Forest
-
-**Không cần GPU training configuration.** RF sẽ được train trên CPU với:
-- n_estimators: 500
-- max_depth: 20
-- min_samples_split: 10
-- n_jobs: -1 (dùng all CPU cores)
+**Hardware Requirements:**
+- **CPU:** Multi-core (sử dụng n_jobs=-1)
+- **RAM:** ~2-5GB
+- **GPU:** Không cần
+- **Training time:** ~5-10 phút (toàn bộ pipeline ~15-30 phút)
 
 ---
 
-## 🔬 Training Process (Phase 1)
+## 🔬 Training Process
 
-### Flowchart chi tiết:
+### Random Forest Workflow:
 
 ```mermaid
-flowchart LR
-    A[📦 Patches Dataset<br/>1,285 samples] --> B{Split Data<br/>70/15/15}
+flowchart TD
+    A[📂 Load Data<br/>S1, S2, GT, Boundary] --> B[🔧 Feature Engineering<br/>27 features]
 
-    B --> C[🎓 Train Set<br/>899 samples]
-    B --> D[✅ Val Set<br/>193 samples]
-    B --> E[🧪 Test Set<br/>193 samples]
+    B --> C[📊 Extract at GT Points<br/>1,285 samples]
 
-    C --> F1[🌲 Random Forest<br/>Training]
-    C --> F2[🧠 Simple CNN<br/>Training]
+    C --> D{Split Data<br/>Stratified}
 
-    F1 --> G1[Feature<br/>Extraction<br/>144 features]
-    G1 --> H1[RF Model<br/>500 trees]
+    D --> E[🎓 Train<br/>70% = 900]
+    D --> F[✅ Val<br/>15% = 193]
+    D --> G[🧪 Test<br/>15% = 192]
 
-    F2 --> G2[Mini-batch<br/>BS=24, AMP]
-    G2 --> H2[CNN Forward<br/>+ Backprop]
-    H2 --> I2{Epoch<br/>Complete?}
+    E --> H[🌲 Train RF<br/>100 trees<br/>27 features]
 
-    I2 -->|No| G2
-    I2 -->|Yes| J2[Validate<br/>on Val Set]
+    H --> I[📈 Validation<br/>Metrics]
+    F --> I
 
-    D --> J1[Validate RF]
-    D --> J2
+    I --> J{Accuracy<br/>> 85%?}
 
-    H1 --> J1
+    J -->|Yes| K[🧪 Test Evaluation]
+    J -->|No| L[Tune Hyperparameters]
+    L --> H
 
-    J1 --> K1[RF Metrics:<br/>Acc, F1, AUC]
-    J2 --> K2[CNN Metrics:<br/>Acc, F1, AUC]
+    G --> K
 
-    K2 --> L2{Early<br/>Stop?}
-    L2 -->|No, Continue| G2
-    L2 -->|Yes| M2[Best CNN<br/>Model]
+    K --> M[📊 5-Fold CV<br/>Stability Check]
 
-    K1 --> M1[Final RF<br/>Model]
-    M2 --> N[📊 Final Evaluation<br/>on Test Set]
-    M1 --> N
+    M --> N[🗺️ Predict Full Raster<br/>Binary + Probability]
 
-    E --> N
+    N --> O[📐 Vectorization<br/>Polygons]
 
-    N --> O{Compare<br/>Performance}
+    O --> P[💾 Save Outputs<br/>Maps + Model + Metrics]
 
-    O --> P1[RF Results:<br/>Acc, Precision,<br/>Recall, F1, AUC,<br/>Confusion Matrix]
-    O --> P2[CNN Results:<br/>Acc, Precision,<br/>Recall, F1, AUC,<br/>Confusion Matrix]
+    P --> Q{RF Good<br/>Enough?}
 
-    P1 --> Q[📝 Analysis &<br/>Report]
-    P2 --> Q
-
-    Q --> R{Decision}
-    R -->|CNN significantly better| S1[✅ Use CNN<br/>Proceed Phase 2]
-    R -->|RF comparable| S2[✅ Use RF<br/>ML sufficient]
-    R -->|Both good| S3[✅ Ensemble<br/>RF + CNN]
+    Q -->|Yes, >90%| R[✅ Production Ready]
+    Q -->|No, <85%| S[🔮 Try Deep Learning]
 
     style A fill:#e1f5ff
-    style C fill:#ffe1e1
-    style D fill:#fff4e1
-    style E fill:#e1ffe1
-    style F1 fill:#d4f1d4
-    style F2 fill:#ffd4d4
-    style M1 fill:#90EE90
-    style M2 fill:#FFB6C1
-    style N fill:#FFE4B5
-    style Q fill:#DDA0DD
-    style S1 fill:#98FB98
-    style S2 fill:#98FB98
-    style S3 fill:#98FB98
+    style B fill:#fff4e1
+    style H fill:#ffe1e1
+    style K fill:#e1ffe1
+    style N fill:#f0e1ff
+    style P fill:#90EE90
+    style R fill:#98FB98
+    style S fill:#FFB6C1
 ```
 
 ---
 
 ## 📈 Kết quả
 
-> **Status:** Đang trong quá trình thử nghiệm và training models.
+### Evaluation Metrics
 
-### Metrics
+Mô hình Random Forest được đánh giá qua các metrics sau:
 
-Các metrics đánh giá sẽ bao gồm:
-- **Accuracy:** Độ chính xác tổng thể
+**Classification Metrics:**
+- **Accuracy:** Độ chính xác tổng thể (target: >85%)
 - **Precision:** Độ chính xác của class "Mất rừng"
 - **Recall:** Khả năng phát hiện mất rừng
 - **F1-Score:** Trung bình điều hòa của Precision và Recall
-- **Confusion Matrix:** Ma trận nhầm lẫn
 - **ROC-AUC:** Diện tích dưới đường cong ROC
 
-### Kết quả so sánh models
+**Robustness Check:**
+- **5-Fold Cross Validation:** Đánh giá độ ổn định
+- **Out-of-Bag Score:** OOB evaluation (RF built-in)
+- **Confusion Matrix:** Phân tích chi tiết lỗi phân loại
 
-(Sẽ được cập nhật sau khi hoàn thành training và evaluation)
+**Feature Analysis:**
+- **Feature Importance Rankings:** Top 20 features quan trọng nhất
+- **Temporal vs Spectral:** So sánh delta features vs before/after
 
-### Deforestation Map
+### Output Products
 
-(Bản đồ phân loại toàn bộ khu vực rừng Cà Mau sẽ được tạo sau khi chọn được best model)
+**1. Deforestation Maps:**
+- Binary classification map (0 = No loss, 1 = Deforestation)
+- Probability map (0.0 - 1.0, confidence scores)
+- GeoTIFF format với đầy đủ metadata
+
+**2. Vector Data:**
+- Deforestation polygons (GeoJSON)
+- Area statistics (m² và hectares)
+- Ready để integrate vào GIS
+
+**3. Model Artifacts:**
+- Trained Random Forest model (.pkl)
+- Feature importance rankings
+- Evaluation metrics (JSON + CSV)
+
+> **Status:** Kết quả chi tiết sẽ được cập nhật sau khi hoàn thành training và evaluation pipeline
 
 ---
 
@@ -560,125 +583,84 @@ Các metrics đánh giá sẽ bao gồm:
 
 ---
 
-## 🔧 Tối ưu hóa cho GTX 1060 6GB + 64GB RAM
+## 🔧 Tối ưu hóa cho Phần cứng
 
-Dự án được tối ưu hóa đặc biệt cho cấu hình phần cứng hiện có.
+Dự án Random Forest được tối ưu hóa cho cấu hình phần cứng hiện có.
 
-### GPU Optimization (GTX 1060 6GB) - Simple CNN:
+### CPU Optimization (Random Forest):
 
-#### Memory Optimization:
-- **Mixed Precision Training (AMP):** ✅ Enabled
-  - Giảm ~40% VRAM usage (float16 thay vì float32)
-  - Tăng tốc training ~20-30%
-  - Không ảnh hưởng độ chính xác kết quả
+**Multi-threading:**
+- **n_jobs = -1:** Sử dụng tất cả CPU cores
+- **Parallel tree building:** Mỗi tree được train độc lập
+- **Expected speedup:** Linear với số cores (4-8 cores → 4-8x faster)
 
-- **Batch size = 24:**
-  - Tối ưu cho Simple CNN (~1.2M params)
-  - VRAM usage: ~2.5-3GB / 6GB → còn dư ~50%
-  - Thoải mái cho OS + Chrome + VSCode
-
-- **Gradient Accumulation = 2 steps:**
-  - Effective batch size = 48
-  - Giúp training ổn định hơn với dataset nhỏ (899 training samples)
-  - Trade-off: chậm hơn ~15-20% nhưng accuracy tốt hơn
-
-#### Speed Optimization:
-- **cuDNN autotuner:** Enabled để tìm conv algorithms nhanh nhất
-- **TF32 precision:** Enabled trên Ampere/Ada GPUs (nếu upgrade sau)
-
-#### VRAM Breakdown (Simple CNN):
-```
-Model weights:       ~5 MB    (1.2M params × 4 bytes)
-Optimizer states:    ~10 MB   (Adam có 2 states)
-Batch activations:   ~800 MB  (24 samples × 18ch × 64×64)
-Gradients:          ~400 MB
-Misc (cuDNN, etc):  ~800 MB
-────────────────────────────
-Total:              ~2.0-2.5 GB / 6 GB (40% usage)
-```
+**Training Speed:**
+- **Feature extraction:** ~1-2 phút (tại 1,285 ground truth points)
+- **RF training:** ~3-5 phút (100 trees)
+- **Full raster prediction:** ~5-10 phút (batch processing)
+- **Total pipeline:** ~15-30 phút (với vectorization)
 
 ---
 
 ### RAM Optimization (64GB DDR3):
 
-#### Data Caching Strategy:
-- **Cache patches trong RAM:** ✅ Recommended
-  - Load toàn bộ 1,285 patches một lần (~380 MB)
-  - Training CỰC NHANH (không đọc disk mỗi epoch)
-  - Epoch time: ~5-10 phút → ~2-3 giây (300x faster!)
-
-#### DataLoader Configuration:
-```python
-DataLoader(
-    dataset=cached_dataset,
-    batch_size=24,
-    shuffle=True,
-    num_workers=4,         # Đủ vì data đã trong RAM
-    pin_memory=True,       # Tăng tốc CPU → GPU transfer
-    prefetch_factor=2,     # Prefetch 2 batches/worker
-    persistent_workers=True # Không kill workers giữa epochs
-)
+**Memory Usage:**
 ```
-
-#### RAM Breakdown:
-```
-Patches cache:       ~380 MB   (1,285 patches)
-PyTorch + CUDA:      ~3 GB
+Sentinel-2 data:     ~7.6 GB  (7 bands × 2 kỳ)
+Sentinel-1 data:     ~2.2 GB  (2 bands × 2 kỳ)
+Feature stack:       ~3.5 GB  (27 features)
+RF model:            ~100 MB  (100 trees)
+Working memory:      ~2 GB
 OS + Background:     ~8 GB
-Browser + IDE:       ~4 GB
 ────────────────────────────
-Total Used:          ~15 GB / 64 GB (25% usage)
-Available:           ~49 GB (dư thừa nhiều!)
+Total Used:          ~23 GB / 64 GB (36% usage)
+Available:           ~41 GB (dư thừa)
 ```
 
----
-
-### Training Speed Estimation:
-
-#### Simple CNN (với cache trong RAM):
-- **Forward pass:** ~50ms (24 samples)
-- **Backward pass:** ~80ms
-- **Total per batch:** ~130ms
-- **Batches per epoch:** 899/24 ≈ 38 batches (với gradient accum = 2 → 19 optimizer steps)
-- **Time per epoch:** ~5-8 phút
-- **Total training (30 epochs):** ~2.5-4 giờ
-
-#### Random Forest (CPU):
-- **Feature extraction:** ~2-3 phút (899 samples)
-- **Training:** ~3-5 phút (500 trees)
-- **Total:** ~5-8 phút
+**Optimization Tips:**
+- ✅ Load data once và reuse
+- ✅ Use batch processing cho full raster prediction
+- ✅ Đóng ứng dụng không cần thiết khi chạy pipeline
+- ✅ Monitor RAM usage với Task Manager
 
 ---
 
 ### Performance Tips:
 
-1. **Để đạt tốc độ tối đa:**
-   - ✅ Cache data trong RAM (đã enable)
-   - ✅ Dùng `pin_memory=True`
-   - ✅ Dùng AMP (đã enable)
-   - ⚠️ Đóng Chrome tabs không cần thiết khi training
-   - ⚠️ Tắt Windows Update khi training
+**1. Tăng tốc độ training:**
+```python
+# Sử dụng all CPU cores
+RF_PARAMS = {
+    'n_jobs': -1,  # -1 = use all cores
+    ...
+}
+```
 
-2. **Monitor trong training:**
-   ```python
-   # Trong training loop
-   nvidia-smi  # Xem VRAM usage
-   htop        # Xem RAM + CPU usage
-   ```
+**2. Giảm memory usage (nếu cần):**
+```python
+# Giảm batch_size trong full raster prediction
+predictor.predict_raster(..., batch_size=5000)  # Thay vì 10000
+```
 
-3. **Nếu OOM (Out of Memory):**
-   - Giảm batch_size: 24 → 20 → 16
-   - Tăng gradient accumulation: 2 → 3
-   - Effective batch size vẫn giữ = 48
+**3. Skip vectorization (nếu không cần):**
+```python
+# Trong main.py hoặc notebook
+RUN_VECTORIZATION = False  # Tiết kiệm ~2-5 phút
+```
+
+**4. Monitor performance:**
+```bash
+# Windows Task Manager: Ctrl+Shift+Esc
+# Xem CPU usage, RAM usage trong tab Performance
+```
 
 ---
 
 ## 📚 Thư viện chính
 
-### Deep Learning & ML:
-- **PyTorch** 2.0+ - Deep learning framework cho Simple CNN
-- **torchvision** - Computer vision utilities và transforms
+### Machine Learning:
 - **scikit-learn** - Random Forest và metrics (Accuracy, Precision, Recall, F1, AUC)
+- **scipy** - Scientific computing và morphological operations
 
 ### Geospatial:
 - **rasterio** - Đọc/ghi GeoTIFF files (Sentinel-1, Sentinel-2)
@@ -697,16 +679,21 @@ Available:           ~49 GB (dư thừa nhiều!)
 ### Utilities:
 - **tqdm** - Progress bars
 - **pyyaml** - Configuration files
-- **tensorboard** (optional) - Training visualization
 
-### Phase 1 Required:
+### Current Requirements:
 ```bash
-# Minimum requirements cho Phase 1
-pip install torch torchvision
-pip install rasterio geopandas
-pip install scikit-learn
+# Cài đặt packages cho Random Forest approach
+pip install scikit-learn scipy
+pip install rasterio geopandas shapely
 pip install numpy pandas
 pip install matplotlib seaborn tqdm
+```
+
+### Future Deep Learning Requirements:
+```bash
+# Sẽ cần khi implement CNN/U-Net (Phase 2)
+pip install torch torchvision
+pip install tensorboard  # Training visualization
 ```
 
 ---
@@ -740,4 +727,15 @@ Dự án này được phát triển cho mục đích nghiên cứu và giáo d�
 
 ---
 
-**Cập nhật lần cuối:** 06/01/2025
+---
+
+## 📚 Tài liệu tham khảo
+
+- [README_SRC.md](README_SRC.md) - Hướng dẫn chi tiết source code
+- [HOW_TO_RUN_NOTEBOOK.md](HOW_TO_RUN_NOTEBOOK.md) - Hướng dẫn chạy Jupyter notebook
+- [notebooks/random_forest.ipynb](notebooks/random_forest.ipynb) - Interactive notebook cho Random Forest pipeline
+
+---
+
+**Cập nhật lần cuối:** 07/01/2025
+**Version:** 2.0 (Random Forest baseline)
