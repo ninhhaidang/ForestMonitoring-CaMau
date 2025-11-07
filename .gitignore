@@ -29,7 +29,18 @@ logs/
 *.pth
 *.pkl
 experiments/**/
-results/**/
+
+# Results folder - keep structure but ignore large output files
+results/rasters/*
+results/vectors/*
+results/models/*
+results/data/*
+results/plots/*
+!results/rasters/.gitkeep
+!results/vectors/.gitkeep
+!results/models/.gitkeep
+!results/data/.gitkeep
+!results/plots/.gitkeep
 
 # Logs
 *.log
