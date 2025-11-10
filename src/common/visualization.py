@@ -438,15 +438,15 @@ def main():
     # Load test data (we need to recreate this)
     logger.info("\nRecreating test data...")
     from step1_2_setup_and_load_data import DataLoader
-    from step3_feature_engineering import FeatureEngineering
+    from common.feature_extraction import FeatureExtraction
     from step4_extract_training_data import TrainingDataExtractor
     from config import FEATURE_NAMES
 
     loader = DataLoader()
     data = loader.load_all()
 
-    engineer = FeatureEngineering()
-    feature_stack, valid_mask = engineer.engineer_features(
+    feature_extractor = FeatureExtraction()
+    feature_stack, valid_mask = feature_extractor.extract_features(
         data['s2_before'],
         data['s2_after'],
         data['s1_before'],

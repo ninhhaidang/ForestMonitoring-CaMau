@@ -270,8 +270,8 @@ class FeatureExtraction:
 
 
 def main():
-    """Main function to test feature engineering"""
-    logger.info("Testing Step 3: Feature Engineering")
+    """Main function to test feature extraction"""
+    logger.info("Testing Step 3: Feature Extraction")
 
     # Import data loader
     from step1_2_setup_and_load_data import DataLoader
@@ -280,11 +280,11 @@ def main():
     loader = DataLoader()
     data = loader.load_all()
 
-    # Create feature engineer
-    engineer = FeatureEngineering()
+    # Create feature extractor
+    extractor = FeatureExtraction()
 
-    # Engineer features
-    feature_stack, valid_mask = engineer.engineer_features(
+    # Extract features
+    feature_stack, valid_mask = extractor.extract_features(
         data['s2_before'],
         data['s2_after'],
         data['s1_before'],
@@ -299,8 +299,8 @@ def main():
     logger.info(f"  - Valid pixels: {summary['valid_pixels']:,}")
     logger.info(f"  - Valid percentage: {summary['valid_percentage']:.2f}%")
 
-    return feature_stack, valid_mask, engineer
+    return feature_stack, valid_mask, extractor
 
 
 if __name__ == "__main__":
-    feature_stack, valid_mask, engineer = main()
+    feature_stack, valid_mask, extractor = main()

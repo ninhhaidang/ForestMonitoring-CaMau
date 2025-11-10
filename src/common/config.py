@@ -38,7 +38,6 @@ BOUNDARY_SHP = BOUNDARY_DIR / "forest_boundary.shp"
 # Output directories
 RESULTS_DIR = PROJECT_ROOT / "results"
 RASTERS_DIR = RESULTS_DIR / "rasters"
-VECTORS_DIR = RESULTS_DIR / "vectors"
 MODELS_DIR = RESULTS_DIR / "models"
 DATA_OUTPUT_DIR = RESULTS_DIR / "data"
 PLOTS_DIR = RESULTS_DIR / "plots"
@@ -130,18 +129,6 @@ CV_CONFIG = {
     'n_splits': 5,           # 5-Fold Cross Validation
     'shuffle': True,         # Shuffle before splitting
     'random_state': 42       # Reproducibility
-}
-
-# ============================================================================
-# VECTORIZATION CONFIGURATION
-# ============================================================================
-
-VECTOR_CONFIG = {
-    'simplify_tolerance': 10,      # Simplify geometry (meters)
-    'min_area': 100,               # Minimum polygon area (m²)
-    'erosion_kernel': 3,           # Morphological erosion kernel size
-    'dilation_kernel': 5,          # Morphological dilation kernel size
-    'output_format': 'GeoJSON'     # Output format (GeoJSON or Shapefile)
 }
 
 # ============================================================================
@@ -240,10 +227,6 @@ OUTPUT_FILES = {
     'classification_raster': RASTERS_DIR / 'rf_classification.tif',
     'probability_raster': RASTERS_DIR / 'rf_probability.tif',
 
-    # Vectors
-    'polygons_geojson': VECTORS_DIR / 'rf_deforestation_polygons.geojson',
-    'polygons_shapefile': VECTORS_DIR / 'rf_deforestation_polygons.shp',
-
     # Models
     'trained_model': MODELS_DIR / 'rf_model.pkl',
 
@@ -279,7 +262,6 @@ def create_output_directories():
     directories = [
         RESULTS_DIR,
         RASTERS_DIR,
-        VECTORS_DIR,
         MODELS_DIR,
         DATA_OUTPUT_DIR,
         PLOTS_DIR
@@ -359,7 +341,6 @@ def print_config_summary(ground_truth_df=None):
 
     print(f"\nOUTPUT DIRECTORIES:")
     print(f"  - Rasters: {RASTERS_DIR}")
-    print(f"  - Vectors: {VECTORS_DIR}")
     print(f"  - Models: {MODELS_DIR}")
     print(f"  - Data: {DATA_OUTPUT_DIR}")
     print(f"  - Plots: {PLOTS_DIR}")

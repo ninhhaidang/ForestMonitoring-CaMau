@@ -18,8 +18,16 @@ build/
 *.tif
 *.tiff
 data/processed/
-data/raw/
 data/patches/
+
+# Raw data - ignore large satellite images but keep boundary files
+data/raw/sentinel-1/*
+data/raw/sentinel-2/*
+data/raw/ground_truth/*.csv
+!data/raw/sentinel-1/.gitkeep
+!data/raw/sentinel-2/.gitkeep
+!data/raw/ground_truth/.gitkeep
+!data/raw/boundary/
 
 # Outputs (large files - do not commit)
 outputs/
@@ -32,15 +40,14 @@ experiments/**/
 
 # Results folder - keep structure but ignore large output files
 results/rasters/*
-results/vectors/*
 results/models/*
 results/data/*
-results/plots/*
 !results/rasters/.gitkeep
-!results/vectors/.gitkeep
 !results/models/.gitkeep
 !results/data/.gitkeep
-!results/plots/.gitkeep
+
+# Plots - commit to GitHub for visualization
+# (plots are small image files, safe to commit)
 
 # Logs
 *.log

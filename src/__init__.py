@@ -11,21 +11,19 @@ __email__ = 'your.email@example.com'
 
 # Import main classes for easy access
 from .step1_2_setup_and_load_data import DataLoader
-from .step3_feature_engineering import FeatureEngineering
+from .common.feature_extraction import FeatureExtraction
 from .step4_extract_training_data import TrainingDataExtractor
 from .step5_train_random_forest import RandomForestTrainer
 from .step6_model_evaluation import ModelEvaluator
 from .step7_predict_full_raster import RasterPredictor
-from .step8_vectorization import Vectorizer
 from .step9_visualization import Visualizer
 
 __all__ = [
     'DataLoader',
-    'FeatureEngineering',
+    'FeatureExtraction',
     'TrainingDataExtractor',
     'RandomForestTrainer',
     'ModelEvaluator',
     'RasterPredictor',
-    'Vectorizer',
     'Visualizer'
 ]

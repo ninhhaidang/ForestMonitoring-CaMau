@@ -3,8 +3,7 @@ Main entry point for Random Forest Deforestation Detection Pipeline
 Cà Mau Province - Sentinel-1 & Sentinel-2
 
 Usage:
-    python main.py                      # Run full pipeline
-    python main.py --skip-vectorization # Skip vectorization step
+    python main.py    # Run full pipeline
 """
 
 import sys
@@ -28,7 +27,6 @@ from common.visualization import Visualizer
 # Import Random Forest modules
 from random_forest.train import RandomForestTrainer, TrainingDataExtractor
 from random_forest.predict import RasterPredictor
-from random_forest.vectorization import Vectorizer
 
 
 class DeforestationDetectionPipeline:
@@ -36,8 +34,7 @@ class DeforestationDetectionPipeline:
     Main pipeline orchestrator for Random Forest deforestation detection
     """
 
-    def __init__(self, skip_vectorization=False):
-        self.skip_vectorization = skip_vectorization
+    def __init__(self):
         self.execution_times = {}
 
     def run(self):
@@ -159,31 +156,9 @@ class DeforestationDetectionPipeline:
         self.execution_times['predict_raster'] = time.time() - step_start
         print(f"\n✓ Full raster prediction completed in {self.execution_times['predict_raster']:.2f} seconds")
 
-        # Step 8: Vectorization (Optional)
-        if not self.skip_vectorization:
-            print("\n" + "="*70)
-            print("STEP 8: VECTORIZATION")
-            print("="*70)
-            step_start = time.time()
-
-            vectorizer = Vectorizer()
-            polygons_gdf = vectorizer.vectorize_and_save(
-                classification_map,
-                data['metadata']['s2_before']['transform'],
-                data['metadata']['s2_before']['crs'],
-                apply_morphology=True,
-                apply_simplification=True
-            )
-
-            self.execution_times['vectorization'] = time.time() - step_start
-            print(f"\n✓ Vectorization completed in {self.execution_times['vectorization']:.2f} seconds")
-        else:
-            print("\n[SKIP] Vectorization skipped as requested")
-            polygons_gdf = None
-
-        # Step 9: Visualization
+        # Step 8: Visualization
         print("\n" + "="*70)
-        print("STEP 9: VISUALIZATION")
+        print("STEP 8: VISUALIZATION")
         print("="*70)
         step_start = time.time()
 
@@ -232,21 +207,8 @@ class DeforestationDetectionPipeline:
 
 def main():
     """Main entry point"""
-    parser = argparse.ArgumentParser(
-        description='Random Forest Deforestation Detection Pipeline'
-    )
-    parser.add_argument(
-        '--skip-vectorization',
-        action='store_true',
-        help='Skip vectorization step (faster execution)'
-    )
-
-    args = parser.parse_args()
-
     # Run pipeline
-    pipeline = DeforestationDetectionPipeline(
-        skip_vectorization=args.skip_vectorization
-    )
+    pipeline = DeforestationDetectionPipeline()
     pipeline.run()
 
 

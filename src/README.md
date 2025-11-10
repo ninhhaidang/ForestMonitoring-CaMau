@@ -16,8 +16,7 @@ src/
 ├── random_forest/                   # Random Forest model
 │   ├── __init__.py
 │   ├── train.py                     # Training pipeline
-│   ├── predict.py                   # Full raster prediction
-│   └── vectorization.py             # Raster to vector conversion
+│   └── predict.py                   # Full raster prediction
 │
 ├── _deprecated/                     # Old files (backup)
 └── main.py                          # Main entry point
@@ -32,13 +31,12 @@ src/
 src/
 ├── config.py
 ├── step1_2_setup_and_load_data.py
-├── step3_feature_engineering.py
+├── common/feature_extraction.py
 ├── step4_extract_training_data.py
 ├── step5_train_random_forest.py
 ├── step6_model_evaluation.py
 ├── step7_predict_full_raster.py
-├── step8_vectorization.py
-├── step9_visualization.py
+├── step8_visualization.py
 └── main.py
 ```
 
@@ -55,8 +53,7 @@ src/
 │
 ├── random_forest/
 │   ├── train.py                     # từ step4_* + step5_*
-│   ├── predict.py                   # từ step7_*
-│   └── vectorization.py             # từ step8_*
+│   └── predict.py                   # từ step7_*
 │
 └── main.py                          # Refactored main.py
 ```
@@ -127,13 +124,6 @@ src/
   - Generate binary + probability maps
   - Save GeoTIFF files
 
-#### `vectorization.py`
-- **Class:** `Vectorizer`
-  - Convert raster to polygons
-  - Morphological operations
-  - Simplify geometries
-  - Save GeoJSON/Shapefile
-
 ---
 
 ## 🚀 Cách sử dụng
@@ -143,11 +133,6 @@ src/
 ```bash
 cd src
 python main.py
-```
-
-**Hoặc skip vectorization:**
-```bash
-python main.py --skip-vectorization
 ```
 
 ### Option 2: Import modules trong Python/Notebook
@@ -161,7 +146,6 @@ from common.evaluation import ModelEvaluator
 # Import RF modules
 from random_forest.train import RandomForestTrainer, TrainingDataExtractor
 from random_forest.predict import RasterPredictor
-from random_forest.vectorization import Vectorizer
 
 # Use them
 loader = DataLoader()
@@ -194,8 +178,7 @@ src/
 │
 ├── random_forest/             # RF (no changes)
 │   ├── train.py
-│   ├── predict.py
-│   └── vectorization.py
+│   └── predict.py
 │
 ├── cnn/                       # NEW: CNN model
 │   ├── __init__.py
