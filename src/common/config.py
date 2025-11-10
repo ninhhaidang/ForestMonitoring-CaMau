@@ -83,10 +83,8 @@ FEATURE_NAMES = (
 )
 
 # Ground Truth configuration
+# Note: total_points and class distribution are read dynamically from CSV
 GROUND_TRUTH_CONFIG = {
-    'total_points': 1285,
-    'class_0': 650,  # No deforestation
-    'class_1': 635,  # Deforestation
     'label_column': 'label',
     'x_column': 'x',
     'y_column': 'y',
@@ -317,8 +315,14 @@ def verify_input_files():
         print("[OK] All required input files exist")
         return True
 
-def print_config_summary():
-    """Print configuration summary"""
+def print_config_summary(ground_truth_df=None):
+    """
+    Print configuration summary
+
+    Args:
+        ground_truth_df: Optional DataFrame with ground truth data.
+                        If provided, will show actual point counts from data.
+    """
     print("\n" + "="*70)
     print("RANDOM FOREST DEFORESTATION DETECTION - CONFIGURATION")
     print("="*70)
@@ -326,9 +330,18 @@ def print_config_summary():
     print(f"  - Total Features: {TOTAL_FEATURES}")
     print(f"  - Sentinel-2 Bands: {S2_BANDS['count']} bands")
     print(f"  - Sentinel-1 Bands: {S1_BANDS['count']} bands")
-    print(f"  - Ground Truth Points: {GROUND_TRUTH_CONFIG['total_points']}")
-    print(f"  - Class 0 (No Deforestation): {GROUND_TRUTH_CONFIG['class_0']}")
-    print(f"  - Class 1 (Deforestation): {GROUND_TRUTH_CONFIG['class_1']}")
+
+    # Read ground truth stats dynamically if DataFrame is provided
+    if ground_truth_df is not None:
+        total_points = len(ground_truth_df)
+        class_counts = ground_truth_df[GROUND_TRUTH_CONFIG['label_column']].value_counts().sort_index()
+        print(f"  - Ground Truth Points: {total_points}")
+        if 0 in class_counts.index:
+            print(f"  - Class 0 (No Deforestation): {class_counts[0]}")
+        if 1 in class_counts.index:
+            print(f"  - Class 1 (Deforestation): {class_counts[1]}")
+    else:
+        print(f"  - Ground Truth Points: (load data to see stats)")
 
     print(f"\nRANDOM FOREST CONFIGURATION:")
     print(f"  - Number of Trees: {RF_PARAMS['n_estimators']}")

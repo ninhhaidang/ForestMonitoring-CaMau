@@ -16,10 +16,10 @@ Dự án này phát triển một hệ thống tự động giám sát biến đ
 ## 📊 Dữ liệu
 
 ### Ground Truth Points
-- **Tổng số điểm:** 1,285 điểm training
+- **Tổng số điểm:** 1,300 điểm training
 - **Phân bố:**
-  - Label 0 (Không mất rừng): 650 điểm (50.6%)
-  - Label 1 (Mất rừng): 635 điểm (49.4%)
+  - Label 0 (Không mất rừng): 650 điểm (50.0%)
+  - Label 1 (Mất rừng): 650 điểm (50.0%)
 - **Format:** CSV file với các trường: `id`, `label`, `x`, `y` (tọa độ UTM Zone 48N)
 - **File:** `data/raw/ground_truth/Training_Points_CSV.csv`
 
@@ -62,7 +62,7 @@ results/
 ├── models/
 │   └── rf_model.pkl                        # Trained Random Forest (277 KB)
 ├── data/
-│   ├── training_data.csv                   # Training features (1,285 samples)
+│   ├── training_data.csv                   # Training features (1,300 samples)
 │   ├── rf_feature_importance.csv           # Feature importance rankings
 │   └── rf_evaluation_metrics.json          # Performance metrics
 └── plots/
