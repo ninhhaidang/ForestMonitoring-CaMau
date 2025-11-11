@@ -364,8 +364,8 @@ class Visualizer:
         # ROC curve
         self.plot_roc_curve(X_test, y_test, model)
 
-        # Feature importance
-        self.plot_feature_importance(feature_importance_df, top_n=20)
+        # Feature importance (show all features)
+        self.plot_feature_importance(feature_importance_df, top_n=len(feature_importance_df))
 
         # Classification maps
         self.plot_classification_maps(classification_map, probability_map, valid_mask)

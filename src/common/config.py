@@ -19,7 +19,7 @@ PROCESSED_DATA_DIR = DATA_DIR / "processed"
 
 # Ground Truth
 GROUND_TRUTH_DIR = RAW_DATA_DIR / "ground_truth"
-GROUND_TRUTH_CSV = GROUND_TRUTH_DIR / "Training_Points_CSV.csv"
+GROUND_TRUTH_CSV = GROUND_TRUTH_DIR / "over10ksamples.csv"
 
 # Sentinel-2 (Optical)
 S2_DIR = RAW_DATA_DIR / "sentinel-2"
