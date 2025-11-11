@@ -176,8 +176,8 @@ DL_CONFIG = {
     'device': 'cuda',                   # 'cuda' or 'cpu'
 
     # Prediction
-    'pred_batch_size': 1000,            # Batch size for full raster prediction
-    'pred_stride': 1,                   # Stride for sliding window (1 = dense)
+    'pred_batch_size': 8000,            # Batch size for full raster prediction
+    'pred_stride': 1,                   # Stride for sliding window (1 = dense, 2 = balanced)
 
     # Class weights (for imbalanced data)
     'use_class_weights': True,

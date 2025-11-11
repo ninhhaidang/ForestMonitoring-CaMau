@@ -118,24 +118,35 @@ class RasterPredictor:
                 logger.info("Computing normalization from prediction patches")
             patches = (patches - mean) / (std + 1e-8)
 
-        # Predict in batches
-        logger.info(f"\nPredicting {len(patches)} patches...")
+        # Predict in batches (OPTIMIZED for GPU utilization)
+        logger.info(f"\nPredicting {len(patches):,} patches...")
 
-        all_predictions = []
-        all_probabilities = []
+        # Pre-allocate output arrays (faster than list append)
+        all_predictions = np.empty(len(patches), dtype=np.uint8)
+        all_probabilities = np.empty(len(patches), dtype=np.float32)
 
         dataset = PatchDataset(patches)
+
+        # OPTIMIZATION: Increase num_workers for parallel data loading
+        # This keeps GPU fed while CPU prepares next batch
+        num_workers = 2 if self.device.type == 'cuda' else 0
+
         loader = DataLoader(
             dataset,
             batch_size=self.batch_size,
             shuffle=False,
-            num_workers=0,
-            pin_memory=True if self.device.type == 'cuda' else False
+            num_workers=num_workers,
+            pin_memory=True if self.device.type == 'cuda' else False,
+            persistent_workers=num_workers > 0  # Keep workers alive
         )
 
+        batch_start_idx = 0
+        total_batches = len(loader)
+        log_interval = max(1, total_batches // 10)  # Log 10 times during prediction
+
         with torch.no_grad():
-            for batch_patches in loader:
-                batch_patches = batch_patches.to(self.device)
+            for batch_idx, batch_patches in enumerate(loader):
+                batch_patches = batch_patches.to(self.device, non_blocking=True)
 
                 # Forward pass
                 outputs = self.model(batch_patches)
@@ -149,11 +160,17 @@ class RasterPredictor:
 
                 _, preds = probs.max(1)
 
-                all_predictions.extend(preds.cpu().numpy())
-                all_probabilities.extend(probs[:, 1].cpu().numpy())  # Probability of class 1
+                # Convert to numpy efficiently
+                batch_size = len(batch_patches)
+                all_predictions[batch_start_idx:batch_start_idx + batch_size] = preds.cpu().numpy()
+                all_probabilities[batch_start_idx:batch_start_idx + batch_size] = probs[:, 1].cpu().numpy()
 
-        all_predictions = np.array(all_predictions)
-        all_probabilities = np.array(all_probabilities)
+                batch_start_idx += batch_size
+
+                # Log progress
+                if (batch_idx + 1) % log_interval == 0:
+                    progress = (batch_idx + 1) / total_batches * 100
+                    logger.info(f"  Progress: {batch_idx + 1}/{total_batches} batches ({progress:.1f}%)")
 
         # Fill output maps
         logger.info("Filling output maps...")

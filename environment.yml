@@ -1,4 +1,4 @@
-name: dangnh
+name: dang
 channels:
   - defaults
   - conda-forge
