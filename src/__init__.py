@@ -1,29 +1,44 @@
 """
-Random Forest Deforestation Detection Pipeline
+Deforestation Detection Pipeline
 Cà Mau Province - Sentinel-1 & Sentinel-2
 
-This package contains the complete pipeline for deforestation detection using Random Forest.
+Multi-model approach: Random Forest & CNN
 """
 
-__version__ = '1.0.0'
-__author__ = 'Your Name'
-__email__ = 'your.email@example.com'
+__version__ = '2.0.0'
+__author__ = 'Deforestation Detection Team'
 
-# Import main classes for easy access
-from .step1_2_setup_and_load_data import DataLoader
-from .common.feature_extraction import FeatureExtraction
-from .step4_extract_training_data import TrainingDataExtractor
-from .step5_train_random_forest import RandomForestTrainer
-from .step6_model_evaluation import ModelEvaluator
-from .step7_predict_full_raster import RasterPredictor
-from .step9_visualization import Visualizer
+# Main modules
+from .core.data_loader import DataLoader
+from .core.feature_extraction import FeatureExtraction
+from .core.evaluation import ModelEvaluator
+from .core.visualization import Visualizer
+
+# Random Forest
+from .models.rf.trainer import RandomForestTrainer
+from .models.rf.predictor import RasterPredictor as RFPredictor
+
+# CNN
+from .models.cnn.architecture import DeforestationCNN, create_model
+from .models.cnn.trainer import CNNTrainer
+from .models.cnn.predictor import RasterPredictor as CNNPredictor
+from .models.cnn.patch_extractor import PatchExtractor
+from .models.cnn.spatial_split import SpatialSplitter
 
 __all__ = [
+    # Core
     'DataLoader',
     'FeatureExtraction',
-    'TrainingDataExtractor',
-    'RandomForestTrainer',
     'ModelEvaluator',
-    'RasterPredictor',
-    'Visualizer'
+    'Visualizer',
+    # Random Forest
+    'RandomForestTrainer',
+    'RFPredictor',
+    # CNN
+    'DeforestationCNN',
+    'create_model',
+    'CNNTrainer',
+    'CNNPredictor',
+    'PatchExtractor',
+    'SpatialSplitter',
 ]

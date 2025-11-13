@@ -1,0 +1,310 @@
+"""
+Full raster prediction module for CNN
+Predict deforestation for entire study area
+"""
+
+import numpy as np
+import torch
+from torch.utils.data import Dataset, DataLoader
+from typing import Tuple
+import logging
+from pathlib import Path
+import rasterio
+from rasterio.transform import Affine
+
+from .patch_extractor import extract_patches_for_prediction
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+class RasterPredictor:
+    """
+    Predict deforestation on full raster using trained CNN
+    """
+
+    def __init__(
+        self,
+        model: torch.nn.Module,
+        device: str = 'cuda',
+        patch_size: int = 3,
+        batch_size: int = 1000
+    ):
+        """
+        Initialize RasterPredictor
+
+        Args:
+            model: Trained CNN model
+            device: 'cuda' or 'cpu'
+            patch_size: Size of patches
+            batch_size: Batch size for prediction
+        """
+        self.device = torch.device(device if torch.cuda.is_available() else 'cpu')
+        self.model = model.to(self.device)
+        self.model.eval()
+        self.patch_size = patch_size
+        self.batch_size = batch_size
+
+        self.multiclass_map = None  # 3-class map (0, 1, 2)
+        self.classification_map = None  # Binary map (0, 1)
+        self.probability_map = None  # Binary probability
+
+        logger.info(f"RasterPredictor initialized on device: {self.device}")
+
+    def predict_raster(
+        self,
+        feature_stack: np.ndarray,
+        valid_mask: np.ndarray,
+        stride: int = 1,
+        normalize: bool = True,
+        normalization_stats: dict = None,
+        temperature: float = 1.0
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Predict on full raster
+
+        Args:
+            feature_stack: Feature array (n_features, height, width)
+            valid_mask: Valid pixel mask (height, width)
+            stride: Stride for sliding window (1 = dense prediction)
+            normalize: Whether to normalize patches
+            normalization_stats: Pre-computed normalization statistics (mean, std)
+            temperature: Temperature scaling for calibration (>1 = softer probabilities)
+
+        Returns:
+            Tuple of (classification_map, probability_map)
+            - classification_map: (height, width) BINARY map (0=No Deforestation, 1=Deforestation)
+            - probability_map: (height, width) BINARY probability of deforestation
+        """
+        logger.info(f"\n{'='*70}")
+        logger.info("PREDICTING FULL RASTER WITH CNN")
+        logger.info(f"{'='*70}")
+
+        n_features, height, width = feature_stack.shape
+        logger.info(f"Raster shape: {height} x {width}")
+        logger.info(f"Patch size: {self.patch_size}x{self.patch_size}")
+        logger.info(f"Stride: {stride}")
+        logger.info(f"Batch size: {self.batch_size}")
+        logger.info(f"Temperature: {temperature} {'(calibrated)' if temperature > 1.0 else '(normal)'}")
+
+        # Initialize output maps
+        self.multiclass_map = np.zeros((height, width), dtype=np.uint8)  # 3-class predictions
+        self.classification_map = np.zeros((height, width), dtype=np.uint8)  # Binary map
+        self.probability_map = np.zeros((height, width), dtype=np.float32)  # Binary probability
+
+        # Extract patches using sliding window
+        logger.info("\nExtracting patches...")
+        patches, coordinates = extract_patches_for_prediction(
+            feature_stack,
+            patch_size=self.patch_size,
+            stride=stride,
+            valid_mask=valid_mask
+        )
+
+        if len(patches) == 0:
+            logger.warning("No valid patches extracted!")
+            return self.classification_map, self.probability_map
+
+        # Normalize if requested
+        if normalize:
+            logger.info("Normalizing patches...")
+            if normalization_stats is not None:
+                # Use provided normalization stats (from training)
+                mean = normalization_stats['mean']
+                std = normalization_stats['std']
+                logger.info("Using training normalization statistics")
+            else:
+                # Compute from current patches
+                mean = patches.mean(axis=(0, 1, 2), keepdims=True)
+                std = patches.std(axis=(0, 1, 2), keepdims=True)
+                logger.info("Computing normalization from prediction patches")
+            patches = (patches - mean) / (std + 1e-8)
+
+        # Predict in batches (OPTIMIZED for GPU utilization)
+        logger.info(f"\nPredicting {len(patches):,} patches...")
+
+        # Pre-allocate output arrays (faster than list append)
+        all_multiclass_preds = np.empty(len(patches), dtype=np.uint8)  # 3-class predictions
+        all_binary_preds = np.empty(len(patches), dtype=np.uint8)  # Binary predictions
+        all_binary_probs = np.empty(len(patches), dtype=np.float32)  # Binary probabilities
+
+        dataset = PatchDataset(patches)
+
+        # OPTIMIZATION: Increase num_workers for parallel data loading
+        # This keeps GPU fed while CPU prepares next batch
+        num_workers = 2 if self.device.type == 'cuda' else 0
+
+        loader = DataLoader(
+            dataset,
+            batch_size=self.batch_size,
+            shuffle=False,
+            num_workers=num_workers,
+            pin_memory=True if self.device.type == 'cuda' else False,
+            persistent_workers=num_workers > 0  # Keep workers alive
+        )
+
+        batch_start_idx = 0
+        total_batches = len(loader)
+        log_interval = max(1, total_batches // 10)  # Log 10 times during prediction
+
+        with torch.no_grad():
+            for batch_idx, batch_patches in enumerate(loader):
+                batch_patches = batch_patches.to(self.device, non_blocking=True)
+
+                # Forward pass
+                outputs = self.model(batch_patches)
+
+                # Apply temperature scaling for calibration
+                if temperature != 1.0:
+                    scaled_outputs = outputs / temperature
+                    probs = torch.softmax(scaled_outputs, dim=1)
+                else:
+                    probs = torch.softmax(outputs, dim=1)
+
+                # Multiclass predictions (3 classes)
+                _, multiclass_preds = probs.max(1)
+
+                # Binary predictions: Class 1 (Deforestation) vs Rest (Class 0 + Class 2)
+                # Binary probability = P(Class 1)
+                binary_probs = probs[:, 1]  # Probability of deforestation
+                binary_preds = (binary_probs > 0.5).long()  # Threshold at 0.5
+
+                # Convert to numpy efficiently
+                batch_size = len(batch_patches)
+                all_multiclass_preds[batch_start_idx:batch_start_idx + batch_size] = multiclass_preds.cpu().numpy()
+                all_binary_preds[batch_start_idx:batch_start_idx + batch_size] = binary_preds.cpu().numpy()
+                all_binary_probs[batch_start_idx:batch_start_idx + batch_size] = binary_probs.cpu().numpy()
+
+                batch_start_idx += batch_size
+
+                # Log progress
+                if (batch_idx + 1) % log_interval == 0:
+                    progress = (batch_idx + 1) / total_batches * 100
+                    logger.info(f"  Progress: {batch_idx + 1}/{total_batches} batches ({progress:.1f}%)")
+
+        # Fill output maps
+        logger.info("Filling output maps...")
+        for idx, (row, col) in enumerate(coordinates):
+            self.multiclass_map[row, col] = all_multiclass_preds[idx]
+            self.classification_map[row, col] = all_binary_preds[idx]
+            self.probability_map[row, col] = all_binary_probs[idx]
+
+        # Apply valid mask - set invalid areas to NoData
+        logger.info("Applying valid mask...")
+        self.multiclass_map[~valid_mask] = 255  # 255 = NoData for uint8
+        self.classification_map[~valid_mask] = 255  # 255 = NoData for uint8
+        self.probability_map[~valid_mask] = -9999  # NoData for float32
+
+        # Statistics - Multiclass
+        total_valid_pixels = np.sum(valid_mask)
+        mc_class_0 = np.sum(self.multiclass_map == 0)  # Forest Stable
+        mc_class_1 = np.sum(self.multiclass_map == 1)  # Deforestation
+        mc_class_2 = np.sum(self.multiclass_map == 2)  # Non-forest
+
+        # Statistics - Binary
+        binary_no_defor = np.sum(self.classification_map == 0)  # No Deforestation
+        binary_defor = np.sum(self.classification_map == 1)  # Deforestation
+
+        logger.info(f"\n{'='*70}")
+        logger.info("PREDICTION SUMMARY")
+        logger.info(f"{'='*70}")
+        logger.info(f"Total valid pixels: {total_valid_pixels:,}")
+        logger.info(f"\nMulticlass Predictions:")
+        logger.info(f"  Class 0 (Forest Stable): {mc_class_0:,} ({mc_class_0/total_valid_pixels*100:.2f}%)")
+        logger.info(f"  Class 1 (Deforestation): {mc_class_1:,} ({mc_class_1/total_valid_pixels*100:.2f}%)")
+        logger.info(f"  Class 2 (Non-forest): {mc_class_2:,} ({mc_class_2/total_valid_pixels*100:.2f}%)")
+        logger.info(f"\nBinary Classification (for visualization):")
+        logger.info(f"  No Deforestation (Class 0+2): {binary_no_defor:,} ({binary_no_defor/total_valid_pixels*100:.2f}%)")
+        logger.info(f"  Deforestation (Class 1): {binary_defor:,} ({binary_defor/total_valid_pixels*100:.2f}%)")
+        logger.info(f"{'='*70}\n")
+
+        return self.classification_map, self.probability_map
+
+    def save_rasters(
+        self,
+        classification_path: Path,
+        probability_path: Path,
+        reference_metadata: dict,
+        multiclass_path: Path = None
+    ):
+        """
+        Save classification and probability rasters
+
+        Args:
+            classification_path: Path to save BINARY classification raster
+            probability_path: Path to save BINARY probability raster
+            reference_metadata: Metadata from reference raster (transform, crs, etc.)
+            multiclass_path: Optional path to save multiclass raster (3 classes)
+        """
+        logger.info("\nSaving output rasters...")
+
+        # Binary Classification raster (uint8) with NoData
+        with rasterio.open(
+            classification_path,
+            'w',
+            driver='GTiff',
+            height=self.classification_map.shape[0],
+            width=self.classification_map.shape[1],
+            count=1,
+            dtype=np.uint8,
+            crs=reference_metadata['crs'],
+            transform=reference_metadata['transform'],
+            compress='lzw',
+            nodata=255  # Set NoData value
+        ) as dst:
+            dst.write(self.classification_map, 1)
+            dst.set_band_description(1, 'Binary Classification (0=No Deforestation, 1=Deforestation, 255=NoData)')
+
+        logger.info(f"  Binary classification raster saved: {classification_path}")
+
+        # Multiclass raster (optional)
+        if multiclass_path is not None:
+            with rasterio.open(
+                multiclass_path,
+                'w',
+                driver='GTiff',
+                height=self.multiclass_map.shape[0],
+                width=self.multiclass_map.shape[1],
+                count=1,
+                dtype=np.uint8,
+                crs=reference_metadata['crs'],
+                transform=reference_metadata['transform'],
+                compress='lzw',
+                nodata=255
+            ) as dst:
+                dst.write(self.multiclass_map, 1)
+                dst.set_band_description(1, 'Multiclass (0=Forest Stable, 1=Deforestation, 2=Non-forest, 255=NoData)')
+
+            logger.info(f"  Multiclass raster saved: {multiclass_path}")
+
+        # Binary Probability raster (float32) with NoData
+        with rasterio.open(
+            probability_path,
+            'w',
+            driver='GTiff',
+            height=self.probability_map.shape[0],
+            width=self.probability_map.shape[1],
+            count=1,
+            dtype=np.float32,
+            crs=reference_metadata['crs'],
+            transform=reference_metadata['transform'],
+            compress='lzw',
+            nodata=-9999  # Set NoData value
+        ) as dst:
+            dst.write(self.probability_map, 1)
+            dst.set_band_description(1, 'Binary Deforestation Probability (0.0-1.0, -9999=NoData)')
+
+        logger.info(f"  Binary probability raster saved: {probability_path}")
+
+
+class PatchDataset(Dataset):
+    """Simple dataset for patches without labels"""
+
+    def __init__(self, patches: np.ndarray):
+        self.patches = torch.FloatTensor(patches)
+
+    def __len__(self):
+        return len(self.patches)
+
+    def __getitem__(self, idx):
+        return self.patches[idx]
