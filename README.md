@@ -9,19 +9,21 @@ Năm học: 2025 - 2026, Học kỳ I
 
 ## 📋 Tổng quan
 
-Dự án này phát triển một hệ thống tự động giám sát biến động rừng tại tỉnh Cà Mau sử dụng kết hợp dữ liệu viễn thám đa nguồn (Sentinel-1 SAR và Sentinel-2 Optical) với hai phương pháp tiếp cận: Machine Learning truyền thống (Random Forest) và Deep Learning (CNN). Hệ thống có khả năng phát hiện và phân loại các khu vực mất rừng dựa trên phân tích chuỗi thời gian ảnh vệ tinh, với độ chính xác > 98%.
+Dự án phát triển hệ thống tự động giám sát biến động rừng tại tỉnh Cà Mau sử dụng kết hợp dữ liệu viễn thám đa nguồn (Sentinel-1 SAR và Sentinel-2 Optical) với hai phương pháp:
+- **Random Forest (RF)**: Phân loại dựa trên pixel với 27 đặc trưng thời gian
+- **Convolutional Neural Network (CNN)**: Phân loại dựa trên patches 3×3 pixels, tự động học spatial patterns
+
+Cả hai phương pháp đạt độ chính xác > 98% trong phát hiện mất rừng.
 
 ---
 
 ## 📊 Dữ liệu
 
 ### Ground Truth Points
-- **Tổng số điểm:** 1,300 điểm training
-- **Phân bố:**
-  - Label 0 (Không mất rừng): 650 điểm (50.0%)
-  - Label 1 (Mất rừng): 650 điểm (50.0%)
-- **Format:** CSV file với các trường: `id`, `label`, `x`, `y` (tọa độ UTM Zone 48N)
-- **File:** `data/raw/ground_truth/Training_Points_CSV.csv`
+- **File:** [`data/raw/samples/4labels.csv`](data/raw/samples/4labels.csv)
+- **Tổng số điểm:** 2,630 điểm training
+- **Format:** CSV với các trường: `id`, `label`, `x`, `y` (tọa độ UTM Zone 48N, EPSG:32648)
+- **Phân bố labels:** (tùy thuộc vào dataset, có thể multi-class hoặc binary)
 
 ### Sentinel-2 (Optical)
 - **7 bands** gồm spectral bands và spectral indices:
@@ -29,566 +31,350 @@ Dự án này phát triển một hệ thống tự động giám sát biến đ
   - **Spectral indices:** NDVI, NBR, NDMI
 - **Độ phân giải không gian:** 10m
 - **Kỳ ảnh:**
-  - Trước: 30/01/2024 (`S2_2024_01_30.tif`)
-  - Sau: 28/02/2025 (`S2_2025_02_28.tif`)
-- **Đã xử lý:** Cắt theo ranh giới rừng tỉnh Cà Mau, masked NoData
+  - Trước: 30/01/2024 ([`S2_2024_01_30.tif`](data/raw/sentinel-2/S2_2024_01_30.tif))
+  - Sau: 28/02/2025 ([`S2_2025_02_28.tif`](data/raw/sentinel-2/S2_2025_02_28.tif))
+- **Xử lý:** Cắt theo ranh giới rừng, masked NoData
 
 ### Sentinel-1 (SAR)
 - **2 bands:** VV và VH polarization
-- **Độ phân giải không gian:** 10m (matched với Sentinel-2)
+- **Độ phân giải không gian:** 10m (co-registered với Sentinel-2)
 - **Kỳ ảnh:**
-  - Trước: 04/02/2024 (`S1_2024_02_04_matched_S2_2024_01_30.tif`)
-  - Sau: 22/02/2025 (`S1_2025_02_22_matched_S2_2025_02_28.tif`)
-- **Đã xử lý:** Co-registered với Sentinel-2, cắt theo ranh giới rừng
+  - Trước: 04/02/2024 ([`S1_2024_02_04_matched_S2_2024_01_30.tif`](data/raw/sentinel-1/S1_2024_02_04_matched_S2_2024_01_30.tif))
+  - Sau: 22/02/2025 ([`S1_2025_02_22_matched_S2_2025_02_28.tif`](data/raw/sentinel-1/S1_2025_02_22_matched_S2_2025_02_28.tif))
+- **Xử lý:** Co-registered với Sentinel-2, cắt theo ranh giới rừng
 
 ### Boundary Shapefile
-- **File:** `data/raw/boundary/forest_boundary.shp`
-- **Mục đích:** Giới hạn khu vực phân tích chỉ trong vùng rừng
+- **File:** [`data/raw/boundary/forest_boundary.shp`](data/raw/boundary/forest_boundary.shp)
+- **CRS:** EPSG:32648 (WGS 84 / UTM Zone 48N)
+- **Mục đích:** Giới hạn khu vực phân tích trong ranh giới rừng
 
 ---
 
-## 📦 Output Files
+## 🗂️ Cấu trúc dự án
 
-Sau khi chạy xong, kết quả được lưu trong folder `results/`:
-
-**Random Forest Outputs:**
 ```
-results/
-├── rasters/
-│   ├── rf_classification.tif               # Binary classification map (0/1)
-│   └── rf_probability.tif                  # Probability map (0.0-1.0)
-├── models/
-│   └── rf_model.pkl                        # Trained Random Forest (277 KB)
-├── data/
-│   ├── training_data.csv                   # Training features (1,300 samples)
-│   ├── rf_feature_importance.csv           # Feature importance rankings
-│   └── rf_evaluation_metrics.json          # Performance metrics
-└── plots/
-    ├── rf_confusion_matrices.png           # Confusion matrices
-    ├── rf_roc_curve.png                    # ROC curve
-    ├── rf_feature_importance.png           # Top 20 features
-    ├── rf_classification_maps.png          # Binary & probability maps
-    └── rf_cv_scores.png                    # 5-fold CV scores
+25-26_HKI_DATN_21021411_DangNH/
+├── README.md                        # Tài liệu này
+├── environment.yml                  # Conda environment specification
+│
+├── data/                            # Thư mục dữ liệu
+│   ├── raw/                         # Dữ liệu thô
+│   │   ├── sentinel-1/              # Ảnh SAR (VV, VH)
+│   │   ├── sentinel-2/              # Ảnh Optical (7 bands)
+│   │   ├── boundary/                # Ranh giới khu vực nghiên cứu
+│   │   └── samples/                 # Ground truth training points
+│   └── inference/                   # Dữ liệu inference (nếu có)
+│
+├── src/                             # Source code chính
+│   ├── config.py                    # Cấu hình tập trung (paths, hyperparameters)
+│   ├── main_rf.py                   # Entry point cho Random Forest pipeline
+│   ├── main_cnn.py                  # Entry point cho CNN pipeline
+│   ├── utils.py                     # Utility functions
+│   │
+│   ├── core/                        # Core modules (shared by RF & CNN)
+│   │   ├── data_loader.py           # Load Sentinel-1/2, ground truth, boundary
+│   │   ├── feature_extraction.py    # Tạo 27-feature stack (before/after/delta)
+│   │   ├── evaluation.py            # Model evaluation (metrics, CV, ROC)
+│   │   └── visualization.py         # Plotting (confusion matrix, ROC, maps)
+│   │
+│   ├── models/                      # Model-specific implementations
+│   │   ├── rf/                      # Random Forest (pixel-based)
+│   │   │   ├── trainer.py           # RF training & feature extraction
+│   │   │   └── predictor.py         # RF full raster prediction
+│   │   │
+│   │   └── cnn/                     # CNN (patch-based)
+│   │       ├── architecture.py      # CNN architecture (2 conv blocks + FC)
+│   │       ├── trainer.py           # CNN training loop (early stopping, LR scheduler)
+│   │       ├── patch_extractor.py   # Extract 3×3 patches từ ground truth
+│   │       ├── spatial_split.py     # Spatial-aware train/val/test split
+│   │       ├── predictor.py         # CNN full raster prediction (sliding window)
+│   │       └── calibration.py       # Probability calibration (isotonic regression)
+│   │
+│   └── analysis/                    # Analysis utilities
+│       └── spatial_clustering.py    # Ground truth spatial distribution analysis
+│
+├── notebook/                        # Jupyter notebooks
+│   ├── rf_deforestion_detection.ipynb      # RF pipeline với interactive exploration
+│   └── cnn_deforestation_detection.ipynb   # CNN pipeline với training visualization
+│
+└── results/                         # Thư mục output
+    ├── models/                      # Trained models
+    │   ├── rf_model.pkl             # Random Forest (~277 KB)
+    │   └── cnn_model.pth            # CNN PyTorch model (~448 KB)
+    │
+    ├── data/                        # Output data files
+    │   ├── training_data.csv        # Extracted training features (RF)
+    │   ├── rf_feature_importance.csv
+    │   ├── rf_evaluation_metrics.json
+    │   ├── cnn_training_patches.npz # Extracted patches (CNN)
+    │   ├── cnn_evaluation_metrics.json
+    │   └── cnn_training_history.json
+    │
+    ├── rasters/                     # GeoTIFF output maps
+    │   ├── rf_classification.tif    # RF binary classification (0/1)
+    │   ├── rf_probability.tif       # RF probability map (0.0-1.0)
+    │   ├── cnn_classification.tif   # CNN binary classification (0/1)
+    │   └── cnn_probability.tif      # CNN probability map (0.0-1.0)
+    │
+    ├── plots/                       # Visualization outputs (PNG, 300 DPI)
+    │   ├── rf_confusion_matrices.png
+    │   ├── rf_roc_curve.png
+    │   ├── rf_feature_importance.png
+    │   ├── rf_classification_maps.png
+    │   ├── rf_cv_scores.png
+    │   ├── cnn_confusion_matrices.png
+    │   ├── cnn_roc_curve.png
+    │   ├── cnn_training_curves.png
+    │   └── cnn_classification_maps.png
+    │
+    └── report/                      # Markdown reports
+        ├── rf_report_YYYYMMDD_HHMMSS.md
+        └── cnn_report_YYYYMMDD_HHMMSS.md
 ```
 
-**CNN Outputs:**
+---
+
+## 📈 Phương pháp
+
+### Random Forest Pipeline (Pixel-based Classification)
+
+**Input unit:** Single pixel (27 features)
+
+**Feature engineering (27 features):**
 ```
-results/
-├── rasters/
-│   ├── cnn_classification.tif              # Binary classification map
-│   └── cnn_probability.tif                 # Probability map
-├── models/
-│   └── cnn_model.pth                       # Trained CNN (448 KB)
-├── data/
-│   ├── cnn_training_patches.npz            # Saved patches data
-│   ├── cnn_evaluation_metrics.json         # Performance metrics
-│   └── cnn_training_history.json           # Training curves (loss, acc)
-└── plots/
-    ├── cnn_confusion_matrices.png          # Confusion matrices
-    ├── cnn_roc_curve.png                   # ROC curve
-    ├── cnn_training_curves.png             # Loss & accuracy curves
-    └── cnn_classification_maps.png         # Binary & probability maps
+Sentinel-2 (21 features):
+  - S2_before[0:7]:  B4, B8, B11, B12, NDVI, NBR, NDMI
+  - S2_after[0:7]:   B4, B8, B11, B12, NDVI, NBR, NDMI
+  - S2_delta[0:7]:   ΔB4, ΔB8, ΔB11, ΔB12, ΔNDVI, ΔNBR, ΔNDMI
+
+Sentinel-1 (6 features):
+  - S1_before[0:2]:  VV, VH
+  - S1_after[0:2]:   VV, VH
+  - S1_delta[0:2]:   ΔVV, ΔVH
 ```
 
----
+**Training configuration:**
+- **Algorithm:** RandomForestClassifier (scikit-learn)
+- **Number of trees:** 100
+- **Max features per split:** sqrt(27) ≈ 5
+- **Class weight:** Balanced
+- **Train/Val/Test split:** 70% / 15% / 15% (stratified)
+- **Cross-validation:** 5-fold stratified
+
+**Advantages:**
+- Fast training (~5 minutes)
+- High interpretability (feature importance)
+- Robust to noise and missing data
+- Low memory requirements
+
+**Disadvantages:**
+- No spatial context (treats each pixel independently)
+- Cannot learn spatial patterns
 
 ---
 
-## 🔄 Pipeline Xử Lý
+### CNN Pipeline (Patch-based Classification)
 
-### Pipeline Random Forest (Pixel-based Classification)
+**Input unit:** 3×3 patch (3×3×27 = 243 values)
 
-Pipeline Random Forest xử lý dữ liệu ở mức **pixel-level**, sử dụng các feature được trích xuất từ chuỗi thời gian ảnh vệ tinh để phân loại từng pixel độc lập.
+**Architecture:**
+```
+Input: (batch, 3, 3, 27) patches
+  ↓
+Permute → (batch, 27, 3, 3)    # PyTorch format (N, C, H, W)
+  ↓
+Conv Block 1: 27→64 channels (3×3, BatchNorm, ReLU, Dropout 0.3)
+  ↓
+Conv Block 2: 64→32 channels (3×3, BatchNorm, ReLU, Dropout 0.3)
+  ↓
+Global Average Pooling → (batch, 32)
+  ↓
+FC Block: 32→64 (BatchNorm, ReLU, Dropout 0.5)
+  ↓
+Output: 64→2 (logits)
+```
 
-#### **Bước 1: Load Dữ liệu (Data Loading)**
-- **Input:**
-  - Sentinel-2 Before/After: 7 bands mỗi kỳ (B4, B8, B11, B12, NDVI, NBR, NDMI)
-  - Sentinel-1 Before/After: 2 bands mỗi kỳ (VV, VH)
-  - Ground truth points: CSV với 1,300 điểm (x, y, label)
-  - Forest boundary: Shapefile ranh giới rừng
+**Training configuration:**
+- **Optimizer:** AdamW (lr=0.001, weight_decay=1e-4)
+- **Loss function:** CrossEntropyLoss (balanced class weights)
+- **LR Scheduler:** ReduceLROnPlateau (factor=0.5, patience=5)
+- **Early stopping:** patience=10 epochs
+- **Batch size:** 32
+- **Epochs:** 50 (max)
+- **Data split:** Spatial-aware split (prevent spatial leakage)
 
-- **Xử lý:**
-  - Load tất cả dữ liệu raster với `rasterio`
-  - Đọc ground truth từ CSV với `pandas`
-  - Kiểm tra kích thước, CRS, độ phân giải
+**Regularization techniques:**
+- Batch Normalization (stabilize training)
+- Dropout (0.3 conv, 0.5 fc)
+- Weight Decay (L2 regularization)
+- Data augmentation (optional)
 
-- **Output:** Dictionary chứa arrays và metadata
+**Advantages:**
+- Learns spatial patterns automatically
+- Better for detecting neighborhood changes
+- More flexible architecture
 
-#### **Bước 2: Feature Extraction**
-- **Input:** S2 before/after (7×H×W), S1 before/after (2×H×W)
-
-- **Xử lý:**
-  ```
-  1. Sentinel-2 Features (21 features):
-     - S2_before[0:7]  → 7 features (B4, B8, B11, B12, NDVI, NBR, NDMI)
-     - S2_after[0:7]   → 7 features
-     - S2_delta = S2_after - S2_before → 7 features (temporal change)
-
-  2. Sentinel-1 Features (6 features):
-     - S1_before[0:2]  → 2 features (VV, VH)
-     - S1_after[0:2]   → 2 features
-     - S1_delta = S1_after - S1_before → 2 features (temporal change)
-
-  3. Valid Mask Creation:
-     - Loại bỏ pixels có NoData/NaN ở bất kỳ band/thời điểm nào
-     - Đảm bảo tất cả 27 features hợp lệ cho mỗi pixel
-  ```
-
-- **Output:** Feature stack (27×H×W), Valid mask (H×W)
-
-#### **Bước 3: Extract Training Data**
-- **Input:** Feature stack, Ground truth points, Transform
-
-- **Xử lý:**
-  ```
-  1. Coordinate Conversion:
-     - Convert ground truth (x,y) từ UTM → pixel coordinates
-     - Sử dụng rasterio transform
-
-  2. Feature Extraction:
-     - Với mỗi ground truth point:
-       - Tìm pixel tương ứng (row, col)
-       - Trích xuất 27 feature values tại pixel đó
-       - Gán label từ ground truth
-       - Skip nếu pixel nằm ngoài bounds hoặc có NoData
-
-  3. Data Quality Check:
-     - Kiểm tra missing values, infinite values
-     - Kiểm tra features có zero variance
-     - Kiểm tra class balance
-
-  4. Train/Val/Test Split:
-     - Train: 70% (stratified)
-     - Validation: 15% (stratified)
-     - Test: 15% (stratified)
-     - Random state = 42 để reproducible
-  ```
-
-- **Output:**
-  - Training DataFrame (n_samples × 28): 27 features + 1 label
-  - Split arrays: X_train, X_val, X_test, y_train, y_val, y_test
-
-#### **Bước 4: Train Random Forest Model**
-- **Input:** X_train (n_train × 27), y_train (n_train,)
-
-- **Hyperparameters:**
-  ```python
-  n_estimators = 100          # Số decision trees
-  max_depth = 20              # Độ sâu tối đa của tree
-  min_samples_split = 10      # Số samples tối thiểu để split
-  min_samples_leaf = 4        # Số samples tối thiểu ở leaf node
-  max_features = 'sqrt'       # Số features cho mỗi split
-  class_weight = 'balanced'   # Cân bằng class weights
-  oob_score = True            # Out-of-Bag score để đánh giá
-  n_jobs = -1                 # Parallel processing
-  random_state = 42
-  ```
-
-- **Training Process:**
-  ```
-  1. Model Creation:
-     - Khởi tạo RandomForestClassifier với hyperparameters
-     - Sử dụng sklearn.ensemble
-
-  2. Model Fitting:
-     - Fit model với X_train, y_train
-     - Mỗi tree được train trên random subset của data
-     - Bootstrap sampling với replacement
-     - Random feature selection tại mỗi split
-
-  3. Validation:
-     - Đánh giá trên validation set
-     - Tính OOB score (Out-of-Bag)
-     - Log training/validation accuracy
-
-  4. Feature Importance:
-     - Tính Gini importance cho mỗi feature
-     - Rank features theo importance
-     - Lưu top 20 features quan trọng nhất
-  ```
-
-- **Output:**
-  - Trained model (pickle file ~277 KB)
-  - Feature importance rankings
-
-#### **Bước 5: Predict Full Raster**
-- **Input:** Feature stack (27×H×W), Valid mask, Trained model
-
-- **Xử lý:**
-  ```
-  1. Reshape Features:
-     - Reshape từ (27, H, W) → (H×W, 27)
-     - Tạo 2D feature matrix cho prediction
-
-  2. Batch Prediction:
-     - Lọc chỉ valid pixels theo mask
-     - Chia thành batches (10,000 pixels/batch) để tiết kiệm memory
-     - Với mỗi batch:
-       - predictions = model.predict(batch_features)
-       - probabilities = model.predict_proba(batch_features)[:, 1]
-
-  3. Reconstruct Rasters:
-     - Tạo classification map: shape (H, W), dtype int8
-       - 0 = No deforestation
-       - 1 = Deforestation
-       - -1 = NoData
-     - Tạo probability map: shape (H, W), dtype float32
-       - Range [0.0, 1.0] = xác suất mất rừng
-       - -9999.0 = NoData
-  ```
-
-- **Output:**
-  - Classification raster (GeoTIFF)
-  - Probability raster (GeoTIFF)
-
-#### **Bước 6: Evaluation & Visualization**
-- **Input:** y_test, predictions, probabilities
-
-- **Metrics:**
-  ```
-  1. Classification Metrics:
-     - Accuracy, Precision, Recall, F1-Score
-     - Confusion Matrix (train/val/test)
-     - ROC Curve & AUC Score
-
-  2. Cross-Validation:
-     - 5-fold stratified CV
-     - CV scores distribution plot
-
-  3. Feature Analysis:
-     - Feature importance plot (top 20)
-     - Feature importance CSV export
-  ```
-
-- **Output:**
-  - Confusion matrices plot
-  - ROC curve plot
-  - Feature importance plot
-  - Classification maps visualization
-  - Metrics JSON file
+**Disadvantages:**
+- Slower training (~15-30 minutes)
+- Requires more data
+- Lower interpretability (black-box)
+- Higher memory requirements
 
 ---
 
-### Pipeline CNN (Patch-based Classification)
-
-Pipeline CNN xử lý dữ liệu ở mức **patch-level**, sử dụng kiến trúc mạng neural để học spatial patterns từ các patches 3×3 pixels.
-
-#### **Bước 1: Load Dữ liệu (Data Loading)**
-- Giống với Random Forest Pipeline
-- **Output:** Dictionary chứa arrays và metadata
-
-#### **Bước 2: Feature Extraction**
-- Giống với Random Forest Pipeline
-- **Output:** Feature stack (27×H×W), Valid mask (H×W)
-
-#### **Bước 3: Spatial Patch Extraction**
-- **Input:** Feature stack (27×H×W), Ground truth points, Valid mask
-
-- **Patch Configuration:**
-  ```python
-  patch_size = 3              # 3×3 spatial window
-  half_size = 1               # Padding around center pixel
-  ```
-
-- **Extraction Process:**
-  ```
-  1. Coordinate Conversion:
-     - Convert ground truth (x,y) → pixel coordinates (row, col)
-
-  2. Patch Extraction:
-     Với mỗi ground truth point tại (row, col):
-     - Kiểm tra edge constraints:
-       if row < 1 or row >= H-1 or col < 1 or col >= W-1: skip
-
-     - Extract 3×3 window:
-       patch = feature_stack[:, row-1:row+2, col-1:col+2]
-       # Shape: (27, 3, 3)
-
-     - Transpose để phù hợp CNN input:
-       patch = transpose(patch, (1, 2, 0))
-       # Shape: (3, 3, 27)
-
-     - Validate patch:
-       - Kiểm tra valid_mask[row-1:row+2, col-1:col+2].all()
-       - Kiểm tra NaN/Inf values
-       - Skip nếu patch không hợp lệ
-
-  3. Quality Control:
-     - Loại bỏ patches ở edge (không đủ padding)
-     - Loại bỏ patches có NoData
-     - Đảm bảo class balance
-  ```
-
-- **Output:**
-  - Patches array: (n_samples, 3, 3, 27)
-  - Labels array: (n_samples,)
-  - Valid indices list
-
-#### **Bước 4: Patch Normalization**
-- **Input:** Raw patches (n_samples, 3, 3, 27)
-
-- **Standardization Method:**
-  ```python
-  # Z-score normalization per feature channel
-  mean = patches.mean(axis=(0, 1, 2), keepdims=True)  # Shape: (1, 1, 1, 27)
-  std = patches.std(axis=(0, 1, 2), keepdims=True)    # Shape: (1, 1, 1, 27)
-
-  normalized_patches = (patches - mean) / (std + 1e-8)
-  ```
-
-- **Output:**
-  - Normalized patches
-  - Normalization statistics (mean, std) để dùng cho inference
-
-#### **Bước 5: Spatial Data Split**
-- **Input:** Patches, Labels, Ground truth coordinates
-
-- **Spatial Split Strategy:**
-  ```
-  1. Calculate Spatial Median:
-     - median_x = median(ground_truth['x'])
-     - median_y = median(ground_truth['y'])
-
-  2. Spatial Quadrant Assignment:
-     - NW quadrant (x < median_x, y >= median_y) → Train
-     - NE quadrant (x >= median_x, y >= median_y) → Train
-     - SW quadrant (x < median_x, y < median_y) → Test
-     - SE quadrant (x >= median_x, y < median_y) → Validation
-
-  3. Prevent Data Leakage:
-     - Train/Val/Test không có overlap về không gian
-     - Đảm bảo model không học từ vùng lân cận test areas
-  ```
-
-- **Output:**
-  - X_train, y_train (spatial NW + NE)
-  - X_val, y_val (spatial SE)
-  - X_test, y_test (spatial SW)
-
-#### **Bước 6: Build CNN Architecture**
-
-- **Model Architecture:**
-  ```
-  Input: (batch, 3, 3, 27)
-  ↓
-  Permute → (batch, 27, 3, 3)  # PyTorch format: (N, C, H, W)
-  ↓
-  ┌─────────────────────────────────────┐
-  │ Conv Block 1                        │
-  │  - Conv2d: 27 → 64 channels (3×3)  │
-  │  - BatchNorm2d(64)                  │
-  │  - ReLU activation                  │
-  │  - Dropout2d(p=0.3)                 │
-  └─────────────────────────────────────┘
-  ↓
-  ┌─────────────────────────────────────┐
-  │ Conv Block 2                        │
-  │  - Conv2d: 64 → 32 channels (3×3)  │
-  │  - BatchNorm2d(32)                  │
-  │  - ReLU activation                  │
-  │  - Dropout2d(p=0.3)                 │
-  └─────────────────────────────────────┘
-  ↓
-  Global Average Pooling → (batch, 32, 1, 1)
-  ↓
-  Flatten → (batch, 32)
-  ↓
-  ┌─────────────────────────────────────┐
-  │ FC Block                            │
-  │  - Linear: 32 → 64                  │
-  │  - BatchNorm1d(64)                  │
-  │  - ReLU activation                  │
-  │  - Dropout(p=0.5)                   │
-  └─────────────────────────────────────┘
-  ↓
-  Linear: 64 → 2 (logits)
-  ↓
-  Output: (batch, 2)
-  ```
-
-- **Model Parameters:**
-  ```
-  - Total parameters: ~50,000 (trainable)
-  - Model size: ~448 KB
-  ```
-
-- **Regularization Techniques:**
-  ```
-  - Batch Normalization: Ổn định training, giảm internal covariate shift
-  - Dropout (0.3 conv, 0.5 fc): Prevent overfitting
-  - Weight Decay (L2): 1e-4
-  ```
-
-#### **Bước 7: Train CNN Model**
-- **Training Configuration:**
-  ```python
-  optimizer = AdamW(lr=0.001, weight_decay=1e-4)
-  loss_fn = CrossEntropyLoss(weight=[1.0, 1.0])  # Balanced classes
-  scheduler = ReduceLROnPlateau(factor=0.5, patience=5)
-
-  batch_size = 32
-  epochs = 50
-  early_stopping_patience = 10
-  ```
-
-- **Training Loop:**
-  ```
-  For each epoch (1 to 50):
-    1. Training Phase:
-       - model.train()
-       - For each batch in train_loader:
-         - Forward pass: logits = model(patches)
-         - Compute loss: loss = CrossEntropyLoss(logits, labels)
-         - Backward pass: loss.backward()
-         - Update weights: optimizer.step()
-         - Track: train_loss, train_accuracy
-
-    2. Validation Phase:
-       - model.eval()
-       - With torch.no_grad():
-         - Forward pass trên validation set
-         - Compute: val_loss, val_accuracy
-
-    3. Learning Rate Scheduling:
-       - scheduler.step(val_loss)
-       - Giảm LR nếu val_loss không cải thiện sau 5 epochs
-
-    4. Model Checkpointing:
-       - If val_loss < best_val_loss:
-         - Save model state_dict
-         - Update best_val_loss, best_val_acc
-         - Reset early_stopping_counter = 0
-       - Else:
-         - early_stopping_counter += 1
-
-    5. Early Stopping:
-       - If early_stopping_counter >= 10:
-         - Stop training
-         - Load best model checkpoint
-  ```
-
-- **Output:**
-  - Best model checkpoint (cnn_model.pth)
-  - Training history: train_loss, val_loss, train_acc, val_acc per epoch
-  - Learning rate schedule
-
-#### **Bước 8: Evaluate CNN Model**
-- **Input:** Trained model, Test set (X_test, y_test)
-
-- **Evaluation Process:**
-  ```
-  1. Test Inference:
-     - model.eval()
-     - With torch.no_grad():
-       - logits = model(X_test)
-       - probs = softmax(logits, dim=1)
-       - preds = argmax(probs, dim=1)
-
-  2. Metrics Calculation:
-     - Accuracy = correct / total
-     - Precision = TP / (TP + FP)
-     - Recall = TP / (TP + FN)
-     - F1-Score = 2 × (Precision × Recall) / (Precision + Recall)
-     - ROC-AUC = area under ROC curve
-
-  3. Confusion Matrix:
-     - Train set confusion matrix
-     - Validation set confusion matrix
-     - Test set confusion matrix
-  ```
-
-- **Output:**
-  - Test metrics JSON
-  - Confusion matrices plot
-  - ROC curve plot
-  - Training curves (loss/accuracy over epochs)
-
-#### **Bước 9: Full Raster Prediction (Sliding Window)**
-- **Input:** Feature stack (27×H×W), Valid mask, Trained model
-
-- **Sliding Window Extraction:**
-  ```
-  1. Patch Grid Generation:
-     - stride = 1 (sliding window với bước 1 pixel)
-     - For row in range(1, H-1):
-         For col in range(1, W-1):
-           - Check valid_mask[row, col]
-           - Extract patch tại (row, col)
-           - Append to patches_list
-           - Save coordinates (row, col)
-
-  2. Batch Prediction:
-     - Chia patches thành batches (1000 patches/batch)
-     - For each batch:
-       - Normalize batch using training mean/std
-       - Forward pass: logits = model(batch)
-       - probs = softmax(logits, dim=1)[:, 1]  # Prob of class 1
-       - preds = argmax(logits, dim=1)
-
-  3. Reconstruct Rasters:
-     - Initialize classification_map (H, W) với NoData = -1
-     - Initialize probability_map (H, W) với NoData = -9999
-     - For each (row, col, pred, prob):
-       - classification_map[row, col] = pred
-       - probability_map[row, col] = prob
-  ```
-
-- **Output:**
-  - CNN classification raster (GeoTIFF)
-  - CNN probability raster (GeoTIFF)
-
-#### **Bước 10: Probability Calibration**
-- **Input:** Model predictions, True labels
-
-- **Calibration Method:**
-  ```python
-  from sklearn.calibration import CalibratedClassifierCV
-
-  # Isotonic Regression Calibration
-  calibrator = CalibratedClassifierCV(
-      base_estimator=None,  # Sử dụng CNN predictions
-      method='isotonic',     # Isotonic regression
-      cv='prefit'           # Model đã được train
-  )
-
-  calibrated_probs = calibrator.predict_proba(val_probs)
-  ```
-
-- **Calibration Metrics:**
-  ```
-  - Expected Calibration Error (ECE)
-  - Reliability Diagram
-  - Brier Score: measure of probability accuracy
-  ```
-
-- **Output:**
-  - Calibrated probability raster
-  - Calibration curve plot
-
-#### **Bước 11: Post-processing & Visualization**
-- Giống Random Forest Pipeline
-- **Additional CNN-specific visualizations:**
-  - Training curves (loss & accuracy)
-  - Learning rate schedule
-  - Calibration curves
-
----
-
-### So sánh 2 Pipeline
+### So sánh 2 phương pháp
 
 | Aspect | Random Forest | CNN |
 |--------|--------------|-----|
 | **Input Unit** | Single pixel (27 features) | 3×3 patch (3×3×27) |
-| **Spatial Context** | Không sử dụng spatial info | Học spatial patterns từ patches |
-| **Feature Extraction** | Manual feature extraction | Automatic feature learning |
-| **Training Time** | ~2-5 phút (100 trees) | ~10-20 phút (50 epochs) |
-| **Model Size** | ~277 KB (pickle) | ~448 KB (PyTorch) |
+| **Spatial Context** | Không | Có (3×3 neighborhood) |
+| **Feature Learning** | Manual | Automatic |
+| **Training Time** | ~5-10 phút | ~15-30 phút |
+| **Model Size** | ~277 KB | ~448 KB |
 | **Inference Speed** | Nhanh (~10k pixels/s) | Chậm hơn (~1k patches/s) |
 | **Interpretability** | Cao (feature importance) | Thấp (black-box) |
-| **Data Requirements** | Ít data, robust với noise | Cần nhiều data hơn |
-| **Overfitting Risk** | Thấp với ensemble | Cao hơn (cần regularization) |
-| **Edge Handling** | Predict tất cả valid pixels | Bỏ qua edge pixels (padding) |
-| **Accuracy** | >98% | >98% |
+| **Data Requirements** | Ít | Nhiều hơn |
+| **Overfitting Risk** | Thấp (ensemble) | Cao hơn (cần regularization) |
+| **Edge Handling** | Tất cả valid pixels | Bỏ edge pixels (1-pixel margin) |
+| **Expected Accuracy** | >98% | >98% |
+
+---
+
+## 📊 Kết quả
+
+### Metrics được đánh giá
+
+**Classification metrics:**
+- Accuracy (Overall, Per-class)
+- Precision, Recall, F1-Score
+- Confusion Matrix (Train/Val/Test)
+- ROC Curve & AUC Score
+
+**Model-specific metrics:**
+- **Random Forest:**
+  - Feature importance (Gini)
+  - Out-of-Bag (OOB) score
+  - 5-fold Cross-validation scores
+
+- **CNN:**
+  - Training curves (loss, accuracy)
+  - Learning rate schedule
+  - Early stopping epoch
+  - Probability calibration (ECE, Brier score)
+
+### Output files
+
+**GeoTIFF rasters:**
+- Binary classification maps (0=No deforestation, 1=Deforestation, -1=NoData)
+- Probability maps (0.0-1.0 = probability of deforestation, -9999.0=NoData)
+- CRS: EPSG:32648 (UTM Zone 48N)
+- Resolution: 10m
+
+**Visualizations:**
+- Confusion matrices (train/val/test)
+- ROC curves with AUC
+- Feature importance plots (RF)
+- Training curves (CNN)
+- Classification maps (binary + probability)
+
+**Reports:**
+- Markdown format với timestamp
+- Comprehensive model evaluation
+- Data configuration summary
+- Key findings và statistics
+
+---
+
+## 🔬 Tính năng nâng cao
+
+### 1. Spatial-Aware Data Splitting (CNN)
+- **Problem:** Prevent spatial data leakage giữa train/val/test
+- **Solution:** Hierarchical clustering với 50m distance threshold
+- **Result:** Train/val/test không có spatial overlap
+
+### 2. Multi-Sensor Integration
+- **Optical (Sentinel-2):** Spectral signatures, vegetation indices
+- **SAR (Sentinel-1):** Penetrates clouds, structure information
+- **Combined:** Robust trong mọi điều kiện thời tiết
+
+### 3. Temporal Change Detection
+- **Before/After comparison:** Detect changes between two time periods
+- **Delta features:** Explicitly model temporal change (Δ = After - Before)
+- **Temporal consistency:** Reduce false positives
+
+### 4. Probability Calibration (CNN)
+- **Post-training calibration:** Isotonic regression
+- **Improve reliability:** Predicted probabilities match true frequencies
+- **Risk-aware decisions:** Better for threshold-based decision making
+
+### 5. Batch Processing for Memory Efficiency
+- **Random Forest:** 10,000 pixels/batch
+- **CNN:** 1,000 patches/batch
+- **Full raster prediction:** Không cần load toàn bộ dataset vào memory
+
+---
+
+## 🛠️ Configuration
+
+Tất cả cấu hình được quản lý tập trung trong [`src/config.py`](src/config.py):
+
+**Paths:**
+- Input data paths (S1, S2, ground truth, boundary)
+- Output directories (models, rasters, plots, reports)
+
+**Hyperparameters:**
+- Random Forest: n_estimators, max_depth, class_weight, etc.
+- CNN: epochs, batch_size, learning_rate, dropout, etc.
+
+**Data split:**
+- Train/Val/Test ratios
+- Random seed (for reproducibility)
+
+**Feature configuration:**
+- Number of features (27)
+- Feature names and indices
+
+**Output format:**
+- GeoTIFF compression, NoData values
+- Plot settings (DPI, colormap, figsize)
+
+Để thay đổi cấu hình, chỉnh sửa [`src/config.py`](src/config.py) trước khi chạy pipeline.
+
+---
+
+## 📚 Dependencies chính
+
+**Core ML libraries:**
+- `torch` 2.5.1+cu121 - Deep learning framework
+- `scikit-learn` 1.7.2 - Machine learning (Random Forest)
+- `numpy` 2.2.6 - Numerical computing
+- `pandas` 2.3.3 - Data manipulation
+
+**Geospatial libraries:**
+- `rasterio` 1.4.3 - Read/write GeoTIFF
+- `geopandas` 1.1.1 - Geospatial data analysis
+- `shapely` 2.1.1 - Geometric operations
+- `pyproj` 3.6.1 - Coordinate transformations
+
+**Visualization:**
+- `matplotlib` 3.10.7 - Plotting
+- `seaborn` 0.13.2 - Statistical visualization
+- `folium` 0.20.0 - Interactive maps
+
+**Full dependencies:** Xem [`environment.yml`](environment.yml)
+
+---
+
+## 📝 Git commit history
+
+Các cập nhật gần đây:
+```
+7e41fe8 BIG UPDATE!!!
+2d53b21 over10ksamples
+c39550e thử lại trước khi đổi samples
+2c5954c Remove vectorization & add visualization plots
+e7d7430 blabla
+```
 
 ---
 
@@ -597,4 +383,15 @@ Pipeline CNN xử lý dữ liệu ở mức **patch-level**, sử dụng kiến 
 - **Sinh viên:** Ninh Hải Đăng
 - **Email:** ninhhaidangg@gmail.com
 - **GitHub:** [ninhhaidang](https://github.com/ninhhaidang)
+- **Repository:** [25-26_HKI_DATN_21021411_DangNH](https://github.com/Geospatial-Technology-Lab/25-26_HKI_DATN_21021411_DangNH)
 - **Đơn vị:** Trường Đại học Công nghệ - ĐHQGHN
+
+---
+
+## 📄 License
+
+Dự án này được phát triển cho mục đích nghiên cứu và học thuật.
+
+---
+
+**Last updated:** November 2025

@@ -20,8 +20,8 @@ RAW_DATA_DIR = DATA_DIR / "raw"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
 
 # Ground Truth
-GROUND_TRUTH_DIR = RAW_DATA_DIR / "ground_truth"
-GROUND_TRUTH_CSV = GROUND_TRUTH_DIR / "add0to0.csv"
+GROUND_TRUTH_DIR = RAW_DATA_DIR / "samples"
+GROUND_TRUTH_CSV = GROUND_TRUTH_DIR / "4labels.csv"
 
 # Sentinel-2 (Optical)
 S2_DIR = RAW_DATA_DIR / "sentinel-2"
@@ -154,7 +154,7 @@ DL_CONFIG = {
     'model_type': 'standard',          # 'standard' or 'deeper'
     'patch_size': 3,                    # 3x3 patches
     'n_features': TOTAL_FEATURES,       # 27 features
-    'n_classes': 3,                     # Multi-class: 0=Forest Stable (1→1), 1=Deforestation (1→0), 2=Non-forest (0→0)
+    'n_classes': 4,                     # Multi-class: 0=Forest Stable (1→1), 1=Deforestation (1→0), 2=Non-forest (0→0), 3=Reforestation (0→1)
     'dropout_rate': 0.5,                # Dropout for regularization
 
     # Training parameters
@@ -183,7 +183,7 @@ DL_CONFIG = {
 
     # Class weights (for imbalanced data)
     'use_class_weights': True,
-    'class_weights': [1.0, 1.0, 1.0]    # Will be computed from data if needed (3 classes)
+    'class_weights': [1.0, 1.0, 1.0, 1.0]    # Will be computed from data if needed (4 classes)
 }
 
 # Output files for Deep Learning
