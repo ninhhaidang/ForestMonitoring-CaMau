@@ -6,11 +6,11 @@
 
 ### 1.1.1. Tình hình mất rừng trên thế giới
 
-Rừng bao phủ khoảng 31% diện tích đất liền toàn cầu (FAO, 2020), đóng vai trò thiết yếu trong việc điều hòa khí hậu, lưu giữ carbon, bảo tồn đa dạng sinh học, và cung cấp sinh kế cho hàng tỷ người. Tuy nhiên, tốc độ mất rừng toàn cầu vẫn đang ở mức báo động. Theo báo cáo "Global Forest Resources Assessment 2020" của FAO (2020), tổng diện tích rừng bị phá (gross deforestation) từ năm 1990 đến 2020 ước tính khoảng 420 triệu hecta, trong khi diện tích mất rừng ròng (net loss, sau khi trừ đi diện tích trồng rừng mới) là 178 triệu hecta, chủ yếu do chuyển đổi sang đất nông nghiệp, chăn nuôi, khai thác gỗ bất hợp pháp, và phát triển cơ sở hạ tầng.
+Rừng bao phủ khoảng 31% diện tích đất liền toàn cầu [[1]](REFERENCES.md#ref1), đóng vai trò thiết yếu trong việc điều hòa khí hậu, lưu giữ carbon, bảo tồn đa dạng sinh học, và cung cấp sinh kế cho hàng tỷ người. Tuy nhiên, tốc độ mất rừng toàn cầu vẫn đang ở mức báo động. Theo báo cáo "Global Forest Resources Assessment 2020" của FAO [[1]](REFERENCES.md#ref1), tổng diện tích rừng bị phá (gross deforestation) từ năm 1990 đến 2020 ước tính khoảng 420 triệu hecta, trong khi diện tích mất rừng ròng (net loss, sau khi trừ đi diện tích trồng rừng mới) là 178 triệu hecta, chủ yếu do chuyển đổi sang đất nông nghiệp, chăn nuôi, khai thác gỗ bất hợp pháp, và phát triển cơ sở hạ tầng.
 
-Khu vực nhiệt đới, nơi tập trung 45% diện tích rừng toàn cầu và đa dạng sinh học cao nhất, đang chịu tốc độ mất rừng nhanh nhất. Lưu vực Amazon (Brazil), rừng Congo (Trung Phi), và Đông Nam Á là những "điểm nóng" về mất rừng. Theo dữ liệu từ Global Forest Watch (2021), thế giới mất khoảng 10 triệu hecta rừng nhiệt đới mỗi năm trong giai đoạn 2015-2020.
+Khu vực nhiệt đới, nơi tập trung 45% diện tích rừng toàn cầu và đa dạng sinh học cao nhất, đang chịu tốc độ mất rừng nhanh nhất. Lưu vực Amazon (Brazil), rừng Congo (Trung Phi), và Đông Nam Á là những "điểm nóng" về mất rừng. Theo dữ liệu từ Global Forest Watch [[3]](REFERENCES.md#ref3), thế giới mất khoảng 10 triệu hecta rừng nhiệt đới mỗi năm trong giai đoạn 2015-2020.
 
-Mất rừng không chỉ làm giảm khả năng hấp thụ CO₂ mà còn trực tiếp phát thải khí nhà kính từ việc đốt rừng và phân hủy sinh khối. Theo IPCC (2019), phá rừng và thay đổi sử dụng đất đóng góp khoảng 23% tổng lượng phát thải khí nhà kính do con người gây ra. Điều này góp phần làm gia tăng hiện tượng biến đổi khí hậu toàn cầu.
+Mất rừng không chỉ làm giảm khả năng hấp thụ CO₂ mà còn trực tiếp phát thải khí nhà kính từ việc đốt rừng và phân hủy sinh khối. Theo IPCC [[2]](REFERENCES.md#ref2), phá rừng và thay đổi sử dụng đất đóng góp khoảng 23% tổng lượng phát thải khí nhà kính do con người gây ra. Điều này góp phần làm gia tăng hiện tượng biến đổi khí hậu toàn cầu.
 
 ### 1.1.2. Tình hình mất rừng tại Việt Nam
 
@@ -90,6 +90,7 @@ NDVI = (NIR - Red) / (NIR + Red)
 - NDVI > 0.6: Thực vật xanh tốt
 - NDVI < 0.2: Đất trống, nước, đô thị
 - Ứng dụng: Đánh giá mật độ và sức khỏe thực vật
+- *Lưu ý: Trong triển khai, thêm epsilon (1e-8) vào mẫu số để tránh chia cho 0*
 
 **NBR (Normalized Burn Ratio):**
 ```
@@ -98,6 +99,7 @@ NBR = (NIR - SWIR2) / (NIR + SWIR2)
 - Nhạy cảm với lửa và vùng cháy
 - Delta NBR (dNBR) dùng để đánh giá mức độ cháy rừng
 - Ứng dụng: Phát hiện cháy rừng, đánh giá thiệt hại sau cháy
+- *Lưu ý: Trong triển khai, thêm epsilon (1e-8) vào mẫu số*
 
 **NDMI (Normalized Difference Moisture Index):**
 ```
@@ -106,6 +108,7 @@ NDMI = (NIR - SWIR1) / (NIR + SWIR1)
 - Đánh giá hàm lượng nước trong thực vật
 - NDMI thấp: Stress hạn, nguy cơ cháy cao
 - Ứng dụng: Giám sát hạn hán, đánh giá sức khỏe rừng
+- *Lưu ý: Trong triển khai, thêm epsilon (1e-8) vào mẫu số*
 
 ### 1.2.4. Tích hợp dữ liệu SAR và Optical
 
@@ -134,9 +137,9 @@ Việc kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2) mang l�
 
 Random Forest là một trong những thuật toán phổ biến nhất trong phân loại ảnh viễn thám. Các nghiên cứu tiêu biểu:
 
-- **Belgiu & Drăguț (2016)** trong bài "Random forest in remote sensing: A review of applications and future directions" (*ISPRS Journal of Photogrammetry and Remote Sensing*, 114, 24-31, https://doi.org/10.1016/j.isprsjprs.2016.01.011) đã tổng hợp hơn 200 nghiên cứu sử dụng Random Forest, chỉ ra rằng RF đạt accuracy trung bình 85-90% trên các bài toán phân loại đất.
+- Belgiu & Drăguț [[4]](REFERENCES.md#ref4) đã tổng hợp hơn 200 nghiên cứu sử dụng Random Forest, chỉ ra rằng RF đạt accuracy trung bình 85-90% trên các bài toán phân loại đất.
 
-- **Gislason et al. (2006)** so sánh RF với SVM và Maximum Likelihood trên dữ liệu Landsat, kết quả cho thấy RF đạt accuracy cao hơn 2-5% và thời gian training nhanh hơn đáng kể.
+- Gislason et al. [[5]](REFERENCES.md#ref5) so sánh RF với SVM và Maximum Likelihood trên dữ liệu Landsat, kết quả cho thấy RF đạt accuracy cao hơn 2-5% và thời gian training nhanh hơn đáng kể.
 
 **Ưu điểm của Random Forest:**
 - Robust với noise và outliers
@@ -155,9 +158,9 @@ Random Forest là một trong những thuật toán phổ biến nhất trong ph
 
 SVM cũng được sử dụng rộng rãi trong phân loại viễn thám:
 
-- **Mountrakis et al. (2011)** trong "Support vector machines in remote sensing: A review" phân tích 73 nghiên cứu, chỉ ra SVM đặc biệt hiệu quả với dữ liệu high-dimensional và training samples nhỏ.
+- Mountrakis et al. [[6]](REFERENCES.md#ref6) phân tích 73 nghiên cứu, chỉ ra SVM đặc biệt hiệu quả với dữ liệu high-dimensional và training samples nhỏ.
 
-- **Huang et al. (2002)** áp dụng SVM cho phân loại đa lớp trên dữ liệu Landsat, đạt accuracy 87%, cao hơn 5% so với Maximum Likelihood.
+- Huang et al. [[7]](REFERENCES.md#ref7) áp dụng SVM cho phân loại đa lớp trên dữ liệu Landsat, đạt accuracy 87%, cao hơn 5% so với Maximum Likelihood.
 
 **Ưu điểm SVM:**
 - Hiệu quả với high-dimensional data
@@ -176,11 +179,11 @@ SVM cũng được sử dụng rộng rãi trong phân loại viễn thám:
 
 CNN đã cách mạng hóa computer vision và ngày càng được áp dụng rộng rãi trong viễn thám:
 
-- **Zhang et al. (2016)** trong "Deep learning for remote sensing data: A technical tutorial on the state of the art" (IEEE GRSM) giới thiệu các kiến trúc CNN phổ biến và ứng dụng trong viễn thám.
+- Zhang et al. [[8]](REFERENCES.md#ref8) giới thiệu các kiến trúc CNN phổ biến và ứng dụng trong viễn thám.
 
-- **Kussul et al. (2017)** áp dụng CNN cho phân loại cây trồng từ Sentinel-2, đạt accuracy 94.5%, vượt trội Random Forest (88%) và SVM (89.5%) trên cùng dataset.
+- Kussul et al. [[9]](REFERENCES.md#ref9) áp dụng CNN cho phân loại cây trồng từ Sentinel-2, đạt accuracy 94.5%, vượt trội Random Forest (88%) và SVM (89.5%) trên cùng dataset.
 
-- **Xu et al. (2021)** trong "Advanced Multi-Sensor Optical Remote Sensing for Urban Land Use and Land Cover Classification: Outcome of the 2018 IEEE GRSS Data Fusion Contest" sử dụng CNN kết hợp với attention mechanism đạt accuracy 96.8% trên dữ liệu đa nguồn.
+- Xu et al. [[10]](REFERENCES.md#ref10) sử dụng CNN kết hợp với attention mechanism đạt accuracy 96.8% trên dữ liệu đa nguồn.
 
 **Ưu điểm CNN:**
 - Tự động học spatial features
@@ -200,43 +203,43 @@ CNN đã cách mạng hóa computer vision và ngày càng được áp dụng r
 
 U-Net ban đầu được thiết kế cho phân đoạn ảnh y tế nhưng đã được áp dụng thành công trong viễn thám:
 
-- **Ronneberger et al. (2015)** giới thiệu kiến trúc U-Net với encoder-decoder và skip connections.
+- Ronneberger et al. [[11]](REFERENCES.md#ref11) giới thiệu kiến trúc U-Net với encoder-decoder và skip connections.
 
-- **Karra et al. (2021)** sử dụng U-Net kết hợp Sentinel-2 time series để tạo bản đồ lớp phủ toàn cầu 10m (Esri Land Cover), đạt accuracy 85% cho 10 lớp.
+- Karra et al. [[12]](REFERENCES.md#ref12) sử dụng U-Net kết hợp Sentinel-2 time series để tạo bản đồ lớp phủ toàn cầu 10m (Esri Land Cover), đạt accuracy 85% cho 10 lớp.
 
 **ResNet và DenseNet:**
 
 Các kiến trúc sâu hơn cũng được thử nghiệm:
 
-- **Zhong et al. (2018)** áp dụng ResNet-50 cho phân loại scene từ ảnh viễn thám, đạt accuracy 96% trên UC Merced dataset.
+- Zhong et al. [[13]](REFERENCES.md#ref13) áp dụng ResNet-50 cho phân loại scene từ ảnh viễn thám, đạt accuracy 96% trên UC Merced dataset.
 
-- **Zhu et al. (2017)** sử dụng DenseNet cho semantic segmentation ảnh viễn thám cao độ phân giải.
+- Zhu et al. [[14]](REFERENCES.md#ref14) sử dụng DenseNet cho semantic segmentation ảnh viễn thám cao độ phân giải.
 
 ### 1.3.3. Ứng dụng trong giám sát rừng
 
 **Phát hiện mất rừng:**
 
-- **Hansen et al. (2013)** phát triển Global Forest Change dataset sử dụng Landsat time series và decision tree, phát hiện mất rừng toàn cầu 2000-2012 ở độ phân giải 30m.
+- Hansen et al. [[15]](REFERENCES.md#ref15) phát triển Global Forest Change dataset sử dụng Landsat time series và decision tree, phát hiện mất rừng toàn cầu 2000-2012 ở độ phân giải 30m.
 
-- **Reiche et al. (2018)** kết hợp Sentinel-1 và Landsat để phát hiện mất rừng near-real-time tại Amazon, đạt accuracy 93.8%.
+- Reiche et al. [[16]](REFERENCES.md#ref16) kết hợp Sentinel-1 và Landsat để phát hiện mất rừng near-real-time tại Amazon, đạt accuracy 93.8%.
 
-- **Hethcoat et al. (2019)** sử dụng CNN trên Landsat time series để phát hiện illegal gold mining ở Amazon, đạt F1-score 0.92.
+- Hethcoat et al. [[17]](REFERENCES.md#ref17) sử dụng CNN trên Landsat time series để phát hiện illegal gold mining ở Amazon, đạt F1-score 0.92.
 
 **Tích hợp SAR và Optical:**
 
-- **Hu et al. (2020)** kết hợp Sentinel-1 và Sentinel-2 với Random Forest để phân loại rừng ở Madagascar, accuracy tăng từ 87% (chỉ Sentinel-2) lên 92% (cả hai).
+- Hu et al. [[18]](REFERENCES.md#ref18) kết hợp Sentinel-1 và Sentinel-2 với Random Forest để phân loại rừng ở Madagascar, accuracy tăng từ 87% (chỉ Sentinel-2) lên 92% (cả hai).
 
-- **Ienco et al. (2019)** sử dụng deep neural networks kết hợp SAR + Optical time series để phân loại crop, đạt accuracy 96.5%.
+- Ienco et al. [[19]](REFERENCES.md#ref19) sử dụng deep neural networks kết hợp SAR + Optical time series để phân loại crop, đạt accuracy 96.5%.
 
 **Nghiên cứu tại Việt Nam:**
 
 Một số nghiên cứu liên quan đã được thực hiện tại Việt Nam:
 
-- **Pham et al. (2019)** sử dụng Sentinel-1 để phát hiện biến động rừng tại Đắk Lắk, kết hợp SAR backscatter và machine learning để phân loại với độ chính xác 87% (*Forest Ecology and Management*, 433, 109-119).
+- Pham et al. [[20]](REFERENCES.md#ref20) sử dụng Sentinel-1 để phát hiện biến động rừng tại Đắk Lắk, kết hợp SAR backscatter và machine learning để phân loại với độ chính xác 87%.
 
-- **Nguyen et al. (2020)** áp dụng Random Forest và Sentinel-2 để lập bản đồ che phủ rừng tại Quảng Nam, đạt overall accuracy 91.2% (*Remote Sensing Applications: Society and Environment*, 17, 100278).
+- Nguyen et al. [[21]](REFERENCES.md#ref21) áp dụng Random Forest và Sentinel-2 để lập bản đồ che phủ rừng tại Quảng Nam, đạt overall accuracy 91.2%.
 
-- **Bùi et al. (2021)** nghiên cứu biến động rừng ngập mặn ven biển ĐBSCL bằng Landsat time series (1990-2020), phát hiện xu hướng giảm diện tích do chuyển đổi sang ao nuôi (*Tạp chí Khoa học Đại học Huế: Khoa học Tự nhiên*, 130(1B), 5-18).
+- Bùi et al. [[22]](REFERENCES.md#ref22) nghiên cứu biến động rừng ngập mặn ven biển ĐBSCL bằng Landsat time series (1990-2020), phát hiện xu hướng giảm diện tích do chuyển đổi sang ao nuôi.
 
 ## 1.4. Khoảng trống nghiên cứu và định hướng luận văn
 
@@ -315,4 +318,6 @@ Luận văn tập trung trả lời các câu hỏi sau:
 ---
 
 **[Kết thúc Chương 1]**
+
+📚 **Xem danh sách đầy đủ tài liệu tham khảo:** [REFERENCES.md](REFERENCES.md)
 

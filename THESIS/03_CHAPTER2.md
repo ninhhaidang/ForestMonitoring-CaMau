@@ -142,6 +142,8 @@ Ví dụ:
 NDVI = (NIR - Red) / (NIR + Red)
 ```
 
+*Lưu ý: Trong thực tế, một epsilon nhỏ (1e-8) được thêm vào mẫu số để tránh chia cho 0.*
+
 **Nguyên lý:**
 - Thực vật xanh: Hấp thụ mạnh Red (chlorophyll), phản xạ cao NIR (cấu trúc tế bào) → NDVI cao
 - Đất trống/nước: Phản xạ thấp cả Red và NIR → NDVI thấp
@@ -163,6 +165,8 @@ NDVI = (NIR - Red) / (NIR + Red)
 NBR = (NIR - SWIR2) / (NIR + SWIR2)
 ```
 
+*Lưu ý: Trong triển khai, epsilon (1e-8) được thêm vào mẫu số.*
+
 **Nguyên lý:**
 - NIR: Phản xạ cao ở thực vật xanh
 - SWIR2: Nhạy với độ ẩm và vùng cháy
@@ -183,6 +187,8 @@ dNBR = NBR_before - NBR_after
 ```
 NDMI = (NIR - SWIR1) / (NIR + SWIR1)
 ```
+
+*Lưu ý: Trong triển khai, epsilon (1e-8) được thêm vào mẫu số.*
 
 **Nguyên lý:**
 - SWIR1 (~1600 nm): Hấp thụ mạnh bởi nước
@@ -1027,3 +1033,5 @@ Trong đó nᵢ là số samples của class i.
 ---
 
 **[Kết thúc Chương 2]**
+
+📚 **Xem danh sách đầy đủ tài liệu tham khảo:** [REFERENCES.md](REFERENCES.md)

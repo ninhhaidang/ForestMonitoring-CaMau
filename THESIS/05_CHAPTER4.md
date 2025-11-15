@@ -841,3 +841,9 @@ Chương 4 trình bày chi tiết kết quả thực nghiệm của mô hình CN
 - Scalable cho monitoring quy mô lớn
 
 Kết quả cho thấy CNN với spatial context (3×3 patches) là phương pháp hiệu quả cho bài toán phát hiện biến động rừng từ dữ liệu Sentinel-1/2, vượt trội so với phương pháp machine learning truyền thống (Random Forest).
+
+---
+
+**[Kết thúc Chương 4]**
+
+📚 **Xem danh sách đầy đủ tài liệu tham khảo:** [REFERENCES.md](REFERENCES.md)

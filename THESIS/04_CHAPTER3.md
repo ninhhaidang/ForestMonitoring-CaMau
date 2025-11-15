@@ -1416,3 +1416,5 @@ rf_accuracy = accuracy_score(y_test, rf_preds)
 ---
 
 **[Kết thúc Chương 3]**
+
+📚 **Xem danh sách đầy đủ tài liệu tham khảo:** [REFERENCES.md](REFERENCES.md)

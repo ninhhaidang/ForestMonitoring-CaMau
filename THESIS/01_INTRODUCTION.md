@@ -66,7 +66,7 @@ Trường Đại học Công nghệ - Đại học Quốc gia Hà Nội
 
 ## 1. Lý do chọn đề tài
 
-Rừng đóng vai trò quan trọng trong việc duy trì cân bằng sinh thái, điều hòa khí hậu, lưu giữ carbon và bảo vệ đa dạng sinh học. Tuy nhiên, tình trạng mất rừng đang diễn ra nghiêm trọng trên toàn cầu, đặc biệt tại các quốc gia đang phát triển. Theo báo cáo "Global Forest Resources Assessment 2020" của Tổ chức Lương thực và Nông nghiệp Liên hợp quốc (FAO, 2020), thế giới đã mất ròng (net loss) khoảng 178 triệu hecta rừng trong giai đoạn 1990-2020, tương đương diện tích của Libya.
+Rừng đóng vai trò quan trọng trong việc duy trì cân bằng sinh thái, điều hòa khí hậu, lưu giữ carbon và bảo vệ đa dạng sinh học. Tuy nhiên, tình trạng mất rừng đang diễn ra nghiêm trọng trên toàn cầu, đặc biệt tại các quốc gia đang phát triển. Theo báo cáo "Global Forest Resources Assessment 2020" của Tổ chức Lương thực và Nông nghiệp Liên hợp quốc [1], thế giới đã mất ròng (net loss) khoảng 178 triệu hecta rừng trong giai đoạn 1990-2020, tương đương diện tích của Libya.
 
 Tại Việt Nam, mặc dù độ che phủ rừng đã tăng từ 37% (năm 2000) lên 42% (năm 2020) nhờ các chương trình trồng rừng, nhưng tình trạng suy thoái và mất rừng tự nhiên vẫn đáng báo động, đặc biệt tại các tỉnh ven biển và đồng bằng sông Cửu Long. Tỉnh Cà Mau, nằm ở cực Nam Tổ Quốc, sở hữu hệ sinh thái rừng ngập mặn quan trọng nhưng đang phải đối mặt với áp lực từ nuôi trồng thủy sản, xâm nhập mặn, và biến đổi khí hậu.
 
@@ -208,3 +208,5 @@ Luận văn được tổ chức thành 5 chương:
 - **Chương 5 - Kết luận và kiến nghị:** Tóm tắt các kết quả đạt được, đóng góp khoa học, hạn chế và hướng phát triển tiếp theo.
 
 ---
+
+📚 **Xem danh sách đầy đủ tài liệu tham khảo:** [REFERENCES.md](REFERENCES.md)
