@@ -94,7 +94,7 @@ flowchart TB
 ### Random Forest Pipeline (Chi tiết)
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Data["INPUT<br/>27 features"]
         F["Feature Stack<br/>(27, H, W)"]
         G["Ground Truth<br/>(2,630 points)"]
@@ -157,7 +157,7 @@ flowchart LR
 ### CNN Pipeline (Chi tiết)
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Data["INPUT<br/>27 features"]
         F["Feature Stack<br/>(27, H, W)"]
         G["Ground Truth<br/>(2,630 points)"]
