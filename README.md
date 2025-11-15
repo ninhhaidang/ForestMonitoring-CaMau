@@ -17,13 +17,237 @@ Cả hai phương pháp đạt độ chính xác > 98% trong phát hiện mất 
 
 ---
 
+## 🔄 Quy trình xử lý
+
+### Tổng quan workflow
+
+```mermaid
+flowchart TB
+    subgraph Input["📥 INPUT DATA"]
+        S2B["Sentinel-2 Before<br/>7 bands, 10m<br/>30/01/2024"]
+        S2A["Sentinel-2 After<br/>7 bands, 10m<br/>28/02/2025"]
+        S1B["Sentinel-1 Before<br/>VV+VH, 10m<br/>04/02/2024"]
+        S1A["Sentinel-1 After<br/>VV+VH, 10m<br/>22/02/2025"]
+        GT["Ground Truth<br/>2,630 points<br/>4 classes"]
+        BD["Forest Boundary<br/>Shapefile"]
+    end
+
+    subgraph Processing["⚙️ DATA PROCESSING"]
+        Load["Data Loading<br/>src/core/data_loader.py"]
+        FeatExt["Feature Extraction<br/>src/core/feature_extraction.py<br/>27 features = S2(21) + S1(6)"]
+        Mask["Apply Forest Mask<br/>Valid pixels only"]
+    end
+
+    subgraph Split["🔀 PIPELINE SPLIT"]
+        Choice{"Chọn phương pháp"}
+    end
+
+    subgraph RF["🌲 RANDOM FOREST PIPELINE"]
+        RF1["Extract Training Data<br/>Pixel-based<br/>src/models/rf/trainer.py"]
+        RF2["Train/Val/Test Split<br/>70% / 15% / 15%<br/>Stratified Random"]
+        RF3["Train Random Forest<br/>100 trees<br/>sklearn"]
+        RF4["Evaluate Model<br/>src/core/evaluation.py<br/>Metrics + Feature Importance"]
+        RF5["Predict Full Raster<br/>src/models/rf/predictor.py<br/>Batch: 10k pixels"]
+        RF6["Save Results<br/>Model + Maps + Plots"]
+    end
+
+    subgraph CNN["🧠 CNN PIPELINE"]
+        CNN1["Spatial Clustering<br/>src/models/cnn/spatial_split.py<br/>Distance threshold: 50m"]
+        CNN2["Extract 3×3 Patches<br/>src/models/cnn/patch_extractor.py<br/>Spatial context"]
+        CNN3["Normalize Patches<br/>Z-score standardization"]
+        CNN4["Train/Val/Test Split<br/>70% / 15% / 15%<br/>Cluster-based"]
+        CNN5["Train CNN Model<br/>src/models/cnn/trainer.py<br/>2 Conv + GAP + FC"]
+        CNN6["Evaluate Model<br/>src/core/evaluation.py<br/>Metrics + Training curves"]
+        CNN7["Predict Full Raster<br/>src/models/cnn/predictor.py<br/>Sliding window"]
+        CNN8["Save Results<br/>Model + Maps + Plots"]
+    end
+
+    subgraph Output["📊 OUTPUTS"]
+        Model["Trained Models<br/>rf_model.pkl / cnn_model.pth"]
+        Raster["Classification Maps<br/>Binary + Probability<br/>GeoTIFF format"]
+        Metrics["Evaluation Metrics<br/>Accuracy, F1, ROC-AUC"]
+        Plots["Visualizations<br/>Confusion Matrix, ROC, Maps"]
+    end
+
+    S2B & S2A & S1B & S1A & GT & BD --> Load
+    Load --> FeatExt
+    FeatExt --> Mask
+    Mask --> Choice
+
+    Choice -->|"Pixel-based"| RF1
+    RF1 --> RF2 --> RF3 --> RF4 --> RF5 --> RF6
+
+    Choice -->|"Patch-based"| CNN1
+    CNN1 --> CNN2 --> CNN3 --> CNN4 --> CNN5 --> CNN6 --> CNN7 --> CNN8
+
+    RF6 --> Model & Raster & Metrics & Plots
+    CNN8 --> Model & Raster & Metrics & Plots
+
+    style Input fill:#e1f5ff
+    style Processing fill:#fff3e0
+    style Split fill:#f3e5f5
+    style RF fill:#e8f5e9
+    style CNN fill:#fce4ec
+    style Output fill:#fff9c4
+```
+
+### Random Forest Pipeline (Chi tiết)
+
+```mermaid
+flowchart LR
+    subgraph Data["INPUT<br/>27 features"]
+        F["Feature Stack<br/>(27, H, W)"]
+        G["Ground Truth<br/>(2,630 points)"]
+    end
+
+    subgraph Extract["EXTRACT TRAINING"]
+        E1["Convert coords → pixels<br/>Geographic to raster"]
+        E2["Extract pixel values<br/>At GT locations"]
+        E3["Create DataFrame<br/>(N, 27 features + label)"]
+    end
+
+    subgraph Split["SPLIT DATA"]
+        S1["Stratified Split<br/>sklearn.train_test_split"]
+        S2["Train: 70%<br/>Val: 15%<br/>Test: 15%"]
+    end
+
+    subgraph Train["TRAIN MODEL"]
+        T1["RandomForestClassifier<br/>n_estimators=100<br/>max_features='sqrt'"]
+        T2["Fit on training data<br/>X_train, y_train"]
+        T3["Validate on val set<br/>Early assessment"]
+    end
+
+    subgraph Eval["EVALUATE"]
+        EV1["Test Set Metrics<br/>Accuracy, F1, AUC"]
+        EV2["Feature Importance<br/>Gini-based ranking"]
+        EV3["Cross-Validation<br/>5-fold stratified"]
+    end
+
+    subgraph Predict["PREDICT RASTER"]
+        P1["Reshape features<br/>(H×W, 27)"]
+        P2["Batch prediction<br/>10k pixels/batch"]
+        P3["4-class probabilities<br/>Softmax output"]
+        P4["Binary conversion<br/>Class 1 vs Rest"]
+        P5["Reshape to map<br/>(H, W)"]
+    end
+
+    subgraph Output["OUTPUT"]
+        O1["Classification Map<br/>0/1/2/3/-1"]
+        O2["Probability Map<br/>P(Deforestation)"]
+        O3["Model File<br/>rf_model.pkl"]
+    end
+
+    F & G --> E1 --> E2 --> E3
+    E3 --> S1 --> S2
+    S2 --> T1 --> T2 --> T3
+    T3 --> EV1 & EV2 & EV3
+    EV1 --> P1 --> P2 --> P3 --> P4 --> P5
+    P5 --> O1 & O2
+    T3 --> O3
+
+    style Data fill:#e3f2fd
+    style Extract fill:#f1f8e9
+    style Split fill:#fff3e0
+    style Train fill:#fce4ec
+    style Eval fill:#f3e5f5
+    style Predict fill:#e0f2f1
+    style Output fill:#fff9c4
+```
+
+### CNN Pipeline (Chi tiết)
+
+```mermaid
+flowchart LR
+    subgraph Data["INPUT<br/>27 features"]
+        F["Feature Stack<br/>(27, H, W)"]
+        G["Ground Truth<br/>(2,630 points)"]
+    end
+
+    subgraph Spatial["SPATIAL SPLIT"]
+        SP1["Hierarchical Clustering<br/>Distance: 50m threshold"]
+        SP2["Cluster assignment<br/>Prevent spatial leakage"]
+        SP3["Split clusters<br/>Train/Val/Test<br/>70/15/15"]
+    end
+
+    subgraph Patch["EXTRACT PATCHES"]
+        PA1["Convert coords → pixels"]
+        PA2["Extract 3×3 patches<br/>At each GT point"]
+        PA3["Check validity<br/>No NaN, within bounds"]
+        PA4["Normalize<br/>Z-score: (x-μ)/σ"]
+    end
+
+    subgraph Arch["CNN ARCHITECTURE"]
+        A1["Input: 3×3×27"]
+        A2["Conv1: 27→64<br/>BatchNorm, ReLU<br/>Dropout 0.3"]
+        A3["Conv2: 64→32<br/>BatchNorm, ReLU<br/>Dropout 0.3"]
+        A4["Global Avg Pool<br/>32 features"]
+        A5["FC1: 32→64<br/>BatchNorm, ReLU<br/>Dropout 0.5"]
+        A6["FC2: 64→4<br/>4-class logits"]
+    end
+
+    subgraph Train["TRAINING"]
+        TR1["DataLoader<br/>batch_size=32"]
+        TR2["Loss: CrossEntropy<br/>Optimizer: AdamW<br/>LR: 0.001"]
+        TR3["Training Loop<br/>Max 50 epochs"]
+        TR4["LR Scheduler<br/>ReduceLROnPlateau"]
+        TR5["Early Stopping<br/>patience=10"]
+        TR6["Save Best Model<br/>Min val_loss"]
+    end
+
+    subgraph Eval["EVALUATE"]
+        EV1["Test Metrics<br/>Accuracy, F1, AUC"]
+        EV2["Training Curves<br/>Loss, Accuracy"]
+        EV3["Confusion Matrix<br/>Per-class performance"]
+    end
+
+    subgraph Predict["PREDICT RASTER"]
+        PR1["Sliding Window<br/>Extract all 3×3 patches"]
+        PR2["Normalize patches<br/>Using training stats"]
+        PR3["Batch inference<br/>GPU accelerated<br/>1k patches/batch"]
+        PR4["4-class probabilities<br/>Softmax"]
+        PR5["Binary conversion<br/>Class 1 vs Rest"]
+        PR6["Fill output map<br/>(H, W)"]
+    end
+
+    subgraph Output["OUTPUT"]
+        O1["Classification Map<br/>0/1/2/3/-1"]
+        O2["Probability Map<br/>P(Deforestation)"]
+        O3["Model File<br/>cnn_model.pth"]
+        O4["Training History<br/>Loss curves"]
+    end
+
+    F & G --> SP1 --> SP2 --> SP3
+    SP3 --> PA1 --> PA2 --> PA3 --> PA4
+    PA4 --> A1 --> A2 --> A3 --> A4 --> A5 --> A6
+    A6 --> TR1 --> TR2 --> TR3 --> TR4 --> TR5 --> TR6
+    TR6 --> EV1 & EV2 & EV3
+    EV1 --> PR1 --> PR2 --> PR3 --> PR4 --> PR5 --> PR6
+    PR6 --> O1 & O2
+    TR6 --> O3 & O4
+
+    style Data fill:#e3f2fd
+    style Spatial fill:#fff3e0
+    style Patch fill:#f1f8e9
+    style Arch fill:#fce4ec
+    style Train fill:#f3e5f5
+    style Eval fill:#e1bee7
+    style Predict fill:#e0f2f1
+    style Output fill:#fff9c4
+```
+
+---
+
 ## 📊 Dữ liệu
 
 ### Ground Truth Points
 - **File:** [`data/raw/samples/4labels.csv`](data/raw/samples/4labels.csv)
 - **Tổng số điểm:** 2,630 điểm training
 - **Format:** CSV với các trường: `id`, `label`, `x`, `y` (tọa độ UTM Zone 48N, EPSG:32648)
-- **Phân bố labels:** (tùy thuộc vào dataset, có thể multi-class hoặc binary)
+- **Phân bố labels (4 classes):**
+  - **Class 0:** Rừng ổn định (Forest Stable) - 656 điểm
+  - **Class 1:** Mất rừng (Deforestation) - 650 điểm
+  - **Class 2:** Không phải rừng (Non-forest) - 664 điểm
+  - **Class 3:** Tái sinh rừng (Reforestation) - 660 điểm
 
 ### Sentinel-2 (Optical)
 - **7 bands** gồm spectral bands và spectral indices:
@@ -191,7 +415,7 @@ Global Average Pooling → (batch, 32)
   ↓
 FC Block: 32→64 (BatchNorm, ReLU, Dropout 0.5)
   ↓
-Output: 64→2 (logits)
+Output: 64→4 (logits)
 ```
 
 **Training configuration:**
@@ -265,8 +489,8 @@ Output: 64→2 (logits)
 ### Output files
 
 **GeoTIFF rasters:**
-- Binary classification maps (0=No deforestation, 1=Deforestation, -1=NoData)
-- Probability maps (0.0-1.0 = probability of deforestation, -9999.0=NoData)
+- Multi-class classification maps (0=Forest Stable, 1=Deforestation, 2=Non-forest, 3=Reforestation, -1=NoData)
+- Probability maps (0.0-1.0 = probability for each class, -9999.0=NoData)
 - CRS: EPSG:32648 (UTM Zone 48N)
 - Resolution: 10m
 
@@ -385,6 +609,23 @@ e7d7430 blabla
 - **GitHub:** [ninhhaidang](https://github.com/ninhhaidang)
 - **Repository:** [25-26_HKI_DATN_21021411_DangNH](https://github.com/Geospatial-Technology-Lab/25-26_HKI_DATN_21021411_DangNH)
 - **Đơn vị:** Trường Đại học Công nghệ - ĐHQGHN
+
+---
+
+## 📚 Tài liệu tham khảo
+
+Luận văn này tham khảo **24 tài liệu** từ các nguồn uy tín về Machine Learning, Deep Learning, và Viễn thám.
+
+**Xem danh sách đầy đủ:** [REFERENCES.md](THESIS/REFERENCES.md)
+
+**Phân loại theo chủ đề:**
+- Tổ chức quốc tế: 3 tài liệu
+- Machine Learning truyền thống: 4 tài liệu
+- Deep Learning: 7 tài liệu
+- Giám sát rừng: 3 tài liệu
+- SAR-Optical Fusion: 2 tài liệu
+- Nghiên cứu Việt Nam: 3 tài liệu
+- So sánh phương pháp: 2 tài liệu
 
 ---
 
