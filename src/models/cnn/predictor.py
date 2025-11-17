@@ -45,9 +45,10 @@ class RasterPredictor:
         self.patch_size = patch_size
         self.batch_size = batch_size
 
-        self.multiclass_map = None  # 3-class map (0, 1, 2)
+        self.multiclass_map = None  # 4-class map (0, 1, 2, 3)
         self.classification_map = None  # Binary map (0, 1)
-        self.probability_map = None  # Binary probability
+        self.probability_map = None  # Binary probability (P of class 1)
+        self.multiclass_probs_map = None  # 4-class probabilities (height, width, 4)
 
         logger.info(f"RasterPredictor initialized on device: {self.device}")
 
@@ -88,9 +89,10 @@ class RasterPredictor:
         logger.info(f"Temperature: {temperature} {'(calibrated)' if temperature > 1.0 else '(normal)'}")
 
         # Initialize output maps
-        self.multiclass_map = np.zeros((height, width), dtype=np.uint8)  # 3-class predictions
+        self.multiclass_map = np.zeros((height, width), dtype=np.uint8)  # 4-class predictions
         self.classification_map = np.zeros((height, width), dtype=np.uint8)  # Binary map
         self.probability_map = np.zeros((height, width), dtype=np.float32)  # Binary probability
+        self.multiclass_probs_map = np.zeros((height, width, 4), dtype=np.float32)  # 4-class probabilities
 
         # Extract patches using sliding window
         logger.info("\nExtracting patches...")
@@ -124,9 +126,10 @@ class RasterPredictor:
         logger.info(f"\nPredicting {len(patches):,} patches...")
 
         # Pre-allocate output arrays (faster than list append)
-        all_multiclass_preds = np.empty(len(patches), dtype=np.uint8)  # 3-class predictions
+        all_multiclass_preds = np.empty(len(patches), dtype=np.uint8)  # 4-class predictions
         all_binary_preds = np.empty(len(patches), dtype=np.uint8)  # Binary predictions
         all_binary_probs = np.empty(len(patches), dtype=np.float32)  # Binary probabilities
+        all_multiclass_probs = np.empty((len(patches), 4), dtype=np.float32)  # 4-class probabilities
 
         dataset = PatchDataset(patches)
 
@@ -161,10 +164,10 @@ class RasterPredictor:
                 else:
                     probs = torch.softmax(outputs, dim=1)
 
-                # Multiclass predictions (3 classes)
+                # Multiclass predictions (4 classes: 0=Forest Stable, 1=Deforestation, 2=Non-forest, 3=Reforestation)
                 _, multiclass_preds = probs.max(1)
 
-                # Binary predictions: Class 1 (Deforestation) vs Rest (Class 0 + Class 2)
+                # Binary predictions: Class 1 (Deforestation) vs Rest (Class 0 + Class 2 + Class 3)
                 # Binary probability = P(Class 1)
                 binary_probs = probs[:, 1]  # Probability of deforestation
                 binary_preds = (binary_probs > 0.5).long()  # Threshold at 0.5
@@ -174,6 +177,7 @@ class RasterPredictor:
                 all_multiclass_preds[batch_start_idx:batch_start_idx + batch_size] = multiclass_preds.cpu().numpy()
                 all_binary_preds[batch_start_idx:batch_start_idx + batch_size] = binary_preds.cpu().numpy()
                 all_binary_probs[batch_start_idx:batch_start_idx + batch_size] = binary_probs.cpu().numpy()
+                all_multiclass_probs[batch_start_idx:batch_start_idx + batch_size] = probs.cpu().numpy()  # Save all 4 probabilities
 
                 batch_start_idx += batch_size
 
@@ -188,18 +192,21 @@ class RasterPredictor:
             self.multiclass_map[row, col] = all_multiclass_preds[idx]
             self.classification_map[row, col] = all_binary_preds[idx]
             self.probability_map[row, col] = all_binary_probs[idx]
+            self.multiclass_probs_map[row, col] = all_multiclass_probs[idx]  # Fill 4-class probabilities
 
         # Apply valid mask - set invalid areas to NoData
         logger.info("Applying valid mask...")
         self.multiclass_map[~valid_mask] = 255  # 255 = NoData for uint8
         self.classification_map[~valid_mask] = 255  # 255 = NoData for uint8
         self.probability_map[~valid_mask] = -9999  # NoData for float32
+        self.multiclass_probs_map[~valid_mask] = -9999  # NoData for float32 (all 4 bands)
 
         # Statistics - Multiclass
         total_valid_pixels = np.sum(valid_mask)
         mc_class_0 = np.sum(self.multiclass_map == 0)  # Forest Stable
         mc_class_1 = np.sum(self.multiclass_map == 1)  # Deforestation
         mc_class_2 = np.sum(self.multiclass_map == 2)  # Non-forest
+        mc_class_3 = np.sum(self.multiclass_map == 3)  # Reforestation
 
         # Statistics - Binary
         binary_no_defor = np.sum(self.classification_map == 0)  # No Deforestation
@@ -209,12 +216,13 @@ class RasterPredictor:
         logger.info("PREDICTION SUMMARY")
         logger.info(f"{'='*70}")
         logger.info(f"Total valid pixels: {total_valid_pixels:,}")
-        logger.info(f"\nMulticlass Predictions:")
+        logger.info(f"\nMulticlass Predictions (4 classes):")
         logger.info(f"  Class 0 (Forest Stable): {mc_class_0:,} ({mc_class_0/total_valid_pixels*100:.2f}%)")
         logger.info(f"  Class 1 (Deforestation): {mc_class_1:,} ({mc_class_1/total_valid_pixels*100:.2f}%)")
         logger.info(f"  Class 2 (Non-forest): {mc_class_2:,} ({mc_class_2/total_valid_pixels*100:.2f}%)")
+        logger.info(f"  Class 3 (Reforestation): {mc_class_3:,} ({mc_class_3/total_valid_pixels*100:.2f}%)")
         logger.info(f"\nBinary Classification (for visualization):")
-        logger.info(f"  No Deforestation (Class 0+2): {binary_no_defor:,} ({binary_no_defor/total_valid_pixels*100:.2f}%)")
+        logger.info(f"  No Deforestation (Class 0+2+3): {binary_no_defor:,} ({binary_no_defor/total_valid_pixels*100:.2f}%)")
         logger.info(f"  Deforestation (Class 1): {binary_defor:,} ({binary_defor/total_valid_pixels*100:.2f}%)")
         logger.info(f"{'='*70}\n")
 
@@ -222,40 +230,43 @@ class RasterPredictor:
 
     def save_rasters(
         self,
-        classification_path: Path,
-        probability_path: Path,
         reference_metadata: dict,
-        multiclass_path: Path = None
+        classification_path: Path = None,
+        probability_path: Path = None,
+        multiclass_path: Path = None,
+        multiclass_probs_path: Path = None
     ):
         """
         Save classification and probability rasters
 
         Args:
-            classification_path: Path to save BINARY classification raster
-            probability_path: Path to save BINARY probability raster
             reference_metadata: Metadata from reference raster (transform, crs, etc.)
-            multiclass_path: Optional path to save multiclass raster (3 classes)
+            classification_path: Optional path to save BINARY classification raster
+            probability_path: Optional path to save BINARY probability raster (single band: P(class 1))
+            multiclass_path: Optional path to save multiclass raster (4 classes)
+            multiclass_probs_path: Optional path to save 4-band probability raster (P(0), P(1), P(2), P(3))
         """
         logger.info("\nSaving output rasters...")
 
-        # Binary Classification raster (uint8) with NoData
-        with rasterio.open(
-            classification_path,
-            'w',
-            driver='GTiff',
-            height=self.classification_map.shape[0],
-            width=self.classification_map.shape[1],
-            count=1,
-            dtype=np.uint8,
-            crs=reference_metadata['crs'],
-            transform=reference_metadata['transform'],
-            compress='lzw',
-            nodata=255  # Set NoData value
-        ) as dst:
-            dst.write(self.classification_map, 1)
-            dst.set_band_description(1, 'Binary Classification (0=No Deforestation, 1=Deforestation, 255=NoData)')
+        # Binary Classification raster (optional)
+        if classification_path is not None:
+            with rasterio.open(
+                classification_path,
+                'w',
+                driver='GTiff',
+                height=self.classification_map.shape[0],
+                width=self.classification_map.shape[1],
+                count=1,
+                dtype=np.uint8,
+                crs=reference_metadata['crs'],
+                transform=reference_metadata['transform'],
+                compress='lzw',
+                nodata=255  # Set NoData value
+            ) as dst:
+                dst.write(self.classification_map, 1)
+                dst.set_band_description(1, 'Binary Classification (0=No Deforestation, 1=Deforestation, 255=NoData)')
 
-        logger.info(f"  Binary classification raster saved: {classification_path}")
+            logger.info(f"  Binary classification raster saved: {classification_path}")
 
         # Multiclass raster (optional)
         if multiclass_path is not None:
@@ -273,28 +284,52 @@ class RasterPredictor:
                 nodata=255
             ) as dst:
                 dst.write(self.multiclass_map, 1)
-                dst.set_band_description(1, 'Multiclass (0=Forest Stable, 1=Deforestation, 2=Non-forest, 255=NoData)')
+                dst.set_band_description(1, 'Multiclass (0=Forest Stable, 1=Deforestation, 2=Non-forest, 3=Reforestation, 255=NoData)')
 
             logger.info(f"  Multiclass raster saved: {multiclass_path}")
 
-        # Binary Probability raster (float32) with NoData
-        with rasterio.open(
-            probability_path,
-            'w',
-            driver='GTiff',
-            height=self.probability_map.shape[0],
-            width=self.probability_map.shape[1],
-            count=1,
-            dtype=np.float32,
-            crs=reference_metadata['crs'],
-            transform=reference_metadata['transform'],
-            compress='lzw',
-            nodata=-9999  # Set NoData value
-        ) as dst:
-            dst.write(self.probability_map, 1)
-            dst.set_band_description(1, 'Binary Deforestation Probability (0.0-1.0, -9999=NoData)')
+        # Binary Probability raster (optional)
+        if probability_path is not None:
+            with rasterio.open(
+                probability_path,
+                'w',
+                driver='GTiff',
+                height=self.probability_map.shape[0],
+                width=self.probability_map.shape[1],
+                count=1,
+                dtype=np.float32,
+                crs=reference_metadata['crs'],
+                transform=reference_metadata['transform'],
+                compress='lzw',
+                nodata=-9999  # Set NoData value
+            ) as dst:
+                dst.write(self.probability_map, 1)
+                dst.set_band_description(1, 'Binary Deforestation Probability (0.0-1.0, -9999=NoData)')
 
-        logger.info(f"  Binary probability raster saved: {probability_path}")
+            logger.info(f"  Binary probability raster saved: {probability_path}")
+
+        # Multiclass Probabilities raster (4 bands) - NEW!
+        if multiclass_probs_path is not None:
+            with rasterio.open(
+                multiclass_probs_path,
+                'w',
+                driver='GTiff',
+                height=self.multiclass_probs_map.shape[0],
+                width=self.multiclass_probs_map.shape[1],
+                count=4,  # 4 bands for 4 classes
+                dtype=np.float32,
+                crs=reference_metadata['crs'],
+                transform=reference_metadata['transform'],
+                compress='lzw',
+                nodata=-9999
+            ) as dst:
+                # Write each probability band
+                for i in range(4):
+                    dst.write(self.multiclass_probs_map[:, :, i], i + 1)
+                    class_names = ['Forest Stable', 'Deforestation', 'Non-forest', 'Reforestation']
+                    dst.set_band_description(i + 1, f'P(Class {i}): {class_names[i]} (0.0-1.0, -9999=NoData)')
+
+            logger.info(f"  4-band multiclass probabilities raster saved: {multiclass_probs_path}")
 
 
 class PatchDataset(Dataset):

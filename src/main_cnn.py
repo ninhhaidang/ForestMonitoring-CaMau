@@ -207,7 +207,11 @@ class DeforestationCNNPipeline:
             device=self.config['device'],
             learning_rate=self.config['learning_rate'],
             weight_decay=self.config['weight_decay'],
-            class_weights=class_weights
+            class_weights=class_weights,
+            use_lr_scheduler=self.config['use_lr_scheduler'],
+            lr_scheduler_patience=self.config['lr_scheduler_patience'],
+            lr_scheduler_factor=self.config['lr_scheduler_factor'],
+            lr_min=self.config['lr_min']
         )
 
         # Train model
@@ -274,11 +278,10 @@ class DeforestationCNNPipeline:
             normalize=True
         )
 
-        # Save rasters
+        # Save rasters (only 4-class multiclass map)
         predictor.save_rasters(
-            DL_OUTPUT_FILES['classification_raster'],
-            DL_OUTPUT_FILES['probability_raster'],
-            data['metadata']['s2_before']
+            data['metadata']['s2_before'],
+            multiclass_path=DL_OUTPUT_FILES['multiclass_raster']  # Save 4-class raster only
         )
 
         self.execution_times['predict_raster'] = time.time() - step_start
@@ -308,6 +311,12 @@ class DeforestationCNNPipeline:
         print(f"  Learning rate: {self.config['learning_rate']}")
         print(f"  Weight decay: {self.config['weight_decay']}")
         print(f"  Early stopping patience: {self.config['early_stopping_patience']}")
+        if self.config.get('use_lr_scheduler', False):
+            print(f"\n  Learning Rate Scheduler:")
+            print(f"    Type: {self.config.get('lr_scheduler_type', 'N/A')}")
+            print(f"    Patience: {self.config.get('lr_scheduler_patience', 'N/A')}")
+            print(f"    Factor: {self.config.get('lr_scheduler_factor', 'N/A')}")
+            print(f"    Min LR: {self.config.get('lr_min', 'N/A')}")
 
         print(f"\nDATA SPLIT (Spatial-Aware):")
         print(f"  Cluster distance: {self.config['cluster_distance']}m")

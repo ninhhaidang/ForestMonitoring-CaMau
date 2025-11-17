@@ -48,7 +48,11 @@ class CNNTrainer:
         device: str = 'cuda',
         learning_rate: float = 0.001,
         weight_decay: float = 1e-4,
-        class_weights: List[float] = None
+        class_weights: List[float] = None,
+        use_lr_scheduler: bool = True,
+        lr_scheduler_patience: int = 15,
+        lr_scheduler_factor: float = 0.5,
+        lr_min: float = 1e-6
     ):
         """
         Initialize trainer
@@ -59,11 +63,17 @@ class CNNTrainer:
             learning_rate: Initial learning rate
             weight_decay: L2 regularization weight
             class_weights: Weights for imbalanced classes
+            use_lr_scheduler: Whether to use learning rate scheduler
+            lr_scheduler_patience: Patience for ReduceLROnPlateau
+            lr_scheduler_factor: Factor to reduce LR (multiply by this)
+            lr_min: Minimum learning rate
         """
         self.device = torch.device(device if torch.cuda.is_available() else 'cpu')
         self.model = model.to(self.device)
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
+        self.use_lr_scheduler = use_lr_scheduler
+        self.lr_min = lr_min
 
         # Loss function
         if class_weights is not None:
@@ -79,14 +89,18 @@ class CNNTrainer:
             weight_decay=weight_decay
         )
 
-        # Learning rate scheduler
-        self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-            self.optimizer,
-            mode='min',
-            factor=0.5,
-            patience=5,
-            verbose=True
-        )
+        # Learning rate scheduler (optional)
+        self.scheduler = None
+        if use_lr_scheduler:
+            self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+                self.optimizer,
+                mode='min',
+                factor=lr_scheduler_factor,
+                patience=lr_scheduler_patience,
+                verbose=True,
+                min_lr=lr_min
+            )
+            logger.info(f"Learning Rate Scheduler enabled (patience={lr_scheduler_patience}, factor={lr_scheduler_factor}, min_lr={lr_min})")
 
         # Training history
         self.history = {
@@ -242,8 +256,9 @@ class CNNTrainer:
             # Validate
             val_loss, val_acc = self.validate(val_loader)
 
-            # Update learning rate
-            self.scheduler.step(val_loss)
+            # Update learning rate (if scheduler is enabled)
+            if self.scheduler is not None:
+                self.scheduler.step(val_loss)
             current_lr = self.optimizer.param_groups[0]['lr']
 
             # Record history

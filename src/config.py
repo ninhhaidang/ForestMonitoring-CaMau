@@ -155,14 +155,21 @@ DL_CONFIG = {
     'patch_size': 3,                    # 3x3 patches
     'n_features': TOTAL_FEATURES,       # 27 features
     'n_classes': 4,                     # Multi-class: 0=Forest Stable (1→1), 1=Deforestation (1→0), 2=Non-forest (0→0), 3=Reforestation (0→1)
-    'dropout_rate': 0.5,                # Dropout for regularization
+    'dropout_rate': 0.7,                # Dropout for regularization (increased to prevent overfitting)
 
     # Training parameters
-    'epochs': 50,                       # Maximum epochs
-    'batch_size': 32,                   # Batch size
+    'epochs': 100,                      # Maximum epochs (reduced from 500, model converges fast)
+    'batch_size': 64,                   # Batch size (increased from 32)
     'learning_rate': 0.001,             # Initial learning rate
-    'weight_decay': 1e-4,               # L2 regularization
-    'early_stopping_patience': 10,      # Early stopping patience
+    'weight_decay': 1e-3,               # L2 regularization (increased to prevent overfitting)
+    'early_stopping_patience': 15,      # Early stopping patience (reduced from 50 for faster stopping)
+
+    # Learning Rate Scheduler (adaptive learning)
+    'use_lr_scheduler': True,           # Enable learning rate scheduler
+    'lr_scheduler_type': 'ReduceLROnPlateau',  # Reduce LR when validation loss plateaus
+    'lr_scheduler_patience': 10,        # Wait 10 epochs before reducing LR (reduced from 15)
+    'lr_scheduler_factor': 0.5,         # Reduce LR to 50% (multiply by 0.5)
+    'lr_min': 1e-6,                     # Minimum learning rate
 
     # Data split (spatial-aware)
     'cluster_distance': 50.0,           # Clustering threshold (meters)
@@ -188,9 +195,9 @@ DL_CONFIG = {
 
 # Output files for Deep Learning
 DL_OUTPUT_FILES = {
-    # Rasters
-    'classification_raster': RASTERS_DIR / 'cnn_classification.tif',
-    'probability_raster': RASTERS_DIR / 'cnn_probability.tif',
+    # Rasters (only 4-class multiclass map)
+    'multiclass_raster': RASTERS_DIR / 'cnn_multiclass.tif',  # 4-class raster (0=Forest Stable, 1=Deforestation, 2=Non-forest, 3=Reforestation)
+    # Note: Binary classification and probability rasters removed (redundant with 4-class output)
 
     # Models
     'trained_model': MODELS_DIR / 'cnn_model.pth',

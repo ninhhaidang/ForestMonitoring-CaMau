@@ -1,5 +1,3 @@
----
-
 # CHƯƠNG 1: TỔNG QUAN VỀ VẤN ĐỀ NGHIÊN CỨU
 
 ## 1.1. Bối cảnh và tình hình mất rừng

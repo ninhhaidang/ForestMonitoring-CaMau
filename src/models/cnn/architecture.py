@@ -20,7 +20,7 @@ class DeforestationCNN(nn.Module):
         self,
         patch_size: int = 3,
         n_features: int = 27,
-        n_classes: int = 3,
+        n_classes: int = 4,
         dropout_rate: float = 0.5
     ):
         """
@@ -29,7 +29,7 @@ class DeforestationCNN(nn.Module):
         Args:
             patch_size: Size of input patch (e.g., 3 for 3x3)
             n_features: Number of feature channels (e.g., 27)
-            n_classes: Number of output classes (3 for multi-class: 0=Forest Stable, 1=Deforestation, 2=Non-forest)
+            n_classes: Number of output classes (4 for multi-class: 0=Forest Stable, 1=Deforestation, 2=Non-forest, 3=Reforestation)
             dropout_rate: Dropout probability
         """
         super(DeforestationCNN, self).__init__()
@@ -188,7 +188,7 @@ class DeforestationCNNDeeper(nn.Module):
         self,
         patch_size: int = 3,
         n_features: int = 27,
-        n_classes: int = 3,
+        n_classes: int = 4,
         dropout_rate: float = 0.5
     ):
         super(DeforestationCNNDeeper, self).__init__()
@@ -264,7 +264,7 @@ def create_model(
     model_type: str = 'standard',
     patch_size: int = 3,
     n_features: int = 27,
-    n_classes: int = 3,
+    n_classes: int = 4,
     dropout_rate: float = 0.5
 ) -> nn.Module:
     """
@@ -274,7 +274,7 @@ def create_model(
         model_type: 'standard' or 'deeper'
         patch_size: Input patch size
         n_features: Number of feature channels
-        n_classes: Number of output classes (3 for multi-class)
+        n_classes: Number of output classes (4 for multi-class: 0=Forest Stable, 1=Deforestation, 2=Non-forest, 3=Reforestation)
         dropout_rate: Dropout rate
 
     Returns:

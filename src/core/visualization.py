@@ -214,26 +214,97 @@ class Visualizer:
         logger.info(f"  ✓ Saved to: {output_path}")
         plt.close()
 
+    def plot_multiclass_map(self, multiclass_map: np.ndarray,
+                           valid_mask: np.ndarray = None,
+                           output_path=None):
+        """
+        Plot 4-class classification map
+
+        Args:
+            multiclass_map: Multiclass classification map (4 classes)
+            valid_mask: Valid pixel mask
+            output_path: Path to save plot
+        """
+        logger.info("\nPlotting 4-class multiclass map...")
+
+        fig, ax = plt.subplots(1, 1, figsize=(12, 10))
+
+        # Create masked array for visualization
+        if valid_mask is not None:
+            class_masked = np.ma.masked_where(~valid_mask, multiclass_map)
+        else:
+            class_masked = np.ma.masked_where(multiclass_map == 255, multiclass_map)
+
+        # Custom colormap for 4 classes
+        # 0=Forest Stable (Green), 1=Deforestation (Red), 2=Non-forest (Gray), 3=Reforestation (Blue)
+        cmap_multiclass = ListedColormap(['#2ecc71', '#e74c3c', '#95a5a6', '#3498db'])
+        im = ax.imshow(class_masked, cmap=cmap_multiclass, vmin=0, vmax=3)
+
+        ax.set_title('4-Class Classification Map\n(Green: Forest Stable | Red: Deforestation | Gray: Non-forest | Blue: Reforestation)',
+                     fontsize=12, fontweight='bold')
+        ax.axis('off')
+
+        # Add colorbar
+        cbar = plt.colorbar(im, ax=ax, orientation='horizontal',
+                           pad=0.05, fraction=0.046)
+        cbar.set_ticks([0, 1, 2, 3])
+        cbar.set_ticklabels(['Forest Stable', 'Deforestation', 'Non-forest', 'Reforestation'])
+
+        plt.tight_layout()
+
+        # Save
+        if output_path is None:
+            output_path = PLOTS_DIR / 'multiclass_map.png'
+
+        plt.savefig(output_path, dpi=self.config['dpi'], bbox_inches='tight')
+        logger.info(f"  ✓ Saved to: {output_path}")
+        plt.close()
+
     def plot_classification_maps(self, classification_map: np.ndarray,
                                 probability_map: np.ndarray,
                                 valid_mask: np.ndarray = None,
+                                multiclass_map: np.ndarray = None,
                                 output_path=None):
         """
-        Plot classification and probability maps
+        Plot classification and probability maps (with optional multiclass)
 
         Args:
             classification_map: Binary classification map
             probability_map: Probability map
             valid_mask: Valid pixel mask
+            multiclass_map: Optional 4-class map to display
             output_path: Path to save plot
         """
         logger.info("\nPlotting classification maps...")
 
-        fig, axes = plt.subplots(1, 2, figsize=(18, 8))
+        # If multiclass map is provided, create 3-panel figure
+        if multiclass_map is not None:
+            fig, axes = plt.subplots(1, 3, figsize=(24, 8))
 
-        # Classification map
-        ax1 = axes[0]
+            # Panel 1: Multiclass (4 classes)
+            ax1 = axes[0]
+            if valid_mask is not None:
+                mc_masked = np.ma.masked_where(~valid_mask, multiclass_map)
+            else:
+                mc_masked = np.ma.masked_where(multiclass_map == 255, multiclass_map)
 
+            cmap_multiclass = ListedColormap(['#2ecc71', '#e74c3c', '#95a5a6', '#3498db'])
+            im1 = ax1.imshow(mc_masked, cmap=cmap_multiclass, vmin=0, vmax=3)
+            ax1.set_title('4-Class Map\n(Green: Forest Stable | Red: Deforestation | Gray: Non-forest | Blue: Reforestation)',
+                         fontsize=11, fontweight='bold')
+            ax1.axis('off')
+
+            cbar1 = plt.colorbar(im1, ax=ax1, orientation='horizontal', pad=0.05, fraction=0.046)
+            cbar1.set_ticks([0, 1, 2, 3])
+            cbar1.set_ticklabels(['Forest\nStable', 'Defor.', 'Non-\nforest', 'Refor.'], fontsize=9)
+
+            # Panel 2: Binary classification
+            ax2 = axes[1]
+        else:
+            fig, axes = plt.subplots(1, 2, figsize=(18, 8))
+            ax2 = axes[0]
+
+        # Classification map (Binary)
         # Create masked array for visualization
         if valid_mask is not None:
             class_masked = np.ma.masked_where(~valid_mask, classification_map)
@@ -242,20 +313,32 @@ class Visualizer:
 
         # Custom colormap
         cmap_class = ListedColormap(['#2ecc71', '#e74c3c'])  # Green, Red
-        im1 = ax1.imshow(class_masked, cmap=cmap_class, vmin=0, vmax=1)
+        if multiclass_map is not None:
+            im2 = ax2.imshow(class_masked, cmap=cmap_class, vmin=0, vmax=1)
+        else:
+            im1 = ax2.imshow(class_masked, cmap=cmap_class, vmin=0, vmax=1)
 
-        ax1.set_title('Binary Classification Map\n(Green: No Deforestation, Red: Deforestation)',
+        ax2.set_title('Binary Classification Map\n(Green: No Deforestation, Red: Deforestation)',
                      fontsize=12, fontweight='bold')
-        ax1.axis('off')
+        ax2.axis('off')
 
         # Add colorbar
-        cbar1 = plt.colorbar(im1, ax=ax1, orientation='horizontal',
-                            pad=0.05, fraction=0.046)
-        cbar1.set_ticks([0, 1])
-        cbar1.set_ticklabels(['No Deforestation', 'Deforestation'])
+        if multiclass_map is not None:
+            cbar2 = plt.colorbar(im2, ax=ax2, orientation='horizontal',
+                                pad=0.05, fraction=0.046)
+            cbar2.set_ticks([0, 1])
+            cbar2.set_ticklabels(['No Deforestation', 'Deforestation'])
+            # Panel 3: Probability map
+            ax3 = axes[2]
+        else:
+            cbar1 = plt.colorbar(im1, ax=ax2, orientation='horizontal',
+                                pad=0.05, fraction=0.046)
+            cbar1.set_ticks([0, 1])
+            cbar1.set_ticklabels(['No Deforestation', 'Deforestation'])
+            # Probability map
+            ax3 = axes[1]
 
         # Probability map
-        ax2 = axes[1]
 
         # Create masked array
         if valid_mask is not None:
@@ -264,17 +347,26 @@ class Visualizer:
             prob_masked = np.ma.masked_where(probability_map == -9999, probability_map)
 
         # Plot with RdYlGn_r colormap
-        im2 = ax2.imshow(prob_masked, cmap=self.config['cmap_probability'],
-                        vmin=0, vmax=1)
+        if multiclass_map is not None:
+            im3 = ax3.imshow(prob_masked, cmap=self.config['cmap_probability'],
+                            vmin=0, vmax=1)
+        else:
+            im2 = ax3.imshow(prob_masked, cmap=self.config['cmap_probability'],
+                            vmin=0, vmax=1)
 
-        ax2.set_title('Deforestation Probability Map\n(Green: Low Probability, Red: High Probability)',
+        ax3.set_title('Deforestation Probability Map\n(Green: Low Probability, Red: High Probability)',
                      fontsize=12, fontweight='bold')
-        ax2.axis('off')
+        ax3.axis('off')
 
         # Add colorbar
-        cbar2 = plt.colorbar(im2, ax=ax2, orientation='horizontal',
-                            pad=0.05, fraction=0.046)
-        cbar2.set_label('Probability of Deforestation', fontsize=10)
+        if multiclass_map is not None:
+            cbar3 = plt.colorbar(im3, ax=ax3, orientation='horizontal',
+                                pad=0.05, fraction=0.046)
+            cbar3.set_label('Probability of Deforestation', fontsize=10)
+        else:
+            cbar2 = plt.colorbar(im2, ax=ax3, orientation='horizontal',
+                                pad=0.05, fraction=0.046)
+            cbar2.set_label('Probability of Deforestation', fontsize=10)
 
         plt.tight_layout()
 
