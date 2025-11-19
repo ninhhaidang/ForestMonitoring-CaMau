@@ -544,20 +544,43 @@ class SpatialKFoldWithFixedTest:
         logger.info(f"{'='*70}")
         logger.info(f"Test size: {self.test_size*100:.1f}%")
 
-        # Use SpatialSplitter to create fixed test set
-        splitter = SpatialSplitter(
-            cluster_distance=self.cluster_distance,
-            train_size=(1 - self.test_size),
-            val_size=0.0,  # No validation set in this step
-            test_size=self.test_size,
-            random_state=self.random_state
-        )
+        # Check if using random split or spatial clustering
+        if self.cluster_distance is None:
+            # Use simple random split (stratified)
+            logger.info("Using RANDOM SPLIT (stratified by class)")
+            
+            if stratify_by_class:
+                stratify = ground_truth['label']
+            else:
+                stratify = None
+            
+            indices = np.arange(len(ground_truth))
+            trainval_indices, test_indices = train_test_split(
+                indices,
+                test_size=self.test_size,
+                stratify=stratify,
+                random_state=self.random_state
+            )
+            
+            metadata = {'method': 'random_split', 'clusters': None}
+            
+        else:
+            # Use spatial clustering
+            logger.info(f"Using SPATIAL CLUSTERING (cluster_distance={self.cluster_distance}m)")
+            
+            splitter = SpatialSplitter(
+                cluster_distance=self.cluster_distance,
+                train_size=(1 - self.test_size),
+                val_size=0.0,  # No validation set in this step
+                test_size=self.test_size,
+                random_state=self.random_state
+            )
 
-        trainval_indices, _, test_indices, metadata = splitter.spatial_split(
-            ground_truth,
-            stratify_by_class=stratify_by_class,
-            verify=True
-        )
+            trainval_indices, _, test_indices, metadata = splitter.spatial_split(
+                ground_truth,
+                stratify_by_class=stratify_by_class,
+                verify=True
+            )
 
         logger.info(f"\n✅ Fixed test set created:")
         logger.info(f"   Train+Val: {len(trainval_indices)} samples ({len(trainval_indices)/len(ground_truth)*100:.1f}%)")
@@ -586,19 +609,56 @@ class SpatialKFoldWithFixedTest:
         logger.info(f"Number of folds: {self.n_splits}")
         logger.info(f"Data size: {len(ground_truth_trainval)} samples")
 
-        # Use SpatialKFold for CV
-        kfold = SpatialKFold(
-            n_splits=self.n_splits,
-            cluster_distance=self.cluster_distance,
-            random_state=self.random_state,
-            shuffle=self.shuffle
-        )
+        # Check if using random split or spatial clustering
+        if self.cluster_distance is None:
+            # Use simple StratifiedKFold or KFold
+            logger.info("Using RANDOM K-FOLD (stratified by class)")
+            
+            if stratify_by_class:
+                from sklearn.model_selection import StratifiedKFold
+                kfold = StratifiedKFold(
+                    n_splits=self.n_splits,
+                    shuffle=self.shuffle,
+                    random_state=self.random_state
+                )
+                for fold_idx, (train_indices, val_indices) in enumerate(kfold.split(
+                    ground_truth_trainval,
+                    ground_truth_trainval['label']
+                )):
+                    logger.info(f"\nFold {fold_idx + 1}/{self.n_splits}:")
+                    logger.info(f"  Train: {len(train_indices)} samples")
+                    logger.info(f"  Val: {len(val_indices)} samples")
+                    yield fold_idx, train_indices, val_indices
+            else:
+                from sklearn.model_selection import KFold
+                kfold = KFold(
+                    n_splits=self.n_splits,
+                    shuffle=self.shuffle,
+                    random_state=self.random_state
+                )
+                for fold_idx, (train_indices, val_indices) in enumerate(kfold.split(
+                    ground_truth_trainval
+                )):
+                    logger.info(f"\nFold {fold_idx + 1}/{self.n_splits}:")
+                    logger.info(f"  Train: {len(train_indices)} samples")
+                    logger.info(f"  Val: {len(val_indices)} samples")
+                    yield fold_idx, train_indices, val_indices
+        else:
+            # Use SpatialKFold for CV
+            logger.info(f"Using SPATIAL K-FOLD (cluster_distance={self.cluster_distance}m)")
+            
+            kfold = SpatialKFold(
+                n_splits=self.n_splits,
+                cluster_distance=self.cluster_distance,
+                random_state=self.random_state,
+                shuffle=self.shuffle
+            )
 
-        for fold_idx, (train_indices, val_indices) in enumerate(kfold.split(
-            ground_truth_trainval,
-            stratify_by_class=stratify_by_class
-        )):
-            yield fold_idx, train_indices, val_indices
+            for fold_idx, (train_indices, val_indices) in enumerate(kfold.split(
+                ground_truth_trainval,
+                stratify_by_class=stratify_by_class
+            )):
+                yield fold_idx, train_indices, val_indices
 
     def get_full_trainval_data(
         self,
