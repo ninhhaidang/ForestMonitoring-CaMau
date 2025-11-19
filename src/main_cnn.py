@@ -112,12 +112,16 @@ class DeforestationCNNPipeline:
         print("="*70)
         step_start = time.time()
 
+        # Generate random seed from timestamp for different splits each run
+        random_seed = int(time.time() * 1000) % (2**32)
+        print(f"Using random seed: {random_seed}")
+
         splitter = SpatialSplitter(
             cluster_distance=self.config['cluster_distance'],
             train_size=self.config['train_size'],
             val_size=self.config['val_size'],
             test_size=self.config['test_size'],
-            random_state=42
+            random_state=random_seed
         )
 
         train_indices, val_indices, test_indices, split_metadata = splitter.spatial_split(

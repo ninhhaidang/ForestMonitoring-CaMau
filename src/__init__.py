@@ -2,7 +2,7 @@
 Deforestation Detection Pipeline
 Cà Mau Province - Sentinel-1 & Sentinel-2
 
-Multi-model approach: Random Forest & CNN
+CNN-based approach for deforestation detection
 """
 
 __version__ = '2.0.0'
@@ -13,10 +13,6 @@ from .core.data_loader import DataLoader
 from .core.feature_extraction import FeatureExtraction
 from .core.evaluation import ModelEvaluator
 from .core.visualization import Visualizer
-
-# Random Forest
-from .models.rf.trainer import RandomForestTrainer
-from .models.rf.predictor import RasterPredictor as RFPredictor
 
 # CNN
 from .models.cnn.architecture import DeforestationCNN, create_model
@@ -31,9 +27,6 @@ __all__ = [
     'FeatureExtraction',
     'ModelEvaluator',
     'Visualizer',
-    # Random Forest
-    'RandomForestTrainer',
-    'RFPredictor',
     # CNN
     'DeforestationCNN',
     'create_model',

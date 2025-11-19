@@ -12,8 +12,8 @@ import logging
 from pathlib import Path
 
 from config import (
-    VIZ_CONFIG, OUTPUT_FILES, PLOTS_DIR,
-    LOG_CONFIG
+    VIZ_CONFIG, PLOTS_DIR,
+    OUTPUT_FILES, LOG_CONFIG
 )
 
 # Setup logging
@@ -260,123 +260,7 @@ class Visualizer:
         logger.info(f"  ✓ Saved to: {output_path}")
         plt.close()
 
-    def plot_classification_maps(self, classification_map: np.ndarray,
-                                probability_map: np.ndarray,
-                                valid_mask: np.ndarray = None,
-                                multiclass_map: np.ndarray = None,
-                                output_path=None):
-        """
-        Plot classification and probability maps (with optional multiclass)
 
-        Args:
-            classification_map: Binary classification map
-            probability_map: Probability map
-            valid_mask: Valid pixel mask
-            multiclass_map: Optional 4-class map to display
-            output_path: Path to save plot
-        """
-        logger.info("\nPlotting classification maps...")
-
-        # If multiclass map is provided, create 3-panel figure
-        if multiclass_map is not None:
-            fig, axes = plt.subplots(1, 3, figsize=(24, 8))
-
-            # Panel 1: Multiclass (4 classes)
-            ax1 = axes[0]
-            if valid_mask is not None:
-                mc_masked = np.ma.masked_where(~valid_mask, multiclass_map)
-            else:
-                mc_masked = np.ma.masked_where(multiclass_map == 255, multiclass_map)
-
-            cmap_multiclass = ListedColormap(['#2ecc71', '#e74c3c', '#95a5a6', '#3498db'])
-            im1 = ax1.imshow(mc_masked, cmap=cmap_multiclass, vmin=0, vmax=3)
-            ax1.set_title('4-Class Map\n(Green: Forest Stable | Red: Deforestation | Gray: Non-forest | Blue: Reforestation)',
-                         fontsize=11, fontweight='bold')
-            ax1.axis('off')
-
-            cbar1 = plt.colorbar(im1, ax=ax1, orientation='horizontal', pad=0.05, fraction=0.046)
-            cbar1.set_ticks([0, 1, 2, 3])
-            cbar1.set_ticklabels(['Forest\nStable', 'Defor.', 'Non-\nforest', 'Refor.'], fontsize=9)
-
-            # Panel 2: Binary classification
-            ax2 = axes[1]
-        else:
-            fig, axes = plt.subplots(1, 2, figsize=(18, 8))
-            ax2 = axes[0]
-
-        # Classification map (Binary)
-        # Create masked array for visualization
-        if valid_mask is not None:
-            class_masked = np.ma.masked_where(~valid_mask, classification_map)
-        else:
-            class_masked = np.ma.masked_where(classification_map == -1, classification_map)
-
-        # Custom colormap
-        cmap_class = ListedColormap(['#2ecc71', '#e74c3c'])  # Green, Red
-        if multiclass_map is not None:
-            im2 = ax2.imshow(class_masked, cmap=cmap_class, vmin=0, vmax=1)
-        else:
-            im1 = ax2.imshow(class_masked, cmap=cmap_class, vmin=0, vmax=1)
-
-        ax2.set_title('Binary Classification Map\n(Green: No Deforestation, Red: Deforestation)',
-                     fontsize=12, fontweight='bold')
-        ax2.axis('off')
-
-        # Add colorbar
-        if multiclass_map is not None:
-            cbar2 = plt.colorbar(im2, ax=ax2, orientation='horizontal',
-                                pad=0.05, fraction=0.046)
-            cbar2.set_ticks([0, 1])
-            cbar2.set_ticklabels(['No Deforestation', 'Deforestation'])
-            # Panel 3: Probability map
-            ax3 = axes[2]
-        else:
-            cbar1 = plt.colorbar(im1, ax=ax2, orientation='horizontal',
-                                pad=0.05, fraction=0.046)
-            cbar1.set_ticks([0, 1])
-            cbar1.set_ticklabels(['No Deforestation', 'Deforestation'])
-            # Probability map
-            ax3 = axes[1]
-
-        # Probability map
-
-        # Create masked array
-        if valid_mask is not None:
-            prob_masked = np.ma.masked_where(~valid_mask, probability_map)
-        else:
-            prob_masked = np.ma.masked_where(probability_map == -9999, probability_map)
-
-        # Plot with RdYlGn_r colormap
-        if multiclass_map is not None:
-            im3 = ax3.imshow(prob_masked, cmap=self.config['cmap_probability'],
-                            vmin=0, vmax=1)
-        else:
-            im2 = ax3.imshow(prob_masked, cmap=self.config['cmap_probability'],
-                            vmin=0, vmax=1)
-
-        ax3.set_title('Deforestation Probability Map\n(Green: Low Probability, Red: High Probability)',
-                     fontsize=12, fontweight='bold')
-        ax3.axis('off')
-
-        # Add colorbar
-        if multiclass_map is not None:
-            cbar3 = plt.colorbar(im3, ax=ax3, orientation='horizontal',
-                                pad=0.05, fraction=0.046)
-            cbar3.set_label('Probability of Deforestation', fontsize=10)
-        else:
-            cbar2 = plt.colorbar(im2, ax=ax3, orientation='horizontal',
-                                pad=0.05, fraction=0.046)
-            cbar2.set_label('Probability of Deforestation', fontsize=10)
-
-        plt.tight_layout()
-
-        # Save
-        if output_path is None:
-            output_path = OUTPUT_FILES['classification_maps']
-
-        plt.savefig(output_path, dpi=self.config['dpi'], bbox_inches='tight')
-        logger.info(f"  ✓ Saved to: {output_path}")
-        plt.close()
 
     def plot_cv_scores(self, cv_scores: dict, output_path=None):
         """
@@ -422,6 +306,217 @@ class Visualizer:
         plt.savefig(output_path, dpi=self.config['dpi'], bbox_inches='tight')
         logger.info(f"  ✓ Saved to: {output_path}")
         plt.close()
+
+    def plot_5fold_results(self, fold_results: list, output_path=None):
+        """
+        Plot 5-fold cross-validation results for CNN
+
+        Args:
+            fold_results: List of dictionaries with fold results
+                Each dict should contain: {
+                    'fold': int,
+                    'train_loss': float,
+                    'val_loss': float,
+                    'train_acc': float,
+                    'val_acc': float,
+                    'test_acc': float,
+                    'test_metrics': dict (optional)
+                }
+            output_path: Path to save plot
+        """
+        logger.info("\nPlotting 5-fold cross-validation results...")
+
+        n_folds = len(fold_results)
+
+        # Create figure with subplots
+        fig = plt.figure(figsize=(20, 12))
+        gs = fig.add_gridspec(3, 3, hspace=0.3, wspace=0.3)
+
+        # 1. Training & Validation Accuracy per Fold
+        ax1 = fig.add_subplot(gs[0, :2])
+        folds = [r['fold'] for r in fold_results]
+        train_accs = [r['train_acc'] for r in fold_results]
+        val_accs = [r['val_acc'] for r in fold_results]
+        test_accs = [r['test_acc'] for r in fold_results]
+
+        x = np.arange(n_folds)
+        width = 0.25
+
+        bars1 = ax1.bar(x - width, train_accs, width, label='Train',
+                       color='#3498db', alpha=0.8)
+        bars2 = ax1.bar(x, val_accs, width, label='Validation',
+                       color='#2ecc71', alpha=0.8)
+        bars3 = ax1.bar(x + width, test_accs, width, label='Test',
+                       color='#e74c3c', alpha=0.8)
+
+        ax1.set_xlabel('Fold', fontsize=12, fontweight='bold')
+        ax1.set_ylabel('Accuracy', fontsize=12, fontweight='bold')
+        ax1.set_title(f'{n_folds}-Fold Cross-Validation: Accuracy per Fold',
+                     fontsize=14, fontweight='bold')
+        ax1.set_xticks(x)
+        ax1.set_xticklabels([f'Fold {i+1}' for i in range(n_folds)])
+        ax1.legend(fontsize=11)
+        ax1.set_ylim([0, 1.05])
+        ax1.grid(axis='y', alpha=0.3)
+
+        # Add value labels
+        for bars in [bars1, bars2, bars3]:
+            for bar in bars:
+                height = bar.get_height()
+                ax1.text(bar.get_x() + bar.get_width()/2., height,
+                        f'{height:.3f}',
+                        ha='center', va='bottom', fontsize=9)
+
+        # 2. Loss per Fold
+        ax2 = fig.add_subplot(gs[0, 2])
+        train_losses = [r['train_loss'] for r in fold_results]
+        val_losses = [r['val_loss'] for r in fold_results]
+
+        bars1 = ax2.bar(x - width/2, train_losses, width, label='Train',
+                       color='#3498db', alpha=0.8)
+        bars2 = ax2.bar(x + width/2, val_losses, width, label='Validation',
+                       color='#2ecc71', alpha=0.8)
+
+        ax2.set_xlabel('Fold', fontsize=11, fontweight='bold')
+        ax2.set_ylabel('Loss', fontsize=11, fontweight='bold')
+        ax2.set_title('Loss per Fold', fontsize=12, fontweight='bold')
+        ax2.set_xticks(x)
+        ax2.set_xticklabels([f'F{i+1}' for i in range(n_folds)])
+        ax2.legend(fontsize=10)
+        ax2.grid(axis='y', alpha=0.3)
+
+        # 3. Statistics Summary (Box plots)
+        ax3 = fig.add_subplot(gs[1, :])
+
+        data_to_plot = [train_accs, val_accs, test_accs]
+        labels = ['Train Accuracy', 'Val Accuracy', 'Test Accuracy']
+
+        bp = ax3.boxplot(data_to_plot, labels=labels, patch_artist=True,
+                        showmeans=True, meanline=True,
+                        boxprops=dict(facecolor='lightblue', alpha=0.7),
+                        medianprops=dict(color='red', linewidth=2),
+                        meanprops=dict(color='green', linewidth=2, linestyle='--'))
+
+        ax3.set_ylabel('Accuracy', fontsize=12, fontweight='bold')
+        ax3.set_title('Accuracy Distribution Across Folds',
+                     fontsize=14, fontweight='bold')
+        ax3.grid(axis='y', alpha=0.3)
+        ax3.set_ylim([0, 1.05])
+
+        # Add statistics text
+        train_mean = np.mean(train_accs)
+        train_std = np.std(train_accs)
+        val_mean = np.mean(val_accs)
+        val_std = np.std(val_accs)
+        test_mean = np.mean(test_accs)
+        test_std = np.std(test_accs)
+
+        stats_text = (
+            f'Train: {train_mean:.4f} ± {train_std:.4f}\n'
+            f'Val: {val_mean:.4f} ± {val_std:.4f}\n'
+            f'Test: {test_mean:.4f} ± {test_std:.4f}'
+        )
+        ax3.text(0.02, 0.98, stats_text, transform=ax3.transAxes,
+                fontsize=11, verticalalignment='top',
+                bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+        # 4. Metrics per Fold (if available)
+        if 'test_metrics' in fold_results[0]:
+            ax4 = fig.add_subplot(gs[2, 0])
+
+            precision_scores = [r['test_metrics']['precision'] for r in fold_results]
+            recall_scores = [r['test_metrics']['recall'] for r in fold_results]
+            f1_scores = [r['test_metrics']['f1'] for r in fold_results]
+
+            width = 0.25
+            bars1 = ax4.bar(x - width, precision_scores, width,
+                           label='Precision', color='#9b59b6', alpha=0.8)
+            bars2 = ax4.bar(x, recall_scores, width,
+                           label='Recall', color='#e67e22', alpha=0.8)
+            bars3 = ax4.bar(x + width, f1_scores, width,
+                           label='F1-Score', color='#1abc9c', alpha=0.8)
+
+            ax4.set_xlabel('Fold', fontsize=11, fontweight='bold')
+            ax4.set_ylabel('Score', fontsize=11, fontweight='bold')
+            ax4.set_title('Classification Metrics per Fold',
+                         fontsize=12, fontweight='bold')
+            ax4.set_xticks(x)
+            ax4.set_xticklabels([f'F{i+1}' for i in range(n_folds)])
+            ax4.legend(fontsize=10)
+            ax4.set_ylim([0, 1.05])
+            ax4.grid(axis='y', alpha=0.3)
+
+        # 5. Final Summary Table
+        ax5 = fig.add_subplot(gs[2, 1:])
+        ax5.axis('off')
+
+        # Create summary table
+        summary_data = []
+        for i, result in enumerate(fold_results):
+            row = [
+                f"Fold {i+1}",
+                f"{result['train_acc']:.4f}",
+                f"{result['val_acc']:.4f}",
+                f"{result['test_acc']:.4f}",
+            ]
+            if 'test_metrics' in result:
+                row.extend([
+                    f"{result['test_metrics']['precision']:.4f}",
+                    f"{result['test_metrics']['recall']:.4f}",
+                    f"{result['test_metrics']['f1']:.4f}"
+                ])
+            summary_data.append(row)
+
+        # Add mean row
+        mean_row = [
+            "Mean ± Std",
+            f"{train_mean:.4f} ± {train_std:.4f}",
+            f"{val_mean:.4f} ± {val_std:.4f}",
+            f"{test_mean:.4f} ± {test_std:.4f}"
+        ]
+        if 'test_metrics' in fold_results[0]:
+            mean_row.extend([
+                f"{np.mean(precision_scores):.4f} ± {np.std(precision_scores):.4f}",
+                f"{np.mean(recall_scores):.4f} ± {np.std(recall_scores):.4f}",
+                f"{np.mean(f1_scores):.4f} ± {np.std(f1_scores):.4f}"
+            ])
+        summary_data.append(mean_row)
+
+        columns = ['Fold', 'Train Acc', 'Val Acc', 'Test Acc']
+        if 'test_metrics' in fold_results[0]:
+            columns.extend(['Precision', 'Recall', 'F1-Score'])
+
+        table = ax5.table(cellText=summary_data, colLabels=columns,
+                         loc='center', cellLoc='center',
+                         colWidths=[0.15] * len(columns))
+        table.auto_set_font_size(False)
+        table.set_fontsize(10)
+        table.scale(1, 2)
+
+        # Style header
+        for i in range(len(columns)):
+            table[(0, i)].set_facecolor('#34495e')
+            table[(0, i)].set_text_props(weight='bold', color='white')
+
+        # Style mean row
+        for i in range(len(columns)):
+            table[(len(summary_data), i)].set_facecolor('#f39c12')
+            table[(len(summary_data), i)].set_text_props(weight='bold')
+
+        ax5.set_title('Summary Table', fontsize=12, fontweight='bold', pad=20)
+
+        plt.suptitle(f'{n_folds}-Fold Cross-Validation Results',
+                    fontsize=16, fontweight='bold', y=0.995)
+
+        # Save
+        if output_path is None:
+            output_path = PLOTS_DIR / 'cnn_5fold_results.png'
+
+        plt.savefig(output_path, dpi=self.config['dpi'], bbox_inches='tight')
+        logger.info(f"  ✓ Saved to: {output_path}")
+        plt.close()
+
+        return output_path
 
     def create_all_visualizations(self, val_metrics: dict, test_metrics: dict,
                                  feature_importance_df: pd.DataFrame,
@@ -469,110 +564,4 @@ class Visualizer:
         logger.info("✓ ALL VISUALIZATIONS CREATED")
         logger.info("="*70)
         logger.info(f"\nPlots saved to: {PLOTS_DIR}")
-        logger.info(f"  - Confusion matrices: {OUTPUT_FILES['confusion_matrices'].name}")
-        logger.info(f"  - ROC curve: {OUTPUT_FILES['roc_curve'].name}")
-        logger.info(f"  - Feature importance: {OUTPUT_FILES['feature_importance_plot'].name}")
-        logger.info(f"  - Classification maps: {OUTPUT_FILES['classification_maps'].name}")
-        logger.info(f"  - CV scores: {OUTPUT_FILES['cv_scores'].name}")
         logger.info("="*70)
-
-
-def main():
-    """Main function to test visualization"""
-    logger.info("Testing Step 9: Visualization")
-
-    import json
-    import rasterio
-
-    # Load evaluation metrics
-    metrics_path = OUTPUT_FILES['evaluation_metrics']
-    if not metrics_path.exists():
-        logger.error("Evaluation metrics not found. Please run step 6 first.")
-        return None
-
-    logger.info(f"\nLoading evaluation metrics from: {metrics_path}")
-    with open(metrics_path, 'r') as f:
-        metrics = json.load(f)
-
-    val_metrics = metrics['validation']
-    test_metrics = metrics['test']
-    cv_scores = metrics['cross_validation']
-
-    # Load feature importance
-    importance_path = OUTPUT_FILES['feature_importance']
-    if not importance_path.exists():
-        logger.error("Feature importance not found. Please run step 6 first.")
-        return None
-
-    logger.info(f"Loading feature importance from: {importance_path}")
-    feature_importance_df = pd.read_csv(importance_path)
-
-    # Load classification maps
-    class_path = OUTPUT_FILES['classification_raster']
-    prob_path = OUTPUT_FILES['probability_raster']
-
-    if not class_path.exists() or not prob_path.exists():
-        logger.error("Classification/probability rasters not found. Please run step 7 first.")
-        return None
-
-    logger.info(f"Loading rasters...")
-    with rasterio.open(class_path) as src:
-        classification_map = src.read(1)
-
-    with rasterio.open(prob_path) as src:
-        probability_map = src.read(1)
-
-    # Load model
-    from step5_train_random_forest import RandomForestTrainer
-    trainer = RandomForestTrainer()
-    model = trainer.load_model()
-
-    # Load test data (we need to recreate this)
-    logger.info("\nRecreating test data...")
-    from step1_2_setup_and_load_data import DataLoader
-    from core.feature_extraction import FeatureExtraction
-    from step4_extract_training_data import TrainingDataExtractor
-    from config import FEATURE_NAMES
-
-    loader = DataLoader()
-    data = loader.load_all()
-
-    feature_extractor = FeatureExtraction()
-    feature_stack, valid_mask = feature_extractor.extract_features(
-        data['s2_before'],
-        data['s2_after'],
-        data['s1_before'],
-        data['s1_after']
-    )
-
-    extractor = TrainingDataExtractor()
-    training_df = extractor.extract_pixel_values(
-        feature_stack,
-        data['ground_truth'],
-        data['metadata']['s2_before']['transform']
-    )
-
-    X = training_df[FEATURE_NAMES].values
-    y = training_df['label'].values
-    _, _, X_test, _, _, y_test = extractor.split_data(X, y)
-
-    # Create visualizations
-    visualizer = Visualizer()
-    visualizer.create_all_visualizations(
-        val_metrics=val_metrics,
-        test_metrics=test_metrics,
-        feature_importance_df=feature_importance_df,
-        cv_scores=cv_scores,
-        classification_map=classification_map,
-        probability_map=probability_map,
-        X_test=X_test,
-        y_test=y_test,
-        model=model,
-        valid_mask=valid_mask
-    )
-
-    return visualizer
-
-
-if __name__ == "__main__":
-    visualizer = main()

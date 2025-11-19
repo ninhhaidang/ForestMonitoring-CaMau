@@ -158,9 +158,17 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    subgraph Data["INPUT<br/>27 features"]
-        F["Feature Stack<br/>(27, H, W)"]
-        G["Ground Truth<br/>(2,630 points)"]
+    subgraph Load["LOAD DATA"]
+        L1["Load Sentinel-2<br/>Before & After"]
+        L2["Load Sentinel-1<br/>Before & After"]
+        L3["Load Ground Truth<br/>~1,300 points"]
+        L4["Load Boundary<br/>Forest shapefile"]
+    end
+
+    subgraph FeatExt["FEATURE EXTRACTION"]
+        FE1["Extract Features<br/>src/core/feature_extraction.py"]
+        FE2["Feature Stack<br/>(H, W, 27)"]
+        FE3["Valid Mask<br/>No NaN/Inf"]
     end
 
     subgraph Spatial["SPATIAL SPLIT"]
@@ -169,68 +177,91 @@ flowchart TD
         SP3["Split clusters<br/>Train/Val/Test<br/>70/15/15"]
     end
 
-    subgraph Patch["EXTRACT PATCHES"]
-        PA1["Convert coords → pixels"]
+    subgraph Patch["EXTRACT & NORMALIZE PATCHES"]
+        PA1["Convert coords → pixels<br/>Geographic to raster"]
         PA2["Extract 3×3 patches<br/>At each GT point"]
         PA3["Check validity<br/>No NaN, within bounds"]
-        PA4["Normalize<br/>Z-score: (x-μ)/σ"]
+        PA4["Normalize patches<br/>Z-score: (x-μ)/σ"]
+        PA5["Save normalization stats<br/>For prediction phase"]
+        PA6["Split patches by<br/>spatial indices"]
     end
 
     subgraph Arch["CNN ARCHITECTURE"]
         A1["Input: 3×3×27"]
-        A2["Conv1: 27→64<br/>BatchNorm, ReLU<br/>Dropout 0.3"]
-        A3["Conv2: 64→32<br/>BatchNorm, ReLU<br/>Dropout 0.3"]
+        A2["Conv1: 27→64<br/>BatchNorm, ReLU<br/>Dropout 0.7"]
+        A3["Conv2: 64→32<br/>BatchNorm, ReLU<br/>Dropout 0.7"]
         A4["Global Avg Pool<br/>32 features"]
-        A5["FC1: 32→64<br/>BatchNorm, ReLU<br/>Dropout 0.5"]
+        A5["FC1: 32→64<br/>BatchNorm, ReLU<br/>Dropout 0.7"]
         A6["FC2: 64→4<br/>4-class logits"]
     end
 
     subgraph Train["TRAINING"]
-        TR1["DataLoader<br/>batch_size=32"]
-        TR2["Loss: CrossEntropy<br/>Optimizer: AdamW<br/>LR: 0.001"]
-        TR3["Training Loop<br/>Max 50 epochs"]
-        TR4["LR Scheduler<br/>ReduceLROnPlateau"]
-        TR5["Early Stopping<br/>patience=10"]
-        TR6["Save Best Model<br/>Min val_loss"]
+        TR1["DataLoader<br/>batch_size=64"]
+        TR2["Loss: CrossEntropy<br/>with class weights"]
+        TR3["Optimizer: Adam<br/>LR: 0.001<br/>Weight Decay: 1e-3"]
+        TR4["Training Loop<br/>Max 100 epochs"]
+        TR5["LR Scheduler<br/>ReduceLROnPlateau<br/>patience=10"]
+        TR6["Early Stopping<br/>patience=15"]
+        TR7["Save Best Model<br/>Min val_loss"]
     end
 
     subgraph Eval["EVALUATE"]
-        EV1["Test Metrics<br/>Accuracy, F1, AUC"]
-        EV2["Training Curves<br/>Loss, Accuracy"]
-        EV3["Confusion Matrix<br/>Per-class performance"]
+        EV1["Validation Metrics<br/>Accuracy, F1, AUC"]
+        EV2["Test Metrics<br/>Final performance"]
+        EV3["Training Curves<br/>Loss, Accuracy"]
+        EV4["Confusion Matrix<br/>Val & Test"]
+        EV5["ROC Curve<br/>Multi-class (OvR)"]
+    end
+
+    subgraph CV["🔄 5-FOLD CROSS-VALIDATION<br/>(BONUS)"]
+        CV1["StratifiedKFold<br/>n_splits=5<br/>shuffle=True"]
+        CV2["For each fold:<br/>Train new model"]
+        CV3["Evaluate on<br/>Train/Val/Test"]
+        CV4["Aggregate metrics<br/>Mean ± Std"]
+        CV5["Save 5-fold results<br/>JSON + Plot"]
     end
 
     subgraph Predict["PREDICT RASTER"]
-        PR1["Sliding Window<br/>Extract all 3×3 patches"]
+        PR1["Sliding Window<br/>Extract all 3×3 patches<br/>Stride=1"]
         PR2["Normalize patches<br/>Using training stats"]
-        PR3["Batch inference<br/>GPU accelerated<br/>1k patches/batch"]
-        PR4["4-class probabilities<br/>Softmax"]
-        PR5["Binary conversion<br/>Class 1 vs Rest"]
+        PR3["Batch inference<br/>GPU accelerated<br/>8k patches/batch"]
+        PR4["4-class probabilities<br/>Softmax output"]
+        PR5["Argmax for prediction<br/>Class 0/1/2/3"]
         PR6["Fill output map<br/>(H, W)"]
     end
 
     subgraph Output["OUTPUT"]
-        O1["Classification Map<br/>0/1/2/3/-1"]
-        O2["Probability Map<br/>P(Deforestation)"]
-        O3["Model File<br/>cnn_model.pth"]
-        O4["Training History<br/>Loss curves"]
+        O1["Multiclass Map<br/>0/1/2/3/-1<br/>GeoTIFF"]
+        O2["Model File<br/>cnn_model.pth"]
+        O3["Training History<br/>cnn_training_history.json"]
+        O4["Evaluation Metrics<br/>cnn_evaluation_metrics.json"]
+        O5["5-Fold Results<br/>cnn_5fold_results.json"]
+        O6["Plots<br/>Curves, CM, ROC, Maps, 5-Fold"]
     end
 
-    F & G --> SP1 --> SP2 --> SP3
-    SP3 --> PA1 --> PA2 --> PA3 --> PA4
-    PA4 --> A1 --> A2 --> A3 --> A4 --> A5 --> A6
-    A6 --> TR1 --> TR2 --> TR3 --> TR4 --> TR5 --> TR6
-    TR6 --> EV1 & EV2 & EV3
-    EV1 --> PR1 --> PR2 --> PR3 --> PR4 --> PR5 --> PR6
-    PR6 --> O1 & O2
-    TR6 --> O3 & O4
+    L1 & L2 & L3 & L4 --> FE1
+    FE1 --> FE2 & FE3
+    FE2 & FE3 & L3 --> SP1
+    SP1 --> SP2 --> SP3
+    SP3 & FE2 --> PA1 --> PA2 --> PA3 --> PA4 --> PA5 --> PA6
+    PA6 --> A1 --> A2 --> A3 --> A4 --> A5 --> A6
+    A6 --> TR1 --> TR2 --> TR3 --> TR4
+    TR4 --> TR5 --> TR6 --> TR7
+    TR7 --> EV1 --> EV2 --> EV3 --> EV4 --> EV5
+    EV5 --> CV1 --> CV2 --> CV3 --> CV4 --> CV5
+    CV5 --> PR1 --> PR2 --> PR3 --> PR4 --> PR5 --> PR6
+    PR6 --> O1
+    TR7 --> O2 & O3 & O4
+    CV5 --> O5 & O6
 
-    style Data fill:#e3f2fd
+    style Load fill:#e3f2fd
+    style FeatExt fill:#f1f8e9
     style Spatial fill:#fff3e0
-    style Patch fill:#f1f8e9
+    style Patch fill:#ffe0b2
     style Arch fill:#fce4ec
     style Train fill:#f3e5f5
     style Eval fill:#e1bee7
+    style CV fill:#e8eaf6
     style Predict fill:#e0f2f1
     style Output fill:#fff9c4
 ```
@@ -407,36 +438,37 @@ Input: (batch, 3, 3, 27) patches
   ↓
 Permute → (batch, 27, 3, 3)    # PyTorch format (N, C, H, W)
   ↓
-Conv Block 1: 27→64 channels (3×3, BatchNorm, ReLU, Dropout 0.3)
+Conv Block 1: 27→64 channels (3×3, BatchNorm, ReLU, Dropout 0.7)
   ↓
-Conv Block 2: 64→32 channels (3×3, BatchNorm, ReLU, Dropout 0.3)
+Conv Block 2: 64→32 channels (3×3, BatchNorm, ReLU, Dropout 0.7)
   ↓
 Global Average Pooling → (batch, 32)
   ↓
-FC Block: 32→64 (BatchNorm, ReLU, Dropout 0.5)
+FC Block: 32→64 (BatchNorm, ReLU, Dropout 0.7)
   ↓
 Output: 64→4 (logits)
 ```
 
 **Training configuration:**
-- **Optimizer:** AdamW (lr=0.001, weight_decay=1e-4)
+- **Optimizer:** Adam (lr=0.001, weight_decay=1e-3)
 - **Loss function:** CrossEntropyLoss (balanced class weights)
-- **LR Scheduler:** ReduceLROnPlateau (factor=0.5, patience=5)
-- **Early stopping:** patience=10 epochs
-- **Batch size:** 32
-- **Epochs:** 50 (max)
-- **Data split:** Spatial-aware split (prevent spatial leakage)
+- **LR Scheduler:** ReduceLROnPlateau (factor=0.5, patience=10)
+- **Early stopping:** patience=15 epochs
+- **Batch size:** 64
+- **Epochs:** 100 (max, thường stop sớm ~20-30 epochs)
+- **Data split:** Spatial-aware split (cluster-based, 50m threshold)
 
 **Regularization techniques:**
 - Batch Normalization (stabilize training)
-- Dropout (0.3 conv, 0.5 fc)
-- Weight Decay (L2 regularization)
-- Data augmentation (optional)
+- Dropout (0.7 - high dropout cho small dataset)
+- Weight Decay (L2 regularization, 1e-3)
+- Class weights (handle imbalanced classes)
 
 **Advantages:**
 - Learns spatial patterns automatically
 - Better for detecting neighborhood changes
 - More flexible architecture
+- Spatial-aware splitting prevents data leakage
 
 **Disadvantages:**
 - Slower training (~15-30 minutes)
@@ -454,10 +486,12 @@ Output: 64→4 (logits)
 | **Spatial Context** | Không | Có (3×3 neighborhood) |
 | **Feature Learning** | Manual | Automatic |
 | **Training Time** | ~5-10 phút | ~15-30 phút |
+| **Batch Size** | 10k pixels/batch | 64 samples (train)<br/>8k patches (inference) |
 | **Model Size** | ~277 KB | ~448 KB |
-| **Inference Speed** | Nhanh (~10k pixels/s) | Chậm hơn (~1k patches/s) |
+| **Inference Speed** | Nhanh (~10k pixels/s) | Chậm hơn (~8k patches/batch) |
 | **Interpretability** | Cao (feature importance) | Thấp (black-box) |
 | **Data Requirements** | Ít | Nhiều hơn |
+| **Regularization** | Minimal | Heavy (dropout 0.7, weight decay) |
 | **Overfitting Risk** | Thấp (ensemble) | Cao hơn (cần regularization) |
 | **Edge Handling** | Tất cả valid pixels | Bỏ edge pixels (1-pixel margin) |
 | **Expected Accuracy** | >98% | >98% |
@@ -484,6 +518,7 @@ Output: 64→4 (logits)
   - Training curves (loss, accuracy)
   - Learning rate schedule
   - Early stopping epoch
+  - 5-fold Cross-validation scores (robustness assessment)
   - Probability calibration (ECE, Brier score)
 
 ### Output files
@@ -526,14 +561,23 @@ Output: 64→4 (logits)
 - **Delta features:** Explicitly model temporal change (Δ = After - Before)
 - **Temporal consistency:** Reduce false positives
 
-### 4. Probability Calibration (CNN)
+### 4. 5-Fold Cross-Validation (CNN)
+- **Purpose:** Assess model robustness và generalization
+- **Method:** StratifiedKFold (n_splits=5, shuffle=True)
+- **Process:** Train 5 independent models trên different data splits
+- **Metrics:** Mean ± Std của accuracy, precision, recall, F1
+- **Result:** Verify consistent performance across different data splits
+
+### 5. Probability Calibration (CNN)
 - **Post-training calibration:** Isotonic regression
 - **Improve reliability:** Predicted probabilities match true frequencies
 - **Risk-aware decisions:** Better for threshold-based decision making
 
-### 5. Batch Processing for Memory Efficiency
+### 6. Batch Processing for Memory Efficiency
 - **Random Forest:** 10,000 pixels/batch
-- **CNN:** 1,000 patches/batch
+- **CNN:**
+  - Training: 64 samples/batch
+  - Inference: 8,000 patches/batch
 - **Full raster prediction:** Không cần load toàn bộ dataset vào memory
 
 ---

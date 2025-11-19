@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 class ModelEvaluator:
-    """Class to evaluate Random Forest model performance"""
+    """Class to evaluate model performance (supports both CNN and traditional ML models)"""
 
     def __init__(self, model):
         """
@@ -393,67 +393,3 @@ class ModelEvaluator:
                 logger.info(f"  {row['rank']}. {row['feature']}: {row['importance_normalized']:.2f}%")
 
         logger.info("="*70)
-
-
-def main():
-    """Main function to test model evaluation"""
-    logger.info("Testing Step 6: Model Evaluation")
-
-    # Import previous steps
-    from step1_2_setup_and_load_data import DataLoader
-    from core.feature_extraction import FeatureExtraction
-    from step4_extract_training_data import TrainingDataExtractor
-    from step5_train_random_forest import RandomForestTrainer
-    from config import FEATURE_NAMES
-
-    # Load data
-    loader = DataLoader()
-    data = loader.load_all()
-
-    # Extract features
-    feature_extractor = FeatureExtraction()
-    feature_stack, valid_mask = feature_extractor.extract_features(
-        data['s2_before'],
-        data['s2_after'],
-        data['s1_before'],
-        data['s1_after']
-    )
-
-    # Extract training data
-    extractor = TrainingDataExtractor()
-    training_df = extractor.extract_pixel_values(
-        feature_stack,
-        data['ground_truth'],
-        data['metadata']['s2_before']['transform']
-    )
-
-    X = training_df[FEATURE_NAMES].values
-    y = training_df['label'].values
-
-    # Split data
-    X_train, X_val, X_test, y_train, y_val, y_test = extractor.split_data(X, y)
-
-    # Train model
-    trainer = RandomForestTrainer()
-    model = trainer.train(X_train, y_train, X_val, y_val)
-
-    # Evaluate model
-    evaluator = ModelEvaluator(model)
-    results = evaluator.evaluate_all(
-        X_train, y_train,
-        X_val, y_val,
-        X_test, y_test,
-        FEATURE_NAMES
-    )
-
-    # Save results
-    evaluator.save_results()
-
-    # Print summary
-    evaluator.print_summary()
-
-    return evaluator, results
-
-
-if __name__ == "__main__":
-    evaluator, results = main()

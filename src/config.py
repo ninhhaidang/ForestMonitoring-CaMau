@@ -1,5 +1,5 @@
 """
-Configuration file for Random Forest Deforestation Detection
+Configuration file for CNN Deforestation Detection
 Cà Mau Province - Sentinel-1 & Sentinel-2
 """
 
@@ -94,24 +94,6 @@ GROUND_TRUTH_CONFIG = {
 }
 
 # ============================================================================
-# RANDOM FOREST CONFIGURATION
-# ============================================================================
-
-RF_PARAMS = {
-    'n_estimators': 100,           # Number of trees
-    'max_features': 'sqrt',        # sqrt(27) ≈ 5 features per split
-    'max_depth': None,             # Unlimited depth
-    'min_samples_split': 2,        # Minimum samples to split a node
-    'min_samples_leaf': 1,         # Minimum samples in leaf node
-    'bootstrap': True,             # Bootstrap samples
-    'oob_score': True,             # Out-of-Bag score
-    'class_weight': 'balanced',    # Handle imbalanced data
-    'n_jobs': -1,                  # Use all CPU cores
-    'random_state': 42,            # Reproducibility
-    'verbose': 1                   # Show progress
-}
-
-# ============================================================================
 # DATA SPLIT CONFIGURATION
 # ============================================================================
 
@@ -140,8 +122,6 @@ CV_CONFIG = {
 VIZ_CONFIG = {
     'dpi': 300,                    # Plot resolution
     'figsize': (12, 8),            # Default figure size
-    'cmap_probability': 'RdYlGn_r',  # Colormap for probability
-    'cmap_binary': 'RdYlGn',       # Colormap for binary
     'save_format': 'png'           # Save format
 }
 
@@ -158,7 +138,7 @@ DL_CONFIG = {
     'dropout_rate': 0.7,                # Dropout for regularization (increased to prevent overfitting)
 
     # Training parameters
-    'epochs': 100,                      # Maximum epochs (reduced from 500, model converges fast)
+    'epochs': 200,                      # Maximum epochs (reduced from 500, model converges fast)
     'batch_size': 64,                   # Batch size (increased from 32)
     'learning_rate': 0.001,             # Initial learning rate
     'weight_decay': 1e-3,               # L2 regularization (increased to prevent overfitting)
@@ -197,7 +177,6 @@ DL_CONFIG = {
 DL_OUTPUT_FILES = {
     # Rasters (only 4-class multiclass map)
     'multiclass_raster': RASTERS_DIR / 'cnn_multiclass.tif',  # 4-class raster (0=Forest Stable, 1=Deforestation, 2=Non-forest, 3=Reforestation)
-    # Note: Binary classification and probability rasters removed (redundant with 4-class output)
 
     # Models
     'trained_model': MODELS_DIR / 'cnn_model.pth',
@@ -211,9 +190,11 @@ DL_OUTPUT_FILES = {
     'training_curves': PLOTS_DIR / 'cnn_training_curves.png',
     'confusion_matrix': PLOTS_DIR / 'cnn_confusion_matrix.png',
     'roc_curve': PLOTS_DIR / 'cnn_roc_curve.png',
-    'classification_map': PLOTS_DIR / 'cnn_classification_map.png',
-    'comparison_rf_cnn': PLOTS_DIR / 'comparison_rf_vs_cnn.png'
+    'multiclass_map': PLOTS_DIR / 'cnn_multiclass_map.png'  # 4-class visualization
 }
+
+# Alias for backward compatibility
+OUTPUT_FILES = DL_OUTPUT_FILES
 
 # ============================================================================
 # EVALUATION METRICS
@@ -226,31 +207,6 @@ METRICS = [
     'f1',
     'roc_auc'
 ]
-
-# ============================================================================
-# OUTPUT FILES
-# ============================================================================
-
-OUTPUT_FILES = {
-    # Rasters
-    'classification_raster': RASTERS_DIR / 'rf_classification.tif',
-    'probability_raster': RASTERS_DIR / 'rf_probability.tif',
-
-    # Models
-    'trained_model': MODELS_DIR / 'rf_model.pkl',
-
-    # Data
-    'training_data': DATA_OUTPUT_DIR / 'rf_training_data.csv',
-    'feature_importance': DATA_OUTPUT_DIR / 'rf_feature_importance.csv',
-    'evaluation_metrics': DATA_OUTPUT_DIR / 'rf_evaluation_metrics.json',
-
-    # Plots
-    'confusion_matrices': PLOTS_DIR / 'rf_confusion_matrices.png',
-    'roc_curve': PLOTS_DIR / 'rf_roc_curve.png',
-    'feature_importance_plot': PLOTS_DIR / 'rf_feature_importance.png',
-    'classification_maps': PLOTS_DIR / 'rf_classification_maps.png',
-    'cv_scores': PLOTS_DIR / 'rf_cv_scores.png'
-}
 
 # ============================================================================
 # LOGGING CONFIGURATION
@@ -315,7 +271,7 @@ def print_config_summary(ground_truth_df=None):
                         If provided, will show actual point counts from data.
     """
     print("\n" + "="*70)
-    print("RANDOM FOREST DEFORESTATION DETECTION - CONFIGURATION")
+    print("CNN DEFORESTATION DETECTION - CONFIGURATION")
     print("="*70)
     print(f"\nDATA CONFIGURATION:")
     print(f"  - Total Features: {TOTAL_FEATURES}")
@@ -333,12 +289,6 @@ def print_config_summary(ground_truth_df=None):
             print(f"  - Class 1 (Deforestation): {class_counts[1]}")
     else:
         print(f"  - Ground Truth Points: (load data to see stats)")
-
-    print(f"\nRANDOM FOREST CONFIGURATION:")
-    print(f"  - Number of Trees: {RF_PARAMS['n_estimators']}")
-    print(f"  - Max Features: {RF_PARAMS['max_features']}")
-    print(f"  - Class Weight: {RF_PARAMS['class_weight']}")
-    print(f"  - OOB Score: {RF_PARAMS['oob_score']}")
 
     print(f"\nDATA SPLIT:")
     print(f"  - Train: {TRAIN_TEST_SPLIT['train_size']*100:.0f}%")
