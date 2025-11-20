@@ -237,7 +237,7 @@ class Visualizer:
 
         # Custom colormap for 4 classes
         # 0=Forest Stable (Green), 1=Deforestation (Red), 2=Non-forest (Gray), 3=Reforestation (Blue)
-        cmap_multiclass = ListedColormap(['#2ecc71', '#e74c3c', '#95a5a6', '#3498db'])
+        cmap_multiclass = ListedColormap(['#2ecc71', '#e74c3c', "#fbff20", '#3498db'])
         im = ax.imshow(class_masked, cmap=cmap_multiclass, vmin=0, vmax=3)
 
         ax.set_title('4-Class Classification Map\n(Green: Forest Stable | Red: Deforestation | Gray: Non-forest | Blue: Reforestation)',

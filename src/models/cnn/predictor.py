@@ -46,7 +46,6 @@ class RasterPredictor:
         self.batch_size = batch_size
 
         self.multiclass_map = None  # 4-class map (0, 1, 2, 3)
-        self.multiclass_probs_map = None  # 4-class probabilities (height, width, 4)
 
         logger.info(f"RasterPredictor initialized on device: {self.device}")
 
@@ -57,8 +56,7 @@ class RasterPredictor:
         stride: int = 1,
         normalize: bool = True,
         normalization_stats: dict = None,
-        temperature: float = 1.0,
-        compute_probs: bool = True
+        temperature: float = 1.0
     ) -> np.ndarray:
         """
         Predict on full raster
@@ -70,7 +68,6 @@ class RasterPredictor:
             normalize: Whether to normalize patches
             normalization_stats: Pre-computed normalization statistics (mean, std)
             temperature: Temperature scaling for calibration (>1 = softer probabilities)
-            compute_probs: Whether to compute and store probability maps (memory intensive)
 
         Returns:
             multiclass_map: (height, width) 4-class map (0=Forest Stable, 1=Deforestation, 2=Non-forest, 3=Reforestation)
@@ -85,14 +82,9 @@ class RasterPredictor:
         logger.info(f"Stride: {stride}")
         logger.info(f"Batch size: {self.batch_size}")
         logger.info(f"Temperature: {temperature} {'(calibrated)' if temperature > 1.0 else '(normal)'}")
-        logger.info(f"Compute probabilities: {compute_probs}")
 
-        # Initialize output maps
+        # Initialize output map
         self.multiclass_map = np.zeros((height, width), dtype=np.uint8)  # 4-class predictions
-        if compute_probs:
-            self.multiclass_probs_map = np.zeros((height, width, 4), dtype=np.float32)  # 4-class probabilities
-        else:
-            self.multiclass_probs_map = None
 
         # Extract patches using sliding window
         logger.info("\nExtracting patches...")
@@ -112,8 +104,8 @@ class RasterPredictor:
             logger.info("Normalizing patches...")
             if normalization_stats is not None:
                 # Use provided normalization stats (from training)
-                mean = normalization_stats['mean']
-                std = normalization_stats['std']
+                mean = np.array(normalization_stats['mean']).reshape(1, 1, 1, -1)
+                std = np.array(normalization_stats['std']).reshape(1, 1, 1, -1)
                 logger.info("Using training normalization statistics")
             else:
                 # Compute from current patches
@@ -125,14 +117,10 @@ class RasterPredictor:
         # Predict in batches (OPTIMIZED for GPU utilization)
         logger.info(f"\nPredicting {len(patches):,} patches...")
 
-        # Pre-allocate output arrays (faster than list append)
+        # Pre-allocate output array for predictions only
         all_multiclass_preds = np.empty(len(patches), dtype=np.uint8)  # 4-class predictions
-        if compute_probs:
-            all_multiclass_probs = np.empty((len(patches), 4), dtype=np.float32)  # 4-class probabilities
-        else:
-            all_multiclass_probs = None
 
-        dataset = PatchDataset(patches, mean=mean, std=std)
+        dataset = PatchDataset(patches)
 
         # OPTIMIZATION: Increase num_workers for parallel data loading
         # This keeps GPU fed while CPU prepares next batch
@@ -171,8 +159,6 @@ class RasterPredictor:
                 # Convert to numpy efficiently
                 batch_size = len(batch_patches)
                 all_multiclass_preds[batch_start_idx:batch_start_idx + batch_size] = multiclass_preds.cpu().numpy()
-                if compute_probs:
-                    all_multiclass_probs[batch_start_idx:batch_start_idx + batch_size] = probs.cpu().numpy()  # Save all 4 probabilities
 
                 batch_start_idx += batch_size
 
@@ -181,18 +167,14 @@ class RasterPredictor:
                     progress = (batch_idx + 1) / total_batches * 100
                     logger.info(f"  Progress: {batch_idx + 1}/{total_batches} batches ({progress:.1f}%)")
 
-        # Fill output maps
-        logger.info("Filling output maps...")
+        # Fill output map
+        logger.info("Filling output map...")
         for idx, (row, col) in enumerate(coordinates):
             self.multiclass_map[row, col] = all_multiclass_preds[idx]
-            if compute_probs:
-                self.multiclass_probs_map[row, col] = all_multiclass_probs[idx]  # Fill 4-class probabilities
 
         # Apply valid mask - set invalid areas to NoData
         logger.info("Applying valid mask...")
         self.multiclass_map[~valid_mask] = 255  # 255 = NoData for uint8
-        if compute_probs:
-            self.multiclass_probs_map[~valid_mask] = -9999  # NoData for float32 (all 4 bands)
 
         # Statistics - Multiclass
         total_valid_pixels = np.sum(valid_mask)
@@ -217,16 +199,14 @@ class RasterPredictor:
     def save_rasters(
         self,
         reference_metadata: dict,
-        multiclass_path: Path = None,
-        multiclass_probs_path: Path = None
+        multiclass_path: Path = None
     ):
         """
-        Save multiclass rasters
+        Save multiclass raster
 
         Args:
             reference_metadata: Metadata from reference raster (transform, crs, etc.)
             multiclass_path: Path to save multiclass raster (4 classes)
-            multiclass_probs_path: Optional path to save 4-band probability raster (P(0), P(1), P(2), P(3))
         """
         logger.info("\nSaving output rasters...")
 
@@ -249,29 +229,6 @@ class RasterPredictor:
                 dst.set_band_description(1, 'Multiclass (0=Forest Stable, 1=Deforestation, 2=Non-forest, 3=Reforestation, 255=NoData)')
 
             logger.info(f"  Multiclass raster saved: {multiclass_path}")
-
-        # Multiclass Probabilities raster (4 bands)
-        if multiclass_probs_path is not None:
-            with rasterio.open(
-                multiclass_probs_path,
-                'w',
-                driver='GTiff',
-                height=self.multiclass_probs_map.shape[0],
-                width=self.multiclass_probs_map.shape[1],
-                count=4,  # 4 bands for 4 classes
-                dtype=np.float32,
-                crs=reference_metadata['crs'],
-                transform=reference_metadata['transform'],
-                compress='lzw',
-                nodata=-9999
-            ) as dst:
-                # Write each probability band
-                for i in range(4):
-                    dst.write(self.multiclass_probs_map[:, :, i], i + 1)
-                    class_names = ['Forest Stable', 'Deforestation', 'Non-forest', 'Reforestation']
-                    dst.set_band_description(i + 1, f'P(Class {i}): {class_names[i]} (0.0-1.0, -9999=NoData)')
-
-            logger.info(f"  4-band multiclass probabilities raster saved: {multiclass_probs_path}")
 
 
 class PatchDataset(Dataset):

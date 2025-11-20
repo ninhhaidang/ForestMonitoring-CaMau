@@ -1,0 +1,26 @@
+{
+  "timestamp": "20251120_173312",
+  "total_pixels": 16246850,
+  "classes": {
+    "forest_stable": {
+      "pixels": 12071691,
+      "percent": 74.30173233580663,
+      "area_ha": 120716.91
+    },
+    "deforestation": {
+      "pixels": 728215,
+      "percent": 4.48219193259001,
+      "area_ha": 7282.15
+    },
+    "non_forest": {
+      "pixels": 2952854,
+      "percent": 18.17493237150586,
+      "area_ha": 29528.54
+    },
+    "reforestation": {
+      "pixels": 494090,
+      "percent": 3.0411433600974958,
+      "area_ha": 4940.9
+    }
+  }
+}
