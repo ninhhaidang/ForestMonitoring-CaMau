@@ -57,8 +57,9 @@ class RasterPredictor:
         stride: int = 1,
         normalize: bool = True,
         normalization_stats: dict = None,
-        temperature: float = 1.0
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        temperature: float = 1.0,
+        compute_probs: bool = True
+    ) -> np.ndarray:
         """
         Predict on full raster
 
@@ -69,6 +70,7 @@ class RasterPredictor:
             normalize: Whether to normalize patches
             normalization_stats: Pre-computed normalization statistics (mean, std)
             temperature: Temperature scaling for calibration (>1 = softer probabilities)
+            compute_probs: Whether to compute and store probability maps (memory intensive)
 
         Returns:
             multiclass_map: (height, width) 4-class map (0=Forest Stable, 1=Deforestation, 2=Non-forest, 3=Reforestation)
@@ -83,10 +85,14 @@ class RasterPredictor:
         logger.info(f"Stride: {stride}")
         logger.info(f"Batch size: {self.batch_size}")
         logger.info(f"Temperature: {temperature} {'(calibrated)' if temperature > 1.0 else '(normal)'}")
+        logger.info(f"Compute probabilities: {compute_probs}")
 
         # Initialize output maps
         self.multiclass_map = np.zeros((height, width), dtype=np.uint8)  # 4-class predictions
-        self.multiclass_probs_map = np.zeros((height, width, 4), dtype=np.float32)  # 4-class probabilities
+        if compute_probs:
+            self.multiclass_probs_map = np.zeros((height, width, 4), dtype=np.float32)  # 4-class probabilities
+        else:
+            self.multiclass_probs_map = None
 
         # Extract patches using sliding window
         logger.info("\nExtracting patches...")
@@ -121,9 +127,12 @@ class RasterPredictor:
 
         # Pre-allocate output arrays (faster than list append)
         all_multiclass_preds = np.empty(len(patches), dtype=np.uint8)  # 4-class predictions
-        all_multiclass_probs = np.empty((len(patches), 4), dtype=np.float32)  # 4-class probabilities
+        if compute_probs:
+            all_multiclass_probs = np.empty((len(patches), 4), dtype=np.float32)  # 4-class probabilities
+        else:
+            all_multiclass_probs = None
 
-        dataset = PatchDataset(patches)
+        dataset = PatchDataset(patches, mean=mean, std=std)
 
         # OPTIMIZATION: Increase num_workers for parallel data loading
         # This keeps GPU fed while CPU prepares next batch
@@ -162,7 +171,8 @@ class RasterPredictor:
                 # Convert to numpy efficiently
                 batch_size = len(batch_patches)
                 all_multiclass_preds[batch_start_idx:batch_start_idx + batch_size] = multiclass_preds.cpu().numpy()
-                all_multiclass_probs[batch_start_idx:batch_start_idx + batch_size] = probs.cpu().numpy()  # Save all 4 probabilities
+                if compute_probs:
+                    all_multiclass_probs[batch_start_idx:batch_start_idx + batch_size] = probs.cpu().numpy()  # Save all 4 probabilities
 
                 batch_start_idx += batch_size
 
@@ -175,12 +185,14 @@ class RasterPredictor:
         logger.info("Filling output maps...")
         for idx, (row, col) in enumerate(coordinates):
             self.multiclass_map[row, col] = all_multiclass_preds[idx]
-            self.multiclass_probs_map[row, col] = all_multiclass_probs[idx]  # Fill 4-class probabilities
+            if compute_probs:
+                self.multiclass_probs_map[row, col] = all_multiclass_probs[idx]  # Fill 4-class probabilities
 
         # Apply valid mask - set invalid areas to NoData
         logger.info("Applying valid mask...")
         self.multiclass_map[~valid_mask] = 255  # 255 = NoData for uint8
-        self.multiclass_probs_map[~valid_mask] = -9999  # NoData for float32 (all 4 bands)
+        if compute_probs:
+            self.multiclass_probs_map[~valid_mask] = -9999  # NoData for float32 (all 4 bands)
 
         # Statistics - Multiclass
         total_valid_pixels = np.sum(valid_mask)
