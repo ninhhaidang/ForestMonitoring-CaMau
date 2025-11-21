@@ -135,7 +135,7 @@ DL_CONFIG = {
     'patch_size': 3,                    # 3x3 patches
     'n_features': TOTAL_FEATURES,       # 27 features
     'n_classes': 4,                     # Multi-class: 0=Forest Stable (1→1), 1=Deforestation (1→0), 2=Non-forest (0→0), 3=Reforestation (0→1)
-    'dropout_rate': 0.7,                # Dropout for regularization (increased to prevent overfitting)
+    'dropout_rate': 0.7,                # Dropout for regularization (balanced to avoid over-regularization)
 
     # Training parameters
     'epochs': 200,                      # Maximum epochs (reduced from 500, model converges fast)
