@@ -19,7 +19,7 @@ from .models.cnn.architecture import DeforestationCNN, create_model
 from .models.cnn.trainer import CNNTrainer
 from .models.cnn.predictor import RasterPredictor as CNNPredictor
 from .models.cnn.patch_extractor import PatchExtractor
-from .models.cnn.spatial_split import SpatialSplitter
+from .models.cnn.random_split import RandomKFoldWithFixedTest
 
 __all__ = [
     # Core
@@ -33,5 +33,5 @@ __all__ = [
     'CNNTrainer',
     'CNNPredictor',
     'PatchExtractor',
-    'SpatialSplitter',
+    'RandomKFoldWithFixedTest',
 ]
