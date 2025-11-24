@@ -11,7 +11,6 @@ __author__ = 'Deforestation Detection Team'
 # Main modules
 from .core.data_loader import DataLoader
 from .core.feature_extraction import FeatureExtraction
-from .core.evaluation import ModelEvaluator
 from .core.visualization import Visualizer
 
 # CNN
@@ -25,7 +24,6 @@ __all__ = [
     # Core
     'DataLoader',
     'FeatureExtraction',
-    'ModelEvaluator',
     'Visualizer',
     # CNN
     'DeforestationCNN',

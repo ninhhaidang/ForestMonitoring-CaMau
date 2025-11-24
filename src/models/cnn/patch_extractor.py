@@ -176,10 +176,10 @@ class PatchExtractor:
 
     def normalize_patches(self, method='standardize', epsilon=1e-8):
         """
-        Normalize patches
+        Normalize patches using z-score standardization
 
         Args:
-            method: 'standardize' (z-score) or 'minmax'
+            method: 'standardize' (only option, kept for compatibility)
             epsilon: Small value to avoid division by zero
 
         Returns:
@@ -188,35 +188,23 @@ class PatchExtractor:
         if self.patches is None:
             raise ValueError("No patches to normalize. Extract patches first.")
 
+        if method != 'standardize':
+            raise ValueError(f"Only 'standardize' method is supported, got: {method}")
+
         logger.info(f"\nNormalizing patches using method: {method}")
 
         normalization_stats = {'method': method, 'epsilon': epsilon}
 
-        if method == 'standardize':
-            # Standardization (z-score normalization)
-            mean = self.patches.mean(axis=(0, 1, 2), keepdims=True)
-            std = self.patches.std(axis=(0, 1, 2), keepdims=True)
-            self.patches = (self.patches - mean) / (std + epsilon)
+        # Standardization (z-score normalization)
+        mean = self.patches.mean(axis=(0, 1, 2), keepdims=True)
+        std = self.patches.std(axis=(0, 1, 2), keepdims=True)
+        self.patches = (self.patches - mean) / (std + epsilon)
 
-            normalization_stats['mean'] = mean
-            normalization_stats['std'] = std
+        normalization_stats['mean'] = mean
+        normalization_stats['std'] = std
 
-            logger.info("Applied standardization (z-score normalization)")
-            logger.info(f"  Mean shape: {mean.shape}, Std shape: {std.shape}")
-
-        elif method == 'minmax':
-            # Min-max normalization to [0, 1]
-            min_val = self.patches.min(axis=(0, 1, 2), keepdims=True)
-            max_val = self.patches.max(axis=(0, 1, 2), keepdims=True)
-            self.patches = (self.patches - min_val) / (max_val - min_val + epsilon)
-
-            normalization_stats['min'] = min_val
-            normalization_stats['max'] = max_val
-
-            logger.info("Applied min-max normalization to [0, 1]")
-
-        else:
-            raise ValueError(f"Unknown normalization method: {method}")
+        logger.info("Applied standardization (z-score normalization)")
+        logger.info(f"  Mean shape: {mean.shape}, Std shape: {std.shape}")
 
         return self.patches, normalization_stats
 

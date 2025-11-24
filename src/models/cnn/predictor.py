@@ -102,16 +102,17 @@ class RasterPredictor:
         # Normalize if requested
         if normalize:
             logger.info("Normalizing patches...")
-            if normalization_stats is not None:
-                # Use provided normalization stats (from training)
-                mean = np.array(normalization_stats['mean']).reshape(1, 1, 1, -1)
-                std = np.array(normalization_stats['std']).reshape(1, 1, 1, -1)
-                logger.info("Using training normalization statistics")
-            else:
-                # Compute from current patches
-                mean = patches.mean(axis=(0, 1, 2), keepdims=True)
-                std = patches.std(axis=(0, 1, 2), keepdims=True)
-                logger.info("Computing normalization from prediction patches")
+            if normalization_stats is None:
+                raise ValueError(
+                    "normalization_stats is required when normalize=True. "
+                    "Please provide the normalization statistics computed from training data. "
+                    "Computing statistics from test/prediction data would cause data leakage."
+                )
+
+            # Use provided normalization stats (from training)
+            mean = np.array(normalization_stats['mean']).reshape(1, 1, 1, -1)
+            std = np.array(normalization_stats['std']).reshape(1, 1, 1, -1)
+            logger.info("Using training normalization statistics")
             patches = (patches - mean) / (std + 1e-8)
 
         # Predict in batches (OPTIMIZED for GPU utilization)

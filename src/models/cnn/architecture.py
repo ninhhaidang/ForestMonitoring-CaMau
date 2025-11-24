@@ -179,87 +179,6 @@ class DeforestationCNN(nn.Module):
         return "\n".join(summary)
 
 
-class DeforestationCNNDeeper(nn.Module):
-    """
-    Deeper variant with 3 conv blocks (alternative architecture)
-    """
-
-    def __init__(
-        self,
-        patch_size: int = 3,
-        n_features: int = 27,
-        n_classes: int = 4,
-        dropout_rate: float = 0.5
-    ):
-        super(DeforestationCNNDeeper, self).__init__()
-
-        self.patch_size = patch_size
-        self.n_features = n_features
-        self.n_classes = n_classes
-
-        # Conv Block 1
-        self.conv1 = nn.Conv2d(n_features, 64, kernel_size=3, padding=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(64)
-        self.dropout1 = nn.Dropout2d(p=0.3)
-
-        # Conv Block 2
-        self.conv2 = nn.Conv2d(64, 64, kernel_size=3, padding=1, bias=False)
-        self.bn2 = nn.BatchNorm2d(64)
-        self.dropout2 = nn.Dropout2d(p=0.3)
-
-        # Conv Block 3
-        self.conv3 = nn.Conv2d(64, 32, kernel_size=3, padding=1, bias=False)
-        self.bn3 = nn.BatchNorm2d(32)
-        self.dropout3 = nn.Dropout2d(p=0.3)
-
-        # Global pooling
-        self.global_pool = nn.AdaptiveAvgPool2d((1, 1))
-
-        # FC layers
-        self.fc1 = nn.Linear(32, 64)
-        self.bn_fc1 = nn.BatchNorm1d(64)
-        self.dropout_fc = nn.Dropout(p=dropout_rate)
-        self.fc2 = nn.Linear(64, n_classes)
-
-        self._initialize_weights()
-
-    def _initialize_weights(self):
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-            elif isinstance(m, (nn.BatchNorm2d, nn.BatchNorm1d)):
-                nn.init.constant_(m.weight, 1)
-                nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
-                nn.init.xavier_normal_(m.weight)
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-
-    def forward(self, x):
-        x = x.permute(0, 3, 1, 2)
-
-        x = F.relu(self.bn1(self.conv1(x)))
-        x = self.dropout1(x)
-
-        x = F.relu(self.bn2(self.conv2(x)))
-        x = self.dropout2(x)
-
-        x = F.relu(self.bn3(self.conv3(x)))
-        x = self.dropout3(x)
-
-        x = self.global_pool(x)
-        x = x.view(x.size(0), -1)
-
-        x = F.relu(self.bn_fc1(self.fc1(x)))
-        x = self.dropout_fc(x)
-        x = self.fc2(x)
-
-        return x
-
-    def count_parameters(self):
-        return sum(p.numel() for p in self.parameters() if p.requires_grad)
-
-
 def create_model(
     model_type: str = 'standard',
     patch_size: int = 3,
@@ -271,7 +190,7 @@ def create_model(
     Factory function to create model
 
     Args:
-        model_type: 'standard' or 'deeper'
+        model_type: 'standard' (only option, kept for compatibility)
         patch_size: Input patch size
         n_features: Number of feature channels
         n_classes: Number of output classes (4 for multi-class: 0=Forest Stable, 1=Deforestation, 2=Non-forest, 3=Reforestation)
@@ -280,22 +199,15 @@ def create_model(
     Returns:
         CNN model
     """
-    if model_type == 'standard':
-        model = DeforestationCNN(
-            patch_size=patch_size,
-            n_features=n_features,
-            n_classes=n_classes,
-            dropout_rate=dropout_rate
-        )
-    elif model_type == 'deeper':
-        model = DeforestationCNNDeeper(
-            patch_size=patch_size,
-            n_features=n_features,
-            n_classes=n_classes,
-            dropout_rate=dropout_rate
-        )
-    else:
-        raise ValueError(f"Unknown model type: {model_type}")
+    if model_type != 'standard':
+        raise ValueError(f"Only 'standard' model type is supported, got: {model_type}")
+
+    model = DeforestationCNN(
+        patch_size=patch_size,
+        n_features=n_features,
+        n_classes=n_classes,
+        dropout_rate=dropout_rate
+    )
 
     return model
 

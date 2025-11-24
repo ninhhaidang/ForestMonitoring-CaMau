@@ -194,8 +194,8 @@ class CNNTrainer:
         self,
         X_train: np.ndarray,
         y_train: np.ndarray,
-        X_val: np.ndarray,
-        y_val: np.ndarray,
+        X_val: np.ndarray = None,
+        y_val: np.ndarray = None,
         epochs: int = 50,
         batch_size: int = 32,
         early_stopping_patience: int = 10
@@ -206,29 +206,36 @@ class CNNTrainer:
         Args:
             X_train: Training patches
             y_train: Training labels
-            X_val: Validation patches
-            y_val: Validation labels
+            X_val: Validation patches (optional, set to None to train without validation)
+            y_val: Validation labels (optional, set to None to train without validation)
             epochs: Number of epochs
             batch_size: Batch size
-            early_stopping_patience: Patience for early stopping
+            early_stopping_patience: Patience for early stopping (ignored if no validation set)
 
         Returns:
             Training history dictionary
         """
+        # Check if validation data is provided
+        has_validation = X_val is not None and y_val is not None
+
         logger.info(f"\n{'='*70}")
         logger.info("STARTING CNN TRAINING")
         logger.info(f"{'='*70}")
         logger.info(f"Training samples: {len(X_train)}")
-        logger.info(f"Validation samples: {len(X_val)}")
+        if has_validation:
+            logger.info(f"Validation samples: {len(X_val)}")
+        else:
+            logger.info(f"Validation samples: None (training on 100% of data)")
         logger.info(f"Epochs: {epochs}")
         logger.info(f"Batch size: {batch_size}")
         logger.info(f"Learning rate: {self.learning_rate}")
         logger.info(f"Device: {self.device}")
+        if not has_validation:
+            logger.info(f"Early stopping: Disabled (no validation set)")
         logger.info(f"{'='*70}\n")
 
         # Create datasets and dataloaders
         train_dataset = PatchDataset(X_train, y_train)
-        val_dataset = PatchDataset(X_val, y_val)
 
         train_loader = DataLoader(
             train_dataset,
@@ -238,13 +245,16 @@ class CNNTrainer:
             pin_memory=True if self.device.type == 'cuda' else False
         )
 
-        val_loader = DataLoader(
-            val_dataset,
-            batch_size=batch_size,
-            shuffle=False,
-            num_workers=0,
-            pin_memory=True if self.device.type == 'cuda' else False
-        )
+        val_loader = None
+        if has_validation:
+            val_dataset = PatchDataset(X_val, y_val)
+            val_loader = DataLoader(
+                val_dataset,
+                batch_size=batch_size,
+                shuffle=False,
+                num_workers=0,
+                pin_memory=True if self.device.type == 'cuda' else False
+            )
 
         # Training loop
         epochs_no_improve = 0
@@ -253,46 +263,67 @@ class CNNTrainer:
             # Train
             train_loss, train_acc = self.train_epoch(train_loader)
 
-            # Validate
-            val_loss, val_acc = self.validate(val_loader)
+            # Validate (if validation set provided)
+            if has_validation:
+                val_loss, val_acc = self.validate(val_loader)
 
-            # Update learning rate (if scheduler is enabled)
-            if self.scheduler is not None:
-                self.scheduler.step(val_loss)
+                # Update learning rate (if scheduler is enabled)
+                if self.scheduler is not None:
+                    self.scheduler.step(val_loss)
+            else:
+                val_loss = None
+                val_acc = None
+
+                # Update learning rate based on train loss if no validation
+                if self.scheduler is not None:
+                    self.scheduler.step(train_loss)
+
             current_lr = self.optimizer.param_groups[0]['lr']
 
             # Record history
             self.history['train_loss'].append(train_loss)
             self.history['train_acc'].append(train_acc)
-            self.history['val_loss'].append(val_loss)
-            self.history['val_acc'].append(val_acc)
+            if has_validation:
+                self.history['val_loss'].append(val_loss)
+                self.history['val_acc'].append(val_acc)
+            else:
+                self.history['val_loss'].append(None)
+                self.history['val_acc'].append(None)
             self.history['learning_rates'].append(current_lr)
 
             # Log progress
-            logger.info(
-                f"Epoch {epoch:3d}/{epochs} | "
-                f"Train Loss: {train_loss:.4f} | Train Acc: {train_acc:6.2f}% | "
-                f"Val Loss: {val_loss:.4f} | Val Acc: {val_acc:6.2f}% | "
-                f"LR: {current_lr:.6f}"
-            )
-
-            # Save best model
-            if val_loss < self.best_val_loss:
-                self.best_val_loss = val_loss
-                self.best_val_acc = val_acc
-                self.best_model_state = self.model.state_dict().copy()
-                epochs_no_improve = 0
-                logger.info(f"  → New best model! Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%")
+            if has_validation:
+                logger.info(
+                    f"Epoch {epoch:3d}/{epochs} | "
+                    f"Train Loss: {train_loss:.4f} | Train Acc: {train_acc:6.2f}% | "
+                    f"Val Loss: {val_loss:.4f} | Val Acc: {val_acc:6.2f}% | "
+                    f"LR: {current_lr:.6f}"
+                )
             else:
-                epochs_no_improve += 1
+                logger.info(
+                    f"Epoch {epoch:3d}/{epochs} | "
+                    f"Train Loss: {train_loss:.4f} | Train Acc: {train_acc:6.2f}% | "
+                    f"LR: {current_lr:.6f}"
+                )
 
-            # Early stopping
-            if epochs_no_improve >= early_stopping_patience:
-                logger.info(f"\n⚠️  Early stopping triggered after {epoch} epochs")
-                break
+            # Save best model (only if validation set exists)
+            if has_validation:
+                if val_loss < self.best_val_loss:
+                    self.best_val_loss = val_loss
+                    self.best_val_acc = val_acc
+                    self.best_model_state = self.model.state_dict().copy()
+                    epochs_no_improve = 0
+                    logger.info(f"  → New best model! Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%")
+                else:
+                    epochs_no_improve += 1
 
-        # Restore best model
-        if self.best_model_state is not None:
+                # Early stopping (only if validation set exists and patience is set)
+                if early_stopping_patience is not None and epochs_no_improve >= early_stopping_patience:
+                    logger.info(f"\n⚠️  Early stopping triggered after {epoch} epochs")
+                    break
+
+        # Restore best model (only if we saved one)
+        if has_validation and self.best_model_state is not None:
             self.model.load_state_dict(self.best_model_state)
             logger.info(f"\n✓ Restored best model (Val Loss: {self.best_val_loss:.4f}, Val Acc: {self.best_val_acc:.2f}%)")
 
