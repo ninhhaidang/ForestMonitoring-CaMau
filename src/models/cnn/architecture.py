@@ -50,7 +50,7 @@ class DeforestationCNN(nn.Module):
             bias=False
         )
         self.bn1 = nn.BatchNorm2d(64)
-        self.dropout1 = nn.Dropout2d(p=0.3)
+        self.dropout1 = nn.Dropout2d(p=dropout_rate)
 
         # Conv Block 2
         self.conv2 = nn.Conv2d(
@@ -61,7 +61,7 @@ class DeforestationCNN(nn.Module):
             bias=False
         )
         self.bn2 = nn.BatchNorm2d(32)
-        self.dropout2 = nn.Dropout2d(p=0.3)
+        self.dropout2 = nn.Dropout2d(p=dropout_rate)
 
         # Global Average Pooling
         self.global_pool = nn.AdaptiveAvgPool2d((1, 1))

@@ -1361,7 +1361,7 @@ rf_accuracy = accuracy_score(y_test, rf_preds)
 
 | Metric | CNN | Random Forest |
 |--------|-----|---------------|
-| **Test Accuracy** | **99.49%** | ~98% |
+| **Test Accuracy** | **99.24%** | ~98% |
 | **Training Time** | 18.7s (GPU) | ~2-5 min |
 | **Model Size** | 450 KB | ~2 MB |
 | **Spatial Context** | ✓ Yes (3×3 patch) | ✗ No (pixel-based) |

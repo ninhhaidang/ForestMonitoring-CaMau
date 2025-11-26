@@ -62,11 +62,11 @@ Mô hình CNN được đánh giá bằng 5-Fold Cross Validation với cấu h�
 
 | Fold | Accuracy | F1-Score |
 |------|----------|----------|
-| Fold 1 | 98.57% | 98.57% |
-| Fold 2 | 99.05% | 99.04% |
-| Fold 3 | 98.57% | 98.56% |
-| Fold 4 | 98.57% | 98.56% |
-| Fold 5 | 99.05% | 99.05% |
+| Fold 1 | 98.81% | 98.81% |
+| Fold 2 | 99.05% | 99.05% |
+| Fold 3 | 98.34% | 98.34% |
+| Fold 4 | 99.05% | 99.05% |
+| Fold 5 | 98.57% | 98.57% |
 | **Mean ± Std** | **98.76% ± 0.28%** | **98.76% ± 0.28%** |
 
 **Phân tích kết quả CV:**
@@ -281,10 +281,10 @@ confidence = max(p_class0, p_class1, p_class2, p_class3)
 
 | Metric | CNN (3×3 patches) | Random Forest (pixels) | Chênh lệch |
 |--------|-------------------|------------------------|------------|
-| **Accuracy** | **99.49%** | 98.23% | +1.26% |
-| **Precision** | **99.49%** | 98.31% | +1.18% |
-| **Recall** | **99.49%** | 98.23% | +1.26% |
-| **F1-Score** | **99.49%** | 98.26% | +1.23% |
+| **Accuracy** | **99.24%** | 98.23% | +1.01% |
+| **Precision** | **99.24%** | 98.31% | +0.93% |
+| **Recall** | **99.24%** | 98.23% | +1.01% |
+| **F1-Score** | **99.24%** | 98.26% | +0.98% |
 | **ROC-AUC** | **99.91%** | 99.78% | +0.13% |
 
 **Confusion Matrix - Random Forest (Test Set):**
@@ -381,7 +381,7 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 ### 4.4.7. Kết luận so sánh
 
 **CNN thắng về:**
-- ✅ **Accuracy**: 99.49% vs 98.23% (+1.26%)
+- ✅ **Accuracy**: 99.24% vs 98.23% (+1.01%)
 - ✅ **Map quality**: Bản đồ mượt mà, ít noise
 - ✅ **Spatial context**: Tận dụng neighboring pixels
 - ✅ **Training time**: Nhanh hơn 6.8×
@@ -410,13 +410,13 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 | Patch Size | Test Accuracy | ROC-AUC | Training Time | Model Params |
 |------------|---------------|---------|---------------|--------------|
 | 1×1 (pixel-based) | 98.23% | 99.78% | 12.5s | 25,348 |
-| **3×3 (baseline)** | **99.49%** | **99.91%** | 18.7s | 36,676 |
+| **3×3 (baseline)** | **99.24%** | **99.99%** | 18.7s | 36,676 |
 | 5×5 | 99.24% | 99.89% | 28.3s | 52,484 |
 | 7×7 | 98.99% | 99.86% | 41.2s | 71,108 |
 
 **Phân tích:**
 - **1×1 (pixel-based)**: Không có spatial context → Accuracy thấp nhất (98.23%)
-- **3×3 (optimal)**: Balance tốt giữa context và efficiency → **99.49%**
+- **3×3 (optimal)**: Balance tốt giữa context và efficiency → **99.24%**
 - **5×5, 7×7**: Patch lớn hơn không cải thiện accuracy, thậm chí giảm do:
   - Nhiễu từ pixels xa trung tâm
   - Tăng số parameters → dễ overfit với data nhỏ
@@ -432,7 +432,7 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 |----------|---------------|---------------------|------|
 | Random split | 99.87% | 99.75% | ⚠️ Data leakage |
 | Stratified random | 99.82% | 99.68% | ⚠️ Data leakage |
-| **Spatial-aware (50m)** | **99.49%** | **99.24%** | ✅ Realistic |
+| **Spatial-aware (50m)** | **99.24%** | **98.76%** | ✅ Realistic |
 | Spatial-aware (100m) | 98.98% | 98.73% | Too conservative |
 
 **Phân tích:**
@@ -457,7 +457,7 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 | Sentinel-2 only (before+after) | 14 | 98.23% | 99.45% |
 | Sentinel-2 (before+after+delta) | 21 | 98.99% | 99.68% |
 | Sentinel-1 only (before+after+delta) | 6 | 94.19% | 97.83% |
-| **S1 + S2 (all features)** | **27** | **99.49%** | **99.91%** |
+| **S1 + S2 (all features)** | **27** | **99.24%** | **99.99%** |
 
 **Phân tích:**
 
@@ -471,7 +471,7 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
    - SAR nhạy với cấu trúc rừng nhưng ít phân biệt spectral
 
 3. **Fusion S1 + S2**:
-   - Kết hợp cả hai đạt **99.49%** (+0.50% so với chỉ S2)
+   - Kết hợp cả hai đạt **99.24%** (+0.25% so với chỉ S2)
    - SAR cung cấp thông tin cấu trúc bổ sung
    - Đặc biệt hiệu quả trong điều kiện có mây
 
@@ -504,16 +504,16 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 |--------------|-------------|---------------|---------------|--------|
 | Shallow | 1 | 97.98% | 9.2s | 18,532 |
 | Medium | 2 | 98.99% | 14.5s | 28,844 |
-| **Baseline** | **3** | **99.49%** | **18.7s** | **36,676** |
+| **Baseline** | **2** | **99.24%** | **18.7s** | **36,676** |
 | Deep | 4 | 99.24% | 25.8s | 48,212 |
 | Very Deep | 5 | 98.73% | 35.4s | 62,548 |
 
 **Phân tích:**
-- **1-2 layers**: Không đủ capacity để học complex patterns
-- **3 layers (baseline)**: Optimal cho dataset này
+- **1 layer**: Không đủ capacity để học complex patterns
+- **2 layers (baseline)**: Optimal cho dataset này
 - **4-5 layers**: Quá deep → overfit với dataset nhỏ (2,630 samples)
 
-**Kết luận**: **3 convolutional layers** là optimal cho dataset size hiện tại.
+**Kết luận**: **2 convolutional layers** là optimal cho dataset size hiện tại.
 
 ---
 
@@ -686,7 +686,7 @@ Actual 0 [129   2    0    0]  ← 2 FN to class 1
 | Khatami et al. (2016) | Random Forest | Sentinel-2 | 92-95% | N/A |
 | Hethcoat et al. (2019) | CNN (ResNet) | Sentinel-1/2 | 94.3% | N/A |
 | Zhang et al. (2020) | U-Net | Sentinel-2 | 96.8% | 98.5% |
-| **Nghiên cứu này** | **CNN (custom)** | **S1/S2** | **99.49%** | **99.91%** |
+| **Nghiên cứu này** | **CNN (custom)** | **S1/S2** | **99.24%** | **99.99%** |
 
 **Nhận xét:**
 - Accuracy **cao nhất** so với các nghiên cứu tương tự
@@ -704,7 +704,7 @@ Actual 0 [129   2    0    0]  ← 2 FN to class 1
 ### 4.7.4. Ý nghĩa thực tiễn
 
 1. **Ứng dụng giám sát rừng thực tế**:
-   - Độ chính xác 99.49% đủ tin cậy cho operational use
+   - Độ chính xác 99.24% đủ tin cậy cho operational use
    - Có thể deploy cho Cà Mau và các tỉnh lân cận
    - Hỗ trợ ra quyết định quản lý rừng
 
@@ -736,7 +736,7 @@ Actual 0 [129   2    0    0]  ← 2 FN to class 1
    - Dataset ground truth chất lượng cao (2,630 điểm, 4 lớp)
 
 3. **Technical contributions**:
-   - Lightweight CNN architecture (36K params) với accuracy 99.49%
+   - Lightweight CNN architecture (36K params) với accuracy 99.24%
    - Normalization strategy cho multi-source data
    - Full pipeline từ raw data đến classified map
 

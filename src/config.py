@@ -98,9 +98,8 @@ GROUND_TRUTH_CONFIG = {
 # ============================================================================
 
 TRAIN_TEST_SPLIT = {
-    'train_size': 0.70,      # 70% (~900 points)
-    'val_size': 0.15,        # 15% (~193 points)
-    'test_size': 0.15,       # 15% (~192 points)
+    'trainval_size': 0.80,   # 80% for 5-Fold CV (2,104 points)
+    'test_size': 0.20,       # 20% fixed test set (526 points)
     'random_state': 42,      # Reproducibility
     'stratify': True         # Maintain class distribution
 }
@@ -153,9 +152,8 @@ DL_CONFIG = {
 
     # Data split (spatial-aware)
     'cluster_distance': 50.0,           # Clustering threshold (meters)
-    'train_size': 0.70,                 # 70% for training
-    'val_size': 0.15,                   # 15% for validation
-    'test_size': 0.15,                  # 15% for testing
+    'trainval_size': 0.80,              # 80% for 5-Fold CV
+    'test_size': 0.20,                  # 20% fixed test set
     'stratify_by_class': True,          # Maintain class balance
 
     # Normalization
@@ -291,9 +289,8 @@ def print_config_summary(ground_truth_df=None):
         print(f"  - Ground Truth Points: (load data to see stats)")
 
     print(f"\nDATA SPLIT:")
-    print(f"  - Train: {TRAIN_TEST_SPLIT['train_size']*100:.0f}%")
-    print(f"  - Validation: {TRAIN_TEST_SPLIT['val_size']*100:.0f}%")
-    print(f"  - Test: {TRAIN_TEST_SPLIT['test_size']*100:.0f}%")
+    print(f"  - Train+Val (5-Fold CV): {TRAIN_TEST_SPLIT['trainval_size']*100:.0f}%")
+    print(f"  - Test (Fixed): {TRAIN_TEST_SPLIT['test_size']*100:.0f}%")
 
     print(f"\nCROSS VALIDATION:")
     print(f"  - K-Folds: {CV_CONFIG['n_splits']}")
