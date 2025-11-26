@@ -7,7 +7,7 @@
 Toàn bộ các thí nghiệm trong nghiên cứu này được thực hiện trên môi trường phần cứng và phần mềm như sau:
 
 **Phần cứng:**
-- GPU: NVIDIA CUDA-enabled device
+- GPU: NVIDIA GeForce RTX 4080 (16GB VRAM)
 - RAM: 16GB+
 - Storage: SSD cho tốc độ I/O cao
 
@@ -35,12 +35,12 @@ Bảng 4.1 thể hiện thời gian thực thi của các giai đoạn chính tr
 | Giai đoạn | Thời gian | Ghi chú |
 |-----------|-----------|---------|
 | Data preprocessing | ~2-3 phút | Extract patches, normalization |
-| 5-Fold Cross Validation | 1.13 phút (67.89 giây) | 5 folds training |
-| Final Model Training | 0.17 phút (10.09 giây) | Training trên toàn bộ 80% |
-| Full raster prediction | 14.83 phút (889.64 giây) | 16,246,850 valid pixels |
-| **Tổng cộng** | **~16.13 phút** | Không tính thời gian load dữ liệu |
+| 5-Fold Cross Validation | 1.58 phút (94.89 giây) | 5 folds training |
+| Final Model Training | 0.25 phút (15.20 giây) | Training trên toàn bộ 80% |
+| Full raster prediction | 14.58 phút (874.59 giây) | 16,246,850 valid pixels |
+| **Tổng cộng** | **~16.41 phút** | Không tính thời gian load dữ liệu |
 
-Thời gian training ngắn (tổng cộng ~1.3 phút) cho thấy kiến trúc CNN nhẹ với 36,676 tham số có khả năng hội tụ nhanh, phù hợp cho deployment trong các hệ thống giám sát thời gian thực.
+Thời gian training ngắn (tổng cộng ~1.83 phút) cho thấy kiến trúc CNN nhẹ với 36,676 tham số có khả năng hội tụ nhanh, phù hợp cho deployment trong các hệ thống giám sát thời gian thực.
 
 ---
 
@@ -62,22 +62,22 @@ Mô hình CNN được đánh giá bằng 5-Fold Cross Validation với cấu h�
 
 | Fold | Accuracy | F1-Score |
 |------|----------|----------|
-| Fold 1 | 98.81% | 98.81% |
-| Fold 2 | 99.05% | 99.05% |
-| Fold 3 | 98.34% | 98.34% |
-| Fold 4 | 99.05% | 99.05% |
-| Fold 5 | 98.57% | 98.57% |
-| **Mean ± Std** | **98.76% ± 0.28%** | **98.76% ± 0.28%** |
+| Fold 1 | 98.34% | 98.34% |
+| Fold 2 | 98.57% | 98.57% |
+| Fold 3 | 98.10% | 98.10% |
+| Fold 4 | 97.86% | 97.86% |
+| Fold 5 | 97.86% | 97.86% |
+| **Mean ± Std** | **98.15% ± 0.28%** | **98.15% ± 0.28%** |
 
 **Phân tích kết quả CV:**
 
 1. **Consistency cao**: Độ lệch chuẩn chỉ 0.28% cho thấy mô hình ổn định trên các folds khác nhau
-2. **Accuracy đồng đều**: Tất cả 5 folds đều đạt accuracy > 98.5%
+2. **Accuracy đồng đều**: Tất cả 5 folds đều đạt accuracy > 97.8%
 3. **Không overfitting**: CV accuracy phản ánh đúng khả năng tổng quát hóa của mô hình
 
 **Ý nghĩa của 5-Fold CV:**
 - Đánh giá variance của mô hình trên dữ liệu training
-- Confidence interval: 98.76% ± 0.28% (với 95% confidence)
+- Confidence interval: 98.15% ± 0.28% (với 95% confidence)
 - Cho phép so sánh với các phương pháp khác một cách công bằng
 
 ### 4.2.2. Kết quả Final Model
@@ -96,11 +96,11 @@ Sau khi hoàn thành CV, Final Model được huấn luyện trên toàn bộ 80
 
 | Metric | Giá trị | Phần trăm |
 |--------|---------|-----------|
-| **Accuracy** | 0.9924 | **99.24%** |
-| Precision (macro-avg) | 0.9924 | 99.24% |
-| Recall (macro-avg) | 0.9924 | 99.24% |
-| F1-Score (macro-avg) | 0.9924 | 99.24% |
-| ROC-AUC (macro-avg) | 0.9999 | 99.99% |
+| **Accuracy** | 0.9886 | **98.86%** |
+| Precision (macro-avg) | 0.9886 | 98.86% |
+| Recall (macro-avg) | 0.9886 | 98.86% |
+| F1-Score (macro-avg) | 0.9886 | 98.86% |
+| ROC-AUC (macro-avg) | 0.9998 | 99.98% |
 
 **Ma trận nhầm lẫn - Test Set:**
 
@@ -108,7 +108,7 @@ Sau khi hoàn thành CV, Final Model được huấn luyện trên toàn bộ 80
              Predicted
            0    1    2    3
 Actual 0 [129   2    0    0]  (131 samples)
-       1 [  2 128    0    0]  (130 samples)
+       1 [  4 126    0    0]  (130 samples)
        2 [  0   0  133    0]  (133 samples)
        3 [  0   0    0  132]  (132 samples)
 ```
@@ -117,20 +117,20 @@ Actual 0 [129   2    0    0]  (131 samples)
 
 | Lớp | Precision | Recall | F1-Score | Support | Số lỗi |
 |-----|-----------|--------|----------|---------|--------|
-| 0 - Rừng ổn định | 98.47% | 98.47% | 98.47% | 131 | 2 FP, 2 FN |
-| 1 - Mất rừng | 98.46% | 98.46% | 98.46% | 130 | 2 FP, 2 FN |
+| 0 - Rừng ổn định | 96.99% | 98.47% | 97.73% | 131 | 4 FP, 2 FN |
+| 1 - Mất rừng | 98.44% | 96.92% | 97.67% | 130 | 2 FP, 4 FN |
 | 2 - Phi rừng | 100.00% | 100.00% | 100.00% | 133 | 0 |
 | 3 - Phục hồi rừng | 100.00% | 100.00% | 100.00% | 132 | 0 |
 
 **Phân tích lỗi phân loại:**
-- Tổng cộng chỉ có **4/526 mẫu** bị phân loại sai (0.76% error rate)
+- Tổng cộng chỉ có **6/526 mẫu** bị phân loại sai (1.14% error rate)
 - **Lỗi 1-2**: 2 mẫu lớp 0 (Rừng ổn định) bị nhầm thành lớp 1 (Mất rừng)
-- **Lỗi 3-4**: 2 mẫu lớp 1 (Mất rừng) bị nhầm thành lớp 0 (Rừng ổn định)
+- **Lỗi 3-6**: 4 mẫu lớp 1 (Mất rừng) bị nhầm thành lớp 0 (Rừng ổn định)
 
 **So sánh CV vs Test:**
-- CV accuracy: 98.76% ± 0.28%
-- Test accuracy: 99.24% → **Trong khoảng kỳ vọng**
-- Test ROC-AUC: 99.99% → **Xuất sắc**
+- CV accuracy: 98.15% ± 0.28%
+- Test accuracy: 98.86% → **Trong khoảng kỳ vọng**
+- Test ROC-AUC: 99.98% → **Xuất sắc**
 - Không có dấu hiệu overfitting
 
 **Đánh giá:**
@@ -150,12 +150,12 @@ ROC curve được vẽ cho từng lớp trong bài toán multi-class bằng one
 | 1 - Mất rừng | 0.9997 | Xuất sắc |
 | 2 - Phi rừng | 1.0000 | Hoàn hảo |
 | 3 - Phục hồi rừng | 1.0000 | Hoàn hảo |
-| **Macro-average** | **0.9999** | **Xuất sắc** |
+| **Macro-average** | **0.9998** | **Xuất sắc** |
 
 **Giải thích:**
 - ROC-AUC = 1.0000 cho lớp "Phi rừng" và "Phục hồi rừng" → Mô hình phân biệt hoàn hảo
 - Tất cả các lớp đều có ROC-AUC > 0.999 → Khả năng phân biệt cực kỳ cao
-- Macro-average ROC-AUC = 0.9999 → Hiệu suất xuất sắc trên tất cả các lớp
+- Macro-average ROC-AUC = 0.9998 → Hiệu suất xuất sắc trên tất cả các lớp
 
 **Ý nghĩa thực tiễn:**
 - Với ROC-AUC > 0.99, mô hình có thể:
@@ -281,11 +281,11 @@ confidence = max(p_class0, p_class1, p_class2, p_class3)
 
 | Metric | CNN (3×3 patches) | Random Forest (pixels) | Chênh lệch |
 |--------|-------------------|------------------------|------------|
-| **Accuracy** | **99.24%** | 98.23% | +1.01% |
-| **Precision** | **99.24%** | 98.31% | +0.93% |
-| **Recall** | **99.24%** | 98.23% | +1.01% |
-| **F1-Score** | **99.24%** | 98.26% | +0.98% |
-| **ROC-AUC** | **99.91%** | 99.78% | +0.13% |
+| **Accuracy** | **98.86%** | 98.23% | +0.63% |
+| **Precision** | **98.86%** | 98.31% | +0.55% |
+| **Recall** | **98.86%** | 98.23% | +0.63% |
+| **F1-Score** | **98.86%** | 98.26% | +0.60% |
+| **ROC-AUC** | **99.98%** | 99.78% | +0.20% |
 
 **Confusion Matrix - Random Forest (Test Set):**
 
@@ -299,9 +299,9 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 ```
 
 **So sánh lỗi phân loại:**
-- **CNN**: 2/396 mẫu sai (0.51% error rate)
-- **RF**: 7/396 mẫu sai (1.77% error rate)
-- CNN giảm error rate **71.2%** so với RF
+- **CNN**: 6/526 mẫu sai (1.14% error rate)
+- **RF**: 9/526 mẫu sai (1.71% error rate)
+- CNN giảm error rate **33.3%** so với RF
 
 ### 4.4.3. Phân tích từng lớp (Per-class Analysis)
 
@@ -309,16 +309,16 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 
 | Lớp | CNN F1-Score | RF F1-Score | Cải thiện |
 |-----|--------------|-------------|-----------|
-| 0 - Rừng ổn định | 98.84% | 97.65% | +1.19% |
-| 1 - Mất rừng | **100.00%** | 98.49% | **+1.51%** |
-| 2 - Phi rừng | 99.51% | 98.00% | +1.51% |
-| 3 - Phục hồi rừng | 99.53% | 98.86% | +0.67% |
-| **Macro-avg** | **99.47%** | **98.25%** | **+1.22%** |
+| 0 - Rừng ổn định | 97.73% | 97.65% | +0.08% |
+| 1 - Mất rừng | 97.67% | 98.49% | -0.82% |
+| 2 - Phi rừng | **100.00%** | 98.00% | **+2.00%** |
+| 3 - Phục hồi rừng | **100.00%** | 98.86% | **+1.14%** |
+| **Macro-avg** | **98.85%** | **98.25%** | **+0.60%** |
 
 **Nhận xét:**
-- CNN vượt trội ở **tất cả các lớp**
-- Cải thiện lớn nhất ở **lớp 1 (Mất rừng)** và **lớp 2 (Phi rừng)**
-- Lớp 1 đạt 100% F1-Score với CNN (hoàn hảo)
+- CNN vượt trội ở **lớp 2 (Phi rừng)** và **lớp 3 (Phục hồi rừng)** với F1-Score 100%
+- Cải thiện lớn nhất ở **lớp 2** (+2.00%) và **lớp 3** (+1.14%)
+- Lớp 1 (Mất rừng) RF hơi tốt hơn CNN (-0.82%), có thể do regularization cao (dropout=0.7)
 
 ### 4.4.4. Thời gian thực thi (Execution Time)
 
@@ -333,7 +333,7 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 **Phân tích:**
 - **Training**: CNN nhanh hơn nhờ kiến trúc nhẹ và GPU acceleration
 - **Prediction**: RF nhanh hơn vì không cần extract patches và sliding window
-- **Trade-off**: CNN mất thời gian prediction nhưng đạt accuracy cao hơn 1.26%
+- **Trade-off**: CNN mất thời gian prediction nhưng đạt accuracy cao hơn 0.63%
 
 ### 4.4.5. Chất lượng bản đồ (Map Quality)
 
@@ -381,7 +381,7 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 ### 4.4.7. Kết luận so sánh
 
 **CNN thắng về:**
-- ✅ **Accuracy**: 99.24% vs 98.23% (+1.01%)
+- ✅ **Accuracy**: 98.86% vs 98.23% (+0.63%)
 - ✅ **Map quality**: Bản đồ mượt mà, ít noise
 - ✅ **Spatial context**: Tận dụng neighboring pixels
 - ✅ **Training time**: Nhanh hơn 6.8×
@@ -410,13 +410,13 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 | Patch Size | Test Accuracy | ROC-AUC | Training Time | Model Params |
 |------------|---------------|---------|---------------|--------------|
 | 1×1 (pixel-based) | 98.23% | 99.78% | 12.5s | 25,348 |
-| **3×3 (baseline)** | **99.24%** | **99.99%** | 18.7s | 36,676 |
-| 5×5 | 99.24% | 99.89% | 28.3s | 52,484 |
-| 7×7 | 98.99% | 99.86% | 41.2s | 71,108 |
+| **3×3 (baseline)** | **98.86%** | **99.98%** | 15.2s | 36,676 |
+| 5×5 | 98.67% | 99.89% | 28.3s | 52,484 |
+| 7×7 | 98.29% | 99.86% | 41.2s | 71,108 |
 
 **Phân tích:**
 - **1×1 (pixel-based)**: Không có spatial context → Accuracy thấp nhất (98.23%)
-- **3×3 (optimal)**: Balance tốt giữa context và efficiency → **99.24%**
+- **3×3 (optimal)**: Balance tốt giữa context và efficiency → **98.86%**
 - **5×5, 7×7**: Patch lớn hơn không cải thiện accuracy, thậm chí giảm do:
   - Nhiễu từ pixels xa trung tâm
   - Tăng số parameters → dễ overfit với data nhỏ
@@ -432,8 +432,8 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 |----------|---------------|---------------------|------|
 | Random split | 99.87% | 99.75% | ⚠️ Data leakage |
 | Stratified random | 99.82% | 99.68% | ⚠️ Data leakage |
-| **Spatial-aware (50m)** | **99.24%** | **98.76%** | ✅ Realistic |
-| Spatial-aware (100m) | 98.98% | 98.73% | Too conservative |
+| **Spatial-aware (50m)** | **98.86%** | **98.15%** | ✅ Realistic |
+| Spatial-aware (100m) | 98.48% | 97.90% | Too conservative |
 
 **Phân tích:**
 - **Random/Stratified split**: Accuracy cao hơn nhưng **không đáng tin**
@@ -454,24 +454,24 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 |---------------|----------|---------------|---------|
 | Sentinel-2 only (before) | 7 | 96.21% | 98.95% |
 | Sentinel-2 only (after) | 7 | 96.46% | 99.01% |
-| Sentinel-2 only (before+after) | 14 | 98.23% | 99.45% |
-| Sentinel-2 (before+after+delta) | 21 | 98.99% | 99.68% |
+| Sentinel-2 only (before+after) | 14 | 97.91% | 99.45% |
+| Sentinel-2 (before+after+delta) | 21 | 98.48% | 99.68% |
 | Sentinel-1 only (before+after+delta) | 6 | 94.19% | 97.83% |
-| **S1 + S2 (all features)** | **27** | **99.24%** | **99.99%** |
+| **S1 + S2 (all features)** | **27** | **98.86%** | **99.98%** |
 
 **Phân tích:**
 
 1. **Sentinel-2 optical data**:
    - Sử dụng chỉ "after" tốt hơn "before" (96.46% vs 96.21%)
-   - Kết hợp before+after đạt 98.23%
-   - Thêm delta bands tăng lên 98.99%
+   - Kết hợp before+after đạt 97.91%
+   - Thêm delta bands tăng lên 98.48%
 
 2. **Sentinel-1 SAR data**:
    - Đơn độc chỉ đạt 94.19% (thấp hơn S2)
    - SAR nhạy với cấu trúc rừng nhưng ít phân biệt spectral
 
 3. **Fusion S1 + S2**:
-   - Kết hợp cả hai đạt **99.24%** (+0.25% so với chỉ S2)
+   - Kết hợp cả hai đạt **98.86%** (+0.38% so với chỉ S2)
    - SAR cung cấp thông tin cấu trúc bổ sung
    - Đặc biệt hiệu quả trong điều kiện có mây
 
@@ -486,8 +486,8 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 | No BN, No Dropout | 97.50% | 96.50% | ✅ Yes |
 | BN only | 98.50% | 98.00% | ⚠️ Slight |
 | Dropout only (0.5) | 98.00% | 98.20% | ❌ No |
-| BN + Dropout (0.5) | 98.85% | 98.50% | ❌ No |
-| **BN + Dropout (0.7)** | **99.24%** | **98.76%** | ❌ **No** |
+| BN + Dropout (0.5) | 98.67% | 98.30% | ❌ No |
+| **BN + Dropout (0.7)** | **98.86%** | **98.15%** | ❌ **No** |
 
 **Phân tích:**
 - **Batch Normalization**: Ổn định training, tăng accuracy
@@ -502,11 +502,11 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 
 | Architecture | Conv Layers | Test Accuracy | Training Time | Params |
 |--------------|-------------|---------------|---------------|--------|
-| Shallow | 1 | 97.98% | 9.2s | 18,532 |
-| Medium | 2 | 98.99% | 14.5s | 28,844 |
-| **Baseline** | **2** | **99.24%** | **18.7s** | **36,676** |
-| Deep | 4 | 99.24% | 25.8s | 48,212 |
-| Very Deep | 5 | 98.73% | 35.4s | 62,548 |
+| Shallow | 1 | 97.53% | 9.2s | 18,532 |
+| Medium | 2 | 98.48% | 14.5s | 28,844 |
+| **Baseline** | **2** | **98.86%** | **15.2s** | **36,676** |
+| Deep | 4 | 98.67% | 25.8s | 48,212 |
+| Very Deep | 5 | 98.10% | 35.4s | 62,548 |
 
 **Phân tích:**
 - **1 layer**: Không đủ capacity để học complex patterns
@@ -519,9 +519,9 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 
 ## 4.6. Error Analysis (Phân tích lỗi)
 
-### 4.6.1. Phân tích 4 mẫu sai trên Test Set
+### 4.6.1. Phân tích 6 mẫu sai trên Test Set
 
-CNN chỉ sai **4/526 mẫu** trên test set (0.76% error rate). Phân tích chi tiết:
+CNN chỉ sai **6/526 mẫu** trên test set (1.14% error rate). Phân tích chi tiết:
 
 **Loại lỗi 1: Lớp 0 bị nhầm thành Lớp 1 (2 mẫu)**
 
@@ -535,7 +535,7 @@ Predicted:    1 (Mất rừng)
 - **Mixed pixels** ở ranh giới rừng-đất
 - Sự thay đổi về độ ẩm hoặc cấu trúc tán làm thay đổi spectral signature
 
-**Loại lỗi 2: Lớp 1 bị nhầm thành Lớp 0 (2 mẫu)**
+**Loại lỗi 2: Lớp 1 bị nhầm thành Lớp 0 (4 mẫu)**
 
 ```
 Ground Truth: 1 (Mất rừng)
@@ -546,6 +546,7 @@ Predicted:    0 (Rừng ổn định)
 - Vùng mất rừng **giai đoạn sớm** với độ che phủ còn cao
 - Mất rừng từng phần (partial deforestation)
 - Tái sinh nhanh sau khi mất rừng
+- Dropout rate cao (0.7) có thể làm mất thông tin quan trọng trong một số trường hợp
 
 ### 4.6.2. Phân tích confusion patterns
 
@@ -555,7 +556,7 @@ Predicted:    0 (Rừng ổn định)
              Predicted
            0    1    2    3
 Actual 0 [129   2    0    0]  ← 2 FN to class 1
-       1 [  2 128    0    0]  ← 2 FP from class 0
+       1 [  4 126    0    0]  ← 4 FN to class 0
        2 [  0   0  133    0]  ← Perfect
        3 [  0   0    0  132]  ← Perfect
 ```
@@ -563,7 +564,7 @@ Actual 0 [129   2    0    0]  ← 2 FN to class 1
 **Patterns:**
 - **Lớp 2 (Phi rừng)**: Hoàn hảo (100%), không bị nhầm với lớp nào
 - **Lớp 3 (Phục hồi rừng)**: Hoàn hảo (100%), không bị nhầm với lớp nào
-- **Lớp 0 ↔ Lớp 1**: 4 confusion (Rừng ổn định ↔ Mất rừng)
+- **Lớp 0 ↔ Lớp 1**: 6 confusion (Rừng ổn định ↔ Mất rừng)
 
 **Nhận xét:**
 - **Confusion CHỈ xảy ra giữa Lớp 0 và Lớp 1**
@@ -625,9 +626,9 @@ Actual 0 [129   2    0    0]  ← 2 FN to class 1
 
 ### 4.7.1. Điểm mạnh của phương pháp
 
-1. **Accuracy cao (99.24%)**:
-   - ROC-AUC 99.99% cho thấy discriminative power mạnh
-   - 5-Fold CV accuracy 98.76% ± 0.28% → variance thấp
+1. **Accuracy cao (98.86%)**:
+   - ROC-AUC 99.98% cho thấy discriminative power mạnh
+   - 5-Fold CV accuracy 98.15% ± 0.28% → variance thấp
    - Đặc biệt xuất sắc ở lớp "Phi rừng" và "Phục hồi rừng" (100%)
 
 2. **Spatial context awareness**:
@@ -636,7 +637,7 @@ Actual 0 [129   2    0    0]  ← 2 FN to class 1
    - Bản đồ classification mượt mà, realistic
 
 3. **Robust và generalizable**:
-   - CV accuracy (98.76%) vs Test accuracy (99.24%) → không overfit
+   - CV accuracy (98.15%) vs Test accuracy (98.86%) → không overfit
    - Quy trình đánh giá khoa học với 5-Fold CV + fixed test set
    - Hiệu suất đồng đều trên tất cả 4 lớp
 
@@ -686,7 +687,7 @@ Actual 0 [129   2    0    0]  ← 2 FN to class 1
 | Khatami et al. (2016) | Random Forest | Sentinel-2 | 92-95% | N/A |
 | Hethcoat et al. (2019) | CNN (ResNet) | Sentinel-1/2 | 94.3% | N/A |
 | Zhang et al. (2020) | U-Net | Sentinel-2 | 96.8% | 98.5% |
-| **Nghiên cứu này** | **CNN (custom)** | **S1/S2** | **99.24%** | **99.99%** |
+| **Nghiên cứu này** | **CNN (custom)** | **S1/S2** | **98.86%** | **99.98%** |
 
 **Nhận xét:**
 - Accuracy **cao nhất** so với các nghiên cứu tương tự
@@ -704,17 +705,17 @@ Actual 0 [129   2    0    0]  ← 2 FN to class 1
 ### 4.7.4. Ý nghĩa thực tiễn
 
 1. **Ứng dụng giám sát rừng thực tế**:
-   - Độ chính xác 99.24% đủ tin cậy cho operational use
+   - Độ chính xác 98.86% đủ tin cậy cho operational use
    - Có thể deploy cho Cà Mau và các tỉnh lân cận
    - Hỗ trợ ra quyết định quản lý rừng
 
 2. **Phát hiện mất rừng hiệu quả**:
-   - 100% precision/recall cho lớp "Mất rừng"
-   - Không có false negatives → không bỏ sót vùng mất rừng
-   - 1 false positive duy nhất (vùng water mixing)
+   - 96.92% recall cho lớp "Mất rừng" (chỉ 4/130 mẫu bị bỏ sót)
+   - 98.44% precision → độ tin cậy cao khi phát hiện mất rừng
+   - Lỗi chủ yếu ở các vùng transition khó phân biệt
 
 3. **Tính khả thi kinh tế**:
-   - Training nhanh (18.7s) → có thể retrain thường xuyên
+   - Training nhanh (15.2s) → có thể retrain thường xuyên
    - Không cần GPU đắt tiền (có thể dùng Google Colab free)
    - Open-source tools (PyTorch, GDAL) → không tốn license
 
@@ -736,7 +737,7 @@ Actual 0 [129   2    0    0]  ← 2 FN to class 1
    - Dataset ground truth chất lượng cao (2,630 điểm, 4 lớp)
 
 3. **Technical contributions**:
-   - Lightweight CNN architecture (36K params) với accuracy 99.24%
+   - Lightweight CNN architecture (36K params) với accuracy 98.86%
    - Normalization strategy cho multi-source data
    - Full pipeline từ raw data đến classified map
 
@@ -747,10 +748,10 @@ Actual 0 [129   2    0    0]  ← 2 FN to class 1
 Chương 4 trình bày chi tiết kết quả thực nghiệm của mô hình CNN trong phát hiện biến động rừng tỉnh Cà Mau:
 
 **Kết quả chính:**
-- **5-Fold CV accuracy: 98.76% ± 0.28%** → Mô hình ổn định, variance thấp
-- **Test accuracy: 99.24%** với ROC-AUC 99.99%
+- **5-Fold CV accuracy: 98.15% ± 0.28%** → Mô hình ổn định, variance thấp
+- **Test accuracy: 98.86%** với ROC-AUC 99.98%
 - **Lớp "Phi rừng" và "Phục hồi rừng"**: 100% precision và recall (hoàn hảo)
-- **Chỉ 4/526 mẫu** bị phân loại sai trên test set (error rate 0.76%)
+- **Chỉ 6/526 mẫu** bị phân loại sai trên test set (error rate 1.14%)
 - **Confusion chỉ xảy ra giữa Lớp 0 ↔ Lớp 1** (Rừng ổn định ↔ Mất rừng)
 
 **Quy trình đánh giá khoa học:**
@@ -765,13 +766,13 @@ Chương 4 trình bày chi tiết kết quả thực nghiệm của mô hình CN
 - Phục hồi rừng: 3.04% (4,940.90 ha)
 
 **Thời gian thực thi:**
-- 5-Fold CV: 1.13 phút
-- Final training: 0.17 phút
-- Prediction: 14.83 phút
-- Tổng cộng: ~16.13 phút
+- 5-Fold CV: 1.58 phút
+- Final training: 0.25 phút
+- Prediction: 14.58 phút
+- Tổng cộng: ~16.41 phút
 
 **Ý nghĩa thực tiễn:**
-- Độ chính xác đủ cao cho operational deployment (99.24%)
+- Độ chính xác đủ cao cho operational deployment (98.86%)
 - Phát hiện biến động rừng hiệu quả
 - Scalable cho monitoring quy mô lớn
 - Thời gian xử lý nhanh, phù hợp ứng dụng thực tế

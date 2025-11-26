@@ -1154,7 +1154,7 @@ train_loader = DataLoader(
 
 **Training time:**
 
-- **With CUDA (GPU):** ~18.7 seconds cho 38 epochs
+- **With CUDA (GPU):** ~15.2 seconds cho Final Model training
 - **With CPU:** ~5-10 phút cho 38 epochs
 
 ---
@@ -1361,8 +1361,8 @@ rf_accuracy = accuracy_score(y_test, rf_preds)
 
 | Metric | CNN | Random Forest |
 |--------|-----|---------------|
-| **Test Accuracy** | **99.24%** | ~98% |
-| **Training Time** | 18.7s (GPU) | ~2-5 min |
+| **Test Accuracy** | **98.86%** | ~98% |
+| **Training Time** | 15.2s (GPU) | ~2-5 min |
 | **Model Size** | 450 KB | ~2 MB |
 | **Spatial Context** | ✓ Yes (3×3 patch) | ✗ No (pixel-based) |
 | **Feature Learning** | ✓ Automatic | ✗ Manual (handcrafted) |
