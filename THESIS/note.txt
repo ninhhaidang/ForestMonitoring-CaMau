@@ -1,4 +1,5 @@
 Vấn đề hiện tại:
+- Thừa phần Machine Learning: Random Forest
 - Cấu trúc chưa chuẩn và còn thiếu một số phần. Thứ tự chính xác phải là:
     + Tóm tắt
     + Lời cam đoan
@@ -13,10 +14,10 @@ Vấn đề hiện tại:
         3. Đối tượng và phạm vi nghiên cứu
         4. Ý nghĩa khoa học và thực tiễn của đề tài
         6. Cấu trúc của đồ án
-    + Chương 1:
-    + Chương 2:
-    + Chương 3:
-    + Chương 4:
+    + Chương 1: Tổng quan về vấn đề nghiên cứu
+    + Chương 2: Cơ sở lỹ thuyết
+    + Chương 3: Phương pháp nghiên cứu
+    + Chương 4: Kết quả và thảo luận
     + Kết luận và kiến nghị
     + Tài liệu tham khảo
 
