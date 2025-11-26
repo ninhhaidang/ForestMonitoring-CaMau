@@ -1,5 +1,274 @@
-\chapter{Lý thuyết công suất tua-bin gió và phương pháp mô phỏng số động lực học chất lỏng}
+\chapter{Cơ sở lý thuyết}
 
-\input{chapters/chapter2/sec2_1}
-\input{chapters/chapter2/sec2_2}
-\input{chapters/chapter2/sec2_3}
+\section{Công nghệ viễn thám và ảnh vệ tinh}
+
+\subsection{Nguyên lý viễn thám}
+
+Viễn thám (Remote Sensing) là khoa học và kỹ thuật thu thập thông tin về một đối tượng hoặc khu vực từ xa, thường thông qua việc ghi nhận bức xạ điện từ phản xạ hoặc phát ra từ bề mặt Trái Đất. Nguyên lý cơ bản của viễn thám dựa trên tương tác giữa bức xạ điện từ và các đối tượng trên bề mặt.
+
+\textbf{Quá trình viễn thám bị động (Passive Remote Sensing):}
+
+Trong hệ thống viễn thám bị động, nguồn năng lượng chính là bức xạ từ Mặt Trời. Khi các sóng này truyền qua khí quyển, một phần năng lượng bị hấp thụ hoặc tán xạ. Sau đó bức xạ tương tác với bề mặt, chịu các quá trình phản xạ, hấp thụ hoặc truyền qua tùy theo đặc tính vật liệu. Tín hiệu phản xạ được vệ tinh ghi nhận bởi cảm biến và được xử lý, truyền về trạm mặt đất để phục vụ phân tích.
+
+\textbf{Phương trình cân bằng năng lượng:}
+\begin{equation}
+E_{incident} = E_{reflected} + E_{absorbed} + E_{transmitted}
+\end{equation}
+
+Trong đó, $E_{incident}$ là năng lượng tới từ Mặt Trời, $E_{reflected}$ là phần năng lượng phản xạ được cảm biến ghi nhận, $E_{absorbed}$ là phần năng lượng bị hấp thụ và chuyển thành nhiệt, và $E_{transmitted}$ là phần năng lượng truyền qua vật chất.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Sơ đồ minh họa nguyên lý viễn thám\\ bị động và chủ động\vspace{2cm}}}
+    \caption{Nguyên lý viễn thám bị động và chủ động}
+    \label{fig:remote_sensing_principle}
+\end{figure}
+
+\subsection{Radar khẩu độ tổng hợp (SAR)}
+
+\textbf{Nguyên lý hoạt động:}
+
+Khác với viễn thám bị động, SAR là hệ thống chủ động (active remote sensing): anten phát xung sóng điện từ về phía Trái Đất, các sóng này tương tác với bề mặt và tạo hiện tượng phản xạ ngược (backscatter) với cường độ phụ thuộc vào nhiều yếu tố như độ nhám bề mặt, hàm lượng nước (độ ẩm), hằng số điện môi và góc tới.
+
+\textbf{Hệ số Backscatter ($\sigma^0$):}
+\begin{equation}
+\sigma^0 (dB) = 10 \times \log_{10}(\sigma^0_{linear})
+\end{equation}
+
+Giá trị $\sigma^0$ phụ thuộc vào nhiều yếu tố. Về độ nhám bề mặt, bề mặt nhẵn như nước cho $\sigma^0$ thấp, trong khi bề mặt nhám như rừng cho $\sigma^0$ cao. Về hàm lượng nước, độ ẩm làm tăng $\sigma^0$ do hằng số điện môi lớn của nước. Về cấu trúc thực vật, khu vực rừng có cấu trúc phức tạp thường cho backscatter mạnh.
+
+\textbf{Polarization:}
+
+SAR có thể phát và thu theo các chế độ phân cực khác nhau: VV (phát V, thu V) nhạy với độ ẩm bề mặt, VH (phát V, thu H) thường nhạy với cấu trúc thực vật (volume scattering).
+
+\subsection{Ảnh quang học đa phổ (Optical Multispectral)}
+
+\textbf{Dải phổ điện từ:}
+
+Ảnh quang học ghi nhận bức xạ phản xạ từ bề mặt Trái Đất ở các dải phổ khác nhau. Dải nhìn thấy (VIS) có bước sóng 400–700 nm, bao gồm Blue (450–520 nm), Green (520–600 nm) và Red (630–690 nm). Dải cận hồng ngoại (NIR) có bước sóng 700–1400 nm, với đặc trưng phản xạ cao ở thực vật xanh do chlorophyll. Dải hồng ngoại sóng ngắn (SWIR) có bước sóng 1400–3000 nm, nhạy với độ ẩm của thực vật và đất.
+
+\textbf{Chữ ký phổ (Spectral Signature):}
+
+Mỗi loại đối tượng có chữ ký phổ đặc trưng - mẫu phản xạ qua các dải phổ:
+\begin{equation}
+S = [\rho(\lambda_1), \rho(\lambda_2), ..., \rho(\lambda_n)]
+\end{equation}
+
+Ví dụ: thực vật xanh có phản xạ thấp ở dải Red (hấp thụ bởi chlorophyll) và phản xạ cao ở dải NIR; đất trống có phản xạ trung bình và tăng dần theo bước sóng; nước có phản xạ thấp ở hầu hết các dải, đặc biệt là NIR và SWIR.
+
+\begin{table}[H]
+\centering
+\caption{Các dải phổ Sentinel-2 sử dụng trong nghiên cứu}
+\label{tab:s2_bands}
+\begin{tabular}{|c|l|c|c|l|}
+\hline
+\textbf{Band} & \textbf{Tên} & \textbf{Bước sóng (nm)} & \textbf{Độ phân giải (m)} & \textbf{Ứng dụng} \\
+\hline
+B4 & Red & 665 & 10 & Chlorophyll absorption \\
+\hline
+B8 & NIR & 842 & 10 & Biomass, NDVI \\
+\hline
+B11 & SWIR1 & 1610 & 20 & Độ ẩm, NDMI \\
+\hline
+B12 & SWIR2 & 2190 & 20 & NBR \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Phát hiện biến động rừng}
+
+\textbf{Change Detection Approach:}
+\begin{equation}
+\Delta Feature = Feature_{after} - Feature_{before}
+\end{equation}
+
+\textbf{Temporal Features:}
+
+Temporal features bao gồm các ``before features'' thể hiện trạng thái rừng tại thời điểm $t_1$, các ``after features'' thể hiện trạng thái rừng tại thời điểm $t_2$, và các ``delta features'' biểu diễn biến đổi giữa hai thời điểm ($t_2 - t_1$).
+
+\textbf{Ví dụ với NDVI:}
+\begin{equation}
+\Delta NDVI = NDVI_{after} - NDVI_{before}
+\end{equation}
+
+Khi $\Delta NDVI$ giảm mạnh (rất nhỏ hơn 0) thì đó là dấu hiệu mất rừng; khi $\Delta NDVI$ xấp xỉ 0 thì vùng được xem là rừng ổn định; và khi $\Delta NDVI$ tăng mạnh (rất lớn hơn 0) thì biểu hiện tái trồng rừng.
+
+\section{Mạng Neural Tích chập (Convolutional Neural Networks)}
+
+\subsection{Giới thiệu về Neural Networks}
+
+\textbf{Perceptron - Đơn vị cơ bản:}
+
+Một neuron nhân tạo thực hiện phép biến đổi tuyến tính và hàm kích hoạt:
+\begin{equation}
+y = f(\mathbf{w}^T \mathbf{x} + b)
+\end{equation}
+
+Trong đó, $\mathbf{x} \in \mathbb{R}^n$ là input vector chứa $n$ feature, $\mathbf{w} \in \mathbb{R}^n$ là weight vector, $b \in \mathbb{R}$ là bias, $f(\cdot)$ là hàm kích hoạt và $y$ là output.
+
+\textbf{Multi-Layer Perceptron (MLP):}
+
+Một mạng neural gồm nhiều layers:
+\begin{align}
+\text{Layer 1: } & \mathbf{h}_1 = f_1(\mathbf{W}_1 \mathbf{x} + \mathbf{b}_1) \\
+\text{Layer 2: } & \mathbf{h}_2 = f_2(\mathbf{W}_2 \mathbf{h}_1 + \mathbf{b}_2) \\
+\text{Output: } & \mathbf{y} = f_n(\mathbf{W}_n \mathbf{h}_{n-1} + \mathbf{b}_n)
+\end{align}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Sơ đồ cấu trúc một perceptron\\ với inputs, weights, bias, activation function\vspace{2cm}}}
+    \caption{Cấu trúc cơ bản của một perceptron}
+    \label{fig:perceptron}
+\end{figure}
+
+\subsection{Convolutional Layer}
+
+\textbf{Phép tích chập 2D (2D Convolution):}
+
+Đây là thành phần cốt lõi của CNN, thực hiện phép tích chập giữa input và kernel:
+\begin{equation}
+(I * K)(i, j) = \sum_m \sum_n I(i+m, j+n) \times K(m, n)
+\end{equation}
+
+Trong đó, $I$ là input feature map với kích thước height × width × channels, $K$ là kernel hoặc filter có kích thước $k_h \times k_w$, $(i,j)$ là vị trí trong output và $(m,n)$ là vị trí trong kernel.
+
+\textbf{Ưu điểm của Convolution:}
+
+Phép tích chập mang lại nhiều ưu điểm quan trọng. Về parameter sharing, cùng một kernel áp dụng toàn bộ input giúp tiết kiệm tham số. Về translation invariance, mạng có khả năng nhận diện các đặc trưng bất kể vị trí xuất hiện. Về local connectivity, mỗi neuron chỉ kết nối với vùng cục bộ của input, giảm số lượng kết nối cần thiết.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Hình minh họa phép tích chập 2D\\ với kernel 3×3 trượt trên input\vspace{2cm}}}
+    \caption{Minh họa phép tích chập 2D}
+    \label{fig:convolution}
+\end{figure}
+
+\subsection{Activation Functions}
+
+\textbf{ReLU (Rectified Linear Unit):}
+\begin{equation}
+f(x) = \max(0, x) = \begin{cases} x & \text{if } x > 0 \\ 0 & \text{if } x \leq 0 \end{cases}
+\end{equation}
+
+ReLU có các ưu điểm như tính toán nhanh, giảm vấn đề vanishing gradient và cho sparse activation.
+
+\textbf{Softmax (cho Output Layer):}
+\begin{equation}
+\text{softmax}(\mathbf{x})_i = \frac{\exp(x_i)}{\sum_j \exp(x_j)}
+\end{equation}
+
+Các đầu ra của hàm softmax là các xác suất thuộc khoảng [0, 1] và tổng bằng 1, phù hợp cho bài toán phân loại đa lớp.
+
+\subsection{Batch Normalization}
+
+\textbf{Batch Normalization Algorithm:}
+
+Với một mini-batch $B = \{x_1, x_2, ..., x_m\}$:
+\begin{align}
+\mu_B &= \frac{1}{m} \sum_i x_i \\
+\sigma^2_B &= \frac{1}{m} \sum_i (x_i - \mu_B)^2 \\
+\hat{x}_i &= \frac{x_i - \mu_B}{\sqrt{\sigma^2_B + \epsilon}} \\
+y_i &= \gamma \hat{x}_i + \beta
+\end{align}
+
+Batch Normalization giúp tăng tốc độ huấn luyện, giảm độ nhạy với khởi tạo trọng số, và đóng vai trò như một phương pháp regularization.
+
+\subsection{Dropout}
+
+\textbf{Motivation:}
+
+Overfitting xảy ra khi model học quá chi tiết training data, không generalize tốt cho unseen data.
+
+\textbf{Dropout Algorithm (Training):}
+\begin{equation}
+\text{For each neuron } i: \quad r_i \sim \text{Bernoulli}(p), \quad \tilde{y}_i = r_i \times y_i
+\end{equation}
+
+Với xác suất $p$ giữ lại neuron, nếu $r_i = 0$, neuron bị tắt.
+
+\textbf{Dropout2d (Spatial Dropout):}
+
+Thay vì dropout từng neuron, dropout toàn bộ feature maps, phù hợp cho CNN vì features trong cùng channel có correlation không gian cao.
+
+\subsection{Loss Functions}
+
+\textbf{Cross-Entropy Loss (Multi-class Classification):}
+\begin{equation}
+L = -\sum_i y_i \log(\hat{y}_i)
+\end{equation}
+
+Trong đó, $y_i$ là nhãn thực tế (true label) được mã hóa one-hot và $\hat{y}_i$ là xác suất dự đoán xuất ra từ hàm softmax.
+
+\subsection{Optimization Algorithms}
+
+\textbf{Adam (Adaptive Moment Estimation):}
+\begin{align}
+m_t &= \beta_1 m_{t-1} + (1-\beta_1) \nabla L(\theta_t) \\
+v_t &= \beta_2 v_{t-1} + (1-\beta_2) (\nabla L(\theta_t))^2 \\
+\hat{m}_t &= \frac{m_t}{1 - \beta_1^t} \\
+\hat{v}_t &= \frac{v_t}{1 - \beta_2^t} \\
+\theta_{t+1} &= \theta_t - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
+\end{align}
+
+Hyperparameters thường sử dụng: $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon = 10^{-8}$, $\eta = 0.001$.
+
+\textbf{AdamW (Adam with Weight Decay):}
+\begin{equation}
+\theta_{t+1} = \theta_t - \eta \left( \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon} + \lambda \theta_t \right)
+\end{equation}
+
+Trong đó $\lambda$ là weight decay coefficient (L2 regularization).
+
+\section{Phương pháp phân loại ảnh viễn thám}
+
+\subsection{Pixel-based vs Patch-based Classification}
+
+\textbf{Pixel-based Classification:}
+
+Mỗi pixel được phân loại độc lập dựa trên vector đặc trưng:
+\begin{equation}
+\mathbf{x}_i = [f_1, f_2, ..., f_n], \quad y_i = \text{classifier}(\mathbf{x}_i)
+\end{equation}
+
+\textbf{Ưu điểm:} Đơn giản, dễ triển khai, tốc độ xử lý nhanh.
+
+\textbf{Nhược điểm:} Không tận dụng ngữ cảnh không gian, dễ tạo ra nhiễu dạng salt-and-pepper.
+
+\textbf{Patch-based Classification:}
+
+Trích xuất patches (windows) xung quanh mỗi pixel:
+\begin{equation}
+P_i = \text{extract\_patch}(I, \text{center}=(row_i, col_i), \text{size}=k \times k)
+\end{equation}
+\begin{equation}
+y_i = \text{classifier}(P_i)
+\end{equation}
+
+\textbf{Ưu điểm:} Sử dụng ngữ cảnh không gian, kết quả mượt hơn, phù hợp với CNN.
+
+\subsection{Evaluation Metrics}
+
+\textbf{Accuracy:}
+\begin{equation}
+\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+\end{equation}
+
+\textbf{Precision (Positive Predictive Value):}
+\begin{equation}
+\text{Precision} = \frac{TP}{TP + FP}
+\end{equation}
+
+\textbf{Recall (Sensitivity, True Positive Rate):}
+\begin{equation}
+\text{Recall} = \frac{TP}{TP + FN}
+\end{equation}
+
+\textbf{F1-Score (Harmonic Mean):}
+\begin{equation}
+F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+\end{equation}
+
+\textbf{ROC-AUC (Area Under ROC Curve):}
+
+Các tiêu chuẩn diễn giải ROC-AUC theo Hosmer và Lemeshow \cite{hosmer2013}: AUC = 0.5 tương ứng với classifier ngẫu nhiên; 0.5 < AUC < 0.7 là phân biệt kém; 0.7 $\leq$ AUC < 0.8 là chấp nhận được; 0.8 $\leq$ AUC < 0.9 là xuất sắc; và AUC $\geq$ 0.9 là vượt trội.

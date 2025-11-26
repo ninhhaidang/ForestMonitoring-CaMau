@@ -1,6 +1,22 @@
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {1.1}{\ignorespaces Tổng hợp các nghiên cứu liên quan}}{8}{table.caption.11}%
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {2.1}{\ignorespaces Các dải phổ Sentinel-2 sử dụng trong nghiên cứu}}{12}{table.caption.13}%
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces Tổng quan dữ liệu viễn thám sử dụng}}{20}{table.caption.17}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Thống kê Ground Truth}}{20}{table.caption.19}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces Chi tiết 27 features sử dụng}}{22}{table.caption.22}%
+\contentsline {table}{\numberline {3.4}{\ignorespaces Tổng số trainable parameters}}{24}{table.caption.24}%
+\contentsline {table}{\numberline {3.5}{\ignorespaces Hyperparameters huấn luyện}}{25}{table.caption.25}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces Kết quả thực nghiệm trên các tập dữ liệu \textit {pthread}, \textit {pthread-nondet}, \textit {pthread-deagle}, và \textit {pthread-atomic}}}{50}{table.caption.27}%
-\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces Thời gian thực thi các giai đoạn}}{28}{table.caption.27}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Kết quả 5-Fold Cross Validation}}{28}{table.caption.28}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Metrics trên tập test (526 patches)}}{29}{table.caption.30}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces Ma trận nhầm lẫn trên Test Set}}{29}{table.caption.31}%
+\contentsline {table}{\numberline {4.5}{\ignorespaces Phân tích chi tiết từng lớp}}{30}{table.caption.33}%
+\contentsline {table}{\numberline {4.6}{\ignorespaces ROC-AUC score cho từng lớp (Test Set)}}{31}{table.caption.34}%
+\contentsline {table}{\numberline {4.7}{\ignorespaces Thống kê phân loại full raster}}{32}{table.caption.36}%
+\contentsline {table}{\numberline {4.8}{\ignorespaces Phân bố diện tích theo lớp phân loại}}{32}{table.caption.37}%
+\contentsline {table}{\numberline {4.9}{\ignorespaces So sánh các patch sizes}}{34}{table.caption.40}%
+\contentsline {table}{\numberline {4.10}{\ignorespaces Ablation các nguồn dữ liệu}}{34}{table.caption.41}%
+\contentsline {table}{\numberline {4.11}{\ignorespaces So sánh với các nghiên cứu trong literature}}{35}{table.caption.42}%

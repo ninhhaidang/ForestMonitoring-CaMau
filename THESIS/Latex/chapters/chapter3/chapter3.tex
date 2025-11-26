@@ -1,5 +1,294 @@
-\chapter{Quá trình mô phỏng số dòng chảy qua tua-bin gió Savonius}
+\chapter{Phương pháp nghiên cứu}
 
-\input{chapters/chapter3/sec3_1}
-\input{chapters/chapter3/sec3_2}
-\input{chapters/chapter3/sec3_3}
+\section{Khu vực và dữ liệu nghiên cứu}
+
+\subsection{Khu vực nghiên cứu}
+
+\textbf{Vị trí địa lý:}
+
+Theo Nghị quyết số 1278/NQ-UBTVQH15 ngày 24/10/2024 của Ủy ban Thường vụ Quốc hội, kể từ ngày 01/07/2025, tỉnh Cà Mau và tỉnh Bạc Liêu được sáp nhập thành tỉnh Cà Mau mới. Tỉnh Cà Mau mới nằm ở cực Nam Tổ Quốc, thuộc vùng Đồng bằng sông Cửu Long; tọa độ địa lý nằm trong khoảng 8°36'–9°40' Bắc và 104°43'–105°50' Đông, diện tích tự nhiên là 7,942.38 km², dân số khoảng 2.6 triệu người, và chiều dài đường bờ biển khoảng 300 km (bao gồm cả bờ biển Bạc Liêu cũ).
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{3cm}\textbf{[PLACEHOLDER]}\\ Bản đồ vị trí khu vực nghiên cứu:\\(a) Vị trí Cà Mau trong Việt Nam\\(b) Ranh giới tỉnh Cà Mau\\(c) Vùng rừng nghiên cứu với tọa độ UTM\vspace{3cm}}}
+    \caption{Bản đồ vị trí khu vực nghiên cứu}
+    \label{fig:study_area}
+\end{figure}
+
+\textbf{Vùng nghiên cứu:}
+
+Đồ án tập trung vào toàn bộ vùng quy hoạch lâm nghiệp của tỉnh Cà Mau mới. Dữ liệu ranh giới quy hoạch lâm nghiệp được cung cấp bởi Công ty TNHH Tư vấn và Công nghệ Đồng Xanh — đối tác của Chi cục Kiểm lâm tỉnh Cà Mau.
+
+\begin{itemize}
+    \item \textbf{Tổng diện tích ranh giới quy hoạch:} 170,178.82 hecta (tương đương 1,701.79 km²), bao gồm 666 polygon trong file shapefile ranh giới.
+    \item \textbf{Diện tích thực tế được phân loại:} 162,469.25 hecta (khoảng 95.5\% diện tích ranh giới). Phần còn lại (~7,710 ha, chiếm 4.5\%) bị loại do mây che phủ hoặc dữ liệu không hợp lệ (nodata) trong quá trình xử lý ảnh vệ tinh.
+    \item \textbf{Kích thước raster:} 12,547 × 10,917 pixels (ở độ phân giải 10m).
+    \item \textbf{Hệ quy chiếu:} EPSG:32648 (WGS 84 / UTM Zone 48N).
+\end{itemize}
+
+\subsection{Dữ liệu viễn thám}
+
+\begin{table}[H]
+\centering
+\caption{Tổng quan dữ liệu viễn thám sử dụng}
+\label{tab:data_overview}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Nguồn dữ liệu} & \textbf{Độ phân giải} & \textbf{Kỳ ảnh} & \textbf{Số bands} & \textbf{Dung lượng} \\
+\hline
+Sentinel-2 Before & 10m & 30/01/2024 & 7 & ~850 MB \\
+\hline
+Sentinel-2 After & 10m & 28/02/2025 & 7 & ~850 MB \\
+\hline
+Sentinel-1 Before & 10m & 04/02/2024 & 2 & ~250 MB \\
+\hline
+Sentinel-1 After & 10m & 22/02/2025 & 2 & ~250 MB \\
+\hline
+Ground Truth & - & - & - & 2,630 points \\
+\hline
+Forest Boundary & Vector & - & - & Shapefile \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Ảnh tổ hợp màu Sentinel-2 (RGB)\\ của khu vực nghiên cứu ở 2 thời điểm\\ (before và after)\vspace{2cm}}}
+    \caption{Ảnh Sentinel-2 khu vực nghiên cứu tại hai thời điểm}
+    \label{fig:s2_images}
+\end{figure}
+
+\subsection{Ground Truth Data}
+
+\begin{table}[H]
+\centering
+\caption{Thống kê Ground Truth}
+\label{tab:ground_truth}
+\begin{tabular}{|c|l|c|c|l|}
+\hline
+\textbf{Class} & \textbf{Tên} & \textbf{Số điểm} & \textbf{Tỷ lệ (\%)} & \textbf{Mô tả} \\
+\hline
+0 & Forest Stable & 656 & 24.9\% & Rừng ổn định (có rừng ở cả 2 kỳ) \\
+\hline
+1 & Deforestation & 650 & 24.7\% & Mất rừng (có rừng $\rightarrow$ không có rừng) \\
+\hline
+2 & Non-forest & 664 & 25.3\% & Không phải rừng (không có rừng ở cả 2 kỳ) \\
+\hline
+3 & Reforestation & 660 & 25.1\% & Tái trồng rừng (không có $\rightarrow$ có rừng) \\
+\hline
+\textbf{Tổng} & & \textbf{2,630} & \textbf{100\%} & Balanced distribution \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Bản đồ phân bố các điểm ground truth\\ theo từng lớp với màu sắc khác nhau\vspace{2cm}}}
+    \caption{Phân bố không gian các điểm ground truth}
+    \label{fig:ground_truth_distribution}
+\end{figure}
+
+\section{Quy trình xử lý dữ liệu}
+
+\subsection{Tổng quan quy trình}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Sơ đồ quy trình xử lý dữ liệu dạng flowchart:\\Raw Data $\rightarrow$ Data Loading $\rightarrow$ Feature Extraction $\rightarrow$\\Patch Extraction $\rightarrow$ Normalization $\rightarrow$ Data Splitting $\rightarrow$ Ready Dataset\vspace{2cm}}}
+    \caption{Quy trình xử lý dữ liệu tổng quan}
+    \label{fig:data_pipeline}
+\end{figure}
+
+\textbf{Quy trình xử lý:}
+\begin{enumerate}
+    \item \textbf{Data Loading \& Validation:} Tải và kiểm tra dữ liệu Sentinel-1/2 cùng ground truth.
+    \item \textbf{Feature Extraction:} Xây dựng 27 features (21 từ Sentinel-2 và 6 từ Sentinel-1).
+    \item \textbf{Patch Extraction:} Trích xuất các patches kích thước 3×3 tại các vị trí ground truth.
+    \item \textbf{Normalization:} Chuẩn hóa dữ liệu bằng phương pháp Z-score.
+    \item \textbf{Stratified Data Splitting:} Chia dữ liệu với tỷ lệ 80\% Train+Val và 20\% Test cố định.
+\end{enumerate}
+
+\subsection{Feature Extraction chi tiết}
+
+\textbf{Feature stack construction:}
+
+\begin{verbatim}
+# Sentinel-2 features (21)
+S2_before = [B4, B8, B11, B12, NDVI, NBR, NDMI]  # 7 bands
+S2_after = [B4, B8, B11, B12, NDVI, NBR, NDMI]   # 7 bands
+S2_delta = S2_after - S2_before                   # 7 bands
+
+# Sentinel-1 features (6)
+S1_before = [VV, VH]                              # 2 bands
+S1_after = [VV, VH]                               # 2 bands
+S1_delta = S1_after - S1_before                   # 2 bands
+
+# Stack tất cả features: Total = 27
+feature_stack = [S2_before, S2_after, S2_delta,
+                 S1_before, S1_after, S1_delta]
+\end{verbatim}
+
+\begin{table}[H]
+\centering
+\caption{Chi tiết 27 features sử dụng}
+\label{tab:features}
+\begin{tabular}{|c|c|c|l|l|}
+\hline
+\textbf{Index} & \textbf{Nguồn} & \textbf{Temporal} & \textbf{Feature} & \textbf{Mô tả} \\
+\hline
+0-6 & S2 & Before & B4, B8, B11, B12, NDVI, NBR, NDMI & Quang phổ kỳ trước \\
+\hline
+7-13 & S2 & After & B4, B8, B11, B12, NDVI, NBR, NDMI & Quang phổ kỳ sau \\
+\hline
+14-20 & S2 & Delta & $\Delta$B4, $\Delta$B8, ... & Biến đổi quang phổ \\
+\hline
+21-22 & S1 & Before & VV, VH & SAR kỳ trước \\
+\hline
+23-24 & S1 & After & VV, VH & SAR kỳ sau \\
+\hline
+25-26 & S1 & Delta & $\Delta$VV, $\Delta$VH & Biến đổi SAR \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Kiến trúc mô hình CNN đề xuất}
+
+\subsection{Thiết kế kiến trúc}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.9\textwidth}{\centering\vspace{3cm}\textbf{[PLACEHOLDER]}\\ Sơ đồ kiến trúc CNN chi tiết với các layer,\\ kích thước tensor ở mỗi bước, và số parameters\vspace{3cm}}}
+    \caption{Kiến trúc mô hình CNN đề xuất}
+    \label{fig:cnn_architecture}
+\end{figure}
+
+\textbf{Tổng quan architecture:}
+
+\begin{verbatim}
+INPUT: (batch_size, 3, 3, 27)
+    |
+PERMUTE -> (batch_size, 27, 3, 3)  # PyTorch format (N, C, H, W)
+    |
+CONVOLUTIONAL BLOCK 1
+    Conv2D(27 -> 64, kernel=3x3)
+    BatchNorm2D(64)
+    ReLU()
+    Dropout2D(p=0.7)
+    | (batch_size, 64, 3, 3)
+CONVOLUTIONAL BLOCK 2
+    Conv2D(64 -> 32, kernel=3x3)
+    BatchNorm2D(32)
+    ReLU()
+    Dropout2D(p=0.7)
+    | (batch_size, 32, 3, 3)
+GLOBAL AVERAGE POOLING
+    | (batch_size, 32)
+FULLY CONNECTED BLOCK
+    Linear(32 -> 64)
+    BatchNorm1D(64)
+    ReLU()
+    Dropout(p=0.7)
+    | (batch_size, 64)
+OUTPUT LAYER
+    Linear(64 -> 4)
+    |
+OUTPUT: (batch_size, 4)  # Logits for 4 classes
+\end{verbatim}
+
+\subsection{Parameter Count}
+
+\begin{table}[H]
+\centering
+\caption{Tổng số trainable parameters}
+\label{tab:parameters}
+\begin{tabular}{|l|l|c|l|}
+\hline
+\textbf{Layer} & \textbf{Type} & \textbf{Parameters} & \textbf{Calculation} \\
+\hline
+Conv1 & Weights & 15,552 & 27×3×3×64 \\
+\hline
+BN1 & $\gamma$, $\beta$ & 128 & 64 + 64 \\
+\hline
+Conv2 & Weights & 18,432 & 64×3×3×32 \\
+\hline
+BN2 & $\gamma$, $\beta$ & 64 & 32 + 32 \\
+\hline
+GAP & - & 0 & No params \\
+\hline
+FC1 & Weights, bias & 2,112 & 32×64 + 64 \\
+\hline
+BN3 & $\gamma$, $\beta$ & 128 & 64 + 64 \\
+\hline
+FC2 & Weights, bias & 260 & 64×4 + 4 \\
+\hline
+\textbf{TOTAL} & & \textbf{36,676} & \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Huấn luyện và tối ưu hóa mô hình}
+
+\subsection{Training Configuration}
+
+\begin{table}[H]
+\centering
+\caption{Hyperparameters huấn luyện}
+\label{tab:hyperparameters}
+\begin{tabular}{|l|c|p{6cm}|}
+\hline
+\textbf{Parameter} & \textbf{Value} & \textbf{Justification} \\
+\hline
+\texttt{epochs} & 200 & Max epochs với early stopping \\
+\hline
+\texttt{batch\_size} & 64 & Cân bằng giữa stability và speed \\
+\hline
+\texttt{learning\_rate} & 0.001 & Learning rate chuẩn cho Adam \\
+\hline
+\texttt{weight\_decay} & 1e-3 & L2 regularization \\
+\hline
+\texttt{optimizer} & AdamW & Adaptive learning với decoupled weight decay \\
+\hline
+\texttt{loss\_function} & CrossEntropyLoss & Phù hợp cho phân loại đa lớp \\
+\hline
+\texttt{dropout\_rate} & 0.7 & Dropout cao để regularization mạnh \\
+\hline
+\texttt{early\_stopping\_patience} & 15 & Số epochs chờ trước khi dừng \\
+\hline
+\texttt{lr\_scheduler\_patience} & 10 & Giảm LR sau 10 epochs không cải thiện \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Data Splitting Strategy}
+
+\textbf{Stratified Random Split:}
+\begin{enumerate}
+    \item \textbf{Step 1:} Tách 20\% dữ liệu làm Fixed Test Set (526 mẫu)
+    \item \textbf{Step 2:} 5-Fold Cross Validation trên 80\% còn lại (Train+Val = 2,104 mẫu)
+    \item \textbf{Step 3:} Huấn luyện Final Model trên toàn bộ 80\%
+    \item \textbf{Step 4:} Đánh giá Final Model trên 20\% Test Set
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Sơ đồ minh họa chiến lược chia dữ liệu\\ với 5-Fold CV và fixed test set\vspace{2cm}}}
+    \caption{Chiến lược phân chia dữ liệu}
+    \label{fig:data_split}
+\end{figure}
+
+\section{Dự đoán và đánh giá kết quả}
+
+\subsection{Test Set Evaluation}
+
+Mô hình được đánh giá trên 20\% fixed test set (526 mẫu) thông qua các metrics bao gồm Accuracy, Precision, Recall, F1-Score (per-class và macro-average), ROC-AUC (One-vs-Rest) và Confusion Matrix.
+
+\subsection{Full Raster Prediction}
+
+Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn bộ 16,246,850 valid pixels trong vùng nghiên cứu. Quy trình prediction:
+\begin{enumerate}
+    \item Trích xuất patch 3×3 cho mỗi valid pixel
+    \item Chuẩn hóa patch với mean/std từ training data
+    \item Forward pass qua trained model
+    \item Lấy argmax để xác định class
+    \item Xuất kết quả dưới dạng GeoTIFF
+\end{enumerate}

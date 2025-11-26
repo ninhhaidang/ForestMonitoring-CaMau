@@ -1,22 +1,36 @@
-\chapter*{Kết luận chung}
-\addcontentsline{toc}{chapter}{Kết luận chung}
+\chapter*{Kết luận và kiến nghị}
+\addcontentsline{toc}{chapter}{Kết luận và kiến nghị}
 
-Năng lượng tái tạo, đặc biệt là năng lượng gió, đang ngày càng khẳng định vai trò quan trọng trong chiến lược phát triển bền vững toàn cầu, nhằm đối phó với các vấn đề về biến đổi khí hậu và sự cạn kiệt của các nguồn năng lượng hoá thạch. Tuy nhiên, hiệu quả khai thác năng lượng gió vẫn còn nhiều hạn chế, đặc biệt là đối với các tua-bin gió Savonius, vốn có thiết kế đơn giản nhưng hiệu suất chuyển đổi năng lượng còn thấp. Để nâng cao hiệu quả của các hệ thống tua-bin gió Savonius, việc cải tiến thiết kế cánh là một hướng nghiên cứu quan trọng. Đồ án này tập trung vào nghiên cứu và cải tiến biên dạng cánh tua-bin gió Savonius thông qua việc áp dụng các biên dạng cánh máy bay (airfoil) nhằm cải thiện hiệu suất khí động học và khả năng khai thác năng lượng gió hiệu quả hơn trong các điều kiện gió đa dạng của môi trường đô thị.
+\section*{Kết luận}
 
-Trong \textbf{Chương 1}, đồ án đã trình bày tổng quan về xu hướng chuyển dịch năng lượng của thế giới, đặc biệt là sự phát triển của năng lượng gió tại Việt Nam. Cũng trong chương này, thiết kế tua-bin gió Savonius đã được giới thiệu, cùng với các nghiên cứu hiện tại về việc cải thiện hiệu suất khí động học của loại tua-bin này. Đề tài đã chỉ ra mục tiêu nghiên cứu là cải tiến hiệu suất tua-bin Savonius qua việc thay đổi biên dạng cánh, nhằm đáp ứng tốt hơn với các yêu cầu khai thác năng lượng gió.
+Đồ án đã hoàn thành các mục tiêu đề ra và đạt được một số kết quả chính:
 
-\textbf{Chương 2} đã cung cấp lý thuyết về công suất của tua-bin gió và phương pháp mô phỏng số động lực học chất lỏng, trong đó giới thiệu định lý Betz và các phương pháp tính toán hiệu suất rô-to Savonius.
+\textbf{Về xây dựng bộ dữ liệu huấn luyện:} Nhóm nghiên cứu đã thu thập, tiền xử lý hai kỳ dữ liệu Sentinel-1/2 (01/2024 và 02/2025) và tạo feature stack 27 chiều (kết hợp SAR và Optical) cùng với việc thu thập 2,630 điểm ground truth cho 4 lớp phân loại với phân bố cân bằng.
 
-\textbf{Chương 3} mô tả quy trình mô phỏng số dòng chảy qua tua-bin gió Savonius, bao gồm việc thiết kế mô hình, chia lưới miền tính toán, và lựa chọn các điều kiện biên cho mô phỏng. Phương trình Navier-Stokes và mô hình rối để mô phỏng dòng chảy qua biên dạng cánh mới của tua-bin Savonius cũng được giới thiệu.
+\textbf{Về thiết kế kiến trúc CNN:} Kiến trúc CNN nhẹ với khoảng 36,676 tham số được thiết kế và áp dụng các kỹ thuật regularization hiệu quả (BatchNorm, Dropout 0.7, Weight Decay), phù hợp cho bộ dữ liệu nhỏ khoảng 2,600 mẫu.
 
-Trong \textbf{Chương 4}, kết quả mô phỏng dòng chảy qua các biên dạng cánh khác nhau, với sự phân tích chi tiết về hiệu suất của các cấu hình cánh được cải tiến so với cánh nguyên bản đã được trình bày.
+\textbf{Về đánh giá khoa học:} 5-Fold Stratified Cross Validation cho kết quả CV accuracy 98.15\% ± 0.28\% (mô hình ổn định), test accuracy 98.86\% và ROC-AUC 99.98\% (khả năng phân biệt xuất sắc).
 
-Các kết quả mô phỏng cho thấy, ở tỉ tốc gió thấp ($\lambda =$ 0.5), biên dạng Ov01 tỏ ra ưu việt nhờ khả năng tạo mô-men xoắn lớn ở các góc quay thuận lợi. Điều này giúp biên dạng Ov01 hoạt động hiệu quả trong điều kiện gió yếu. Tuy nhiên, ở các tỉ số vận tốc gió trung bình và cao ($\lambda =$ 1.0 và 1.4), biên dạng Fx lại cho thấy hiệu suất vượt trội hơn nhờ thiết kế kết hợp đặc tính đa độ cong và độ dày của cánh.
+\textbf{Về ứng dụng thực tế:} Mô hình đã được áp dụng để phân loại toàn vùng quy hoạch lâm nghiệp tỉnh Cà Mau mới (170,179 ha ranh giới, 162,469 ha phân loại thực tế), phát hiện 7,282 ha mất rừng (4.48\%) và 4,941 ha phục hồi rừng (3.04\%) trong giai đoạn 01/2024 - 02/2025.
 
-Một trong những ưu điểm nổi bật của biên dạng Fx là khả năng kiểm soát dòng chảy tốt hơn, đặc biệt là trong vùng chồng cánh. Khi dòng chảy từ mặt lõm của cánh tiến được dẫn qua khe chồng cánh hẹp sang mặt lõm của cánh lùi, sự gia tăng vận tốc dòng chảy qua khe này giúp nâng cao chênh lệch áp suất trên cánh tiến. Kết quả là lực khí động tăng lên đáng kể. Trong khi đó, biên dạng Ov01, với khe chồng cánh rộng hơn, gặp khó khăn trong việc kiểm soát dòng chảy tại khu vực này, dẫn đến sự nhiễu loạn và tách dòng, làm giảm hiệu suất của tua-bin.
+\section*{Đóng góp khoa học}
 
-Ngoài ra, biên dạng Fx còn giúp giảm cường độ rối và cường độ xoáy, đặc biệt ở vùng chồng cánh và khu vực thoát dòng sau cánh. Các vùng xoáy trong biên dạng Fx nhỏ gọn và ít lan rộng, giúp ổn định dòng chảy và giảm thiểu tổn thất năng lượng khí động. Phân bố áp suất trên bề mặt cánh cũng cho thấy sự ổn định vượt trội của Fx so với Ov01, với lực khí động được duy trì ổn định trong suốt chu kỳ quay.
+\textbf{Về mặt phương pháp:} Đồ án đã áp dụng 5-Fold Stratified Cross Validation nhằm đánh giá độ ổn định của mô hình, chứng minh hiệu quả sử dụng patches 3×3 cho bài toán phát hiện mất rừng, và tiến hành các thí nghiệm ablation toàn diện để khảo sát ảnh hưởng của kích thước patch, nguồn dữ liệu và kỹ thuật regularization.
 
-Đề tài này đã chứng minh rằng việc cải tiến biên dạng cánh tua-bin Savonius là một giải pháp tiềm năng để tăng hiệu suất khai thác năng lượng gió trong môi trường đô thị. Biên dạng cánh cải tiến mang lại những ưu điểm nổi bật như tăng hiệu suất hoạt động, giảm lực cản, và duy trì khả năng vận hành ổn định ở các tỉ tốc gió khác nhau. Ngoài ra, thiết kế cánh đơn giản, dễ chế tạo và bảo trì của tua-bin Savonius vẫn được giữ nguyên, làm cho nó trở thành một lựa chọn phù hợp cho các khu vực có điều kiện gió đa dạng.
+\textbf{Về mặt ứng dụng:} Đồ án là một trong những nghiên cứu đầu tiên áp dụng CNN cho phát hiện biến động rừng tại Cà Mau, chứng minh hiệu quả trong việc kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2), đồng thời đóng góp một bộ ground truth chất lượng cao gồm 2,630 điểm với 4 lớp phân loại.
 
-Hướng phát triển tiếp theo của đồ án có thể tập trung vào việc thử nghiệm thực tế để kiểm chứng kết quả mô phỏng, cũng như nghiên cứu các yếu tố khác như vật liệu chế tạo cánh và các hệ thống kiểm soát gió tự động. Bên cạnh đó, việc áp dụng các mô hình mô phỏng 3D để khảo sát các đặc tính khí động học của rô-to trong điều kiện thực tế cũng là một hướng nghiên cứu đầy tiềm năng. Tóm lại, đồ án này đã mở ra hướng đi mới trong việc cải tiến thiết kế tua-bin gió Savonius, đặc biệt là trong ứng dụng năng lượng gió ở các khu vực đô thị, với hiệu suất khí động học được tối ưu hoá.\cite{tiktok_ads}
+\section*{Hạn chế}
+
+Đồ án vẫn tồn tại các hạn chế cần lưu ý. Thứ nhất, thời gian dự đoán toàn bộ raster còn dài (khoảng 14.83 phút cho 16.2 triệu pixel hợp lệ). Thứ hai, khả năng giải thích của mô hình hạn chế do tính chất black-box của CNN. Thứ ba, quy mô ground truth còn nhỏ (chỉ 2,630 điểm), chưa có khảo sát thực địa đầy đủ. Thứ tư, phân tích chỉ dừng lại ở bi-temporal mà chưa khai thác chuỗi thời gian đầy đủ.
+
+\section*{Kiến nghị}
+
+Đề xuất cho các hướng phát triển tiếp theo:
+
+\textbf{Mở rộng phân tích temporal:} Các nghiên cứu tiếp theo nên sử dụng chuỗi thời gian thay vì chỉ phân tích hai thời kỳ (bi-temporal), đồng thời áp dụng các mô hình như LSTM hoặc Transformer để khai thác các mẫu temporal.
+
+\textbf{Cải thiện mô hình:} Cần thử nghiệm cơ chế attention để tăng khả năng giải thích, tận dụng transfer learning từ các mô hình pretrained, và áp dụng ensemble methods nhằm tăng độ chính xác và độ ổn định.
+
+\textbf{Ứng dụng thực tế:} Hướng phát triển bao gồm triển khai hệ thống giám sát near-real-time, mở rộng phạm vi áp dụng sang các tỉnh trong vùng Đồng bằng sông Cửu Long, và tích hợp kết quả với hệ thống GIS của cơ quan quản lý rừng.
+
+\textbf{Tăng cường thu thập dữ liệu:} Cần khảo sát thực địa để validate kết quả, mở rộng bộ ground truth, và thu thập thêm dữ liệu multi-temporal để nâng cao khả năng khai thác chuỗi thời gian.

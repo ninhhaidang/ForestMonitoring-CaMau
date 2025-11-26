@@ -1,51 +1,86 @@
-\chapter*{Danh mục từ viết tắt và ký hiệu}
-\addcontentsline{toc}{chapter}{Danh mục các từ viết tắt và ký hiệu}
+\chapter*{Danh mục từ viết tắt}
+\addcontentsline{toc}{chapter}{Danh mục từ viết tắt}
 
-\begin{table}[h]
-\label{tab:my-table}
-\begin{tabular}[t]{ll}
-\multicolumn{2}{c}{ \textbf{Từ viết tắt}} \\          \\
-WMO     & Tổ chức Khí tượng thế giới (World Meteorological Organization)\\
-COP26   & \begin{tabular}[t]{@{}l@{}}Hội nghị lần thứ 26 Các bên tham gia Công ước khung của Liên hợp quốc \\ về biến đổi khí hậu (Conference of the Parties 26)\end{tabular} \\
-REN21   & \begin{tabular}[t]{@{}l@{}}Mạng lưới chính sách năng lượng tái tạo cho thế kỷ 21 (Renewable Energy \\ Policy Network for the 21st Century)\end{tabular}             \\
-GRS2023 & \begin{tabular}[t]{@{}l@{}}Báo cáo hiện trạng toàn cầu về năng lượng tái tạo năm 2023 (Renewables \\ Global Status Report 2023)\end{tabular}                        \\
-WB      & Ngân hàng thế giới (World Bank)                                                                                                                                     \\
-VAWT    & Tua-bin gió trục đứng (Vertical Axis Wind Turbine)                                                                                                                  \\
-HAWT    & Tua-bin gió trục ngang (Horizontal Axis Wind Turbine)                                                                                                                                                   \\
-VAST    & \begin{tabular}[t]{@{}l@{}}Viện Hàn lâm Khoa học và Công nghệ Việt Nam ( Vietnam Academy of \\ Science and Technology)\end{tabular}    \\
-FVM     & Phương pháp thể tích hữu hạn (Finite Volume Method)                                                                                                                 \\
-CFD     & \begin{tabular}[t]{@{}l@{}}Phương pháp mô phỏng số động lực học chất lỏng (Computational Fluid \\ Dynamics)\end{tabular}\\
-CAD & Phần mềm hỗ trợ thiết kế (Computer Aided Design)\\
-CPU & Đơn vị xử lý trung tâm (Central Processing Unit)\\
-GPU & Đơn vị xử lý đồ hoạ (Graphics Processing Unit)\\
-HPC & Máy tính hiệu năng cao (High Performance Computing)\\
-AST & Áp suất thấp\\
-ASC & Áp suất cao\\
-VTC & Vận tốc cao\\
-VTT & Vận tốc thấp\\
-
-\end{tabular}
-\end{table}
-
-\begin{table}[t]
-\label{tab:my-table}
-\begin{tabular}{llll}
-\multicolumn{4}{c}{ \textbf{Ký hiệu}}  \\         \\
-$C_P$ & Hệ số công suất & $R$ & Bán kính cánh [m] \\
-$C_T$ & Hệ số mô-men xoắn & $s$ & Khoảng cách cánh [m] \\
-$D$ & Đường kính rô-to [m] &$T$ & Mô-men xoắn trên cánh [Nm]   \\
-$d$ & Đường kính cánh [m] & $T_{av}$ & Mô-men trung bình [Nm]\\
-$e = \frac{s}{d}$ & Tỉ lệ chồng cánh & $\lambda$ & Tỉ tốc gió \\     
-$H$ & Chiều cao rô-to [m] & $t$ & Độ dày cánh [m] \\
-$I$ & Cường độ rối [\%] & $U_0$ & Vận tốc gió [$m.s^{-1}$]  \\
-$k$ & Động năng rối [$m^2.s^{-2}$] & $\bar{u}$ & Vận tốc trung bình [$m.s^{-1}$]\\
-$l$ & Thang độ dài rối [m] & $Re$ & Số Reynold \\
-$P$ & Công suất của rô-to [W] & $i, j$ & Chỉ số toạ độ Đề-các \\
-$\bar{p}$ & Áp suất trung bình [Pa] &$\omega$ & Vận tốc quay [$rad.s^{-1}$]\\
-$\sigma_k$, $\sigma_\varepsilon$, $C_{1\varepsilon}$, $C_2$ & Hệ số rối\\ 
-$\nu$ & Độ nhớt động học [$m^2.s^{-1}$]\\
-$\mu$ & Độ nhớt động lực học [Pa.s]\\
-$\rho$ & Mật độ [$kg.m^{-3}$]\\
-$\varepsilon$ & Tốc độ tiêu tán rối [$m^2.s^{-3}$]\\
-\end{tabular}
-\end{table}
+\begin{longtable}{p{5cm} l p{6cm}}
+\textbf{Từ} & \textbf{Viết tắt} & \textbf{Dịch - Nghĩa} \\[0.3cm]
+Accuracy & - & Độ chính xác tổng thể (tỷ lệ dự đoán đúng trên tổng số mẫu) \\
+Activation Function & - & Hàm kích hoạt (hàm phi tuyến trong mạng neural) \\
+AdamW & - & Thuật toán tối ưu Adam với phân rã trọng số tách rời \\
+Artificial Intelligence & AI & Trí tuệ nhân tạo \\
+Backscatter & - & Tán xạ ngược (năng lượng radar phản hồi về cảm biến) \\
+Batch Normalization & BN & Chuẩn hóa theo lô (chuẩn hóa đầu vào mỗi lớp theo mini-batch) \\
+Bi-temporal & - & Hai thời điểm (phân tích so sánh hai thời kỳ) \\
+C-band & - & Băng tần C (bước sóng radar 4-8 GHz, xuyên qua mây) \\
+Classification & - & Phân loại (gán nhãn cho đối tượng) \\
+Compute Unified Device Architecture & CUDA & Nền tảng tính toán song song của NVIDIA trên GPU \\
+Confusion Matrix & - & Ma trận nhầm lẫn (bảng so sánh dự đoán và thực tế) \\
+Convolutional Neural Network & CNN & Mạng nơ-ron tích chập \\
+Cross Validation & CV & Kiểm định chéo (đánh giá mô hình trên nhiều phần dữ liệu) \\
+CrossEntropyLoss & - & Hàm mất mát entropy chéo (đo độ sai khác phân phối xác suất) \\
+Deep Learning & DL & Học sâu (học máy với nhiều lớp ẩn) \\
+Deforestation & - & Mất rừng (chuyển đổi từ rừng sang phi rừng) \\
+Dropout & - & Loại bỏ ngẫu nhiên (tắt ngẫu nhiên một số neuron khi huấn luyện) \\
+Early Stopping & - & Dừng sớm (ngừng huấn luyện khi validation loss không giảm) \\
+Enhanced Vegetation Index & EVI & Chỉ số thực vật cải tiến (nhạy hơn NDVI ở vùng rậm rạp) \\
+European Space Agency & ESA & Cơ quan Vũ trụ Châu Âu \\
+European Union & EU & Liên minh Châu Âu \\
+F1-Score & - & Điểm F1 (trung bình điều hòa của Precision và Recall) \\
+Feature & - & Đặc trưng (thuộc tính đầu vào của mô hình) \\
+Feature Extraction & - & Trích xuất đặc trưng (rút trích thông tin từ dữ liệu thô) \\
+Feature Map & - & Bản đồ đặc trưng (đầu ra của lớp tích chập) \\
+Filter/Kernel & - & Bộ lọc/Nhân tích chập (ma trận trọng số trượt qua ảnh) \\
+Fold & - & Phần gập (một phần dữ liệu trong Cross Validation) \\
+Food and Agriculture Organization & FAO & Tổ chức Lương thực và Nông nghiệp Liên Hợp Quốc \\
+Forest Change Detection & - & Phát hiện biến động rừng \\
+Fully Connected Layer & FC & Lớp kết nối đầy đủ (mỗi neuron kết nối với tất cả neuron lớp trước) \\
+Geographic Information System & GIS & Hệ thống thông tin địa lý \\
+Global Average Pooling & GAP & Gộp trung bình toàn cục (lấy trung bình toàn bộ feature map) \\
+Graphics Processing Unit & GPU & Bộ xử lý đồ họa (phần cứng tính toán song song) \\
+Ground Truth & - & Dữ liệu tham chiếu (nhãn thực tế để đánh giá mô hình) \\
+Hyperparameter & - & Siêu tham số (tham số cấu hình trước khi huấn luyện) \\
+Interferometric Wide & IW & Chế độ giao thoa rộng (chế độ chụp chính của Sentinel-1) \\
+Intergovernmental Panel on Climate Change & IPCC & Ủy ban Liên chính phủ về Biến đổi Khí hậu \\
+Learning Rate & LR & Tốc độ học (bước cập nhật trọng số mỗi lần lặp) \\
+Lightweight & - & Kiến trúc nhẹ (mô hình có ít tham số, tính toán nhanh) \\
+Logits & - & Giá trị logit (đầu ra thô của mạng trước khi áp dụng softmax) \\
+Machine Learning & ML & Học máy \\
+Mangrove Forest & - & Rừng ngập mặn \\
+Multi-Layer Perceptron & MLP & Perceptron đa lớp (mạng neural nhiều lớp kết nối đầy đủ) \\
+Multispectral & - & Đa phổ (ảnh chụp ở nhiều dải bước sóng) \\
+Near-Infrared & NIR & Cận hồng ngoại (bước sóng 0.7-1.4 μm) \\
+Non-forest & - & Phi rừng (vùng không có rừng che phủ) \\
+Normalized Burn Ratio & NBR & Chỉ số cháy chuẩn hóa (phát hiện vùng cháy rừng) \\
+Normalized Difference Moisture Index & NDMI & Chỉ số độ ẩm chuẩn hóa (đánh giá độ ẩm thực vật) \\
+Normalized Difference Vegetation Index & NDVI & Chỉ số thực vật chuẩn hóa (đánh giá mức độ xanh tươi) \\
+Normalized Difference Water Index & NDWI & Chỉ số nước chuẩn hóa (phát hiện mặt nước) \\
+Optical & - & Quang học (ảnh vệ tinh dùng ánh sáng khả kiến và hồng ngoại) \\
+Overfitting & - & Quá khớp (mô hình học thuộc dữ liệu huấn luyện, kém tổng quát) \\
+Padding & - & Đệm viền (thêm pixel xung quanh ảnh khi tích chập) \\
+Parameter & - & Tham số (trọng số học được trong quá trình huấn luyện) \\
+Patch & - & Mảnh ảnh (vùng ảnh nhỏ trích xuất từ ảnh gốc) \\
+Pixel & - & Điểm ảnh (đơn vị nhỏ nhất của ảnh số) \\
+Polarization & - & Phân cực (hướng dao động của sóng radar: VV, VH) \\
+Pooling & - & Gộp (giảm kích thước không gian của feature map) \\
+Precision & - & Độ chính xác (tỷ lệ dự đoán dương đúng trên tổng dự đoán dương) \\
+Prediction & - & Dự đoán (kết quả đầu ra của mô hình) \\
+Raster & - & Dữ liệu raster (ảnh dạng lưới điểm ảnh) \\
+Recall & - & Độ phủ (tỷ lệ phát hiện đúng trên tổng số thực tế dương) \\
+Receiver Operating Characteristic & ROC & Đường cong ROC (biểu đồ đánh giá khả năng phân loại) \\
+Rectified Linear Unit & ReLU & Hàm ReLU (hàm kích hoạt: f(x) = max(0, x)) \\
+Reforestation & - & Phục hồi rừng (tái sinh hoặc trồng lại rừng) \\
+Regularization & - & Chính quy hóa (kỹ thuật giảm overfitting) \\
+Remote Sensing & - & Viễn thám (thu thập thông tin từ xa qua vệ tinh/máy bay) \\
+ROC-AUC & - & Diện tích dưới đường cong ROC (đo khả năng phân biệt lớp) \\
+Scheduler & - & Bộ điều chỉnh tốc độ học (thay đổi learning rate theo epoch) \\
+Short-Wave Infrared & SWIR & Hồng ngoại sóng ngắn (bước sóng 1.4-3 μm) \\
+Softmax & - & Hàm softmax (chuyển logits thành phân phối xác suất) \\
+Spectral Signature & - & Phổ phản xạ đặc trưng (đặc điểm phản xạ theo bước sóng) \\
+Stratified & - & Phân tầng (chia dữ liệu giữ nguyên tỷ lệ các lớp) \\
+Synthetic Aperture Radar & SAR & Radar khẩu độ tổng hợp (cảm biến chủ động, hoạt động mọi thời tiết) \\
+Test Set & - & Tập kiểm tra (dữ liệu đánh giá cuối cùng, không dùng khi huấn luyện) \\
+Training & - & Huấn luyện (quá trình học tham số từ dữ liệu) \\
+Universal Transverse Mercator & UTM & Hệ tọa độ UTM (phép chiếu bản đồ chia thành 60 múi) \\
+Validation & - & Xác thực (đánh giá mô hình trong quá trình huấn luyện) \\
+Weight Decay & - & Phân rã trọng số (thêm phạt L2 vào hàm mất mát) \\
+World Geodetic System & WGS & Hệ trắc địa thế giới (hệ tọa độ toàn cầu, WGS84) \\
+\end{longtable}

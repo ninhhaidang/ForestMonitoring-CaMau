@@ -1,8 +1,169 @@
-\chapter{Tổng quan về xu hướng chuyển dịch năng lượng toàn cầu và nghiên cứu cải thiện hiệu suất tua-bin gió Savonius}
+\chapter{Tổng quan về vấn đề nghiên cứu}
 
-\input{chapters/chapter1/sec1_1}
-\input{chapters/chapter1/sec1_2}
-\input{chapters/chapter1/sec1_3}
-\input{chapters/chapter1/sec1_4}
-\input{chapters/chapter1/sec1_5}
-\input{chapters/chapter1/sec1_6}
+\section{Bối cảnh và tình hình mất rừng}
+
+\subsection{Tình hình mất rừng trên thế giới}
+
+Rừng bao phủ khoảng 31\% diện tích đất liền toàn cầu \cite{fao2020}, đóng vai trò thiết yếu trong việc điều hòa khí hậu, lưu giữ carbon, bảo tồn đa dạng sinh học, và cung cấp sinh kế cho hàng tỷ người. Tuy nhiên, tốc độ mất rừng toàn cầu vẫn đang ở mức báo động. Theo báo cáo ``Global Forest Resources Assessment 2020'' của FAO \cite{fao2020}, tổng diện tích rừng bị phá (gross deforestation) từ năm 1990 đến 2020 ước tính khoảng 420 triệu hecta, trong khi diện tích mất rừng ròng (net loss, sau khi trừ đi diện tích trồng rừng mới) là 178 triệu hecta, chủ yếu do chuyển đổi sang đất nông nghiệp, chăn nuôi, khai thác gỗ bất hợp pháp, và phát triển cơ sở hạ tầng.
+
+Khu vực nhiệt đới, nơi tập trung 45\% diện tích rừng toàn cầu và đa dạng sinh học cao nhất, đang chịu tốc độ mất rừng nhanh nhất. Lưu vực Amazon (Brazil), rừng Congo (Trung Phi), và Đông Nam Á là những ``điểm nóng'' về mất rừng. Theo dữ liệu từ Global Forest Watch \cite{gfw2021}, thế giới mất khoảng 10 triệu hecta rừng nhiệt đới mỗi năm trong giai đoạn 2015-2020.
+
+Mất rừng không chỉ làm giảm khả năng hấp thụ CO$_2$ mà còn trực tiếp phát thải khí nhà kính từ việc đốt rừng và phân hủy sinh khối. Theo IPCC \cite{ipcc2019}, phá rừng và thay đổi sử dụng đất đóng góp khoảng 23\% tổng lượng phát thải khí nhà kính do con người gây ra. Điều này góp phần làm gia tăng hiện tượng biến đổi khí hậu toàn cầu.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Bản đồ thế giới thể hiện các vùng mất rừng nhiệt đới\\ (Amazon, Congo, Đông Nam Á)\vspace{2cm}}}
+    \caption{Bản đồ các vùng mất rừng nhiệt đới trên thế giới giai đoạn 2015-2020}
+    \label{fig:global_deforestation}
+\end{figure}
+
+\subsection{Tình hình mất rừng tại Việt Nam}
+
+Việt Nam đã trải qua những biến đổi lớn về độ che phủ rừng trong 30 năm qua. Sau thời kỳ suy giảm nghiêm trọng (độ che phủ chỉ còn 28\% vào năm 1990 do chiến tranh và khai thác bừa bãi), Việt Nam đã thực hiện nhiều chương trình phục hồi và phát triển rừng. Nhờ các chương trình như ``Trồng 5 triệu hecta rừng'' (1998-2010), độ che phủ rừng đã tăng lên 42\% vào năm 2020 \cite{bnnptnt2021}.
+
+Tuy nhiên, chất lượng rừng là một vấn đề đáng lo ngại. Mặc dù tổng diện tích rừng tăng từ 9.4 triệu hecta (1990) lên 14.6 triệu hecta (2020) chủ yếu nhờ rừng trồng (cao su, keo, thông), chất lượng rừng tự nhiên lại suy giảm đáng kể. Theo số liệu của Bộ NN\&PTNT (2020), rừng tự nhiên hiện có khoảng 10.29 triệu hecta, nhưng rừng nguyên sinh (primary forest) chỉ còn chiếm khoảng 0.6\% tổng diện tích rừng \cite{bnnptnt2021}.
+
+Nguyên nhân chính gây mất rừng tại Việt Nam bao gồm việc chuyển đổi sang đất nông nghiệp như trồng cà phê, cao su và điều; khai thác gỗ trái phép; phát triển cơ sở hạ tầng và đô thị hóa; cháy rừng; và hoạt động nuôi trồng thủy sản, đặc biệt tại khu vực ven biển và đồng bằng sông Cửu Long.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Biểu đồ đường thể hiện sự thay đổi độ che phủ rừng\\ Việt Nam giai đoạn 1990-2020\vspace{2cm}}}
+    \caption{Biến động độ che phủ rừng Việt Nam giai đoạn 1990-2020}
+    \label{fig:vietnam_forest_change}
+\end{figure}
+
+\subsection{Tình hình rừng tại tỉnh Cà Mau}
+
+\textbf{Lưu ý về địa giới hành chính:} Theo Nghị quyết số 1278/NQ-UBTVQH15 ngày 24/10/2024 của Ủy ban Thường vụ Quốc hội, kể từ ngày 01/07/2025, tỉnh Cà Mau và tỉnh Bạc Liêu được sáp nhập thành tỉnh Cà Mau mới với tổng diện tích tự nhiên 7,942.38 km² và dân số khoảng 2.6 triệu người. Đồ án này nghiên cứu trên phạm vi rừng của tỉnh Cà Mau mới, bao gồm cả vùng rừng thuộc địa bàn Bạc Liêu cũ.
+
+Tỉnh Cà Mau mới nằm ở cực Nam Tổ Quốc, sở hữu hệ sinh thái rừng ngập mặn quan trọng. Theo số liệu trước khi sáp nhập, tỉnh Cà Mau cũ có diện tích rừng khoảng 94,319 hecta và tỉnh Bạc Liêu có khoảng 5,730 hecta rừng, tổng cộng khoảng 100,000 hecta rừng trên toàn tỉnh Cà Mau mới. Rừng ngập mặn Cà Mau chiếm khoảng 20\% diện tích rừng ngập mặn của Việt Nam, đóng vai trò then chốt trong việc phòng hộ ven biển (chắn sóng, chống xâm thực và bảo vệ bờ biển), bảo tồn đa dạng sinh học vì là môi trường sống cho nhiều loài động thực vật quý hiếm, cung cấp nguồn sinh kế thông qua các hoạt động thủy sản và du lịch sinh thái, và góp phần giảm nhẹ biến đổi khí hậu nhờ khả năng lưu giữ carbon cao, gấp khoảng 3–5 lần so với rừng nhiệt đới trên cạn \cite{donato2011,alongi2014}.
+
+Tuy nhiên, rừng Cà Mau đang phải đối mặt với nhiều thách thức. Trước hết là áp lực chuyển đổi sang nuôi tôm do kinh tế, khiến nhiều khu vực rừng bị chuyển đổi thành ao nuôi. Ngoài ra, hiện tượng xâm nhập mặn gia tăng do biến đổi khí hậu làm giảm sức khỏe rừng; đồng thời xói mòn bờ biển cũng làm suy giảm diện tích rừng ven biển; và tình trạng thiếu nước ngọt ảnh hưởng tới khả năng tái sinh tự nhiên của rừng. Giai đoạn 2011-2023, sạt lở vùng ven biển đã làm mất hơn 6,000 hecta đất và rừng phòng hộ. Việc giám sát và bảo vệ rừng tại Cà Mau là ưu tiên hàng đầu nhằm duy trì hệ sinh thái quan trọng này.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Bản đồ vị trí tỉnh Cà Mau trong Việt Nam\\ và vùng rừng ngập mặn\vspace{2cm}}}
+    \caption{Vị trí tỉnh Cà Mau và khu vực rừng ngập mặn}
+    \label{fig:camau_location}
+\end{figure}
+
+\section{Công nghệ viễn thám trong giám sát rừng}
+
+\subsection{Ưu điểm của công nghệ viễn thám}
+
+Công nghệ viễn thám vệ tinh mang lại nhiều ưu điểm vượt trội so với phương pháp điều tra thực địa truyền thống. Thứ nhất, về khả năng bao phủ phạm vi rộng, một ảnh vệ tinh có thể phủ diện tích hàng nghìn km² và giám sát đồng thời nhiều khu vực rừng. Thứ hai, về khả năng cập nhật thường xuyên, các vệ tinh hiện đại có chu kỳ quay trở lại ngắn (khoảng 3–5 ngày), cho phép phát hiện kịp thời các biến động. Thứ ba, về chi phí hợp lý, nhiều chương trình vệ tinh cung cấp dữ liệu miễn phí, giảm đáng kể chi phí so với khảo sát thực địa. Thứ tư, về khả năng phân tích đa thời gian, kho lưu trữ lịch sử cho phép phân tích xu hướng biến động qua nhiều năm. Thứ năm, về khả năng tiếp cận vùng khó khăn, viễn thám có thể giám sát được những khu vực khó tiếp cận bằng phương pháp thực địa như rừng núi cao hay biên giới. Cuối cùng, về tính khách quan, dữ liệu viễn thám mang tính khách quan và có thể lặp lại, loại bỏ các sai số chủ quan của người khảo sát.
+
+\subsection{Chương trình Copernicus và vệ tinh Sentinel}
+
+Chương trình Copernicus của Liên minh Châu Âu (EU) là một trong những chương trình quan sát Trái Đất lớn nhất thế giới, cung cấp dữ liệu miễn phí và mở. Hai vệ tinh quan trọng cho giám sát rừng là:
+
+\textbf{Sentinel-1 (SAR - Synthetic Aperture Radar):}
+
+Vệ tinh Sentinel-1 hoạt động ở dải sóng C-band (xấp xỉ 5.5 cm) với hai chế độ phân cực chính là VV (Vertical-Vertical) và VH (Vertical-Horizontal); độ phân giải không gian trong chế độ Interferometric Wide (IW) là 10m và chu kỳ quay trở lại của tổ hợp hai vệ tinh (1A và 1B) là khoảng 6 ngày \cite{esa2024s1}. Do là hệ thống chủ động, Sentinel-1 có ưu điểm xuyên qua mây và khói, hoạt động được cả ngày lẫn đêm, và nhạy cảm đối với cấu trúc thực vật cũng như độ ẩm.
+
+\textbf{Sentinel-2 (Optical - Multispectral Imaging):}
+
+Vệ tinh Sentinel-2 cung cấp 13 dải phổ từ vùng nhìn thấy đến hồng ngoại ngắn (từ 443 nm đến 2190 nm) với nhiều cấp độ độ phân giải không gian: 10m cho các dải B2, B3, B4 và B8; 20m cho các dải B5, B6, B7, B8a, B11 và B12; và 60m cho B1, B9 và B10 \cite{esa2024s2}. Chu kỳ quay trở lại của tổ hợp hai vệ tinh Sentinel-2A và Sentinel-2B vào khoảng 5 ngày, và vì có thông tin quang phổ phong phú nên Sentinel-2 rất phù hợp để tính toán chỉ số thực vật.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Hình minh họa vệ tinh Sentinel-1 và Sentinel-2\\ với bảng so sánh thông số kỹ thuật\vspace{2cm}}}
+    \caption{Vệ tinh Sentinel-1 và Sentinel-2 của chương trình Copernicus}
+    \label{fig:sentinel_satellites}
+\end{figure}
+
+\subsection{Chỉ số thực vật từ dữ liệu quang học}
+
+Các chỉ số thực vật (vegetation indices) là công cụ quan trọng trong giám sát rừng, được tính toán từ các dải phổ khác nhau:
+
+\textbf{NDVI (Normalized Difference Vegetation Index):}
+\begin{equation}
+NDVI = \frac{NIR - Red}{NIR + Red}
+\end{equation}
+
+NDVI có dải giá trị từ -1 đến 1; giá trị NDVI lớn hơn 0.6 thường biểu thị thực vật xanh tốt, trong khi giá trị NDVI nhỏ hơn 0.2 thường liên quan đến đất trống, nước hoặc khu vực đô thị \cite{huang2021}.
+
+\textbf{NBR (Normalized Burn Ratio):}
+\begin{equation}
+NBR = \frac{NIR - SWIR_2}{NIR + SWIR_2}
+\end{equation}
+
+NBR nhạy cảm với vùng cháy; biến đổi Delta NBR (dNBR) được sử dụng để đánh giá mức độ tổn thất do cháy rừng.
+
+\textbf{NDMI (Normalized Difference Moisture Index):}
+\begin{equation}
+NDMI = \frac{NIR - SWIR_1}{NIR + SWIR_1}
+\end{equation}
+
+NDMI được dùng để đánh giá hàm lượng nước trong thực vật; giá trị NDMI thấp có thể chỉ ra trạng thái stress do hạn hán.
+
+\subsection{Tích hợp dữ liệu SAR và Optical}
+
+Việc kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2) mang lại nhiều lợi ích thực tế. Về khía cạnh bổ sung thông tin, SAR cung cấp dữ liệu về cấu trúc, độ nhám bề mặt và độ ẩm, trong khi Optical cung cấp thông tin quang phổ và các chỉ số thực vật. Về khía cạnh khắc phục hạn chế, SAR hoạt động hiệu quả trong điều kiện mây mù — điều quan trọng trong môi trường rừng nhiệt đới — còn Optical lại cung cấp dữ liệu trực quan dễ phiên giải. Về khía cạnh nâng cao độ chính xác, nhiều nghiên cứu cho thấy việc kết hợp SAR và Optical giúp tăng accuracy từ khoảng 5 đến 10\% so với việc sử dụng mỗi nguồn dữ liệu riêng lẻ. Về khía cạnh phát hiện biến động đa chiều, SAR nhạy với biến đổi cấu trúc như chặt cây, trong khi Optical nhạy với biến đổi quang phổ thể hiện sức khỏe thực vật.
+
+\section{Tổng quan các nghiên cứu liên quan}
+
+\subsection{Phương pháp Deep Learning}
+
+\textbf{Convolutional Neural Networks (CNN):}
+
+CNN đã cách mạng hóa computer vision và ngày càng được áp dụng rộng rãi trong viễn thám \cite{zhu2017}. Zhang et al. \cite{zhang2016} giới thiệu các kiến trúc CNN phổ biến và ứng dụng của chúng trong viễn thám, Kussul et al. \cite{kussul2017} áp dụng CNN cho phân loại cây trồng từ Sentinel-2 và đạt accuracy 94.5\%, và Xu et al. \cite{xu2021} sử dụng CNN kết hợp với cơ chế attention để đạt accuracy 96.8\% trên dữ liệu đa nguồn.
+
+\textbf{Các kiến trúc CNN tiêu biểu trong viễn thám:}
+
+Ronneberger et al. \cite{ronneberger2015} đề xuất kiến trúc U-Net với cấu trúc encoder-decoder, ban đầu cho phân đoạn ảnh y sinh nhưng sau đó được áp dụng rộng rãi trong viễn thám nhờ khả năng phân đoạn ngữ nghĩa hiệu quả. Zhong et al. \cite{zhong2018} phát triển SatCNN - kiến trúc CNN chuyên biệt cho phân loại ảnh vệ tinh. Karra et al. \cite{karra2021} ứng dụng deep learning kết hợp Sentinel-2 để tạo bản đồ sử dụng đất toàn cầu với độ phân giải 10m.
+
+\subsection{Ứng dụng trong giám sát rừng}
+
+\textbf{Phát hiện mất rừng:}
+
+Hansen et al. \cite{hansen2013} phát triển Global Forest Change dataset sử dụng chuỗi thời gian Landsat và thuật toán decision tree để phát hiện mất rừng toàn cầu giai đoạn 2000–2012 ở độ phân giải 30m. Reiche et al. \cite{reiche2018} kết hợp Sentinel-1 và Landsat để phát hiện mất rừng near-real-time tại Amazon và báo cáo accuracy đạt 93.8\%. Hethcoat et al. \cite{hethcoat2019} áp dụng CNN trên chuỗi thời gian Landsat để phát hiện khai thác vàng trái phép tại Amazon và đạt F1-score 0.92.
+
+\textbf{Tích hợp SAR và Optical:}
+
+Hu et al. \cite{hu2020} kết hợp Sentinel-1 và Sentinel-2 để phân loại rừng ở Madagascar và ghi nhận accuracy tăng từ 87\% lên 92\% khi sử dụng cả hai nguồn dữ liệu. Ienco et al. \cite{ienco2019} ứng dụng deep neural networks kết hợp chuỗi thời gian SAR và Optical để phân loại cây trồng và đạt accuracy 96.5\%.
+
+\textbf{Nghiên cứu tại Việt Nam:}
+
+Pham et al. \cite{pham2019} đã sử dụng kết hợp ảnh QuickBird, LiDAR và chỉ số địa hình GIS để nhận dạng loài cây bản địa trong cảnh quan phức tạp. Nguyen et al. \cite{nguyen2020} áp dụng Sentinel-2 đa thời gian để lập bản đồ sử dụng đất tại Đắk Nông với overall accuracy 91.2\%. Bùi et al. \cite{bui2021} nghiên cứu biến động rừng ngập mặn ven biển Đồng bằng sông Cửu Long bằng chuỗi thời gian Landsat (1990–2020).
+
+\begin{table}[H]
+\centering
+\caption{Tổng hợp các nghiên cứu liên quan}
+\label{tab:related_works}
+\begin{tabular}{|l|c|l|l|c|}
+\hline
+\textbf{Tác giả} & \textbf{Năm} & \textbf{Phương pháp} & \textbf{Dữ liệu} & \textbf{Accuracy} \\
+\hline
+Hansen et al. & 2013 & Decision Tree & Landsat & ~85\% \\
+\hline
+Kussul et al. & 2017 & CNN & Sentinel-2 & 94.5\% \\
+\hline
+Reiche et al. & 2018 & Bayesian & S1+Landsat & 93.8\% \\
+\hline
+Hethcoat et al. & 2019 & CNN (ResNet) & S1/S2 & 94.3\% \\
+\hline
+Nguyen et al. & 2020 & Random Forest & Sentinel-2 & 91.2\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Khoảng trống nghiên cứu và định hướng đồ án}
+
+\subsection{Khoảng trống nghiên cứu}
+
+Qua tổng quan tài liệu, một số khoảng trống nghiên cứu nổi bật được xác định. Thứ nhất, thiếu nghiên cứu Deep Learning cho rừng nhiệt đới Việt Nam: phần lớn công trình tập trung ở Amazon, Congo hay Indonesia, còn ít nghiên cứu áp dụng CNN cho rừng Việt Nam, đặc biệt là rừng ngập mặn Cà Mau. Thứ hai, kiến trúc CNN cho bộ dữ liệu nhỏ: CNN thường yêu cầu tập dữ liệu lớn (hàng trăm nghìn mẫu), có ít công trình nghiên cứu về kiến trúc CNN tối ưu cho các bộ dữ liệu nhỏ trong viễn thám (khoảng 2,000–5,000 mẫu). Thứ ba, tích hợp SAR và Optical trong Deep Learning: việc tích hợp SAR và Optical trong bối cảnh Deep Learning vẫn còn nhiều thách thức và còn thiếu các khảo sát tối ưu hóa fusion trong kiến trúc CNN.
+
+\subsection{Định hướng của đồ án}
+
+Xuất phát từ những khoảng trống nghiên cứu đã nêu, đồ án này hướng tới bốn mục tiêu chính. Thứ nhất, phát triển một kiến trúc CNN phù hợp cho các bộ dữ liệu nhỏ bằng cách thiết kế mô hình lightweight (xấp xỉ 36K tham số), áp dụng các kỹ thuật regularization mạnh như Batch Normalization, Dropout và Weight Decay. Thứ hai, triển khai một quy trình đánh giá khoa học chặt chẽ bao gồm việc sử dụng stratified random split, thực hiện 5-Fold Stratified Cross Validation và giữ lại một fixed test set (20\%). Thứ ba, tối ưu hóa phương pháp fusion giữa Sentinel-1 và Sentinel-2 ở cấp độ feature, trích xuất 27 features tổng cộng (21 features từ S2 và 6 features từ S1). Thứ tư, ứng dụng thực tế tại Cà Mau, bao gồm phân loại toàn vùng quy hoạch lâm nghiệp (170,179 ha ranh giới, 162,469 ha diện tích phân loại thực tế), ước tính diện tích mất rừng và tạo bản đồ phân loại ở độ phân giải 10m.
+
+\subsection{Câu hỏi nghiên cứu}
+
+Đồ án tập trung trả lời một số câu hỏi cốt lõi:
+\begin{enumerate}
+    \item Liệu 5-Fold Cross Validation có đảm bảo đánh giá mô hình một cách robust và ổn định?
+    \item Kiến trúc CNN nào là phù hợp nhất cho bộ dữ liệu gồm 2,630 mẫu?
+    \item Việc tích hợp Sentinel-1 SAR và Sentinel-2 Optical có cải thiện accuracy so với chỉ sử dụng Sentinel-2 hay không?
+    \item Liệu mô hình CNN có thể được ứng dụng thực tế cho giám sát rừng Cà Mau?
+\end{enumerate}

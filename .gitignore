@@ -78,3 +78,43 @@ Thumbs.db
 nul
 output.txt
 test_*.py
+
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.out
+*.toc
+*.synctex.gz
+*.synctex(busy)
+*.pdfsync
+*.nav
+*.snm
+*.vrb
+*.bcf
+*.run.xml
+*-blx.bib
+*.idx
+*.ilg
+*.ind
+*.nlo
+*.nls
+*.glg
+*.glo
+*.gls
+*.ist
+*.acn
+*.acr
+*.alg
+*.xdy
+
+# LaTeX generated PDF (comment out if you want to commit the final PDF)
+# THESIS/Latex/*.pdf
+
+# LaTeX editor files
+*.synctex.gz(busy)
+*.bak

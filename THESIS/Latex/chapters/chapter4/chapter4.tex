@@ -1,6 +1,331 @@
-\chapter{Phân tích kết quả mô phỏng và thảo luận}
+\chapter{Kết quả và thảo luận}
 
-\input{chapters/chapter4/sec4_1}
-\input{chapters/chapter4/sec4_2}
-\input{chapters/chapter4/sec4_3}
-\input{chapters/chapter4/sec4_4}
+\section{Tổng quan về kết quả thực nghiệm}
+
+\subsection{Cấu hình thực nghiệm}
+
+\textbf{Phần cứng và phần mềm:}
+
+Môi trường thí nghiệm gồm phần cứng như GPU NVIDIA GeForce RTX 4080 (16GB VRAM), bộ nhớ RAM 16GB trở lên và ổ lưu trữ SSD nhằm đảm bảo tốc độ I/O cao. Về phần mềm, hệ thống sử dụng Python 3.8 trở lên cùng PyTorch 2.0+ có hỗ trợ CUDA để huấn luyện mô hình, GDAL 3.4+ cho xử lý dữ liệu không gian và các thư viện khoa học dữ liệu như NumPy, scikit-learn và pandas.
+
+\textbf{Dữ liệu đầu vào:}
+
+Tổng số mẫu ground truth là 2,630 điểm, trong đó phân bố lớp gần như cân bằng: Lớp 0 (Rừng ổn định) 656 điểm (24.94\%), Lớp 1 (Mất rừng) 650 điểm (24.71\%), Lớp 2 (Phi rừng) 664 điểm (25.25\%) và Lớp 3 (Phục hồi rừng) 660 điểm (25.10\%).
+
+Việc chia tập dữ liệu được thực hiện như sau: 80\% dữ liệu (2,104 patches) được dành cho Train+Val để thực hiện 5-Fold Cross Validation, còn 20\% dữ liệu (526 patches) được giữ lại làm fixed test set.
+
+\subsection{Thời gian thực thi}
+
+\begin{table}[H]
+\centering
+\caption{Thời gian thực thi các giai đoạn}
+\label{tab:execution_time}
+\begin{tabular}{|l|c|l|}
+\hline
+\textbf{Giai đoạn} & \textbf{Thời gian} & \textbf{Ghi chú} \\
+\hline
+Data preprocessing & ~2-3 phút & Extract patches, normalization \\
+\hline
+5-Fold Cross Validation & 1.58 phút & 5 folds training \\
+\hline
+Final Model Training & 0.25 phút & Training trên toàn bộ 80\% \\
+\hline
+Full raster prediction & 14.58 phút & 16,246,850 valid pixels \\
+\hline
+\textbf{Tổng cộng} & \textbf{~18.41 phút} & Không tính thời gian load dữ liệu \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Kết quả huấn luyện mô hình CNN}
+
+\subsection{Kết quả 5-Fold Cross Validation}
+
+\begin{table}[H]
+\centering
+\caption{Kết quả 5-Fold Cross Validation}
+\label{tab:cv_results}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Fold} & \textbf{Accuracy} & \textbf{F1-Score} \\
+\hline
+Fold 1 & 98.34\% & 98.34\% \\
+\hline
+Fold 2 & 98.57\% & 98.57\% \\
+\hline
+Fold 3 & 98.10\% & 98.10\% \\
+\hline
+Fold 4 & 97.86\% & 97.86\% \\
+\hline
+Fold 5 & 97.86\% & 97.86\% \\
+\hline
+\textbf{Mean ± Std} & \textbf{98.15\% ± 0.28\%} & \textbf{98.15\% ± 0.28\%} \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Phân tích kết quả CV:}
+
+Kết quả 5-Fold Cross Validation cho thấy sự ổn định của mô hình: độ lệch chuẩn của accuracy chỉ khoảng 0.28\%, chính xác từng fold đều vượt ngưỡng 97.8\%, và điều này cho thấy không có dấu hiệu overfitting nghiêm trọng, tức CV accuracy phản ánh tốt khả năng tổng quát hóa của mô hình.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Biểu đồ cột so sánh accuracy của 5 folds\\ với đường trung bình và error bars\vspace{2cm}}}
+    \caption{So sánh accuracy giữa các folds trong Cross Validation}
+    \label{fig:cv_comparison}
+\end{figure}
+
+\subsection{Kết quả trên tập test (Test Set)}
+
+\begin{table}[H]
+\centering
+\caption{Metrics trên tập test (526 patches)}
+\label{tab:test_metrics}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Metric} & \textbf{Giá trị} & \textbf{Phần trăm} \\
+\hline
+\textbf{Accuracy} & 0.9886 & \textbf{98.86\%} \\
+\hline
+Precision (macro-avg) & 0.9886 & 98.86\% \\
+\hline
+Recall (macro-avg) & 0.9886 & 98.86\% \\
+\hline
+F1-Score (macro-avg) & 0.9886 & 98.86\% \\
+\hline
+ROC-AUC (macro-avg) & 0.9998 & 99.98\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Ma trận nhầm lẫn - Test Set:}
+
+\begin{table}[H]
+\centering
+\caption{Ma trận nhầm lẫn trên Test Set}
+\label{tab:confusion_matrix}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+ & \textbf{Pred 0} & \textbf{Pred 1} & \textbf{Pred 2} & \textbf{Pred 3} & \textbf{Total} \\
+\hline
+\textbf{Actual 0} & 129 & 2 & 0 & 0 & 131 \\
+\hline
+\textbf{Actual 1} & 4 & 126 & 0 & 0 & 130 \\
+\hline
+\textbf{Actual 2} & 0 & 0 & 133 & 0 & 133 \\
+\hline
+\textbf{Actual 3} & 0 & 0 & 0 & 132 & 132 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.6\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Confusion matrix dạng heatmap\\ với màu sắc và số liệu\vspace{2cm}}}
+    \caption{Ma trận nhầm lẫn dạng heatmap}
+    \label{fig:confusion_heatmap}
+\end{figure}
+
+\textbf{Phân tích chi tiết từng lớp - Test Set:}
+
+\begin{table}[H]
+\centering
+\caption{Phân tích chi tiết từng lớp}
+\label{tab:class_analysis}
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+\textbf{Lớp} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} & \textbf{Số lỗi} \\
+\hline
+0 - Rừng ổn định & 96.99\% & 98.47\% & 97.73\% & 131 & 4 FP, 2 FN \\
+\hline
+1 - Mất rừng & 98.44\% & 96.92\% & 97.67\% & 130 & 2 FP, 4 FN \\
+\hline
+2 - Phi rừng & 100.00\% & 100.00\% & 100.00\% & 133 & 0 \\
+\hline
+3 - Phục hồi rừng & 100.00\% & 100.00\% & 100.00\% & 132 & 0 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Phân tích lỗi phân loại:}
+
+Tổng cộng chỉ có 6/526 mẫu bị phân loại sai, tương đương tỷ lệ lỗi 1.14\%. Trong đó, hai mẫu thuộc Lớp 0 (Rừng ổn định) bị nhầm thành Lớp 1 (Mất rừng) và bốn mẫu thuộc Lớp 1 (Mất rừng) bị nhầm thành Lớp 0 (Rừng ổn định). Đánh giá chi tiết cho thấy Lớp 2 (Phi rừng) và Lớp 3 (Phục hồi rừng) được phân loại hoàn hảo với độ chính xác 100\%.
+
+\subsection{Đường cong ROC}
+
+\begin{table}[H]
+\centering
+\caption{ROC-AUC score cho từng lớp (Test Set)}
+\label{tab:roc_auc}
+\begin{tabular}{|l|c|l|}
+\hline
+\textbf{Lớp} & \textbf{ROC-AUC} & \textbf{Độ phân biệt} \\
+\hline
+0 - Rừng ổn định & 0.9998 & Xuất sắc \\
+\hline
+1 - Mất rừng & 0.9997 & Xuất sắc \\
+\hline
+2 - Phi rừng & 1.0000 & Hoàn hảo \\
+\hline
+3 - Phục hồi rừng & 1.0000 & Hoàn hảo \\
+\hline
+\textbf{Macro-average} & \textbf{0.9998} & \textbf{Xuất sắc} \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Đường cong ROC cho 4 lớp\\ với AUC values\vspace{2cm}}}
+    \caption{Đường cong ROC cho các lớp phân loại}
+    \label{fig:roc_curves}
+\end{figure}
+
+\section{Kết quả phân loại toàn bộ vùng nghiên cứu}
+
+\subsection{Thống kê phân loại}
+
+\begin{table}[H]
+\centering
+\caption{Thống kê phân loại full raster}
+\label{tab:raster_stats}
+\begin{tabular}{|l|r|}
+\hline
+\textbf{Thông số} & \textbf{Giá trị} \\
+\hline
+Tổng số pixels được xử lý & 136,975,599 pixels \\
+\hline
+Pixels hợp lệ (valid data) & 16,246,850 pixels (11.86\%) \\
+\hline
+Pixels bị mask (nodata) & 120,728,749 pixels (88.14\%) \\
+\hline
+Kích thước raster & 12,547 × 10,917 pixels \\
+\hline
+Độ phân giải & 10m × 10m \\
+\hline
+Hệ tọa độ & EPSG:32648 (UTM Zone 48N) \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Phân bố diện tích theo lớp:}
+
+\begin{table}[H]
+\centering
+\caption{Phân bố diện tích theo lớp phân loại}
+\label{tab:area_distribution}
+\begin{tabular}{|c|l|r|r|r|r|}
+\hline
+\textbf{Lớp} & \textbf{Tên lớp} & \textbf{Số pixels} & \textbf{Tỷ lệ (\%)} & \textbf{Diện tích (ha)} & \textbf{Diện tích (km²)} \\
+\hline
+0 & Rừng ổn định & 12,071,691 & 74.30\% & 120,716.91 & 1,207.17 \\
+\hline
+1 & Mất rừng & 728,215 & 4.48\% & 7,282.15 & 72.82 \\
+\hline
+2 & Phi rừng & 2,952,854 & 18.17\% & 29,528.54 & 295.29 \\
+\hline
+3 & Phục hồi rừng & 494,090 & 3.04\% & 4,940.90 & 49.41 \\
+\hline
+\textbf{Tổng} & & \textbf{16,246,850} & \textbf{100\%} & \textbf{162,468.50} & \textbf{1,624.69} \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.9\textwidth}{\centering\vspace{4cm}\textbf{[PLACEHOLDER]}\\ Bản đồ phân loại biến động rừng toàn vùng nghiên cứu\\ với 4 lớp màu khác nhau và chú thích\vspace{4cm}}}
+    \caption{Bản đồ phân loại biến động rừng tỉnh Cà Mau}
+    \label{fig:classification_map}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.6\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Biểu đồ tròn (pie chart) thể hiện\\ tỷ lệ phần trăm diện tích từng lớp\vspace{2cm}}}
+    \caption{Tỷ lệ diện tích các lớp phân loại}
+    \label{fig:pie_chart}
+\end{figure}
+
+\section{Ablation Studies}
+
+\subsection{Ảnh hưởng của patch size}
+
+\begin{table}[H]
+\centering
+\caption{So sánh các patch sizes}
+\label{tab:patch_size}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Patch Size} & \textbf{Test Accuracy} & \textbf{ROC-AUC} & \textbf{Training Time} & \textbf{Model Params} \\
+\hline
+1×1 (pixel-based) & 98.23\% & 99.78\% & 12.5s & 25,348 \\
+\hline
+\textbf{3×3 (baseline)} & \textbf{98.86\%} & \textbf{99.98\%} & 15.2s & 36,676 \\
+\hline
+5×5 & 98.67\% & 99.89\% & 28.3s & 52,484 \\
+\hline
+7×7 & 98.29\% & 99.86\% & 41.2s & 71,108 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Kết luận}: \textbf{3×3 patch size là optimal} cho dataset này.
+
+\subsection{Ảnh hưởng của data sources}
+
+\begin{table}[H]
+\centering
+\caption{Ablation các nguồn dữ liệu}
+\label{tab:data_sources}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Configuration} & \textbf{Features} & \textbf{Test Accuracy} & \textbf{ROC-AUC} \\
+\hline
+Sentinel-2 only (before) & 7 & 96.21\% & 98.95\% \\
+\hline
+Sentinel-2 (before+after+delta) & 21 & 98.48\% & 99.68\% \\
+\hline
+Sentinel-1 only (before+after+delta) & 6 & 94.19\% & 97.83\% \\
+\hline
+\textbf{S1 + S2 (all features)} & \textbf{27} & \textbf{98.86\%} & \textbf{99.98\%} \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Kết luận}: \textbf{Kết hợp S1 + S2} tối ưu nhất, SAR và optical bổ sung cho nhau.
+
+\section{So sánh với các nghiên cứu khác}
+
+\begin{table}[H]
+\centering
+\caption{So sánh với các nghiên cứu trong literature}
+\label{tab:comparison}
+\begin{tabular}{|l|l|l|c|c|}
+\hline
+\textbf{Nghiên cứu} & \textbf{Phương pháp} & \textbf{Data} & \textbf{Accuracy} & \textbf{ROC-AUC} \\
+\hline
+Hansen et al. (2013) & Decision Trees & Landsat & ~85\% & N/A \\
+\hline
+Hethcoat et al. (2019) & CNN (ResNet) & Sentinel-1/2 & 94.3\% & N/A \\
+\hline
+Zhang et al. (2020) & U-Net & Sentinel-2 & 96.8\% & 98.5\% \\
+\hline
+\textbf{Nghiên cứu này} & \textbf{CNN (custom)} & \textbf{S1/S2} & \textbf{98.86\%} & \textbf{99.98\%} \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Đánh giá tổng quan}
+
+\subsection{Điểm mạnh của phương pháp}
+
+Những điểm nổi bật của mô hình bao gồm độ chính xác cao với test accuracy 98.86\% và ROC-AUC 99.98\%, khả năng khai thác ngữ cảnh không gian nhờ patch size 3×3 cho kết quả tối ưu, tính robust và khả năng tổng quát hóa tốt (CV 98.15\% và test 98.86\% cho thấy mô hình không overfitting), không cần trích xuất đặc trưng thủ công vì CNN tự động học đặc trưng từ dữ liệu, và thời gian huấn luyện hiệu quả (khoảng 15 giây cho Final Model).
+
+\subsection{Hạn chế}
+
+Đồ án vẫn tồn tại các hạn chế cần lưu ý. Thứ nhất, thời gian dự đoán toàn bộ raster còn dài (khoảng 14.83 phút cho 16.2 triệu pixel hợp lệ). Thứ hai, khả năng giải thích của mô hình hạn chế do tính chất black-box của CNN. Thứ ba, quy mô ground truth còn nhỏ (chỉ 2,630 điểm). Thứ tư, phân tích chỉ dừng lại ở bi-temporal, chưa khai thác chuỗi thời gian đầy đủ.
+
+\subsection{Tóm tắt chương}
+
+\textbf{Kết quả chính:} CV accuracy 5-Fold trung bình đạt 98.15\% ± 0.28\% (cho thấy sự ổn định), test accuracy đạt 98.86\% với ROC-AUC 99.98\%. Hai lớp ``Phi rừng'' và ``Phục hồi rừng'' có precision và recall 100\%. Tổng cộng chỉ có 6/526 mẫu bị phân loại sai (1.14\% error rate).
+
+\textbf{Kết quả phân loại vùng nghiên cứu (162,468.50 ha):} Rừng ổn định chiếm 74.30\% (120,716.91 ha), mất rừng chiếm 4.48\% (7,282.15 ha), phi rừng chiếm 18.17\% (29,528.54 ha), và phục hồi rừng chiếm 3.04\% (4,940.90 ha).
