@@ -239,7 +239,7 @@ Một số nghiên cứu liên quan đã được thực hiện tại Việt Nam
 
 - Bùi et al. [[22]](REFERENCES.md#ref22) nghiên cứu biến động rừng ngập mặn ven biển ĐBSCL bằng Landsat time series (1990-2020), phát hiện xu hướng giảm diện tích do chuyển đổi sang ao nuôi.
 
-## 1.4. Khoảng trống nghiên cứu và định hướng luận văn
+## 1.4. Khoảng trống nghiên cứu và định hướng đồ án
 
 ### 1.4.1. Khoảng trống nghiên cứu
 
@@ -265,19 +265,19 @@ Qua tổng quan tài liệu, một số khoảng trống nghiên cứu được 
 - Nhiều nghiên cứu chỉ dùng DL mà không so sánh với baseline ML
 - Thiếu phân tích về trade-off giữa accuracy, computational cost, interpretability
 
-### 1.4.2. Định hướng của luận văn
+### 1.4.2. Định hướng của đồ án
 
-Xuất phát từ các khoảng trống trên, luận văn này định hướng:
+Xuất phát từ các khoảng trống trên, đồ án này định hướng:
 
 **1. Phát triển CNN architecture phù hợp với small dataset:**
 - Thiết kế kiến trúc lightweight (~36K parameters)
 - Áp dụng aggressive regularization (Batch Norm, Dropout, Weight Decay)
 - So sánh với các architectures khác (deeper, wider)
 
-**2. Triển khai spatial-aware data splitting:**
-- Sử dụng hierarchical clustering để nhóm ground truth points
-- Chia dữ liệu theo cluster thay vì random
-- Đảm bảo khoảng cách tối thiểu giữa training/validation/test sets
+**2. Triển khai quy trình đánh giá khoa học:**
+- Sử dụng stratified random split để đảm bảo phân bố lớp đồng đều
+- 5-Fold Cross Validation để đánh giá độ ổn định
+- Fixed test set (20%) để đánh giá tổng quát hóa
 
 **3. Tối ưu fusion Sentinel-1 và Sentinel-2:**
 - Feature-level fusion: concatenate SAR và Optical features
@@ -296,16 +296,16 @@ Xuất phát từ các khoảng trống trên, luận văn này định hướng
 
 **6. Đóng góp khoa học:**
 - Chứng minh CNN vượt trội hơn RF cho bài toán có spatial context
-- Cung cấp phương pháp spatial-aware splitting cho viễn thám
+- Cung cấp phương pháp đánh giá với 5-Fold CV cho viễn thám
 - Kiến trúc CNN nhẹ và hiệu quả cho small datasets
 
 ### 1.4.3. Câu hỏi nghiên cứu
 
-Luận văn tập trung trả lời các câu hỏi sau:
+Đồ án tập trung trả lời các câu hỏi sau:
 
 1. **CNN có vượt trội hơn Random Forest trong phân loại biến động rừng từ ảnh vệ tinh không?** Nếu có, mức độ cải thiện accuracy là bao nhiêu?
 
-2. **Spatial-aware splitting có ảnh hưởng đến kết quả đánh giá mô hình không?** Sự khác biệt giữa random splitting và spatial-aware splitting là gì?
+2. **5-Fold Cross Validation có cải thiện độ tin cậy của đánh giá mô hình không?** Độ biến thiên (variance) của kết quả qua các folds là bao nhiêu?
 
 3. **Kiến trúc CNN như thế nào là phù hợp với bộ dữ liệu 2,630 mẫu?** So sánh lightweight architecture vs deeper architectures.
 

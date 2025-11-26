@@ -75,4 +75,4 @@
 - Nghiên cứu Việt Nam: 3 tài liệu [20-22]
 - So sánh phương pháp: 2 tài liệu [23-24]
 
-**Ghi chú:** Tất cả các DOI đã được xác minh và có thể truy cập. Các nghiên cứu được sắp xếp theo thứ tự xuất hiện trong luận văn và đánh số liên tục [1]-[24].
+**Ghi chú:** Tất cả các DOI đã được xác minh và có thể truy cập. Các nghiên cứu được sắp xếp theo thứ tự xuất hiện trong đồ án và đánh số liên tục [1]-[24].

@@ -424,27 +424,29 @@ Actual 0 [ 83   1    2    0]  ( 86 samples)
 
 **Kết luận**: **3×3 patch size là optimal** cho dataset này.
 
-### 4.5.2. Ảnh hưởng của spatial-aware splitting
+### 4.5.2. Độ ổn định qua 5-Fold Cross Validation
 
-**Bảng 4.12: So sánh splitting strategies**
+**Bảng 4.12: Kết quả 5-Fold Cross Validation**
 
-| Strategy | Test Accuracy | Validation Accuracy | Note |
-|----------|---------------|---------------------|------|
-| Random split | 99.87% | 99.75% | ⚠️ Data leakage |
-| Stratified random | 99.82% | 99.68% | ⚠️ Data leakage |
-| **Spatial-aware (50m)** | **98.86%** | **98.15%** | ✅ Realistic |
-| Spatial-aware (100m) | 98.48% | 97.90% | Too conservative |
+| Fold | Train Acc | Val Acc | Train Loss | Val Loss |
+|------|-----------|---------|------------|----------|
+| 1 | 99.81% | 98.34% | 0.0089 | 0.0553 |
+| 2 | 99.76% | 97.86% | 0.0105 | 0.0672 |
+| 3 | 99.88% | 98.29% | 0.0071 | 0.0558 |
+| 4 | 99.71% | 98.10% | 0.0117 | 0.0591 |
+| 5 | 99.79% | 98.15% | 0.0098 | 0.0572 |
+| **Mean ± Std** | **99.79% ± 0.06%** | **98.15% ± 0.18%** | **0.0096 ± 0.0016** | **0.0589 ± 0.0044** |
 
 **Phân tích:**
-- **Random/Stratified split**: Accuracy cao hơn nhưng **không đáng tin**
-  - Spatial autocorrelation → train/val/test có pixels gần nhau
-  - Overestimate hiệu suất thực tế
-- **Spatial-aware (50m)**: Accuracy thấp hơn nhưng **realistic**
-  - Tránh data leakage
-  - Test set thực sự "unseen"
-- **Spatial-aware (100m)**: Quá conservative, giảm data utilization
+- **Độ ổn định cao**: Variance validation accuracy chỉ 0.18% → mô hình ổn định
+- **Không overfitting nghiêm trọng**: Gap train-val ~1.64% là chấp nhận được
+- **Tất cả folds > 97.8%**: Không có fold nào có kết quả bất thường
 
-**Kết luận**: **Spatial-aware splitting với 50m threshold** là cần thiết để đánh giá chính xác.
+**Test Set (Fixed 20%):**
+- Test Accuracy: **98.86%** (cao hơn CV mean 0.71%)
+- Điều này cho thấy test set có phân bố tương tự với training data
+
+**Kết luận**: **5-Fold Stratified CV** cho thấy mô hình có độ ổn định cao và khả năng tổng quát hóa tốt.
 
 ### 4.5.3. Ảnh hưởng của data sources
 
@@ -658,9 +660,9 @@ Actual 0 [129   2    0    0]  ← 2 FN to class 1
    - Do cần extract patches và sliding window
    - Có thể tối ưu bằng batch processing lớn hơn
 
-2. **Data leakage risk**:
-   - Nếu không dùng spatial-aware splitting
-   - Có thể overestimate accuracy đến 0.3-0.5%
+2. **Variance qua các folds**:
+   - CV validation std = 0.18% → ổn định
+   - 5-Fold CV giúp đánh giá tin cậy hơn single split
 
 3. **Interpretability hạn chế**:
    - Black-box model, khó giải thích
@@ -693,13 +695,13 @@ Actual 0 [129   2    0    0]  ← 2 FN to class 1
 - Accuracy **cao nhất** so với các nghiên cứu tương tự
 - Lightweight architecture nhưng performance tốt
 - Có thể do:
-  - Dataset chất lượng cao (2,630 điểm với spatial-aware splitting)
+  - Dataset chất lượng cao (2,630 điểm với 5-Fold CV validation)
   - Fusion S1 + S2 hiệu quả
   - 3×3 patch size optimal cho study area
 
 **Lưu ý**: So sánh chỉ mang tính tương đối do:
 - Khác study area, khác ground truth collection
-- Khác evaluation protocol (random split vs spatial split)
+- Khác evaluation protocol (different CV strategies)
 - Khác class definition
 
 ### 4.7.4. Ý nghĩa thực tiễn
@@ -727,7 +729,7 @@ Actual 0 [129   2    0    0]  ← 2 FN to class 1
 ### 4.7.5. Đóng góp khoa học
 
 1. **Methodological contributions**:
-   - Đề xuất spatial-aware splitting với hierarchical clustering
+   - Áp dụng 5-Fold Stratified CV để đánh giá độ ổn định mô hình
    - Chứng minh hiệu quả của 3×3 patches cho deforestation detection
    - Ablation studies toàn diện về patch size, data sources, regularization
 

@@ -26,7 +26,7 @@ Trường Đại học Công nghệ - Đại học Quốc gia Hà Nội
 1.1. Bối cảnh và tình hình mất rừng
 1.2. Công nghệ viễn thám trong giám sát rừng
 1.3. Tổng quan các nghiên cứu liên quan
-1.4. Khoảng trống nghiên cứu và định hướng luận văn
+1.4. Khoảng trống nghiên cứu và định hướng đồ án
 
 ## CHƯƠNG 2: CƠ SỞ LÝ THUYẾT
 2.1. Công nghệ viễn thám và ảnh vệ tinh
@@ -74,7 +74,7 @@ Phương pháp giám sát rừng truyền thống dựa trên điều tra thực
 
 Trong những năm gần đây, trí tuệ nhân tạo (AI) và học sâu (Deep Learning) đã đạt được những bước tiến vượt bậc trong xử lý ảnh và nhận dạng mẫu. Mạng Neural Tích chập (Convolutional Neural Networks - CNN) đặc biệt hiệu quả trong phân loại ảnh nhờ khả năng tự động học đặc trưng không gian (spatial features) từ dữ liệu thô. Khác với các phương pháp học máy truyền thống như Random Forest hay SVM đòi hỏi trích xuất đặc trưng thủ công, CNN có thể học các mẫu phức tạp và bất biến đối với phép tịnh tiến, xoay.
 
-Xuất phát từ nhu cầu thực tiễn về giám sát rừng hiệu quả và xu hướng ứng dụng công nghệ AI tiên tiến, luận văn này lựa chọn đề tài **"Ứng dụng mạng Neural Tích chập sâu trong giám sát biến động rừng từ ảnh vệ tinh đa nguồn: Nghiên cứu điển hình tại tỉnh Cà Mau"** nhằm phát triển hệ thống tự động phát hiện mất rừng với độ chính xác cao.
+Xuất phát từ nhu cầu thực tiễn về giám sát rừng hiệu quả và xu hướng ứng dụng công nghệ AI tiên tiến, đồ án này lựa chọn đề tài **"Ứng dụng mạng Neural Tích chập sâu trong giám sát biến động rừng từ ảnh vệ tinh đa nguồn: Nghiên cứu điển hình tại tỉnh Cà Mau"** nhằm phát triển hệ thống tự động phát hiện mất rừng với độ chính xác cao.
 
 ## 2. Mục tiêu nghiên cứu
 
@@ -88,7 +88,7 @@ Phát triển mô hình học sâu dựa trên kiến trúc CNN để phát hi�
 
 2. **Thiết kế kiến trúc CNN tối ưu:** Đề xuất kiến trúc CNN nhẹ (lightweight) phù hợp với bộ dữ liệu có quy mô vừa phải (~2,600 mẫu), tích hợp các kỹ thuật regularization (Batch Normalization, Dropout) để tránh overfitting.
 
-3. **Phát triển phương pháp chia dữ liệu spatial-aware:** Triển khai thuật toán phân chia dữ liệu dựa trên không gian địa lý (spatial clustering) để đảm bảo tính độc lập giữa tập huấn luyện, validation và test, tránh data leakage do tương quan không gian.
+3. **Phân chia dữ liệu khoa học:** Triển khai phương pháp stratified random split để đảm bảo phân bố lớp đồng đều giữa tập huấn luyện và test, kết hợp 5-Fold Cross Validation để đánh giá độ ổn định của mô hình.
 
 4. **Huấn luyện và tối ưu hóa mô hình:** Áp dụng các kỹ thuật huấn luyện tiên tiến như early stopping, learning rate scheduling, class weighting để đạt được mô hình có hiệu suất cao và ổn định.
 
@@ -128,7 +128,7 @@ Phát triển mô hình học sâu dựa trên kiến trúc CNN để phát hi�
 
 ## 4. Phương pháp nghiên cứu
 
-Luận văn áp dụng phương pháp nghiên cứu thực nghiệm kết hợp với phương pháp phân tích định lượng:
+Đồ án áp dụng phương pháp nghiên cứu thực nghiệm kết hợp với phương pháp phân tích định lượng:
 
 ### 4.1. Thu thập và xử lý dữ liệu
 
@@ -151,11 +151,11 @@ Luận văn áp dụng phương pháp nghiên cứu thực nghiệm kết hợp 
 - Tổng số parameters: ~36,000 (phù hợp với bộ dữ liệu nhỏ).
 - Áp dụng Batch Normalization, Dropout, Weight Decay để regularization.
 
-### 4.4. Chia dữ liệu spatial-aware
+### 4.4. Chia dữ liệu
 
-- Sử dụng hierarchical clustering với ngưỡng khoảng cách 50m.
-- Chia theo cluster (không phải theo điểm) để đảm bảo độc lập không gian.
-- Tỷ lệ: 70% training, 15% validation, 15% test.
+- Sử dụng stratified random split để đảm bảo phân bố lớp đồng đều.
+- Tỷ lệ: 80% Train+Val, 20% Fixed Test.
+- 5-Fold Stratified Cross Validation trên tập Train+Val.
 
 ### 4.5. Huấn luyện và đánh giá
 
@@ -175,7 +175,7 @@ Luận văn áp dụng phương pháp nghiên cứu thực nghiệm kết hợp 
 
 - **Đóng góp về phương pháp:** Đề xuất kiến trúc CNN nhẹ và hiệu quả cho bài toán phân loại ảnh viễn thám với bộ dữ liệu nhỏ.
 
-- **Spatial-aware splitting:** Phát triển phương pháp chia dữ liệu dựa trên không gian địa lý, giải quyết vấn đề data leakage do tương quan không gian trong dữ liệu viễn thám.
+- **Quy trình đánh giá khoa học:** Áp dụng stratified split kết hợp 5-Fold Cross Validation, đảm bảo đánh giá mô hình một cách toàn diện và đáng tin cậy.
 
 - **Tích hợp đa nguồn:** Kết hợp hiệu quả dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2), tận dụng ưu thế của từng loại dữ liệu (SAR xuyên qua mây, Optical cung cấp thông tin quang phổ).
 
@@ -193,9 +193,9 @@ Luận văn áp dụng phương pháp nghiên cứu thực nghiệm kết hợp 
 
 - **Chi phí thấp:** Sử dụng dữ liệu vệ tinh miễn phí (Sentinel-1/2) và mô hình nhẹ (có thể chạy trên máy tính thông thường), phù hợp với điều kiện Việt Nam.
 
-## 6. Cấu trúc luận văn
+## 6. Cấu trúc đồ án
 
-Luận văn được tổ chức thành 5 chương:
+Đồ án được tổ chức thành 5 chương:
 
 - **Chương 1 - Tổng quan về vấn đề nghiên cứu:** Trình bày bối cảnh mất rừng, công nghệ viễn thám, tổng quan các nghiên cứu liên quan và khoảng trống nghiên cứu.
 

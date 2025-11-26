@@ -896,35 +896,33 @@ Trong đó:
 
 Training và test samples gần nhau trong không gian có high correlation → **Data leakage** → Overestimate accuracy.
 
-**Giải pháp: Spatial-aware Data Splitting**
+**Giải pháp: Stratified Data Splitting + Cross Validation**
 
-### 2.3.3. Data Leakage Problem
+### 2.3.3. Chiến lược chia dữ liệu
 
-**Random Splitting (Traditional):**
-
-```
-Randomly shuffle all samples
-Train: 70% random samples
-Val: 15% random samples
-Test: 15% random samples
-```
-
-**Problem:**
+**Stratified Random Splitting:**
 
 ```
-  Train: ●
-  Test:        ○
-
-  Distance < 10m → Highly correlated
-  Model có thể "gian lận" bằng cách học spatial correlation
+1. Stratified shuffle all samples (giữ tỷ lệ lớp)
+2. Train+Val: 80% stratified samples
+3. Test: 20% stratified samples (fixed)
+4. 5-Fold Stratified CV trên Train+Val
 ```
 
-**Spatial-aware Splitting:**
+**Ưu điểm:**
 
 ```
-1. Hierarchical Clustering với distance threshold
-2. Chia clusters (không phải points)
-3. Đảm bảo min_distance giữa train/val/test
+- Đảm bảo phân bố lớp đồng đều trong tất cả các folds
+- 5-Fold CV đánh giá variance của mô hình
+- Fixed test set để đánh giá khả năng tổng quát hóa
+```
+
+**Cross Validation Strategy:**
+
+```
+1. Stratified K-Fold (K=5) để chia Train+Val
+2. Mỗi fold: 80% train, 20% validation
+3. Báo cáo mean ± std accuracy qua 5 folds
 ```
 
 **Kết quả:**

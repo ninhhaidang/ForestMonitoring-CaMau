@@ -36,7 +36,7 @@ Cà Mau có hệ sinh thái rừng ngập mặn quan trọng:
 
 **Vùng nghiên cứu:**
 
-Luận văn tập trung vào toàn bộ diện tích rừng trong ranh giới tỉnh Cà Mau:
+Đồ án tập trung vào toàn bộ diện tích rừng trong ranh giới tỉnh Cà Mau:
 
 - **Diện tích nghiên cứu:** 162,469.25 hecta (1,624.69 km²)
 - **Tọa độ UTM (Zone 48N):**
@@ -290,18 +290,17 @@ valid_mask = rasterize(forest_boundary,
 └──────────────────────────┬──────────────────────────────────┘
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│         STEP 5: SPATIAL-AWARE DATA SPLITTING                │
-│  - Hierarchical clustering (distance threshold = 50m)       │
-│  - Assign clusters to train/val/test                        │
-│  - Train: 70%, Val: 15%, Test: 15%                         │
-│  - Verify spatial separation                                │
+│         STEP 5: STRATIFIED DATA SPLITTING                   │
+│  - Stratified random split (giữ tỷ lệ lớp)                 │
+│  - Train+Val: 80%, Test: 20% (fixed)                       │
+│  - 5-Fold Stratified CV trên Train+Val                     │
 └──────────────────────────┬──────────────────────────────────┘
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
 │            OUTPUT: READY-TO-TRAIN DATASET                   │
-│  - X_train (1,838, 3, 3, 27), y_train (1,838,)            │
-│  - X_val (395, 3, 3, 27), y_val (395,)                    │
-│  - X_test (396, 3, 3, 27), y_test (396,)                  │
+│  - X_trainval (2,104, 3, 3, 27), y_trainval (2,104)        │
+│  - X_test (526, 3, 3, 27), y_test (526)                    │
+│  - 5-Fold CV indices trên trainval                         │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -523,29 +522,21 @@ Step 3: Huấn luyện Final Model trên toàn bộ 80%
 Step 4: Đánh giá Final Model trên 20% Test Set
 ```
 
-**Step 1: Fixed Test Set với Spatial-Aware Splitting**
+**Step 1: Fixed Test Set với Stratified Random Split**
 
 ```python
-from scipy.spatial.distance import pdist, squareform
-from scipy.cluster.hierarchy import linkage, fcluster
 from sklearn.model_selection import train_test_split
 
-# Ground truth coordinates
-coords = ground_truth[['x', 'y']].values  # Shape: (2630, 2)
-
-# Hierarchical clustering để tránh data leakage
-distances = pdist(coords, metric='euclidean')
-linkage_matrix = linkage(distances, method='single')
-distance_threshold = 50.0  # meters
-cluster_labels = fcluster(linkage_matrix, t=distance_threshold, criterion='distance')
-
-# Chia Train+Val (80%) và Test (20%)
+# Chia Train+Val (80%) và Test (20%) với stratified sampling
 trainval_indices, test_indices = train_test_split(
     np.arange(len(ground_truth)),
     test_size=0.20,
-    stratify=ground_truth['label'],
+    stratify=ground_truth['label'],  # Giữ tỷ lệ lớp đồng đều
     random_state=42
 )
+
+print(f"Train+Val: {len(trainval_indices)} samples")  # 2,104
+print(f"Test: {len(test_indices)} samples")           # 526
 ```
 
 **Step 2: 5-Fold Cross Validation trên Train+Val**
