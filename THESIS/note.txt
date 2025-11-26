@@ -1,0 +1,28 @@
+Vấn đề hiện tại:
+- Cấu trúc chưa chuẩn và còn thiếu một số phần. Thứ tự chính xác phải là:
+    + Tóm tắt
+    + Lời cam đoan
+    + Lời cảm ơn
+    + Mục Lục (tự tạo trong word sau)
+    + Danh mục từ viết tắt
+    + Danh mục hình ảnh (tự tạo trong word sau)
+    + Danh mục bảng biểu (tự tạo trong word sau)
+    + Mở đầu: 
+        1. Đặt vấn đề
+        2. Mục tiêu và nội dung nghiên cứu
+        3. Đối tượng và phạm vi nghiên cứu
+        4. Ý nghĩa khoa học và thực tiễn của đề tài
+        6. Cấu trúc của đồ án
+    + Chương 1:
+    + Chương 2:
+    + Chương 3:
+    + Chương 4:
+    + Kết luận và kiến nghị
+    + Tài liệu tham khảo
+
+- Đang tự động đánh chương cho:
+    + Tóm tắt
+    + Mở đầu
+    + Phụ lục
+    + Tài liệu tham khảo
+    + Kết luận và kiến nghị

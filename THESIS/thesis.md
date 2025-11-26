@@ -9,10 +9,7 @@ subtitle: |
 
   **Lớp:** Công nghệ Hàng không Vũ trụ K66
 
-  **Giảng viên hướng dẫn:**
-
-  - TS. Hà Minh Cường
-  - ThS. Hoàng Tích Phúc
+   **Giảng viên hướng dẫn:** TS. Hà Minh Cường và ThS. Hoàng Tích Phúc
 
   **Đơn vị:** Viện Công nghệ Hàng không Vũ trụ
 
@@ -26,7 +23,7 @@ lang: vi
 
 ::: {custom-style="Abstract"}
 
-# TÓM TẮT
+# Tóm tắt
 
 Đồ án này nghiên cứu ứng dụng mạng Neural Tích chập (CNN) để phát hiện và phân loại biến động rừng từ dữ liệu viễn thám đa nguồn tại tỉnh Cà Mau. Nghiên cứu sử dụng dữ liệu từ vệ tinh Sentinel-1 (SAR) và Sentinel-2 (Optical) với độ phân giải 10m, kết hợp 27 đặc trưng (features) từ cả hai nguồn dữ liệu.
 
@@ -42,7 +39,7 @@ lang: vi
 
 \newpage
 
-# Phần mở đầu
+# Mở đầu
 
 ## Lý do chọn đề tài
 
@@ -64,47 +61,17 @@ Phát triển mô hình học sâu dựa trên kiến trúc CNN để phát hi�
 
 ### Mục tiêu cụ thể
 
-1. **Xây dựng bộ dữ liệu huấn luyện:** Thu thập và xử lý dữ liệu ảnh vệ tinh Sentinel-1/2 đa thời gian, kết hợp với ground truth points để tạo bộ dữ liệu huấn luyện chất lượng cao.
-
-2. **Thiết kế kiến trúc CNN tối ưu:** Đề xuất kiến trúc CNN nhẹ (lightweight) phù hợp với bộ dữ liệu có quy mô vừa phải (~2,600 mẫu), tích hợp các kỹ thuật regularization (Batch Normalization, Dropout) để tránh overfitting.
-
-3. **Phân chia dữ liệu khoa học:** Triển khai phương pháp stratified random split để đảm bảo phân bố lớp đồng đều giữa các tập huấn luyện, validation và test, kết hợp với 5-Fold Cross Validation để đánh giá robust.
-
-4. **Huấn luyện và tối ưu hóa mô hình:** Áp dụng các kỹ thuật huấn luyện tiên tiến như early stopping, learning rate scheduling, class weighting để đạt được mô hình có hiệu suất cao và ổn định.
-
-5. **Đánh giá và so sánh:** Đánh giá chi tiết hiệu suất mô hình CNN trên các chỉ số Accuracy, Precision, Recall, F1-Score, ROC-AUC. So sánh với phương pháp Random Forest để chứng minh ưu thế của Deep Learning so với Machine Learning truyền thống.
-
-6. **Ứng dụng thực tế:** Áp dụng mô hình đã huấn luyện để phân loại toàn bộ khu vực rừng Cà Mau, ước tính diện tích mất rừng, và trực quan hóa kết quả dưới dạng bản đồ phân loại.
+Để đạt được mục tiêu tổng quát, đề tài tập trung vào sáu mục tiêu cụ thể. Đầu tiên là **xây dựng bộ dữ liệu huấn luyện** thông qua việc thu thập và xử lý dữ liệu ảnh vệ tinh Sentinel-1/2 đa thời gian, kết hợp với ground truth points để tạo bộ dữ liệu huấn luyện chất lượng cao. Tiếp theo là **thiết kế kiến trúc CNN tối ưu**, đề xuất kiến trúc CNN nhẹ (lightweight) phù hợp với bộ dữ liệu có quy mô vừa phải (~2,600 mẫu), tích hợp các kỹ thuật regularization (Batch Normalization, Dropout) để tránh overfitting. Bên cạnh đó, việc **phân chia dữ liệu khoa học** được triển khai bằng phương pháp stratified random split để đảm bảo phân bố lớp đồng đều giữa các tập huấn luyện, validation và test, kết hợp với 5-Fold Cross Validation để đánh giá robust. Tiếp tục, **huấn luyện và tối ưu hóa mô hình** được thực hiện bằng cách áp dụng các kỹ thuật huấn luyện tiên tiến như early stopping, learning rate scheduling, class weighting để đạt được mô hình có hiệu suất cao và ổn định. Sau đó, **đánh giá và so sánh** hiệu suất mô hình CNN trên các chỉ số Accuracy, Precision, Recall, F1-Score, ROC-AUC, đồng thời so sánh với phương pháp Random Forest để chứng minh ưu thế của Deep Learning so với Machine Learning truyền thống. Cuối cùng, mô hình đã huấn luyện được **ứng dụng thực tế** để phân loại toàn bộ khu vực rừng Cà Mau, ước tính diện tích mất rừng, và trực quan hóa kết quả dưới dạng bản đồ phân loại.
 
 ## Đối tượng và phạm vi nghiên cứu
 
 ### Đối tượng nghiên cứu
 
-- **Đối tượng chính:** Các khu vực rừng tự nhiên và rừng trồng tại tỉnh Cà Mau, bao gồm rừng ngập mặn, rừng phòng hộ ven biển.
-
-- **Biến động rừng:** Các trạng thái biến động được phân loại thành 4 nhóm:
-  - **Forest Stable (Rừng ổn định):** Vùng rừng không có biến đổi trong giai đoạn nghiên cứu.
-  - **Deforestation (Mất rừng):** Vùng rừng bị chuyển đổi sang đất trống, đất canh tác hoặc nuôi trồng thủy sản.
-  - **Non-forest (Không phải rừng):** Vùng không có rừng trong cả hai thời điểm (đất trống, mặt nước, khu dân cư).
-  - **Reforestation (Tái trồng rừng):** Vùng không có rừng trở thành rừng trong giai đoạn nghiên cứu.
-
-- **Dữ liệu viễn thám:** Ảnh vệ tinh đa nguồn từ Sentinel-1 (SAR) và Sentinel-2 (Optical), kỳ trước (tháng 1-2/2024) và kỳ sau (tháng 2/2025).
+Đối tượng nghiên cứu chính bao gồm các khu vực rừng tự nhiên và rừng trồng tại tỉnh Cà Mau, bao gồm rừng ngập mặn và rừng phòng hộ ven biển. Các trạng thái biến động rừng được phân loại thành bốn nhóm: **Forest Stable (Rừng ổn định)** là vùng rừng không có biến đổi trong giai đoạn nghiên cứu; **Deforestation (Mất rừng)** là vùng rừng bị chuyển đổi sang đất trống, đất canh tác hoặc nuôi trồng thủy sản; **Non-forest (Không phải rừng)** là vùng không có rừng trong cả hai thời điểm (đất trống, mặt nước, khu dân cư); và **Reforestation (Tái trồng rừng)** là vùng không có rừng trở thành rừng trong giai đoạn nghiên cứu. Dữ liệu viễn thám được sử dụng bao gồm ảnh vệ tinh đa nguồn từ Sentinel-1 (SAR) và Sentinel-2 (Optical), kỳ trước (tháng 1-2/2024) và kỳ sau (tháng 2/2025).
 
 ### Phạm vi nghiên cứu
 
-- **Không gian:** Toàn bộ khu vực có rừng trong ranh giới hành chính tỉnh Cà Mau, diện tích khoảng **162,469 hecta** (tương đương 1,624.69 km²).
-
-- **Thời gian:** Giai đoạn từ tháng 01/2024 đến tháng 02/2025 (khoảng 13 tháng).
-
-- **Độ phân giải không gian:** 10 mét/pixel (độ phân giải gốc của Sentinel-1/2).
-
-- **Hệ tọa độ:** EPSG:32648 (WGS 84 / UTM Zone 48N).
-
-### Giới hạn nghiên cứu
-
-- Nghiên cứu sử dụng dữ liệu tại hai thời điểm (bi-temporal), chưa khai thác đầy đủ chuỗi thời gian liên tục.
-- Ground truth được thu thập từ phiên giải ảnh và dữ liệu có sẵn, chưa có khảo sát thực địa đầy đủ.
-- Mô hình được đào tạo và đánh giá trên dữ liệu Cà Mau, khả năng tổng quát hóa sang các khu vực khác cần được kiểm chứng thêm.
+Phạm vi nghiên cứu bao gồm toàn bộ khu vực có rừng trong ranh giới hành chính tỉnh Cà Mau, diện tích khoảng **162,469 hecta** (tương đương 1,624.69 km²). Thời gian nghiên cứu kéo dài từ tháng 01/2024 đến tháng 02/2025 (khoảng 13 tháng). Độ phân giải không gian của dữ liệu là 10 mét/pixel (độ phân giải gốc của Sentinel-1/2), và hệ tọa độ được sử dụng là EPSG:32648 (WGS 84 / UTM Zone 48N). Tuy nhiên, nghiên cứu có một số giới hạn như chỉ sử dụng dữ liệu tại hai thời điểm (bi-temporal), chưa khai thác đầy đủ chuỗi thời gian liên tục, và ground truth được thu thập từ phiên giải ảnh và dữ liệu có sẵn, chưa có khảo sát thực địa đầy đủ. Mô hình được đào tạo và đánh giá trên dữ liệu Cà Mau, khả năng tổng quát hóa sang các khu vực khác cần được kiểm chứng thêm.
 
 ## Phương pháp nghiên cứu
 
@@ -112,81 +79,44 @@ Phát triển mô hình học sâu dựa trên kiến trúc CNN để phát hi�
 
 ### Thu thập và xử lý dữ liệu
 
-- Thu thập ảnh Sentinel-1 SAR và Sentinel-2 Optical từ Copernicus Open Access Hub.
-- Tiền xử lý: hiệu chỉnh khí quyển, co-registration, cắt theo ranh giới nghiên cứu.
-- Tính toán các chỉ số thực vật (NDVI, NBR, NDMI) từ dữ liệu Sentinel-2.
-- Thu thập ground truth points (2,630 điểm) qua phiên giải ảnh độ phân giải cao.
+Quá trình thu thập và xử lý dữ liệu bắt đầu bằng việc thu thập ảnh Sentinel-1 SAR và Sentinel-2 Optical từ Copernicus Open Access Hub, sau đó dữ liệu được tiền xử lý thông qua các bước bao gồm hiệu chỉnh khí quyển, co-registration và cắt theo ranh giới nghiên cứu; tiếp theo, các chỉ số thực vật như NDVI, NBR và NDMI được tính toán từ dữ liệu Sentinel-2; và cuối cùng, ground truth được thu thập gồm 2,630 điểm thông qua phiên giải ảnh có độ phân giải cao.
 
 ### Trích xuất đặc trưng
 
-- Xây dựng feature stack 27 chiều từ dữ liệu đa nguồn:
-  - Sentinel-2: 21 features (7 before + 7 after + 7 delta)
-  - Sentinel-1: 6 features (2 before + 2 after + 2 delta)
-- Trích xuất patches không gian 3×3 pixels tại vị trí ground truth.
-- Chuẩn hóa dữ liệu bằng phương pháp z-score standardization.
+Feature stack 27 chiều được xây dựng từ dữ liệu đa nguồn, cụ thể là 21 features từ Sentinel-2 (bao gồm 7 dải trước, 7 dải sau và 7 dải delta) và 6 features từ Sentinel-1 (gồm 2 dải trước, 2 dải sau và 2 dải delta). Từ những feature này, các patches không gian 3×3 pixel được trích xuất tại vị trí ground truth, sau đó toàn bộ dữ liệu được chuẩn hóa bằng phương pháp z-score standardization để đảm bảo độ ổn định cho quá trình huấn luyện mô hình.
 
 > **[TODO: Cần chèn Sơ đồ tại đây]**
 > *Gợi ý:* Vẽ sơ đồ tổng quan quy trình nghiên cứu từ thu thập dữ liệu → tiền xử lý → trích xuất đặc trưng → huấn luyện mô hình → đánh giá → ứng dụng.
 
 ### Phát triển mô hình CNN
 
-- Thiết kế kiến trúc CNN nhẹ với 2 convolutional blocks + fully connected layers.
-- Tổng số parameters: ~36,000 (phù hợp với bộ dữ liệu nhỏ).
-- Áp dụng Batch Normalization, Dropout, Weight Decay để regularization.
+Việc phát triển mô hình CNN bao gồm thiết kế một kiến trúc nhẹ với hai convolutional blocks và các fully connected layers, tổng số tham số xấp xỉ 36,000 phù hợp với quy mô dữ liệu nhỏ; bên cạnh đó, các kỹ thuật regularization như Batch Normalization, Dropout và Weight Decay được áp dụng để giảm nguy cơ overfitting.
 
 ### Chia dữ liệu
 
-- Sử dụng stratified random split để đảm bảo phân bố lớp đồng đều.
-- Tỷ lệ: 80% Train+Val (5-Fold CV), 20% Test (fixed).
-- 5-Fold Stratified Cross Validation trên tập Train+Val.
+Trong bước chia dữ liệu, nhóm nghiên cứu sử dụng phương pháp stratified random split nhằm đảm bảo phân bố lớp đồng đều giữa các tập, theo đó, tỷ lệ dữ liệu được phân thành 80% cho Train+Val (được đánh giá bằng 5-Fold Cross Validation) và 20% cho Test cố định (fixed test set), với việc thực hiện 5-Fold Stratified Cross Validation trên tập Train+Val để đánh giá độ ổn định của mô hình.
 
 ### Huấn luyện và đánh giá
 
-- Optimizer: AdamW với learning rate 0.001, weight decay 1e-3.
-- Loss function: CrossEntropyLoss với class weights.
-- Early stopping với patience 15 epochs.
-- Đánh giá trên các chỉ số: Accuracy, Precision, Recall, F1-Score, ROC-AUC.
+Trong quá trình huấn luyện và tối ưu hóa, mô hình được đào tạo bằng optimizer AdamW với learning rate 0.001 và weight decay 1e-3; hàm mất mát sử dụng là CrossEntropyLoss với class weights để xử lý lệch lớp; cơ chế early stopping được thiết lập với patience 15 epochs để ngăn chặn overfitting; và việc đánh giá mô hình được thực hiện bằng một tập hợp các chỉ số tiêu chuẩn bao gồm Accuracy, Precision, Recall, F1-Score và ROC-AUC.
 
 ### So sánh với Random Forest
 
-- Huấn luyện mô hình Random Forest (pixel-based) trên cùng dữ liệu.
-- So sánh về accuracy, thời gian, khả năng sử dụng spatial context.
+Để so sánh, một mô hình Random Forest (pixel-based) được huấn luyện trên cùng bộ dữ liệu và tiến hành so sánh các tiêu chí hiệu năng như accuracy, thời gian xử lý và khả năng tận dụng ngữ cảnh không gian; từ đó đánh giá ưu nhược điểm của phương pháp Machine Learning truyền thống so với mô hình Deep Learning (CNN).
 
 ## Ý nghĩa khoa học và thực tiễn
 
 ### Ý nghĩa khoa học
 
-- **Đóng góp về phương pháp:** Đề xuất kiến trúc CNN nhẹ và hiệu quả cho bài toán phân loại ảnh viễn thám với bộ dữ liệu nhỏ.
-
-- **Quy trình đánh giá khoa học:** Áp dụng 5-Fold Stratified Cross Validation kết hợp với fixed test set để đánh giá mô hình một cách robust và đáng tin cậy.
-
-- **Tích hợp đa nguồn:** Kết hợp hiệu quả dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2), tận dụng ưu thế của từng loại dữ liệu (SAR xuyên qua mây, Optical cung cấp thông tin quang phổ).
-
-- **So sánh định lượng:** Cung cấp bằng chứng thực nghiệm về ưu thế của Deep Learning (CNN) so với Machine Learning truyền thống (Random Forest) trong phân loại ảnh viễn thám có tính không gian.
+Về mặt khoa học, đồ án đóng góp một số điểm chính. Trước hết, đề xuất kiến trúc CNN nhẹ và hiệu quả cho bài toán phân loại ảnh viễn thám với bộ dữ liệu nhỏ; tiếp theo, việc áp dụng 5-Fold Stratified Cross Validation kết hợp với fixed test set giúp đánh giá mô hình một cách robust và đáng tin cậy; bên cạnh đó, đề tài chứng minh hiệu quả tích hợp đa nguồn bằng cách kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2), tận dụng ưu thế của từng loại dữ liệu như khả năng xuyên mây của SAR và thông tin quang phổ phong phú của Optical; cuối cùng, nghiên cứu cung cấp bằng chứng thực nghiệm về ưu thế của Deep Learning (CNN) so với các phương pháp Machine Learning truyền thống như Random Forest trong phân loại ảnh viễn thám có tính không gian.
 
 ### Ý nghĩa thực tiễn
 
-- **Giám sát rừng hiệu quả:** Cung cấp công cụ tự động phát hiện mất rừng với độ chính xác cao (>98%), giảm đáng kể thời gian và chi phí so với phương pháp truyền thống.
+Về ý nghĩa thực tiễn, kết quả nghiên cứu mang lại nhiều lợi ích. Thứ nhất, mô hình cung cấp công cụ tự động phát hiện mất rừng với độ chính xác cao (trên 98%), giúp giảm đáng kể thời gian và chi phí so với phương pháp điều tra thực địa truyền thống; thứ hai, kết quả có thể hỗ trợ các cơ quan quản lý rừng tại Cà Mau và các tỉnh khác trong việc xây dựng cơ sở dữ liệu để ra quyết định về bảo vệ và phát triển rừng bền vững; thứ ba, hệ thống có thể được triển khai để giám sát liên tục, đóng vai trò cảnh báo sớm khi phát hiện các hoạt động phá rừng trái phép; bên cạnh đó, phương pháp còn có tiềm năng mở rộng cho các bài toán giám sát môi trường khác như biến động đất đai, đô thị hóa và thay đổi sử dụng đất; cuối cùng, do sử dụng dữ liệu vệ tinh miễn phí và thiết kế mô hình nhẹ, phương pháp này có chi phí thấp và phù hợp với điều kiện triển khai tại Việt Nam.
 
-- **Hỗ trợ quản lý tài nguyên:** Kết quả nghiên cứu giúp các cơ quan quản lý rừng tại Cà Mau và các tỉnh khác có cơ sở dữ liệu để ra quyết định bảo vệ và phát triển rừng bền vững.
+Cấu trúc đồ án
 
-- **Cảnh báo sớm:** Hệ thống có thể triển khai để giám sát liên tục, phát hiện kịp thời các hoạt động phá rừng trái phép.
-
-- **Mở rộng ứng dụng:** Phương pháp có thể áp dụng cho các bài toán giám sát môi trường khác như biến động đất đai, đô thị hóa, biến đổi sử dụng đất.
-
-- **Chi phí thấp:** Sử dụng dữ liệu vệ tinh miễn phí (Sentinel-1/2) và mô hình nhẹ (có thể chạy trên máy tính thông thường), phù hợp với điều kiện Việt Nam.
-
-## Cấu trúc đồ án
-
-Đồ án được tổ chức thành 4 chương chính:
-
-- **Chương 1 - Tổng quan về vấn đề nghiên cứu:** Trình bày bối cảnh mất rừng, công nghệ viễn thám, tổng quan các nghiên cứu liên quan và khoảng trống nghiên cứu.
-
-- **Chương 2 - Cơ sở lý thuyết:** Giới thiệu chi tiết về công nghệ viễn thám (Sentinel-1/2), lý thuyết mạng Neural Tích chập (CNN), các phương pháp phân loại ảnh và đánh giá mô hình.
-
-- **Chương 3 - Phương pháp nghiên cứu:** Mô tả chi tiết khu vực nghiên cứu, dữ liệu, quy trình xử lý, kiến trúc mô hình CNN đề xuất, phương pháp huấn luyện và đánh giá.
-
-- **Chương 4 - Kết quả và thảo luận:** Trình bày kết quả huấn luyện, đánh giá mô hình, phân loại toàn vùng, so sánh với Random Forest, phân tích lỗi và trực quan hóa.
+Đồ án được tổ chức thành bốn chương chính; Chương 1 trình bày tổng quan về vấn đề nghiên cứu, bao gồm bối cảnh mất rừng, công nghệ viễn thám, tổng quan các nghiên cứu liên quan và các khoảng trống nghiên cứu; Chương 2 trình bày cơ sở lý thuyết, giới thiệu chi tiết về công nghệ viễn thám (Sentinel-1/2), lý thuyết về mạng Neural Tích chập (CNN) và các phương pháp phân loại ảnh cùng những tiêu chí đánh giá mô hình; Chương 3 mô tả phương pháp nghiên cứu, bao gồm khu vực nghiên cứu, dữ liệu sử dụng, quy trình xử lý, kiến trúc mô hình CNN đề xuất, phương pháp huấn luyện và đánh giá; cuối cùng, Chương 4 trình bày các kết quả và thảo luận, bao gồm kết quả huấn luyện, đánh giá mô hình, phân loại toàn vùng, so sánh với Random Forest, phân tích lỗi và trực quan hóa.
 
 \newpage
 
@@ -211,32 +141,16 @@ Việt Nam đã trải qua những biến đổi lớn về độ che phủ rừ
 
 Tuy nhiên, chất lượng rừng là một vấn đề đáng lo ngại. Mặc dù tổng diện tích rừng tăng chủ yếu nhờ rừng trồng (cao su, keo, thông), nhưng diện tích rừng tự nhiên - đặc biệt là rừng giàu, rừng gỗ lớn - lại giảm đáng kể. Rừng tự nhiên giảm từ 9.4 triệu hecta (1990) xuống còn 10.2 triệu hecta (2020), trong đó rừng giàu chỉ chiếm 2.2 triệu hecta.
 
-Các nguyên nhân chủ yếu gây mất rừng tại Việt Nam bao gồm:
-
-- Chuyển đổi sang đất nông nghiệp (cà phê, cao su, điều)
-- Khai thác gỗ trái phép
-- Phát triển cơ sở hạ tầng và đô thị hóa
-- Cháy rừng
-- Nuôi trồng thủy sản (đặc biệt tại khu vực ven biển và đồng bằng sông Cửu Long)
+Nguyên nhân chính gây mất rừng tại Việt Nam bao gồm việc chuyển đổi sang đất nông nghiệp như trồng cà phê, cao su và điều; khai thác gỗ trái phép; phát triển cơ sở hạ tầng và đô thị hóa; cháy rừng; và hoạt động nuôi trồng thủy sản, đặc biệt tại khu vực ven biển và đồng bằng sông Cửu Long.
 
 > **[TODO: Cần chèn Biểu đồ tại đây]**
 > *Gợi ý:* Biểu đồ đường thể hiện sự thay đổi độ che phủ rừng Việt Nam giai đoạn 1990-2020, với 2 đường: tổng diện tích rừng và diện tích rừng tự nhiên.
 
 ### Tình hình rừng tại tỉnh Cà Mau
 
-Cà Mau, tỉnh cực Nam Tổ Quốc, sở hữu hệ sinh thái rừng ngập mặn quan trọng với diện tích khoảng 40,000 hecta, chiếm ~20% diện tích rừng ngập mặn của Việt Nam. Rừng ngập mặn Cà Mau đóng vai trò then chốt trong:
+ Cà Mau, tỉnh cực Nam Tổ Quốc, sở hữu hệ sinh thái rừng ngập mặn quan trọng với diện tích khoảng 40,000 hecta, chiếm khoảng 20% diện tích rừng ngập mặn của Việt Nam; rừng ngập mặn Cà Mau đóng vai trò then chốt trong việc phòng hộ ven biển (chắn sóng, chống xâm thực và bảo vệ bờ biển), bảo tồn đa dạng sinh học vì là môi trường sống cho nhiều loài động thực vật quý hiếm, cung cấp nguồn sinh kế thông qua các hoạt động thủy sản và du lịch sinh thái, và góp phần giảm nhẹ biến đổi khí hậu nhờ khả năng lưu giữ carbon cao, gấp khoảng 3–5 lần so với rừng trên cạn.
 
-- **Phòng hộ ven biển:** Chắn sóng, chống xâm thực, bảo vệ bờ biển.
-- **Đa dạng sinh học:** Môi trường sống cho nhiều loài động thực vật quý hiếm.
-- **Sinh kế:** Nguồn thu nhập từ thủy sản, du lịch sinh thái.
-- **Giảm nhẹ biến đổi khí hậu:** Rừng ngập mặn có khả năng lưu giữ carbon gấp 3-5 lần rừng trên cạn.
-
-Tuy nhiên, rừng Cà Mau đang đối mặt với nhiều thách thức:
-
-- **Chuyển đổi sang nuôi tôm:** Áp lực kinh tế khiến nhiều khu vực rừng bị chuyển đổi sang ao nuôi tôm.
-- **Xâm nhập mặn:** Biến đổi khí hậu làm tăng độ mặn, ảnh hưởng đến sức khỏe rừng.
-- **Xói mòn bờ biển:** Làm giảm diện tích rừng ven biển.
-- **Thiếu nước ngọt:** Ảnh hưởng đến quá trình tái sinh rừng.
+ Tuy nhiên, rừng Cà Mau đang phải đối mặt với nhiều thách thức; trước hết là áp lực chuyển đổi sang nuôi tôm do kinh tế, khiến nhiều khu vực rừng bị chuyển đổi thành ao nuôi; ngoài ra, hiện tượng xâm nhập mặn gia tăng do biến đổi khí hậu làm giảm sức khỏe rừng; đồng thời xói mòn bờ biển cũng làm suy giảm diện tích rừng ven biển; và tình trạng thiếu nước ngọt ảnh hưởng tới khả năng tái sinh tự nhiên của rừng.
 
 Theo số liệu của Sở NN&PTNT Cà Mau (2022), diện tích rừng tự nhiên tại Cà Mau đã giảm khoảng 5-7% trong giai đoạn 2010-2020. Việc giám sát và bảo vệ rừng tại Cà Mau là ưu tiên hàng đầu nhằm duy trì hệ sinh thái quan trọng này.
 
@@ -247,19 +161,7 @@ Theo số liệu của Sở NN&PTNT Cà Mau (2022), diện tích rừng tự nhi
 
 ### Ưu điểm của công nghệ viễn thám
 
-Công nghệ viễn thám vệ tinh cung cấp nhiều ưu điểm vượt trội so với phương pháp điều tra thực địa truyền thống:
-
-**1. Phạm vi rộng:** Một ảnh vệ tinh có thể phủ diện tích hàng nghìn km², cho phép giám sát đồng thời nhiều khu vực rừng.
-
-**2. Cập nhật thường xuyên:** Các vệ tinh hiện đại có chu kỳ quay trở lại ngắn (3-5 ngày), cho phép giám sát liên tục và phát hiện kịp thời các biến động.
-
-**3. Chi phí hiệu quả:** Nhiều chương trình vệ tinh (như Copernicus, Landsat) cung cấp dữ liệu miễn phí, giảm đáng kể chi phí so với khảo sát thực địa.
-
-**4. Dữ liệu đa thời gian:** Lưu trữ dữ liệu lịch sử cho phép phân tích xu hướng biến động trong nhiều năm.
-
-**5. Tiếp cận khu vực khó:** Có thể giám sát các khu vực rừng núi cao, rừng rậm, hoặc khu vực biên giới khó tiếp cận bằng phương pháp thực địa.
-
-**6. Dữ liệu khách quan và có thể lặp lại:** Loại bỏ sai số chủ quan của người điều tra.
+Công nghệ viễn thám vệ tinh mang lại nhiều ưu điểm vượt trội so với phương pháp điều tra thực địa truyền thống. Thứ nhất, khả năng bao phủ phạm vi rộng cho phép một ảnh vệ tinh phủ diện tích hàng nghìn km² và giám sát đồng thời nhiều khu vực rừng; thứ hai, các vệ tinh hiện đại có chu kỳ quay trở lại ngắn (khoảng 3–5 ngày), cho phép cập nhật thường xuyên và phát hiện kịp thời các biến động; thứ ba, việc nhiều chương trình vệ tinh cung cấp dữ liệu miễn phí giúp giảm đáng kể chi phí so với khảo sát thực địa; thứ tư, dữ liệu đa thời gian và kho lưu trữ lịch sử cho phép phân tích xu hướng biến động qua nhiều năm; thứ năm, viễn thám có khả năng tiếp cận những khu vực khó tiếp cận bằng phương pháp thực địa như rừng núi cao hay biên giới; và cuối cùng, dữ liệu viễn thám mang tính khách quan và có thể lặp lại, loại bỏ các sai số chủ quan của người khảo sát.
 
 ### Chương trình Copernicus và vệ tinh Sentinel
 
@@ -267,20 +169,11 @@ Chương trình Copernicus của Liên minh Châu Âu (EU) là một trong nhữ
 
 **Sentinel-1 (SAR - Synthetic Aperture Radar):**
 
-- Hoạt động ở dải sóng C-band (~5.5 cm)
-- Hai chế độ polarization: VV (Vertical-Vertical) và VH (Vertical-Horizontal)
-- Độ phân giải không gian: 10m (IW mode)
-- Chu kỳ quay trở lại: 6 ngày (với hai vệ tinh 1A và 1B)
-- **Ưu điểm:** Xuyên qua mây và khói, hoạt động cả ngày lẫn đêm, nhạy cảm với cấu trúc thực vật và độ ẩm
-- **Ứng dụng:** Phát hiện biến động rừng trong điều kiện mây nhiều, phân biệt rừng ngập nước
+Vệ tinh Sentinel-1 hoạt động ở dải sóng C-band (xấp xỉ 5.5 cm) với hai chế độ phân cực chính là VV (Vertical-Vertical) và VH (Vertical-Horizontal); độ phân giải không gian trong chế độ Interferometric Wide (IW) là 10m và chu kỳ quay trở lại của tổ hợp hai vệ tinh (1A và 1B) là khoảng 6 ngày. Do là hệ thống chủ động, Sentinel-1 có ưu điểm xuyên qua mây và khói, hoạt động được cả ngày lẫn đêm, và nhạy cảm đối với cấu trúc thực vật cũng như độ ẩm, vì vậy các ứng dụng tiêu biểu bao gồm phát hiện biến động rừng trong điều kiện mây nhiều và phân biệt rừng ngập nước.
 
 **Sentinel-2 (Optical - Multispectral Imaging):**
 
-- 13 dải phổ từ vùng nhìn thấy đến hồng ngoại ngắn (443nm - 2190nm)
-- Độ phân giải không gian: 10m (B2, B3, B4, B8), 20m (B5, B6, B7, B8a, B11, B12), 60m (B1, B9, B10)
-- Chu kỳ quay trở lại: 5 ngày (với hai vệ tinh 2A và 2B)
-- **Ưu điểm:** Thông tin quang phổ phong phú, phù hợp tính toán chỉ số thực vật
-- **Ứng dụng:** Phân loại lớp phủ, đánh giá sức khỏe thực vật, tính toán NDVI/NBR/NDMI
+Vệ tinh Sentinel-2 cung cấp 13 dải phổ từ vùng nhìn thấy đến hồng ngoại ngắn (từ 443 nm đến 2190 nm) với nhiều cấp độ độ phân giải không gian: 10m cho các dải B2, B3, B4 và B8; 20m cho các dải B5, B6, B7, B8a, B11 và B12; và 60m cho B1, B9 và B10. Chu kỳ quay trở lại của tổ hợp hai vệ tinh Sentinel-2A và Sentinel-2B vào khoảng 5 ngày, và vì có thông tin quang phổ phong phú nên Sentinel-2 rất phù hợp để tính toán chỉ số thực vật và hỗ trợ các ứng dụng như phân loại lớp phủ, đánh giá sức khỏe thực vật và tính toán NDVI, NBR, NDMI.
 
 > **[TODO: Cần chèn Hình ảnh tại đây]**
 > *Gợi ý:* Hình minh họa vệ tinh Sentinel-1 và Sentinel-2, kèm bảng so sánh thông số kỹ thuật chính của hai vệ tinh.
@@ -293,52 +186,26 @@ Các chỉ số thực vật (vegetation indices) là công cụ quan trọng tr
 
 $$NDVI = \frac{NIR - Red}{NIR + Red}$$
 
-- Dải giá trị: [-1, 1]
-- NDVI > 0.6: Thực vật xanh tốt
-- NDVI < 0.2: Đất trống, nước, đô thị
-- Ứng dụng: Đánh giá mật độ và sức khỏe thực vật
+NDVI có dải giá trị từ -1 đến 1; giá trị NDVI lớn hơn 0.6 thường biểu thị thực vật xanh tốt, trong khi giá trị NDVI nhỏ hơn 0.2 thường liên quan đến đất trống, nước hoặc khu vực đô thị; do vậy NDVI được ứng dụng rộng rãi để đánh giá mật độ và sức khỏe thực vật.
 
 **NBR (Normalized Burn Ratio):**
 
 $$NBR = \frac{NIR - SWIR_2}{NIR + SWIR_2}$$
 
-- Nhạy cảm với lửa và vùng cháy
-- Delta NBR (dNBR) dùng để đánh giá mức độ cháy rừng
-- Ứng dụng: Phát hiện cháy rừng, đánh giá thiệt hại sau cháy
+NBR là công cụ nhạy cảm với vùng cháy; biến đổi Delta NBR (dNBR) được sử dụng để đánh giá mức độ tổn thất do cháy rừng và NBR ứng dụng để phát hiện cháy rừng cũng như đánh giá thiệt hại sau cháy.
 
 **NDMI (Normalized Difference Moisture Index):**
 
 $$NDMI = \frac{NIR - SWIR_1}{NIR + SWIR_1}$$
 
-- Đánh giá hàm lượng nước trong thực vật
-- NDMI thấp: Stress hạn, nguy cơ cháy cao
-- Ứng dụng: Giám sát hạn hán, đánh giá sức khỏe rừng
+NDMI được dùng để đánh giá hàm lượng nước trong thực vật; giá trị NDMI thấp có thể chỉ ra trạng thái stress do hạn hán và tăng nguy cơ cháy, do đó NDMI phù hợp để giám sát hạn hán và đánh giá sức khỏe rừng.
 
 > **[TODO: Cần chèn Hình ảnh tại đây]**
 > *Gợi ý:* Hình ảnh minh họa các chỉ số thực vật (NDVI, NBR, NDMI) trên cùng một khu vực rừng Cà Mau, với thang màu và chú thích giá trị.
 
 ### Tích hợp dữ liệu SAR và Optical
 
-Việc kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2) mang lại nhiều lợi ích:
-
-**Bổ sung thông tin:**
-
-- SAR: Thông tin về cấu trúc, độ nhám bề mặt, độ ẩm
-- Optical: Thông tin quang phổ, chỉ số thực vật
-
-**Khắc phục hạn chế:**
-
-- SAR hoạt động trong điều kiện mây mù (quan trọng với rừng nhiệt đới)
-- Optical cung cấp thông tin trực quan dễ phiên giải
-
-**Nâng cao độ chính xác:**
-
-- Nhiều nghiên cứu cho thấy kết hợp SAR + Optical tăng accuracy 5-10% so với dùng riêng lẻ
-
-**Phát hiện đa chiều:**
-
-- SAR nhạy với biến đổi cấu trúc (chặt cây)
-- Optical nhạy với biến đổi quang phổ (sức khỏe thực vật)
+Việc kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2) mang lại nhiều lợi ích thực tế. Về mặt bổ sung thông tin, SAR cung cấp dữ liệu về cấu trúc, độ nhám bề mặt và độ ẩm, trong khi Optical cung cấp thông tin quang phổ và các chỉ số thực vật. Về khắc phục hạn chế, SAR hoạt động hiệu quả trong điều kiện mây mù — điều quan trọng trong môi trường rừng nhiệt đới — còn Optical lại cung cấp dữ liệu trực quan dễ dàng để phiên giải. Về nâng cao độ chính xác, nhiều nghiên cứu cho thấy việc kết hợp SAR và Optical giúp tăng accuracy từ khoảng 5 đến 10% so với việc sử dụng mỗi nguồn dữ liệu riêng lẻ. Cuối cùng, việc tích hợp hai nguồn dữ liệu cho phép phát hiện biến động đa chiều: SAR nhạy với biến đổi cấu trúc như chặt cây, trong khi Optical nhạy với biến đổi quang phổ thể hiện sức khỏe thực vật.
 
 ## Tổng quan các nghiên cứu liên quan
 
@@ -346,86 +213,47 @@ Việc kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2) mang l�
 
 **Random Forest (RF):**
 
-Random Forest là một trong những thuật toán phổ biến nhất trong phân loại ảnh viễn thám. Các nghiên cứu tiêu biểu:
-
-- Belgiu & Drăguț [4] đã tổng hợp hơn 200 nghiên cứu sử dụng Random Forest, chỉ ra rằng RF đạt accuracy trung bình 85-90% trên các bài toán phân loại đất.
-
-- Gislason et al. [5] so sánh RF với SVM và Maximum Likelihood trên dữ liệu Landsat, kết quả cho thấy RF đạt accuracy cao hơn 2-5% và thời gian training nhanh hơn đáng kể.
+Random Forest là một trong những thuật toán phổ biến nhất trong phân loại ảnh viễn thám; Belgiu và Drăguț [4] đã tổng hợp hơn 200 nghiên cứu sử dụng Random Forest và chỉ ra rằng RF đạt accuracy trung bình khoảng 85–90% trên các bài toán phân loại đất. Ngoài ra, Gislason et al. [5] so sánh RF với SVM và Maximum Likelihood trên dữ liệu Landsat, kết luận rằng RF đạt accuracy cao hơn từ 2–5% và thời gian huấn luyện nhanh hơn đáng kể.
 
 **Ưu điểm của Random Forest:**
 
-- Robust với noise và outliers
-- Không cần chuẩn hóa dữ liệu
-- Cung cấp feature importance
-- Hiệu quả với dữ liệu high-dimensional
-- Khả năng xử lý class imbalance tốt
+Random Forest có một số ưu điểm: nó tương đối robust với noise và outliers; không yêu cầu chuẩn hóa dữ liệu; cho phép đánh giá mức độ quan trọng của các feature (feature importance); xử lý tốt dữ liệu có chiều cao (high-dimensional); và có khả năng xử lý vấn đề lệch lớp (class imbalance) khá hiệu quả.
 
 **Hạn chế:**
 
-- Không khai thác spatial context (xử lý từng pixel độc lập)
-- Cần trích xuất features thủ công
-- Overfitting với dữ liệu noisy
-- Khó giải thích cơ chế ra quyết định
+Tuy nhiên, Random Forest cũng có hạn chế: nó không khai thác ngữ cảnh không gian vì xử lý từng pixel độc lập; yêu cầu trích xuất features thủ công trước khi huấn luyện; có thể bị overfitting khi dữ liệu nhiễu nhiều; và cơ chế ra quyết định của mô hình không dễ giải thích (black-box-like) trong một số trường hợp.
 
 **Support Vector Machine (SVM):**
 
-SVM cũng được sử dụng rộng rãi trong phân loại viễn thám:
-
-- Mountrakis et al. [6] phân tích 73 nghiên cứu, chỉ ra SVM đặc biệt hiệu quả với dữ liệu high-dimensional và training samples nhỏ.
-
-- Huang et al. [7] áp dụng SVM cho phân loại đa lớp trên dữ liệu Landsat, đạt accuracy 87%, cao hơn 5% so với Maximum Likelihood.
+SVM cũng được sử dụng rộng rãi trong phân loại viễn thám; Mountrakis et al. [6] phân tích 73 nghiên cứu và chỉ ra rằng SVM đặc biệt hiệu quả với dữ liệu có chiều cao (high-dimensional) và trong trường hợp có ít mẫu huấn luyện, trong khi Huang et al. [7] áp dụng SVM cho phân loại đa lớp trên dữ liệu Landsat và báo cáo accuracy đạt 87%, cao hơn khoảng 5% so với phương pháp Maximum Likelihood.
 
 ### Phương pháp Deep Learning
 
 **Convolutional Neural Networks (CNN):**
 
-CNN đã cách mạng hóa computer vision và ngày càng được áp dụng rộng rãi trong viễn thám:
-
-- Zhang et al. [8] giới thiệu các kiến trúc CNN phổ biến và ứng dụng trong viễn thám.
-
-- Kussul et al. [9] áp dụng CNN cho phân loại cây trồng từ Sentinel-2, đạt accuracy 94.5%, vượt trội Random Forest (88%) và SVM (89.5%) trên cùng dataset.
-
-- Xu et al. [10] sử dụng CNN kết hợp với attention mechanism đạt accuracy 96.8% trên dữ liệu đa nguồn.
+CNN đã cách mạng hóa computer vision và ngày càng được áp dụng rộng rãi trong viễn thám; Zhang et al. [8] giới thiệu các kiến trúc CNN phổ biến và ứng dụng của chúng trong viễn thám, Kussul et al. [9] áp dụng CNN cho phân loại cây trồng từ Sentinel-2 và đạt accuracy 94.5% (vượt Random Forest 88% và SVM 89.5% trên cùng dataset), và Xu et al. [10] sử dụng CNN kết hợp với cơ chế attention để đạt accuracy 96.8% trên dữ liệu đa nguồn.
 
 **Ưu điểm CNN:**
 
-- Tự động học spatial features
-- Khai thác local spatial context qua convolutional kernels
-- Không cần feature engineering thủ công
-- Khả năng học hierarchical features
-- Có thể transfer learning từ pretrained models
+CNN có nhiều ưu điểm: chúng tự động học đặc trưng không gian (spatial features), khai thác ngữ cảnh không gian cục bộ thông qua các kernel tích chập, loại bỏ nhu cầu phải trích xuất đặc trưng thủ công, có khả năng học các đặc trưng phân tầng (hierarchical features) và có thể sử dụng phương pháp transfer learning từ các mô hình pretrained để cải thiện hiệu suất trên các tập dữ liệu mới.
 
 **Hạn chế:**
 
-- Cần large training datasets
-- Thời gian training lâu (cần GPU)
-- Nhiều hyperparameters cần tuning
-- "Black box" - khó giải thích
-- Dễ overfitting với small datasets
+Tuy nhiên, CNN cũng tồn tại một số hạn chế: chúng thường cần bộ dữ liệu huấn luyện lớn để đạt hiệu suất tối ưu; thời gian huấn luyện lâu và đòi hỏi phần cứng mạnh (GPU); có nhiều hyperparameters cần tinh chỉnh; mô hình thường có tính chất "black box" nên khó giải thích; và mô hình có thể dễ bị overfitting khi sử dụng trên các tập dữ liệu nhỏ.
 
 ### Ứng dụng trong giám sát rừng
 
 **Phát hiện mất rừng:**
 
-- Hansen et al. [15] phát triển Global Forest Change dataset sử dụng Landsat time series và decision tree, phát hiện mất rừng toàn cầu 2000-2012 ở độ phân giải 30m.
-
-- Reiche et al. [16] kết hợp Sentinel-1 và Landsat để phát hiện mất rừng near-real-time tại Amazon, đạt accuracy 93.8%.
-
-- Hethcoat et al. [17] sử dụng CNN trên Landsat time series để phát hiện illegal gold mining ở Amazon, đạt F1-score 0.92.
+Hansen et al. [15] phát triển Global Forest Change dataset sử dụng chuỗi thời gian Landsat và thuật toán decision tree để phát hiện mất rừng toàn cầu giai đoạn 2000–2012 ở độ phân giải 30m; thêm vào đó, Reiche et al. [16] kết hợp Sentinel-1 và Landsat để phát hiện mất rừng near-real-time tại Amazon và báo cáo accuracy đạt 93.8%; Hethcoat et al. [17] áp dụng CNN trên chuỗi thời gian Landsat để phát hiện khai thác vàng trái phép tại Amazon và đạt F1-score 0.92.
 
 **Tích hợp SAR và Optical:**
 
-- Hu et al. [18] kết hợp Sentinel-1 và Sentinel-2 với Random Forest để phân loại rừng ở Madagascar, accuracy tăng từ 87% (chỉ Sentinel-2) lên 92% (cả hai).
-
-- Ienco et al. [19] sử dụng deep neural networks kết hợp SAR + Optical time series để phân loại crop, đạt accuracy 96.5%.
+Một số nghiên cứu minh họa lợi ích của việc kết hợp SAR và Optical: Hu et al. [18] kết hợp Sentinel-1 và Sentinel-2 với Random Forest để phân loại rừng ở Madagascar và ghi nhận accuracy tăng từ 87% (khi chỉ dùng Sentinel-2) lên 92% khi sử dụng cả hai nguồn dữ liệu; tương tự, Ienco et al. [19] ứng dụng deep neural networks kết hợp chuỗi thời gian SAR và Optical để phân loại cây trồng và đạt accuracy 96.5%.
 
 **Nghiên cứu tại Việt Nam:**
 
-- Pham et al. [20] sử dụng Sentinel-1 để phát hiện biến động rừng tại Đắk Lắk, kết hợp SAR backscatter và machine learning để phân loại với độ chính xác 87%.
-
-- Nguyen et al. [21] áp dụng Random Forest và Sentinel-2 để lập bản đồ che phủ rừng tại Quảng Nam, đạt overall accuracy 91.2%.
-
-- Bùi et al. [22] nghiên cứu biến động rừng ngập mặn ven biển ĐBSCL bằng Landsat time series (1990-2020), phát hiện xu hướng giảm diện tích do chuyển đổi sang ao nuôi.
+Tại Việt Nam, Pham et al. [20] đã sử dụng Sentinel-1 để phát hiện biến động rừng tại Đắk Lắk bằng việc kết hợp SAR backscatter với các phương pháp machine learning và đạt độ chính xác khoảng 87%; Nguyen et al. [21] áp dụng Random Forest cùng Sentinel-2 để lập bản đồ che phủ rừng tại Quảng Nam với overall accuracy 91.2%; và Bùi et al. [22] nghiên cứu biến động rừng ngập mặn ven biển Đồng bằng sông Cửu Long bằng chuỗi thời gian Landsat (1990–2020) và phát hiện xu hướng giảm diện tích do chuyển đổi sang ao nuôi.
 
 > **[TODO: Cần chèn Bảng số liệu tại đây]**
 > *Gợi ý:* Bảng tổng hợp các nghiên cứu liên quan với các cột: Tác giả, Năm, Phương pháp, Dữ liệu, Khu vực, Accuracy.
@@ -434,80 +262,15 @@ CNN đã cách mạng hóa computer vision và ngày càng được áp dụng r
 
 ### Khoảng trống nghiên cứu
 
-Qua tổng quan tài liệu, một số khoảng trống nghiên cứu được xác định:
-
-**1. Thiếu nghiên cứu Deep Learning cho rừng nhiệt đới Việt Nam:**
-
-- Hầu hết nghiên cứu Deep Learning tập trung ở Amazon, Congo, Indonesia
-- Ít nghiên cứu áp dụng CNN cho rừng Việt Nam, đặc biệt rừng ngập mặn Cà Mau
-
-**2. Vấn đề spatial data leakage:**
-
-- Nhiều nghiên cứu chia dữ liệu random mà không quan tâm đến spatial autocorrelation
-- Dẫn đến overestimate accuracy do training và test samples gần nhau trong không gian
-
-**3. CNN cho small datasets:**
-
-- CNN thường cần large datasets (hàng trăm nghìn mẫu)
-- Ít nghiên cứu về kiến trúc CNN tối ưu cho small datasets viễn thám (~2,000-5,000 mẫu)
-
-**4. Tích hợp SAR + Optical với Deep Learning:**
-
-- Hầu hết nghiên cứu tích hợp đa nguồn sử dụng feature-level fusion với ML truyền thống
-- Ít nghiên cứu về cách tối ưu fusion SAR + Optical trong CNN architecture
-
-**5. Thiếu so sánh định lượng giữa DL và ML truyền thống:**
-
-- Nhiều nghiên cứu chỉ dùng DL mà không so sánh với baseline ML
-- Thiếu phân tích về trade-off giữa accuracy, computational cost, interpretability
+Qua tổng quan tài liệu, một số khoảng trống nghiên cứu nổi bật được xác định. Thứ nhất, thiếu nghiên cứu Deep Learning cho rừng nhiệt đới Việt Nam khi phần lớn công trình tập trung ở Amazon, Congo hay Indonesia, và vẫn còn ít nghiên cứu áp dụng CNN cho rừng Việt Nam, đặc biệt là rừng ngập mặn Cà Mau. Thứ hai, vấn đề spatial data leakage là một điểm cần lưu ý vì nhiều nghiên cứu chia dữ liệu một cách ngẫu nhiên mà không xử lý mối tương quan không gian, dẫn tới đánh giá accuracy bị phóng đại do tập huấn luyện và tập kiểm tra nằm gần nhau trong không gian. Thứ ba, CNN thường yêu cầu tập dữ liệu lớn (hàng trăm nghìn mẫu), do đó có ít công trình nghiên cứu về kiến trúc CNN tối ưu cho các bộ dữ liệu nhỏ trong viễn thám (khoảng 2,000–5,000 mẫu). Thứ tư, việc tích hợp SAR và Optical trong bối cảnh Deep Learning vẫn còn nhiều thách thức: hầu hết nghiên cứu hiện nay sử dụng feature-level fusion với các phương pháp ML truyền thống, và còn thiếu các khảo sát tối ưu hóa fusion trong kiến trúc CNN. Cuối cùng, còn thiếu so sánh định lượng giữa DL và ML truyền thống, bởi nhiều nghiên cứu chỉ sử dụng DL mà không so sánh với baseline ML, thiếu phân tích về sự đánh đổi giữa accuracy, computational cost và tính khả giải thích.
 
 ### Định hướng của đồ án
 
-Xuất phát từ các khoảng trống trên, đồ án này định hướng:
-
-**1. Phát triển CNN architecture phù hợp với small dataset:**
-
-- Thiết kế kiến trúc lightweight (~36K parameters)
-- Áp dụng aggressive regularization (Batch Norm, Dropout, Weight Decay)
-- So sánh với các architectures khác (deeper, wider)
-
-**2. Triển khai quy trình đánh giá khoa học:**
-
-- Sử dụng stratified random split để đảm bảo phân bố lớp đồng đều
-- 5-Fold Stratified Cross Validation để đánh giá variance của mô hình
-- Fixed test set (20%) để đánh giá khả năng tổng quát hóa
-
-**3. Tối ưu fusion Sentinel-1 và Sentinel-2:**
-
-- Feature-level fusion: concatenate SAR và Optical features
-- Trích xuất temporal features (before, after, delta)
-- 27 features: 21 từ S2 (7×3) + 6 từ S1 (2×3)
-
-**4. So sánh định lượng CNN vs Random Forest:**
-
-- Cùng dataset, cùng features, cùng data split
-- So sánh accuracy, training time, inference time
-- Phân tích ưu nhược điểm từng phương pháp
-
-**5. Ứng dụng thực tế tại Cà Mau:**
-
-- Phân loại toàn vùng rừng Cà Mau (162,469 ha)
-- Ước tính diện tích mất rừng
-- Tạo bản đồ phân loại độ phân giải 10m
+Xuất phát từ những khoảng trống nghiên cứu đã nêu, đồ án này hướng tới một số mục tiêu chính. Thứ nhất, phát triển một kiến trúc CNN phù hợp cho các bộ dữ liệu nhỏ bằng cách thiết kế mô hình lightweight (xấp xỉ 36K tham số), áp dụng các kỹ thuật regularization mạnh như Batch Normalization, Dropout và Weight Decay, và so sánh hiệu năng với những kiến trúc khác (deeper hoặc wider) để tìm ra cấu trúc tối ưu. Thứ hai, triển khai một quy trình đánh giá khoa học chặt chẽ bao gồm việc sử dụng stratified random split để đảm bảo phân bố lớp đồng đều, thực hiện 5-Fold Stratified Cross Validation để đánh giá phương sai của mô hình và giữ lại một fixed test set (20%) để đo khả năng tổng quát hóa thực tế. Thứ ba, tối ưu hóa phương pháp fusion giữa Sentinel-1 và Sentinel-2 ở cấp độ feature bằng cách concatenation các đặc trưng SAR và Optical, trích xuất các temporal features (before, after và delta) để thu được 27 features tổng cộng (21 features từ S2 tương ứng 7×3 và 6 features từ S1 tương ứng 2×3). Thứ tư, thực hiện so sánh định lượng giữa CNN và Random Forest trên cùng bộ dữ liệu, cùng features và cùng data split để so sánh các chỉ tiêu hiệu năng như accuracy, thời gian huấn luyện và thời gian suy luận, đồng thời phân tích ưu nhược điểm từng phương pháp. Cuối cùng, đồ án tập trung vào ứng dụng thực tế tại Cà Mau, bao gồm phân loại toàn vùng rừng (162,469 ha), ước tính diện tích mất rừng và tạo bản đồ phân loại ở độ phân giải 10m.
 
 ### Câu hỏi nghiên cứu
 
-Đồ án tập trung trả lời các câu hỏi sau:
-
-1. **CNN có vượt trội hơn Random Forest trong phân loại biến động rừng từ ảnh vệ tinh không?** Nếu có, mức độ cải thiện accuracy là bao nhiêu?
-
-2. **5-Fold Cross Validation có đảm bảo đánh giá robust cho mô hình không?** Variance giữa các folds như thế nào?
-
-3. **Kiến trúc CNN như thế nào là phù hợp với bộ dữ liệu 2,630 mẫu?** So sánh lightweight architecture vs deeper architectures.
-
-4. **Tích hợp Sentinel-1 SAR và Sentinel-2 Optical có cải thiện accuracy không?** So với chỉ dùng Sentinel-2.
-
-5. **Mô hình CNN có thể ứng dụng thực tế để giám sát rừng Cà Mau không?** Đánh giá về accuracy, tốc độ, và khả năng triển khai.
+Đồ án tập trung trả lời một số câu hỏi cốt lõi. Thứ nhất, liệu CNN có vượt trội hơn Random Forest trong việc phân loại biến động rừng từ ảnh vệ tinh hay không, và nếu có thì mức cải thiện về accuracy là bao nhiêu; thứ hai, liệu 5-Fold Cross Validation có đảm bảo đánh giá mô hình một cách robust và ổn định, và độ biến thiên giữa các folds như thế nào; thứ ba, kiến trúc CNN nào là phù hợp nhất cho bộ dữ liệu gồm 2,630 mẫu, so sánh giữa kiến trúc lightweight và các kiến trúc sâu hơn; thứ tư, việc tích hợp Sentinel-1 SAR và Sentinel-2 Optical có cải thiện accuracy so với chỉ sử dụng Sentinel-2 hay không; và cuối cùng, liệu mô hình CNN có thể được ứng dụng thực tế cho giám sát rừng Cà Mau về mặt accuracy, tốc độ và khả năng triển khai hay không.
 
 \newpage
 
@@ -521,11 +284,7 @@ Viễn thám (Remote Sensing) là khoa học và kỹ thuật thu thập thông 
 
 **Quá trình viễn thám bị động (Passive Remote Sensing):**
 
-1. **Nguồn năng lượng:** Mặt Trời phát ra bức xạ điện từ
-2. **Truyền qua khí quyển:** Một phần bức xạ bị hấp thụ và tán xạ bởi khí quyển
-3. **Tương tác với bề mặt:** Bức xạ phản xạ, hấp thụ, và truyền qua tùy theo đặc tính vật liệu
-4. **Ghi nhận bởi cảm biến:** Vệ tinh thu nhận bức xạ phản xạ
-5. **Truyền dữ liệu:** Tín hiệu được truyền về trạm mặt đất
+Trong hệ thống viễn thám bị động, nguồn năng lượng chính là bức xạ từ Mặt Trời; khi các sóng này truyền qua khí quyển, một phần năng lượng bị hấp thụ hoặc tán xạ; sau đó bức xạ tương tác với bề mặt, chịu các quá trình phản xạ, hấp thụ hoặc truyền qua tùy theo đặc tính vật liệu; tín hiệu phản xạ này sau đó được vệ tinh ghi nhận bởi cảm biến; và cuối cùng các tín hiệu này được xử lý và truyền về trạm mặt đất để phục vụ phân tích tiếp theo.
 
 > **[TODO: Cần chèn Sơ đồ tại đây]**
 > *Gợi ý:* Sơ đồ minh họa nguyên lý viễn thám bị động và chủ động, với các thành phần: nguồn năng lượng, khí quyển, bề mặt, cảm biến.
@@ -534,73 +293,33 @@ Viễn thám (Remote Sensing) là khoa học và kỹ thuật thu thập thông 
 
 $$E_{incident} = E_{reflected} + E_{absorbed} + E_{transmitted}$$
 
-Trong đó:
-
-- $E_{incident}$: Năng lượng tới (từ Mặt Trời)
-- $E_{reflected}$: Năng lượng phản xạ (được cảm biến ghi nhận)
-- $E_{absorbed}$: Năng lượng hấp thụ (chuyển thành nhiệt)
-- $E_{transmitted}$: Năng lượng truyền qua
+Trong đó, $E_{incident}$ là năng lượng tới từ Mặt Trời, $E_{reflected}$ là phần năng lượng phản xạ được cảm biến ghi nhận, $E_{absorbed}$ là phần năng lượng bị hấp thụ và chuyển thành nhiệt, và $E_{transmitted}$ là phần năng lượng truyền qua vật chất.
 
 ### Radar khẩu độ tổng hợp (SAR)
 
 **Nguyên lý hoạt động:**
 
-Khác với viễn thám bị động, SAR là hệ thống chủ động (active remote sensing):
-
-1. **Phát xung radar:** Anten phát xung sóng điện từ về phía Trái Đất
-2. **Tương tác với bề mặt:** Sóng radar phản xạ ngược (backscatter) với cường độ phụ thuộc vào:
-   - Độ nhám bề mặt (surface roughness)
-   - Độ ẩm (moisture content)
-   - Hằng số điện môi (dielectric constant)
-   - Góc tới (incidence angle)
-3. **Thu tín hiệu phản xạ:** Anten thu nhận tín hiệu backscatter
-4. **Xử lý tín hiệu:** Tổng hợp khẩu độ để tăng độ phân giải
+Khác với viễn thám bị động, SAR là hệ thống chủ động (active remote sensing): anten phát xung sóng điện từ về phía Trái Đất, các sóng này tương tác với bề mặt và tạo hiện tượng phản xạ ngược (backscatter) với cường độ phụ thuộc vào nhiều yếu tố như độ nhám bề mặt, hàm lượng nước (độ ẩm), hằng số điện môi và góc tới; các tín hiệu phản xạ được anten thu nhận và được xử lý bằng cách tổng hợp khẩu độ (aperture synthesis) nhằm tăng độ phân giải ảnh.
 
 **Hệ số Backscatter ($\sigma^0$):**
 
 $$\sigma^0 (dB) = 10 \times \log_{10}(\sigma^0_{linear})$$
 
-Giá trị $\sigma^0$ phụ thuộc vào:
-
-- **Độ nhám bề mặt:** Bề mặt nhẵn (nước) → $\sigma^0$ thấp, bề mặt nhám (rừng) → $\sigma^0$ cao
-- **Độ ẩm:** Độ ẩm cao → $\sigma^0$ cao (nước có hằng số điện môi lớn)
-- **Cấu trúc thực vật:** Rừng có cấu trúc phức tạp → backscatter mạnh
+Giá trị $\sigma^0$ phụ thuộc vào nhiều yếu tố, đặc biệt là độ nhám bề mặt (trong đó bề mặt nhẵn như nước cho $\sigma^0$ thấp, còn bề mặt nhám như rừng cho $\sigma^0$ cao), hàm lượng nước (độ ẩm) vốn làm tăng $\sigma^0$ do hằng số điện môi lớn của nước, và cấu trúc thực vật — những khu vực rừng có cấu trúc phức tạp thường cho backscatter mạnh.
 
 **Polarization:**
 
-SAR có thể phát và thu theo các polarization khác nhau:
-
-- **VV:** Phát V (Vertical), Thu V → Nhạy với độ ẩm bề mặt
-- **VH:** Phát V, Thu H (Horizontal) → Nhạy với cấu trúc thực vật (volume scattering)
-- **HH:** Phát H, Thu H → Nhạy với độ nhám bề mặt
-- **HV:** Phát H, Thu V → Tương tự VH
+SAR có thể phát và thu theo các chế độ phân cực khác nhau; ví dụ, chế độ VV (phát V, thu V) nhạy với độ ẩm bề mặt, chế độ VH (phát V, thu H) và HV (phát H, thu V) thường nhạy với cấu trúc thực vật (volume scattering), còn chế độ HH (phát H, thu H) nhạy với độ nhám bề mặt.
 
 **Sentinel-1 SAR:**
 
-- Dải sóng: C-band ($\lambda$ = 5.5 cm, frequency = 5.4 GHz)
-- Polarization: VV và VH (IW mode)
-- Độ phân giải không gian: 10m
-- Ưu điểm: Xuyên qua mây, hoạt động ngày/đêm
+Vệ tinh Sentinel-1 SAR hoạt động ở dải sóng C-band (xấp xỉ 5.5 cm, tần số khoảng 5.4 GHz) với các chế độ phân cực chính như VV và VH trong chế độ IW, đạt độ phân giải không gian khoảng 10m; ưu điểm của Sentinel-1 là khả năng xuyên qua mây và hoạt động cả ngày lẫn đêm.
 
 ### Ảnh quang học đa phổ (Optical Multispectral)
 
 **Dải phổ điện từ:**
 
-Ảnh quang học ghi nhận bức xạ phản xạ từ bề mặt Trái Đất ở các dải phổ khác nhau:
-
-1. **Visible (VIS):** 400-700 nm
-   - Blue (B): 450-520 nm
-   - Green (G): 520-600 nm
-   - Red (R): 630-690 nm
-
-2. **Near-Infrared (NIR):** 700-1400 nm
-   - Phản xạ cao ở thực vật xanh (chlorophyll)
-   - Quan trọng cho tính toán NDVI
-
-3. **Short-Wave Infrared (SWIR):** 1400-3000 nm
-   - SWIR1: 1550-1750 nm
-   - SWIR2: 2080-2350 nm
-   - Nhạy với độ ẩm thực vật và đất
+Ảnh quang học ghi nhận bức xạ phản xạ từ bề mặt Trái Đất ở các dải phổ khác nhau. Dải nhìn thấy (Visible, VIS) nằm trong khoảng 400–700 nm và bao gồm các dải Blue (B) 450–520 nm, Green (G) 520–600 nm và Red (R) 630–690 nm. Dải cận hồng ngoại (Near-Infrared, NIR) trải từ 700–1400 nm, có đặc trưng phản xạ cao ở thực vật xanh do chlorophyll và quan trọng cho việc tính toán NDVI. Dải hồng ngoại sóng ngắn (Short-Wave Infrared, SWIR) nằm trong khoảng 1400–3000 nm, với SWIR1 (1550–1750 nm) và SWIR2 (2080–2350 nm), rất nhạy với độ ẩm của thực vật và đất, vì vậy thường dùng để đánh giá hàm lượng nước và các chỉ số liên quan đến sinh khối.
 
 > **[TODO: Cần chèn Hình ảnh tại đây]**
 > *Gợi ý:* Biểu đồ phổ điện từ với các dải phổ và vị trí các bands của Sentinel-2.
@@ -611,11 +330,7 @@ Mỗi loại đối tượng có chữ ký phổ đặc trưng - mẫu phản x�
 
 $$S = [\rho(\lambda_1), \rho(\lambda_2), ..., \rho(\lambda_n)]$$
 
-Ví dụ:
-
-- **Thực vật xanh:** Phản xạ thấp ở Red (hấp thụ bởi chlorophyll), phản xạ cao ở NIR
-- **Đất trống:** Phản xạ trung bình và tăng dần theo bước sóng
-- **Nước:** Phản xạ thấp ở tất cả các dải (đặc biệt NIR và SWIR)
+Ví dụ: thực vật xanh có đặc trưng phản xạ thấp ở dải Red do sự hấp thụ bởi chlorophyll và phản xạ cao ở dải NIR; đất trống có đặc trưng phản xạ trung bình và tăng dần theo bước sóng; trong khi nước có phản xạ thấp ở hầu hết các dải, đặc biệt là ở NIR và SWIR.
 
 > **[TODO: Cần chèn Biểu đồ tại đây]**
 > *Gợi ý:* Biểu đồ chữ ký phổ của các loại đối tượng: thực vật xanh, đất trống, nước, đô thị.
@@ -639,14 +354,11 @@ $$NDVI = \frac{NIR - Red}{NIR + Red}$$
 
 **Nguyên lý:**
 
-- Thực vật xanh: Hấp thụ mạnh Red (chlorophyll), phản xạ cao NIR (cấu trúc tế bào) → NDVI cao
-- Đất trống/nước: Phản xạ thấp cả Red và NIR → NDVI thấp
+Về nguyên lý, thực vật xanh hấp thụ mạnh ở dải Red do chlorophyll nhưng phản xạ mạnh ở dải NIR nhờ cấu trúc tế bào, dẫn tới giá trị NDVI cao; ngược lại, đất trống và nước có phản xạ thấp ở cả Red và NIR nên cho giá trị NDVI thấp.
 
 **Phạm vi giá trị:**
 
-- NDVI > 0.6: Thực vật xanh tốt (rừng rậm)
-- 0.2 < NDVI < 0.6: Thực vật thưa, cỏ
-- NDVI < 0.2: Đất trống, nước, đô thị
+Giá trị NDVI có thể diễn giải như sau: NDVI lớn hơn 0.6 thường biểu thị thực vật xanh tốt (rừng rậm), giá trị nằm giữa 0.2 và 0.6 cho thấy thực vật thưa hoặc cỏ, còn NDVI nhỏ hơn 0.2 thường liên quan đến đất trống, nước hoặc khu vực đô thị.
 
 **NBR (Normalized Burn Ratio):**
 
@@ -654,9 +366,7 @@ $$NBR = \frac{NIR - SWIR_2}{NIR + SWIR_2}$$
 
 **Nguyên lý:**
 
-- NIR: Phản xạ cao ở thực vật xanh
-- SWIR2: Nhạy với độ ẩm và vùng cháy
-- Vùng cháy: NIR giảm, SWIR2 tăng → NBR giảm mạnh
+Trong công thức NBR, NIR thường có phản xạ cao ở thực vật xanh còn SWIR2 nhạy cảm với độ ẩm và vùng cháy; do đó, trong trường hợp vùng cháy, NIR giảm trong khi SWIR2 tăng, dẫn tới giá trị NBR giảm mạnh.
 
 **NDMI (Normalized Difference Moisture Index):**
 
@@ -664,9 +374,7 @@ $$NDMI = \frac{NIR - SWIR_1}{NIR + SWIR_1}$$
 
 **Nguyên lý:**
 
-- SWIR1 (~1600 nm): Hấp thụ mạnh bởi nước
-- Độ ẩm thực vật cao → SWIR1 phản xạ thấp → NDMI cao
-- Stress hạn → NDMI giảm
+Đối với NDMI, SWIR1 (khoảng 1600 nm) bị hấp thụ mạnh bởi nước; do đó hàm lượng nước trong thực vật cao sẽ khiến SWIR1 phản xạ thấp và NDMI có giá trị cao, còn khi thực vật bị stress do hạn hán thì NDMI sẽ giảm.
 
 ### Phát hiện biến động rừng
 
@@ -676,9 +384,7 @@ $$\Delta Feature = Feature_{after} - Feature_{before}$$
 
 **Temporal Features:**
 
-- **Before features:** Trạng thái rừng tại thời điểm $t_1$
-- **After features:** Trạng thái rừng tại thời điểm $t_2$
-- **Delta features:** Biến đổi giữa hai thời điểm ($t_2 - t_1$)
+Temporal features bao gồm các 'before features' thể hiện trạng thái rừng tại thời điểm $t_1$, các 'after features' thể hiện trạng thái rừng tại thời điểm $t_2$, và các 'delta features' biểu diễn biến đổi giữa hai thời điểm ($t_2 - t_1$).
 
 **Ví dụ với NDVI:**
 
@@ -686,9 +392,7 @@ $$\Delta NDVI = NDVI_{after} - NDVI_{before}$$
 
 **Phân loại biến động:**
 
-- $\Delta NDVI << 0$ (giảm mạnh): Mất rừng (deforestation)
-- $\Delta NDVI \approx 0$: Rừng ổn định
-- $\Delta NDVI >> 0$ (tăng mạnh): Tái trồng rừng
+Các giá trị biến đổi NDVI có thể được diễn giải như sau: khi $\Delta NDVI$ giảm mạnh (rất nhỏ hơn 0) thì đó là dấu hiệu mất rừng (deforestation); khi $\Delta NDVI$ xấp xỉ 0 thì vùng được xem là rừng ổn định; và khi $\Delta NDVI$ tăng mạnh (rất lớn hơn 0) thì biểu hiện tái trồng rừng.
 
 ## Mạng Neural Tích chập (Convolutional Neural Networks)
 
@@ -700,13 +404,7 @@ Một neuron nhân tạo thực hiện phép biến đổi tuyến tính và hà
 
 $$y = f(\mathbf{w}^T \mathbf{x} + b)$$
 
-Trong đó:
-
-- $\mathbf{x} \in \mathbb{R}^n$: Input vector (n features)
-- $\mathbf{w} \in \mathbb{R}^n$: Weight vector
-- $b \in \mathbb{R}$: Bias
-- $f(\cdot)$: Activation function
-- $y$: Output
+Trong đó, $\mathbf{x} \in \mathbb{R}^n$ là input vector chứa $n$ feature, $\mathbf{w} \in \mathbb{R}^n$ là weight vector, $b \in \mathbb{R}$ là bias, $f(\cdot)$ là hàm kích hoạt và $y$ là output.
 
 > **[TODO: Cần chèn Sơ đồ tại đây]**
 > *Gợi ý:* Sơ đồ cấu trúc một perceptron với inputs, weights, bias, activation function và output.
@@ -730,21 +428,14 @@ $$\begin{aligned}
 
 $$(I * K)(i, j) = \sum_m \sum_n I(i+m, j+n) \times K(m, n)$$
 
-Trong đó:
-
-- $I$: Input feature map (height × width × channels)
-- $K$: Kernel/Filter ($k_h \times k_w \times$ channels)
-- $(i, j)$: Vị trí output
-- $(m, n)$: Vị trí trong kernel
+Trong đó, $I$ là input feature map với kích thước height × width × channels, $K$ là kernel hoặc filter có kích thước $k_h \times k_w$ trên các channels, $(i,j)$ là vị trí trong output và $(m,n)$ là vị trí tương ứng trong kernel.
 
 > **[TODO: Cần chèn Hình ảnh tại đây]**
 > *Gợi ý:* Hình minh họa phép tích chập 2D với kernel 3×3 trượt trên input feature map, tạo output feature map.
 
 **Ưu điểm của Convolution:**
 
-1. **Parameter sharing:** Cùng một kernel được áp dụng cho toàn bộ input
-2. **Translation invariance:** Nhận diện đặc trưng ở bất kỳ vị trí nào
-3. **Local connectivity:** Mỗi neuron chỉ kết nối với vùng local của input
+Convolution có nhiều ưu điểm, trong đó cơ chế chia sẻ tham số (parameter sharing) cho phép cùng một kernel áp dụng toàn bộ input để tiết kiệm tham số; tính bất biến theo dịch chuyển (translation invariance) cho phép nhận diện các đặc trưng bất kể vị trí xuất hiện; và local connectivity đảm bảo mỗi neuron chỉ kết nối với vùng cục bộ của input, giúp học các đặc trưng khu vực hiệu quả.
 
 ### Activation Functions
 
@@ -754,9 +445,7 @@ $$f(x) = \max(0, x) = \begin{cases} x & \text{if } x > 0 \\ 0 & \text{if } x \le
 
 **Ưu điểm:**
 
-- Tính toán nhanh (không có exp, log)
-- Giải quyết vanishing gradient problem
-- Sparse activation (nhiều neurons = 0)
+Hàm kích hoạt ReLU có các ưu điểm như tính toán nhanh do không yêu cầu các phép toán phức tạp (như exp hay log), góp phần giảm vấn đề vanishing gradient và cho sparse activation, tức là nhiều neuron có giá trị bằng 0, giúp mô hình trở nên hiệu quả hơn.
 
 **Softmax (cho Output Layer):**
 
@@ -764,9 +453,7 @@ $$\text{softmax}(\mathbf{x})_i = \frac{\exp(x_i)}{\sum_j \exp(x_j)}$$
 
 **Tính chất:**
 
-- Output là xác suất: $0 \leq \text{softmax}(\mathbf{x})_i \leq 1$
-- Tổng = 1: $\sum_i \text{softmax}(\mathbf{x})_i = 1$
-- Dùng cho multi-class classification
+Các đầu ra của hàm softmax là các xác suất thuộc khoảng [0, 1] và tổng các xác suất đó bằng 1, nên softmax được sử dụng phổ biến cho bài toán phân loại đa lớp (multi-class classification).
 
 ### Pooling Layers
 
@@ -774,36 +461,29 @@ $$\text{softmax}(\mathbf{x})_i = \frac{\exp(x_i)}{\sum_j \exp(x_j)}$$
 
 $$GAP(k) = \frac{1}{H \times W} \sum_i \sum_j I(i, j, k)$$
 
-- Giảm spatial dimensions về 1×1
-- Output: (1, 1, C) từ (H, W, C)
-- Ưu điểm: Không có parameters, giảm overfitting
+Global Average Pooling giảm kích thước không gian về 1×1, chuyển output từ (H, W, C) thành (1, 1, C), và vì không có tham số học nên phương pháp này giúp giảm nguy cơ overfitting.
 
 ### Batch Normalization
 
 **Batch Normalization Algorithm:**
 
-Với một mini-batch $B = \{x_1, x_2, ..., x_m\}$:
-
-**Step 1: Tính mean và variance của batch**
+Với một mini-batch $B = \{x_1, x_2, ..., x_m\}$, đầu tiên tính mean và variance của batch theo các công thức:
 
 $$\mu_B = \frac{1}{m} \sum_i x_i$$
 
 $$\sigma^2_B = \frac{1}{m} \sum_i (x_i - \mu_B)^2$$
 
-**Step 2: Normalize**
+Tiếp theo, normalize mỗi giá trị theo công thức:
 
 $$\hat{x}_i = \frac{x_i - \mu_B}{\sqrt{\sigma^2_B + \epsilon}}$$
 
-**Step 3: Scale and shift (learnable parameters)**
+Cuối cùng, áp dụng phép scale và shift bằng các tham số học được để đưa về dạng:
 
 $$y_i = \gamma \hat{x}_i + \beta$$
 
 **Ưu điểm:**
 
-- Tăng tốc training (có thể dùng learning rate cao hơn)
-- Giảm sensitivity với weight initialization
-- Có tác dụng regularization (tương tự dropout)
-- Ổn định gradient flow
+Batch Normalization có một số ưu điểm nổi bật: nó giúp tăng tốc độ huấn luyện (cho phép sử dụng learning rate cao hơn), giảm độ nhạy phụ thuộc vào khởi tạo trọng số, đóng vai trò như một phương pháp regularization tương tự dropout, và ổn định luồng gradient trong quá trình huấn luyện.
 
 ### Dropout
 
@@ -831,10 +511,7 @@ Phù hợp cho CNN vì features trong cùng channel có correlation không gian 
 
 $$L = -\sum_i y_i \log(\hat{y}_i)$$
 
-Trong đó:
-
-- $y_i$: True label (one-hot encoded)
-- $\hat{y}_i$: Predicted probability (from softmax)
+Trong đó, $y_i$ là nhãn thực tế (true label) được mã hóa one-hot và $\hat{y}_i$ là xác suất dự đoán xuất ra từ hàm softmax.
 
 **Weighted Cross-Entropy (Class Imbalance):**
 
@@ -852,12 +529,7 @@ v_t &= \beta_2 v_{t-1} + (1-\beta_2) (\nabla L(\theta_t))^2 \\
 \theta_{t+1} &= \theta_t - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
 \end{aligned}$$
 
-Hyperparameters:
-
-- $\beta_1 = 0.9$: Exponential decay for first moment
-- $\beta_2 = 0.999$: Exponential decay for second moment
-- $\epsilon = 10^{-8}$: Numerical stability
-- $\eta = 0.001$: Learning rate
+Hyperparameters: thường sử dụng $\beta_1 = 0.9$ cho decay của moment bậc nhất, $\beta_2 = 0.999$ cho decay của moment bậc hai, $\epsilon = 10^{-8}$ để ổn định tính toán số và $\eta = 0.001$ làm learning rate mặc định.
 
 **AdamW (Adam with Weight Decay):**
 
@@ -877,15 +549,11 @@ $$\mathbf{x}_i = [f_1, f_2, ..., f_n], \quad y_i = \text{classifier}(\mathbf{x}_
 
 **Ưu điểm:**
 
-- Đơn giản, dễ implement
-- Nhanh (parallel processing)
-- Phù hợp với ML truyền thống (RF, SVM)
+Phương pháp pixel-based có những ưu điểm như tính đơn giản và dễ triển khai, tốc độ xử lý nhanh nhờ khả năng xử lý song song (parallel processing), và phù hợp với các phương pháp Machine Learning truyền thống như Random Forest và SVM.
 
 **Nhược điểm:**
 
-- Không sử dụng spatial context
-- Salt-and-pepper noise trong kết quả
-- Bỏ qua relationships giữa neighboring pixels
+Tuy nhiên, phương pháp pixel-based cũng có nhược điểm là không tận dụng ngữ cảnh không gian (spatial context), dễ tạo ra nhiễu dạng salt-and-pepper trong kết quả phân loại, và bỏ qua các mối quan hệ giữa các pixel lân cận.
 
 **Patch-based Classification:**
 
@@ -896,9 +564,7 @@ $$y_i = \text{classifier}(P_i)$$
 
 **Ưu điểm:**
 
-- Sử dụng spatial context
-- Kết quả smooth hơn
-- Phù hợp với CNN (automatic feature learning)
+Ngược lại, phương pháp patch-based sử dụng ngữ cảnh không gian xung quanh mỗi pixel, cho kết quả phân loại mượt hơn và đặc biệt phù hợp với CNN nhờ khả năng tự động học các đặc trưng từ các patches.
 
 > **[TODO: Cần chèn Hình ảnh tại đây]**
 > *Gợi ý:* So sánh pixel-based vs patch-based classification với hình minh họa và kết quả phân loại mẫu.
@@ -919,8 +585,8 @@ Training và test samples gần nhau trong không gian có high correlation → 
 
 **Confusion Matrix:**
 
-|  | Predicted 0 | Predicted 1 |
-|---|-------------|-------------|
+|  | Pred 0 | Pred 1 | Pred 2 | Pred 3 | Total |
+|---|--------|--------|--------|--------|-------|
 | **Actual 0** | TN | FP |
 | **Actual 1** | FN | TP |
 
@@ -942,11 +608,7 @@ $$F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + 
 
 **ROC-AUC (Area Under ROC Curve):**
 
-- AUC = 1.0: Perfect classifier
-- AUC = 0.5: Random classifier
-- AUC > 0.9: Excellent
-- 0.8 < AUC < 0.9: Good
-- 0.7 < AUC < 0.8: Fair
+Các tiêu chuẩn diễn giải ROC-AUC thường được hiểu như sau: AUC = 1.0 biểu thị classifier hoàn hảo, AUC = 0.5 tương ứng với classifier ngẫu nhiên (random), AUC > 0.9 được xem là xuất sắc (excellent), trong khi các khoảng 0.8–0.9 được coi là tốt (good) và 0.7–0.8 được xếp là khá (fair).
 
 \newpage
 
@@ -958,23 +620,14 @@ $$F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + 
 
 **Vị trí địa lý:**
 
-Tỉnh Cà Mau nằm ở cực Nam Tổ Quốc, thuộc vùng Đồng bằng sông Cửu Long:
-
-- **Tọa độ địa lý:** 8°36' - 9°27' Bắc, 104°43' - 105°10' Đông
-- **Diện tích tự nhiên:** 5,331.7 km²
-- **Dân số:** ~1.2 triệu người (2020)
-- **Đường bờ biển:** 254 km
+Tỉnh Cà Mau nằm ở cực Nam Tổ Quốc, thuộc vùng Đồng bằng sông Cửu Long; tọa độ địa lý nằm trong khoảng 8°36'–9°27' Bắc và 104°43'–105°10' Đông, diện tích tự nhiên là khoảng 5,331.7 km², dân số ước tính khoảng 1.2 triệu người (2020), và chiều dài đường bờ biển khoảng 254 km.
 
 > **[TODO: Cần chèn Bản đồ tại đây]**
 > *Gợi ý:* Bản đồ vị trí khu vực nghiên cứu gồm: (a) Vị trí Cà Mau trong Việt Nam, (b) Ranh giới tỉnh Cà Mau, (c) Vùng rừng nghiên cứu với tọa độ UTM.
 
 **Vùng nghiên cứu:**
 
-Đồ án tập trung vào toàn bộ diện tích rừng trong ranh giới tỉnh Cà Mau:
-
-- **Diện tích nghiên cứu:** 162,469.25 hecta (1,624.69 km²)
-- **Kích thước raster:** 12,547 × 10,917 pixels (độ phân giải 10m)
-- **Hệ quy chiếu:** EPSG:32648 (WGS 84 / UTM Zone 48N)
+Đồ án tập trung vào toàn bộ diện tích rừng trong ranh giới tỉnh Cà Mau, với tổng diện tích nghiên cứu khoảng 162,469.25 hecta (tương đương 1,624.69 km²), kích thước raster là 12,547 × 10,917 pixels (ở độ phân giải 10m), và hệ quy chiếu được sử dụng là EPSG:32648 (WGS 84 / UTM Zone 48N).
 
 ### Dữ liệu viễn thám
 
@@ -1016,11 +669,7 @@ Tỉnh Cà Mau nằm ở cực Nam Tổ Quốc, thuộc vùng Đồng bằng sô
 
 **Quy trình xử lý:**
 
-1. **STEP 1: Data Loading & Validation** - Load dữ liệu Sentinel-1/2 và ground truth
-2. **STEP 2: Feature Extraction** - Trích xuất 27 features (21 S2 + 6 S1)
-3. **STEP 3: Patch Extraction** - Trích xuất patches 3×3 tại vị trí ground truth
-4. **STEP 4: Normalization** - Z-score standardization
-5. **STEP 5: Stratified Data Splitting** - 80% Train+Val (5-Fold CV), 20% Test
+Quy trình xử lý dữ liệu được thực hiện theo các bước liên tiếp: đầu tiên là Data Loading & Validation để tải và kiểm tra dữ liệu Sentinel-1/2 cùng ground truth; tiếp theo là Feature Extraction để xây dựng 27 features (21 từ Sentinel-2 và 6 từ Sentinel-1); bước tiếp theo là Patch Extraction, trích xuất các patches kích thước 3×3 tại các vị trí ground truth; sau đó tiến hành Normalization bằng phương pháp Z-score; và cuối cùng áp dụng Stratified Data Splitting với tỷ lệ 80% cho Train+Val (được đánh giá bằng 5-Fold Cross Validation) và 20% cho Test cố định.
 
 ### Feature Extraction chi tiết
 
@@ -1154,11 +803,7 @@ Step 4: Đánh giá Final Model trên 20% Test Set
 
 ### Test Set Evaluation
 
-Mô hình được đánh giá trên 20% fixed test set (526 mẫu) với các metrics:
-
-- Accuracy, Precision, Recall, F1-Score
-- ROC-AUC (One-vs-Rest)
-- Confusion Matrix
+Mô hình được đánh giá trên 20% fixed test set (526 mẫu) thông qua các metrics bao gồm Accuracy, Precision, Recall, F1-Score, ROC-AUC (One-vs-Rest) và Confusion Matrix.
 
 ### Full Raster Prediction
 
@@ -1172,30 +817,14 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 
 ### Cấu hình thực nghiệm
 
-**Phần cứng:**
+**Phần cứng và phần mềm:**
 
-- GPU: NVIDIA GeForce RTX 4080 (16GB VRAM)
-- RAM: 16GB+
-- Storage: SSD cho tốc độ I/O cao
-
-**Phần mềm:**
-
-- Python: 3.8+
-- PyTorch: 2.0+ với CUDA support
-- GDAL: 3.4+ cho xử lý dữ liệu không gian
-- NumPy, scikit-learn, pandas cho xử lý dữ liệu
+Môi trường thí nghiệm gồm phần cứng như GPU NVIDIA GeForce RTX 4080 (16GB VRAM), bộ nhớ RAM 16GB trở lên và ổ lưu trữ SSD nhằm đảm bảo tốc độ I/O cao; về phần mềm, hệ thống sử dụng Python 3.8 trở lên cùng PyTorch 2.0+ có hỗ trợ CUDA để huấn luyện mô hình, GDAL 3.4+ cho xử lý dữ liệu không gian và các thư viện khoa học dữ liệu như NumPy, scikit-learn và pandas để xử lý và phân tích dữ liệu.
 
 **Dữ liệu đầu vào:**
 
-- Tổng số mẫu ground truth: 2,630 điểm
-- Phân bố lớp:
-  - Lớp 0 (Rừng ổn định): 656 điểm (24.94%)
-  - Lớp 1 (Mất rừng): 650 điểm (24.71%)
-  - Lớp 2 (Phi rừng): 664 điểm (25.25%)
-  - Lớp 3 (Phục hồi rừng): 660 điểm (25.10%)
-- Chia tập dữ liệu:
-  - Train+Val (cho 5-Fold CV): 2,104 patches (80.0%)
-  - Test (fixed, không đụng trong training): 526 patches (20.0%)
+Tổng số mẫu ground truth là 2,630 điểm, trong đó phân bố lớp gần như cân bằng: Lớp 0 (Rừng ổn định) 656 điểm (24.94%), Lớp 1 (Mất rừng) 650 điểm (24.71%), Lớp 2 (Phi rừng) 664 điểm (25.25%) và Lớp 3 (Phục hồi rừng) 660 điểm (25.10%).
+Việc chia tập dữ liệu được thực hiện như sau: 80% dữ liệu (2,104 patches) được dành cho Train+Val để thực hiện 5-Fold Cross Validation, còn 20% dữ liệu (526 patches) được giữ lại làm fixed test set và không tham gia quá trình huấn luyện.
 
 ### Thời gian thực thi
 
@@ -1226,9 +855,7 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 
 **Phân tích kết quả CV:**
 
-1. **Consistency cao**: Độ lệch chuẩn chỉ 0.28% cho thấy mô hình ổn định trên các folds khác nhau
-2. **Accuracy đồng đều**: Tất cả 5 folds đều đạt accuracy > 97.8%
-3. **Không overfitting**: CV accuracy phản ánh đúng khả năng tổng quát hóa của mô hình
+Kết quả 5-Fold Cross Validation cho thấy sự ổn định của mô hình: độ lệch chuẩn của accuracy chỉ khoảng 0.28%, chính xác từng fold đều vượt ngưỡng 97.8%, và điều này cho thấy không có dấu hiệu overfitting nghiêm trọng, tức CV accuracy phản ánh tốt khả năng tổng quát hóa của mô hình.
 
 > **[TODO: Cần chèn Biểu đồ tại đây]**
 > *Gợi ý:* Biểu đồ cột so sánh accuracy của 5 folds với đường trung bình và error bars.
@@ -1268,14 +895,7 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 
 **Phân tích lỗi phân loại:**
 
-- Tổng cộng chỉ có **6/526 mẫu** bị phân loại sai (1.14% error rate)
-- **Lỗi 1-2**: 2 mẫu lớp 0 (Rừng ổn định) bị nhầm thành lớp 1 (Mất rừng)
-- **Lỗi 3-6**: 4 mẫu lớp 1 (Mất rừng) bị nhầm thành lớp 0 (Rừng ổn định)
-
-**Đánh giá:**
-
-- Lớp 2 (Phi rừng) và Lớp 3 (Phục hồi rừng) được phân loại **hoàn hảo** (100%)
-- Confusion chỉ xảy ra giữa Lớp 0 ↔ Lớp 1 (Rừng ổn định ↔ Mất rừng)
+Tổng cộng chỉ có 6/526 mẫu bị phân loại sai, tương đương tỷ lệ lỗi 1.14%. Trong đó, hai mẫu thuộc Lớp 0 (Rừng ổn định) bị nhầm thành Lớp 1 (Mất rừng) và bốn mẫu thuộc Lớp 1 (Mất rừng) bị nhầm thành Lớp 0 (Rừng ổn định). Đánh giá chi tiết cho thấy Lớp 2 (Phi rừng) và Lớp 3 (Phục hồi rừng) được phân loại hoàn hảo với độ chính xác 100%; mọi nhầm lẫn chủ yếu xảy ra giữa hai lớp Lớp 0 và Lớp 1.
 
 ### Đường cong ROC
 
@@ -1339,9 +959,7 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 
 **So sánh lỗi phân loại:**
 
-- **CNN**: 6/526 mẫu sai (1.14% error rate)
-- **RF**: 9/526 mẫu sai (1.71% error rate)
-- CNN giảm error rate **33.3%** so với RF
+Trên tập test, CNN chỉ sai 6/526 mẫu (tương ứng tỷ lệ lỗi 1.14%) trong khi Random Forest sai 9/526 mẫu (tỷ lệ lỗi 1.71%), tương đương CNN giảm error rate khoảng 33.3% so với Random Forest.
 
 > **[TODO: Cần chèn Biểu đồ tại đây]**
 > *Gợi ý:* Biểu đồ cột so sánh các metrics giữa CNN và Random Forest.
@@ -1350,16 +968,11 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 
 **CNN thắng về:**
 
-- Accuracy: 98.86% vs 98.23% (+0.63%)
-- Map quality: Bản đồ mượt mà, ít noise
-- Spatial context: Tận dụng neighboring pixels
-- Training time: Nhanh hơn 6.8×
+CNN thể hiện ưu thế ở một số điểm chính: độ chính xác cao hơn (98.86% so với 98.23%, tương ứng tăng +0.63%), chất lượng bản đồ mượt mà hơn và ít nhiễu, khả năng tận dụng ngữ cảnh không gian (neighboring pixels), và thời gian huấn luyện nhanh hơn so với baseline.
 
 **Random Forest thắng về:**
 
-- Prediction time: Nhanh hơn 3.6×
-- Interpretability: Feature importance rõ ràng
-- Simplicity: Dễ implement, không cần GPU
+Ngược lại, Random Forest có lợi thế về tốc độ suy luận (prediction time nhanh hơn khoảng 3.6×), tính khả giải thích cao hơn nhờ khả năng cung cấp feature importance, và tính đơn giản trong triển khai do không đòi hỏi GPU.
 
 ## Ablation Studies
 
@@ -1399,16 +1012,7 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 
 ### Phân tích 6 mẫu sai trên Test Set
 
-CNN chỉ sai **6/526 mẫu** trên test set (1.14% error rate):
-
-- **2 mẫu**: Lớp 0 (Rừng ổn định) bị nhầm thành Lớp 1 (Mất rừng)
-- **4 mẫu**: Lớp 1 (Mất rừng) bị nhầm thành Lớp 0 (Rừng ổn định)
-
-**Patterns:**
-
-- Lớp 2 (Phi rừng): Hoàn hảo (100%)
-- Lớp 3 (Phục hồi rừng): Hoàn hảo (100%)
-- Confusion CHỈ xảy ra giữa Lớp 0 và Lớp 1
+CNN chỉ sai 6/526 mẫu trên test set, tương đương tỷ lệ lỗi 1.14%. Trong đó, hai mẫu thuộc Lớp 0 (Rừng ổn định) bị nhầm sang Lớp 1 (Mất rừng) và bốn mẫu thuộc Lớp 1 bị nhầm sang Lớp 0. Các pattern cho thấy Lớp 2 (Phi rừng) và Lớp 3 (Phục hồi rừng) được phân loại hoàn hảo (100%), và mọi nhầm lẫn chỉ xuất hiện giữa Lớp 0 và Lớp 1.
 
 > **[TODO: Cần chèn Hình ảnh tại đây]**
 > *Gợi ý:* Hình ảnh minh họa 2-3 mẫu bị phân loại sai với ảnh Sentinel-2, ground truth, và predicted class.
@@ -1417,11 +1021,7 @@ CNN chỉ sai **6/526 mẫu** trên test set (1.14% error rate):
 
 ### Điểm mạnh của phương pháp
 
-1. **Accuracy cao (98.86%)**: ROC-AUC 99.98%
-2. **Spatial context awareness**: 3×3 patch size
-3. **Robust và generalizable**: CV 98.15% vs Test 98.86%
-4. **Automatic feature learning**: Không cần hand-crafted features
-5. **Efficient training**: ~15s cho Final Model
+Những điểm nổi bật của mô hình bao gồm độ chính xác cao (test accuracy 98.86% với ROC-AUC 99.98%), khả năng khai thác ngữ cảnh không gian nhờ patch size 3×3, tính robust và khả năng tổng quát hóa tốt thể hiện qua CV 98.15% và test 98.86%, không cần trích xuất đặc trưng thủ công nhờ khả năng tự động học đặc trưng, và thời gian huấn luyện hiệu quả (khoảng 15 giây cho Final Model trên cấu hình thực nghiệm được sử dụng).
 
 ### So sánh với các nghiên cứu khác
 
@@ -1439,17 +1039,11 @@ CNN chỉ sai **6/526 mẫu** trên test set (1.14% error rate):
 
 **Kết quả chính:**
 
-- **5-Fold CV accuracy: 98.15% ± 0.28%** → Mô hình ổn định
-- **Test accuracy: 98.86%** với ROC-AUC 99.98%
-- **Lớp "Phi rừng" và "Phục hồi rừng"**: 100% precision và recall
-- **Chỉ 6/526 mẫu** bị phân loại sai (error rate 1.14%)
+Kết quả quan trọng bao gồm CV accuracy 5-Fold trung bình 98.15% ± 0.28% cho thấy độ ổn định, test accuracy đạt 98.86% với ROC-AUC 99.98%, hai lớp 'Phi rừng' và 'Phục hồi rừng' có precision và recall 100%, và tổng cộng chỉ có 6/526 mẫu bị phân loại sai (tương ứng 1.14% error rate).
 
 **Kết quả phân loại vùng nghiên cứu (162,468.50 ha):**
 
-- Rừng ổn định: 74.30% (120,716.91 ha)
-- Mất rừng: 4.48% (7,282.15 ha)
-- Phi rừng: 18.17% (29,528.54 ha)
-- Phục hồi rừng: 3.04% (4,940.90 ha)
+Kết quả phân bố diện tích cho thấy rừng ổn định chiếm 74.30% (120,716.91 ha), mất rừng chiếm khoảng 4.48% tương ứng 7,282.15 ha, diện tích thuộc lớp phi rừng chiếm 18.17% (~29,528.54 ha), và diện tích phục hồi rừng chiếm 3.04% (~4,940.90 ha).
 
 \newpage
 
@@ -1457,79 +1051,19 @@ CNN chỉ sai **6/526 mẫu** trên test set (1.14% error rate):
 
 ## Kết luận
 
-Đồ án đã hoàn thành các mục tiêu đề ra với những kết quả chính sau:
-
-**1. Xây dựng thành công bộ dữ liệu huấn luyện:**
-
-- Thu thập và xử lý dữ liệu Sentinel-1/2 hai thời kỳ (01/2024 và 02/2025)
-- Tạo feature stack 27 chiều kết hợp SAR và Optical
-- Thu thập 2,630 điểm ground truth với 4 lớp phân loại cân bằng
-
-**2. Thiết kế kiến trúc CNN phù hợp:**
-
-- Kiến trúc lightweight với 36,676 tham số
-- Áp dụng regularization hiệu quả (BatchNorm, Dropout 0.7, Weight Decay)
-- Tối ưu cho small dataset (~2,600 mẫu)
-
-**3. Đánh giá khoa học với 5-Fold Cross Validation:**
-
-- CV accuracy: 98.15% ± 0.28% → Mô hình ổn định
-- Test accuracy: 98.86% → Khả năng tổng quát hóa tốt
-- ROC-AUC: 99.98% → Khả năng phân biệt xuất sắc
-
-**4. So sánh định lượng CNN vs Random Forest:**
-
-- CNN vượt trội về accuracy (+0.63%)
-- CNN giảm error rate 33.3%
-- CNN tạo bản đồ mượt mà hơn nhờ spatial context
-
-**5. Ứng dụng thực tế:**
-
-- Phân loại toàn vùng rừng Cà Mau (162,469 ha)
-- Phát hiện 7,282 ha mất rừng (4.48%)
-- Phát hiện 4,941 ha phục hồi rừng (3.04%)
+Đồ án đã hoàn thành các mục tiêu đề ra và đạt được một số kết quả chính. Thứ nhất, nhóm nghiên cứu đã xây dựng thành công bộ dữ liệu huấn luyện bằng việc thu thập, tiền xử lý hai kỳ dữ liệu Sentinel-1/2 (01/2024 và 02/2025) và tạo feature stack 27 chiều (kết hợp SAR và Optical) cùng với việc thu thập 2,630 điểm ground truth cho 4 lớp phân loại; thứ hai, kiến trúc CNN nhẹ với khoảng 36,676 tham số được thiết kế và áp dụng các kỹ thuật regularization hiệu quả (BatchNorm, Dropout 0.7, Weight Decay), phù hợp cho bộ dữ liệu nhỏ khoảng 2,600 mẫu; thứ ba, đánh giá khoa học bằng 5-Fold Stratified Cross Validation cho kết quả CV accuracy 98.15% ± 0.28% (mô hình ổn định), test accuracy 98.86% và ROC-AUC 99.98% (khả năng phân biệt xuất sắc); thứ tư, so sánh định lượng với Random Forest cho thấy CNN vượt trội về accuracy (+0.63%) và giảm error rate 33.3%, đồng thời tạo bản đồ mượt hơn nhờ khai thác ngữ cảnh không gian; và cuối cùng, về mặt ứng dụng thực tế, mô hình đã được áp dụng để phân loại toàn vùng rừng Cà Mau (162,469 ha), phát hiện 7,282 ha mất rừng (4.48%) và 4,941 ha phục hồi rừng (3.04%).
 
 ## Đóng góp khoa học
 
-1. **Methodological contributions:**
-   - Áp dụng 5-Fold Stratified CV để đánh giá độ ổn định mô hình
-   - Chứng minh hiệu quả của 3×3 patches cho deforestation detection
-   - Ablation studies toàn diện về patch size, data sources, regularization
-
-2. **Application contributions:**
-   - Nghiên cứu đầu tiên áp dụng CNN cho phát hiện biến động rừng tại Cà Mau
-   - Kết hợp S1 SAR + S2 optical hiệu quả
-   - Dataset ground truth chất lượng cao (2,630 điểm, 4 lớp)
+Về mặt phương pháp, đồ án có một số đóng góp quan trọng: áp dụng 5-Fold Stratified Cross Validation nhằm đánh giá độ ổn định của mô hình, chứng minh hiệu quả sử dụng patches 3×3 cho bài toán phát hiện mất rừng, và tiến hành các thí nghiệm ablation toàn diện để khảo sát ảnh hưởng của kích thước patch, nguồn dữ liệu và kỹ thuật regularization. Về mặt ứng dụng, đồ án là một trong những nghiên cứu đầu tiên áp dụng CNN cho phát hiện biến động rừng tại Cà Mau, chứng minh hiệu quả trong việc kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2), đồng thời đóng góp một bộ ground truth chất lượng cao gồm 2,630 điểm với 4 lớp phân loại.
 
 ## Hạn chế
 
-1. **Prediction time dài:** 14.83 phút để predict full raster (16.2M valid pixels)
-2. **Interpretability hạn chế:** Black-box model, khó giải thích
-3. **Dataset size nhỏ:** Chỉ 2,630 ground truth points
-4. **Bi-temporal analysis:** Chưa khai thác time series đầy đủ
+Đồ án vẫn tồn tại các hạn chế cần lưu ý, gồm: thời gian dự đoán toàn bộ raster còn dài (khoảng 14.83 phút cho 16.2 triệu pixel hợp lệ), khả năng giải thích của mô hình hạn chế do tính chất black-box, quy mô ground truth còn nhỏ (chỉ 2,630 điểm), và việc phân tích chỉ dừng lại ở phân tích bi-temporal mà chưa khai thác chuỗi thời gian đầy đủ.
 
 ## Kiến nghị
 
-**Hướng phát triển:**
-
-1. **Mở rộng temporal analysis:**
-   - Sử dụng time series thay vì bi-temporal
-   - Áp dụng LSTM hoặc Transformer cho temporal patterns
-
-2. **Cải thiện model:**
-   - Thử nghiệm attention mechanisms
-   - Transfer learning từ pretrained models
-   - Ensemble methods
-
-3. **Ứng dụng thực tế:**
-   - Triển khai hệ thống giám sát near-real-time
-   - Mở rộng sang các tỉnh khác trong ĐBSCL
-   - Tích hợp với hệ thống GIS của cơ quan quản lý rừng
-
-4. **Thu thập dữ liệu:**
-   - Khảo sát thực địa để validate kết quả
-   - Mở rộng ground truth dataset
-   - Thu thập dữ liệu multi-temporal
+Đề xuất cho các hướng phát triển tiếp theo gồm: mở rộng phân tích temporal bằng cách sử dụng chuỗi thời gian thay vì chỉ phân tích hai thời kỳ (bi-temporal) và áp dụng các mô hình như LSTM hoặc Transformer để khai thác các mẫu temporal; cải thiện mô hình bằng thử nghiệm cơ chế attention, tận dụng transfer learning từ các mô hình pretrained và áp dụng ensemble methods nhằm tăng độ chính xác và độ ổn định; về ứng dụng thực tế, khuyến nghị triển khai hệ thống giám sát near-real-time, mở rộng phạm vi áp dụng sang các tỉnh trong vùng Đồng bằng sông Cửu Long và tích hợp kết quả với hệ thống GIS của cơ quan quản lý rừng; cuối cùng, cần tăng cường thu thập dữ liệu bằng khảo sát thực địa để validate kết quả, mở rộng bộ ground truth và thu thập thêm dữ liệu multi-temporal để nâng cao khả năng khai thác chuỗi thời gian.
 
 \newpage
 
