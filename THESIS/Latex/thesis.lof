@@ -1,0 +1,23 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Ví dụ chương trình đa luồng đơn giản}}{7}{figure.caption.3}%
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Kiến trúc của cây cú pháp trừu tượng}}{13}{figure.caption.4}%
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Các thành phần cơ bản trong đồ thị luồng điều khiển}}{13}{figure.caption.5}%
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Các cấu trúc điều khiển cơ bản trong đồ thị luồng điều khiển}}{14}{figure.caption.6}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Kiến trúc tổng quan của phương pháp kiểm chứng chương trình đa luồng dựa trên kỹ thuật thực thi tượng trưng}}{17}{figure.caption.7}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Chương trình đa luồng được mã hoá}}{24}{figure.caption.10}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Cây thực thi tượng trưng của chương trình đa luồng}}{25}{figure.caption.11}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Các biến đọc có thể được gán bởi một biến ghi ngay trước nó trong cùng một luồng}}{31}{figure.caption.13}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Các biến đọc cũng có thể được gán bởi một biến ghi trong một luồng khác bất kỳ}}{31}{figure.caption.14}%
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Biểu diễn ràng buộc giải quyết xung đột đọc - ghi 1}}{35}{figure.caption.17}%
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Biểu diễn ràng buộc giải quyết xung đột đọc - ghi 2}}{36}{figure.caption.18}%
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Biểu diễn ràng buộc giải quyết xung đột đọc - ghi 3}}{36}{figure.caption.19}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Kiến trúc tổng quan của công cụ}}{41}{figure.caption.22}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Ví dụ về mã nguồn trước khi tiền xử lý}}{43}{figure.caption.23}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Ví dụ về mã nguồn sau khi tiền xử lý}}{44}{figure.caption.24}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Ví dụ về tệp XML chứa thông tin về điều kiện khẳng định}}{47}{figure.caption.25}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Một tệp YAML chứa thông tin về kết quả kì vọng của bài toán \textit {triangular-1}}}{49}{figure.caption.26}%
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Kết quả kiểm chứng của một bài toán}}{52}{figure.caption.28}%
+\addvspace {10\p@ }

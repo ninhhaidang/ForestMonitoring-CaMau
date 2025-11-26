@@ -1,0 +1,57 @@
+\section{Phương pháp mô phỏng số động lực học chất lỏng và phần mềm thương mại ANSYS Fluent}
+
+\subsection{Phương pháp mô phỏng số động lực học chất lỏng (CFD)}
+
+Phương pháp mô phỏng số động lực học chất lỏng (CFD) là một lĩnh vực khoa học sử dụng máy tính để dự đoán dòng chảy của chất lỏng và khí dựa trên các phương trình bảo toàn khối lượng, động lượng và năng lượng. CFD đóng vai trò quan trọng trong việc phân tích và hiểu các hiện tượng khí động học, từ những ứng dụng cơ bản như sự truyền âm thanh trong không khí, cho đến những ứng dụng phức tạp như tạo lực nâng cho máy bay. Vì chất lỏng hiện diện khắp nơi trong đời sống, việc nghiên cứu và dự đoán dòng chảy của chúng mang lại nhiều lợi ích thiết thực, từ việc cải thiện tính hiệu quả trong các thiết kế kỹ thuật cho đến tối ưu hóa hiệu suất của các hệ thống sử dụng năng lượng.\cite{ansys_what_is_CFD}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{img/chapter2/CFD Application .jpg}
+    \caption{Một số ứng dụng của phương pháp mô phỏng số động lực học chất lỏng.\cite{cfdflowengineering_scope_of_CFD}}
+    \label{fig:enter-label}
+\end{figure} 
+
+Trong lĩnh vực nghiên cứu tua-bin gió Savonius, CFD là một công cụ quan trọng để mô phỏng và phân tích các đặc tính dòng chảy qua tua-bin, bao gồm sự phân bố áp suất, vận tốc và xoáy khí động học. Do các tua-bin Savonius có thiết kế cánh dạng hình trụ, dòng khí đi qua chúng có tính chất phức tạp, với các vùng tách dòng và xoáy mạnh. Nhờ sử dụng CFD, các nhà nghiên cứu có thể nắm bắt được sự tương tác giữa các yếu tố này, từ đó đánh giá hiệu suất hoạt động của tua-bin dưới các điều kiện gió khác nhau mà không cần thực hiện quá nhiều thử nghiệm thực nghiệm.
+
+Lợi ích của việc sử dụng CFD trong nghiên cứu và thiết kế tua-bin gió Savonius là rất đáng kể. Trước hết, CFD cho phép phân tích chi tiết các hiện tượng khí động học mà khó có thể quan sát hoặc đo đạc trực tiếp trong môi trường thực tế. Quá trình mô phỏng số cung cấp cái nhìn rõ ràng về cách các biến đổi về hình dạng và tham số của cánh quạt ảnh hưởng đến hiệu suất của tua-bin. Ngoài ra, CFD giúp tối ưu hóa thiết kế tua-bin thông qua việc thử nghiệm các giải pháp khác nhau một cách nhanh chóng và tiết kiệm chi phí, so với việc chế tạo và kiểm tra các mô hình vật lý. Điều này đặc biệt hữu ích khi nghiên cứu các biên dạng cánh airfoil mới hoặc cải tiến kết cấu của tua-bin để nâng cao hiệu suất khai thác năng lượng.
+
+Trong việc giải các bài toán về dòng chảy chất lỏng trên máy tính, có nhiều phương pháp khác nhau để tiếp cận vấn đề. Trước khi bắt đầu, cần xác định phương pháp sẽ sử dụng ở mức độ tổng quan, tức là xác định những phương trình cơ bản nào sẽ được giải quyết, chẳng hạn như các phương trình bảo toàn khối lượng, động lượng và năng lượng. Lựa chọn này sẽ thu hẹp các phương pháp tính toán có thể áp dụng, và thông thường một cách tiếp cận theo lý thuyết liên tục (continuum approach) sẽ được chọn, vì nó phù hợp với nhiều ứng dụng thực tiễn trong mô phỏng động lực học chất lỏng.\cite{ansys_what_is_CFD}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{img/chapter2/CFD steps.jpg}
+    \caption{Quy trình thực hiện mô phỏng CFD.\cite{cfd_overview}}
+    \label{fig:enter-label} 
+\end{figure}
+
+Khi sử dụng cách tiếp cận theo lý thuyết liên tục, quá trình mô phỏng thường bao gồm ba bước chính. Bước đầu tiên là xác định miền dòng chảy, tức là vùng không gian liên tục nơi dòng chất lỏng cần được tính toán. Miền này thường được thể hiện dưới dạng một mô hình CAD (Computer-Aided Design), giúp hình dung và định nghĩa các biên giới của dòng chảy.
+
+Sau khi miền dòng chảy đã được xác định, bước thứ hai là áp dụng lưới (mesh) để chia miền này thành các ô nhỏ, mỗi ô đại diện cho một phần tử nhỏ của miền dòng chảy. Quá trình phân lưới này là bước quan trọng nhằm chuyển miền liên tục thành các tế bào rời rạc có kích thước và hình dạng xác định rõ ràng, giúp chuẩn bị cho việc giải các phương trình dòng chảy.
+
+Bước cuối cùng là giải phiên bản rời rạc hóa của các phương trình dòng chảy cơ bản trong từng ô lưới. Quá trình này được thực hiện trên máy tính và dựa vào các thuật toán số để tìm ra các giá trị vận tốc, áp suất, nhiệt độ, và các thông số khác tại mỗi ô lưới. Đối với các bài toán phức tạp hoặc cần độ chính xác cao, việc sử dụng máy tính hiệu năng cao (HPC) có thể cần thiết, trong đó các ô lưới sẽ được phân chia cho nhiều máy tính khác nhau để xử lý song song, giúp rút ngắn thời gian tính toán và nâng cao hiệu quả mô phỏng.\cite{ansys_what_is_CFD}
+
+Nhờ các bước này, CFD có thể tái tạo và dự đoán chính xác các hiện tượng khí động học trong các ứng dụng khác nhau, bao gồm thiết kế tua-bin gió, phân tích lực nâng của máy bay, hoặc mô phỏng dòng chảy trong các hệ thống kỹ thuật phức tạp. Việc tối ưu hóa quá trình phân lưới và lựa chọn phương pháp số thích hợp là yếu tố quyết định đến độ chính xác và hiệu suất của mô phỏng CFD.
+
+\subsection{Phần mềm thương mại ANSYS Fluent}
+
+ANSYS Fluent là một phần mềm mô phỏng động lực học chất lỏng (CFD) đa năng, được sử dụng rộng rãi trong nghiên cứu và phát triển các ứng dụng liên quan đến dòng chảy chất lỏng, truyền nhiệt và khối lượng, cũng như các phản ứng hóa học. Với tính năng vượt trội và giao diện thân thiện, Fluent cho phép người dùng tiến hành toàn bộ quy trình mô phỏng CFD từ giai đoạn tiền xử lý đến hậu xử lý trong một môi trường làm việc duy nhất, giúp tối ưu hóa và rút ngắn thời gian thực hiện các bước chuẩn bị, giải quyết, và phân tích kết quả.\cite{ansys_fluent}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{img/chapter2/Ansys Fluent logo.png}
+    \caption{Biểu tượng phần mềm ANSYS Fluent.}
+    \label{fig:enter-label}
+\end{figure}
+
+Phần mềm Fluent nổi bật với các khả năng mô hình hóa vật lý tiên tiến, đáp ứng được những yêu cầu phức tạp trong nhiều lĩnh vực kỹ thuật khác nhau. Các tính năng này bao gồm mô hình hóa dòng chảy nhiễu loạn, dòng chảy đơn pha và đa pha, quá trình cháy, tương tác giữa chất lỏng và cấu trúc, và thậm chí là mô phỏng pin.\cite{ansys_fluent} Với những công cụ mô phỏng đa dạng và mạnh mẽ, Fluent cho phép người dùng giải quyết các bài toán từ đơn giản đến phức tạp, đồng thời cung cấp cái nhìn sâu sắc về các hiện tượng vật lý xảy ra trong các hệ thống kỹ thuật.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{img/chapter2/Ansys fluent window.png}
+    \caption{Giao diện phần mềm ANSYS Fluent.} 
+    \label{fig:enter-label}
+\end{figure}
+
+Một trong những lợi thế lớn của ANSYS Fluent là khả năng mở rộng hiệu quả trên các máy tính hiệu năng cao (HPC). Với tính năng này, các mô hình lớn và phức tạp có thể dễ dàng được xử lý trên nhiều bộ xử lý, bao gồm cả các đơn vị xử lý trung tâm (CPU) và các đơn vị xử lý đồ họa (GPU).\cite{ansys_fluent} Điều này đặc biệt hữu ích khi giải quyết các bài toán CFD đòi hỏi độ chính xác cao và khối lượng tính toán lớn, cho phép giảm đáng kể thời gian giải và tối ưu hóa chi phí tính toán. Fluent hỗ trợ nhiều lựa chọn bộ giải khác nhau, bao gồm bộ giải dựa trên áp suất và bộ giải dựa trên mật độ, phù hợp với các loại dòng chảy từ tốc độ thấp đến siêu thanh. Đặc biệt, bộ giải dựa trên áp suất có thể chạy trên GPU, giúp nâng cao hiệu suất xử lý trong các ứng dụng yêu cầu tính toán nhanh.
+
+Nhờ những tính năng và công nghệ tiên tiến, ANSYS Fluent không chỉ là một công cụ mạnh mẽ để phân tích các hiện tượng khí động học và nhiệt động học phức tạp, mà còn giúp các kỹ sư và nhà nghiên cứu tối ưu hóa thiết kế, cải tiến hiệu suất hệ thống và giải quyết các vấn đề kỹ thuật khó khăn trong các lĩnh vực như hàng không vũ trụ, ô tô, năng lượng và hóa chất. Fluent đóng vai trò quan trọng trong việc cải thiện chất lượng sản phẩm và hiệu suất vận hành, đồng thời mang lại hiệu quả kinh tế cao trong quá trình nghiên cứu và phát triển công nghệ mới.

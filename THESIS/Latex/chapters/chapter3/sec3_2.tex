@@ -1,0 +1,13 @@
+\section{Chia lưới và rời rạc hoá mô hình tính toán}
+
+Trong quá trình mô phỏng động lực học chất lỏng bằng phương pháp số, chia lưới là một bước quan trọng nhằm chuyển miền tính toán liên tục thành các ô nhỏ để máy tính có thể giải được các phương trình dòng chảy. Đối với mô hình tua-bin gió Savonius, cấu trúc lưới được thiết kế như trong Hình \ref{fig:mesh}, sao cho phù hợp với các vùng có tính chất dòng chảy khác nhau để đảm bảo độ chính xác cao và hiệu quả tính toán.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{img/chapter3/mesh.jpg}
+    \caption{Lưới mô phỏng được tạo cho biên dạng Fx.}
+    \label{fig:mesh}
+\end{figure}
+Với vùng quay, do dòng chảy phức tạp và chuyển động của rô-to, lưới phi cấu trúc được sử dụng. Loại lưới này có khả năng mô tả tốt hơn sự biến đổi của dòng chảy tại các mặt phân cách và trong các khu vực có chuyển động trượt của lưới. Để đảm bảo sự chính xác của mô phỏng, lưới được làm mịn đặc biệt ở khu vực quanh cánh tua-bin và phía sau rô-to, nơi mà dòng chảy xoáy và hiện tượng wake diễn ra rõ ràng. Việc này giúp giảm thiểu sai số trong các phép tính và nắm bắt đầy đủ các hiện tượng dòng chảy.
+
+Ngược lại, trong vùng tĩnh, lưới có cấu trúc được áp dụng. Loại lưới này giúp tăng tốc độ tính toán và đảm bảo độ chính xác cao hơn trong các vùng có dòng chảy ổn định. Ở khu vực gần bề mặt cánh tua-bin, lớp lưới được thiết kế với độ dày nhỏ, dao động từ $1\times10^{-5}$ m đến $3\times10^{-5}$ m, nhằm đảm bảo mô phỏng chính xác dòng chảy trong lớp biên. Việc chuyển tiếp giữa các lớp lưới diễn ra mượt mà, với tổng cộng 20 lớp lưới biên để đảm bảo giá trị $y^+$ luôn nằm dưới 1. Đây là một yêu cầu quan trọng để xác định chính xác tác động của dòng chảy trong vùng lớp biên.

@@ -1,0 +1,139 @@
+\documentclass[a4paper,13pt]{report}
+
+% Encoding
+\usepackage[utf8]{vietnam}
+\usepackage{amsmath, amsfonts, amssymb}
+
+% set font, font size and spacing
+\usepackage{mathptmx}
+\usepackage{scrextend}
+\changefontsizes{13pt}
+\renewcommand{\baselinestretch}{1.3}
+
+% Hình ảnh và đồ họa
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows, positioning, arrows.meta, calc, fit}
+\usepackage[justification=centering]{caption}
+
+% Định dạng bảng và caption
+\usepackage{booktabs}
+\usepackage[font=small]{caption}
+\usepackage{makecell}
+\usepackage{multirow}
+
+% Điều chỉnh lề và layout trang
+\usepackage[left=3cm,right=2cm,top=2.5cm,bottom=3cm]{geometry}
+
+% Hyperlinks và danh mục
+\usepackage[unicode]{hyperref}
+
+% Định dạng tiêu đề chương, mục
+\usepackage{titlesec} 
+\titleformat{\chapter}[display]
+{\raggedright\large}
+{\MakeUppercase{\chaptertitlename}~\thechapter}
+{0pt}
+{\vspace{2\baselineskip}\bfseries\huge}
+%\titlespacing*{\chapter}{0cm}{-\topskip}{0pt}[0pt]
+
+\titleformat{\chapter}[block]{\normalfont\Large\bfseries}{\thechapter.}{1em}{}
+\renewcommand{\contentsname}{\MakeUppercase{MỤC LỤC}} 
+
+% Tùy chỉnh các phần khác
+\usepackage{scrextend, enumerate, float, afterpage, sectsty, tocloft, calc, listings}
+
+\usepackage{pdflscape} % Gói giúp xoay trang ngang trong PDF
+\usepackage{graphicx}
+\usepackage{float} % Để cố định vị trí bảng
+\usepackage{longtable} % Nếu bảng dài
+\usepackage{lscape} % Để hỗ trợ xoay trang (tuỳ chọn)
+
+% Gói hỗ trợ thuật toán
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\usepackage{optidef}
+
+% Điều chỉnh các thuật toán
+\SetAlgorithmName{Thuật toán}{Thuật toán}{Danh sách các Thuật toán}
+\SetKwInput{KwIn}{Đầu vào}
+\SetKwInput{KwOut}{Đầu ra}
+
+% Định dạng danh mục tài liệu tham khảo
+\usepackage[numbers,sort&compress]{natbib}
+
+% Định dạng lại các tiêu đề section và subsection
+\sectionfont{\fontsize{15}{15}\selectfont}
+\subsectionfont{\fontsize{13}{15}\selectfont}
+
+% Điều chỉnh khoảng cách giữa các đoạn
+\usepackage{indentfirst}
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{1cm}
+
+% Tùy chỉnh chú thích
+\usepackage{perpage} 
+\MakePerPage{footnote}
+
+% Khoảng cách dòng
+\renewcommand{\baselinestretch}{1.3}
+
+% Tùy chỉnh mục lục
+\renewcommand{\cftchappresnum}{Chương }
+\AtBeginDocument{\addtolength\cftchapnumwidth{\widthof{\bfseries Chương }}}
+
+% Thiết lập tiêu đề và tác giả
+\title{Nghiên cứu biên dạng cánh airfoil cho tua-bin gió Savonius}
+\author{Nguyễn Thị Thu Phương} 
+
+% Khai báo các thư viện cho mục lục hình ảnh và bảng
+\def\l@figure{\@dottedtocline{1}{1em}{2.2em}}
+\def\l@table{\@dottedtocline{1}{1em}{2.2em}}
+
+\newcommand{\argmax}{\arg\!\max}
+
+\begin{document}
+% Bìa chính và các phần đầu
+\input{cover}\newpage\cleardoublepage
+
+% Chuyển sang đánh số trang kiểu La Mã
+\pagenumbering{roman} 
+\input{chapters/abstract_vi}\newpage\cleardoublepage
+\input{chapters/assurance}\newpage\cleardoublepage
+\input{chapters/acknowledgement}\newpage\cleardoublepage
+
+% Mục lục, danh sách hình ảnh, bảng, thuật toán
+\addcontentsline{toc}{chapter}{Mục lục}
+\tableofcontents\newpage\cleardoublepage
+
+\addcontentsline{toc}{chapter}{\listfigurename}
+\listoffigures\cleardoublepage
+
+\addcontentsline{toc}{chapter}{\listtablename}
+\listoftables\cleardoublepage
+
+% Thuật ngữ
+\input{chapters/glossary}\newpage\cleardoublepage
+
+% Phần mở đầu
+\input{chapters/preface}\newpage\cleardoublepage
+
+% Chuyển sang đánh số trang kiểu Ả Rập
+\pagenumbering{arabic}
+\setcounter{secnumdepth}{3}
+% Chương nội dung
+\input{chapters/chapter1/chapter1}\newpage\cleardoublepage
+\input{chapters/chapter2/chapter2}\newpage\cleardoublepage
+\input{chapters/chapter3/chapter3}\newpage\cleardoublepage
+\input{chapters/chapter4/chapter4}\newpage\cleardoublepage
+\input{chapters/chapter5/Conclusions}\newpage\cleardoublepage
+
+% Tài liệu tham khảo
+\phantomsection 
+\addcontentsline{toc}{chapter}{Tài liệu tham khảo}
+\bibliography{references} % Đảm bảo rằng file "references.bib" có chứa tất cả các mục tài liệu tham khảo của bạn
+\bibliographystyle{unsrt} % Đảm bảo chỉ sử dụng một lệnh 
+
+\newpage\cleardoublepage\input{chapters/publish}
+\input{chapters/achievements}
+\end{document}
+

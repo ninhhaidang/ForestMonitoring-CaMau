@@ -1,0 +1,193 @@
+\section{Định luật Betz về giới hạn lý thuyết của hiệu suất tua-bin gió}
+
+Định luật Betz, hay còn gọi là giới hạn Betz, là một nguyên tắc cơ bản trong lĩnh vực năng lượng gió, được công bố lần đầu tiên bởi nhà vật lý người Đức Albert Betz vào năm 1919. Định luật này đưa ra giới hạn lý thuyết về hiệu suất tối đa mà một tua-bin gió có thể chuyển đổi từ động năng của gió thành công suất cơ học.
+
+Theo định luật Betz, tua-bin gió chỉ có thể thu được tối đa 59.3\% năng lượng động học của luồng gió đi qua nó. Giới hạn này được gọi là hệ số Betz và thường được ký hiệu là 0.593 hoặc 59.3\%. Điều này có nghĩa là trong điều kiện lý tưởng nhất, bất kỳ tua-bin gió nào cũng không thể chuyển đổi quá 59.3\% năng lượng của gió thành năng lượng cơ học để sử dụng. Lý do là khi gió đi qua tua-bin, một phần năng lượng phải được giữ lại để duy trì sự chuyển động của luồng không khí phía sau cánh quạt, nhằm tránh làm ngừng luồng khí và cho phép không khí tiếp tục lưu thông.
+
+Cụ thể, lý thuyết giới hạn Betz có thể được tính toán như sau:
+
+Bằng cách sử dụng phương pháp đĩa truyền động, ta biểu diễn tua bin gió như một đĩa đơn giản có kích thước tương tự như rô-to và được sử dụng để tính gần đúng các lực tác dụng lên dòng chảy.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{img/chapter2/actuator_disk.jpg}
+    \caption{Mô hình đĩa truyền động.\cite{betzlimit}}
+    \label{fig:enter-label}
+\end{figure}
+
+Trong đó:
+
+\begin{itemize}
+    \item $U_u$: Vận tốc dòng vào
+    \item $A_u$: Diện tích tiết diện dòng vào
+    \item $P_1$: Áp suất dòng vào tác dụng lên đĩa
+    \item $U_t$: Vận tốc qua đĩa
+    \item $A_t$: Diện tích tiết diện đĩa
+    \item $P_2$: Áp suất dòng ra qua đĩa
+    \item $U_d$: Vận tốc dòng ra
+    \item $A_d$: Diện tích tiết diện dòng ra
+    \item $P_\infty$: Áp suất khí quyển
+    \item $\dot{m}$: Tốc độ dòng chất lưu
+\end{itemize}
+
+Theo tính chất liên tục của dòng chảy, ta có phương trình:
+
+\begin{equation}
+    A_t U_t = A_u U_u = A_d U_d
+\end{equation}
+
+Trong mô hình đĩa truyền động, lực tác dụng lên tua-bin dẫn đến thay đổi động lượng:
+
+\begin{equation}
+    F = \dot{m}\Delta_{v}
+\end{equation}
+\begin{equation}
+    (P_1-P_2 ) A_t=\rho A_u U_u(U_u-U_d )
+\end{equation}
+\begin{equation}
+    P_1-P_2=\frac{\rho A_u U_u(U_u-U_d )}{A_t}
+\end{equation}
+
+
+Từ công thức (2.1) và (2.4) trên, ta có:
+
+\begin{equation}
+    P_1-P_2=\frac{\rho A_t U_t(U_u-U_d )}{A_t}
+\end{equation}
+\begin{equation}
+    P_1-P_2=\rho U_t(U_u-U_d )
+\end{equation}
+
+Theo định luật Bernoulli, trong chất lưu lý tưởng với dòng chảy ổn định, tổng áp suất động và áp suất tĩnh có giá trị không đổi tại mọi vị trí dọc theo ống dòng.
+
+Phương trình định luật Bernoulli có dạng:
+
+\begin{equation}
+    p+\frac{1}{2} \rho v^2+\rho gz=const
+\end{equation}
+
+Trong đó:
+\begin{itemize}
+    \item $1/2 \rho v^2$: Áp suất động $(N/m^2)$
+    \item $p+\rho gz$: Áp suất tĩnh $(N/m^2)$
+    \item $g$: Gia tốc trọng trường $(m/s^2)$
+    \item $z$: Độ cao trục của ống so với mặt đất $(m)$
+\end{itemize}
+
+Với trường hợp ống dòng nằm ngang và độ cao $z$ không đáng kể thì (2.7) trở thành:
+
+\begin{equation}
+    p+\frac{1}{2} \rho v^2=const
+\end{equation}
+
+Xét các vị trí có tiết diện và vận tốc lần lượt là $U_u$, $A_u$, $U_t$, $A_t$, $U_d$, $A_d$ ta có:
+
+\begin{equation}
+    P_\infty+\frac{1}{2} \rho U_u^2=P_1+\frac{1}{2} \rho U_t^2
+\end{equation}
+\begin{equation}
+    P_2+\frac{1}{2} \rho U_t^2=P_\infty+\frac{1}{2} \rho U_d^2
+\end{equation}
+
+Suy ra:
+
+\begin{equation}
+    P_1+\frac{1}{2} \rho U_d^2=P_2+\frac{1}{2} \rho U_u^2
+\end{equation}
+\begin{equation}
+    P_1-P_2=\frac{1}{2} \rho U_u^2-\frac{1}{2} \rho U_d^2=\frac{1}{2} \rho (U_u^2-U_d^2 )
+\end{equation}
+
+Từ (2.6) và (2.12) suy ra:
+\begin{equation}
+    \rho U_t(U_u-U_d )=\frac{1}{2} \rho(U_u^2-U_d^2 )
+\end{equation}
+\begin{equation}
+    U_t=\frac{1}{2}\frac{U_u^2-U_d^2}{U_u-U_d}=\frac{1}{2}(U_u+U_d )
+\end{equation}
+
+Ta có công thức tính hiệu suất:
+
+\begin{equation}
+    \eta=\frac{power_{out}}{power_{in}}
+\end{equation}
+
+Công thức tính công suất:
+
+\begin{equation}
+    power=\frac{1}{2}\dot{m}v^2
+\end{equation}
+\begin{equation}
+    \dot{m}=\rho A_t U_t
+\end{equation}
+\begin{equation}
+    power_{in}=\frac{1}{2} \rho A_t U_t U_u^2
+\end{equation}
+
+Giả sử:
+
+\begin{equation}
+    U_t=U_u
+\end{equation}
+
+Suy ra:
+
+\begin{equation}
+    power_{in}=\frac{1}{2} \rho A_t U_u^3
+\end{equation}
+
+Công suất từ tua-bin:
+
+\begin{equation}
+    power_{out}=Fv=(P_1-P_2 ) A_t U_t
+\end{equation}
+
+Từ công thức (2.6) suy ra:
+
+\begin{equation}
+    power_{out}=\rho U_t^2 A_t(U_u-U_d )
+\end{equation}
+
+Từ công thức (2.14), suy ra:
+
+\begin{equation}
+    power_{out}= \rho(\frac{1}{2}(U_u+U_d ))^2 A_t(U_u-U_d )
+\end{equation}
+\begin{equation}
+    \Leftrightarrow power_{out}=\frac{1}{4} \rho A_t (U_u^2-U_d^2 )(U_u+U_d )
+\end{equation}
+\begin{equation}
+    \Leftrightarrow power_{out}=\frac{1}{4} \rho A_t U_u^2 (\frac{U_u^2}{U_u^2}- \frac{U_d^2}{U_u^2}) U_u (\frac{U_u}{U_u} + \frac{U_d}{U_u})
+\end{equation}
+\begin{equation}
+    \Leftrightarrow power_{out}=\frac{1}{4} \rho A_t U_u^2 (1- \frac{U_d^2}{U_u^2}) U_u (1 + \frac{U_d}{U_u})
+\end{equation}
+
+Thay (2.20) và (2.26) vào công thức (2.15), ta có:
+
+\begin{equation}
+    \eta=\frac{\frac{1}{4} \rho A_t U_u^2 (1-\frac{U_d^2}{U_u^2}) U_u (1+\frac{U_d}{U_u})}{\frac{1}{2}\rho A_t U_u^3}
+\end{equation}
+\begin{equation}
+    \eta=\frac{1}{2}(1-\frac{U_d^2}{U_u^2})(1+\frac{U_d}{U_u})
+\end{equation}
+
+Đặt $b = \frac{U_d}{U_u}$, công thức (2.28) trở thành:
+
+\begin{equation}
+    \eta=\frac{1}{2}(1-b^2)(1+b)
+\end{equation}
+
+Ta có:
+
+\begin{equation}
+    \eta_{max} \Leftrightarrow b = \frac{1}{3}
+\end{equation}
+
+Thay $b$ vào (2.29), ta được:
+
+\begin{equation}
+    \eta_{max} = \frac{16}{27} \approx 0.593
+\end{equation}
+
+Vậy hiệu suất lớn nhất mà tua bin gió có thể đạt được theo định luật Betz là 59.3\%

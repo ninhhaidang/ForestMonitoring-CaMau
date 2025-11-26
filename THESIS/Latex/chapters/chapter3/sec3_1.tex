@@ -1,0 +1,40 @@
+\section{Thiết kế mô hình tính toán}
+
+Trong đồ án này, quá trình thiết kế mô hình tua-bin gió Savonius được thực hiện dựa trên cơ sở kết hợp giữa cấu hình cánh nguyên bản và các biên dạng airfoil nhằm cải thiện hiệu suất của nó ở tỉ tốc cao cho các ứng dụng môi trường trong đô thị nhưng vẫn giữ được tính năng độc đáo của tua-bin thông thường. Cách tiếp cận này phù hợp nhờ một số ưu điểm như: Có thể kết hợp một số tính năng của cả hình học đa độ cong và đa độ dày để nâng cao đáng kể hiệu suất của rô-to Savonius; Hình dạng hình học đơn giản, dễ chế tạo; nhiều cấu hình airfoil đã được ứng dụng nhiều trong thực tế như airfoil lực nâng cao tốc độ thấp hoặc hình dạng foil lấy cảm hứng từ sinh học. Trước đó, nhiều biên dạng airfoil đã được nghiên cứu để áp dụng cho các tua-bin gió trục đứng (VAWT), bao gồm airfoil CH10, airfoil Chen, airfoil Eppler49 và 61, airfoil GOE 63 và 417, và airfoil FX74-CL5-140. Các biên dạng này được lựa chọn dựa trên khả năng hoạt động trong dòng Reynold thấp ($3\times10^5$ đến $5\times 10^5$), phù hợp với điều kiện vận hành của tua-bin gió trục đứng. Đồng thời, chúng thường được sử dụng để nâng cao hiệu suất của các tua-bin, chẳng hạn như tua-bin thủy động lực học, nhờ vào đặc tính khí động học ưu việt.
+
+Trong thiết kế của mô hình này, rô-to tua-bin gió Savonius nguyên bản được thiết kế theo nhóm nghiên cứu của Blackwell\cite{blackwell_wind_tunnel_1977}, bao gồm hai cánh bán nguyệt với đường kính $d = 2r = $ 0.5 m và chiều cao $H = $1 m, được chọn làm tham chiếu cho cấu hình dạng cánh airfoil. Cấu trúc này bao gồm các cánh bán nguyệt, trong đó mặt lồi của cánh được sử dụng làm đường cơ sở để thiết kế biên dạng airfoil, trong khi mặt lõm của cánh ban đầu được thay thế bằng mặt hút của airfoil. Cạnh đầu của airfoil được đặt gần tâm tua-bin, điều này dẫn đến độ dày của cánh rô-to thay đổi từ tâm đến đầu tua-bin, phù hợp với độ dày tự nhiên của airfoil.
+
+Airfoil FX74-CL5-140 được lựa chọn trong nghiên cứu này do những ưu điểm khí động học mà nó mang lại. Thứ nhất, airfoil này được thiết kế để hoạt động hiệu quả trong điều kiện dòng Reynold thấp, tương tự với điều kiện vận hành của tua-bin Savonius, giúp tăng hiệu suất thu năng lượng. Thứ hai, đặc tính thất tốc vừa phải của FX74-CL5-140 giúp giảm thiểu tình trạng ngừng dòng khi tua-bin gặp góc tấn lớn trong quá trình quay, đảm bảo hoạt động ổn định của tua-bin. Cuối cùng, trong quá trình khảo sát một số biên dạng airfoil trước đây, airfoil FX74-CL5-140 tạo ra hiệu suất cao hơn so với các loại airfoil khác trong các ứng dụng tương tự, đặc biệt là ở các tỉ tốc gió khác nhau, làm cho nó trở thành lựa chọn tối ưu để cải thiện hiệu suất khí động học của tua-bin. Rô-to cấu hình nguyên bản và airfoil, bao gồm cả nửa cấu hình ba chiều (3D), được minh họa trong Hình \ref{fig:geometry}  và Bảng \ref{tab:geometry-parameters}. đảm bảo tua-bin hoạt động hiệu quả trong các điều kiện vận hành đa dạng. Để thuận tiện, cấu hình nguyên bản được ký hiệu là Ov01, cấu hình dạng airfoil FX74-CL5-140 được ký hiệu tương ứng là Fx. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{img/chapter3/geometry.jpg}
+    \caption{Mô hình 3D và chi tiết thông số hai biên dạng: (a) Biên dạng Fx và (b) Biên dạng Ov01.}
+    \label{fig:geometry}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Chi tiết kích thước thiết kế 2 cấu hình tua-bin.}
+\label{tab:geometry-parameters}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Thông số}  & \multicolumn{1}{l|}{\textbf{Đơn vị}} & \textbf{Ov01} & \textbf{Fx}     \\ \hline
+\textbf{$D$}         & [m]                                  & 0.95                & 0.94                      \\ \hline
+\textbf{$d = 2r$}    & [m]                                  & 0.5                 & 0.5                       \\ \hline
+\textbf{$t$}         & [m]                                  & 0.004               & Thay đổi với $t_{min}$ = 0.004 \\ \hline
+\textbf{$e = s/d$}   &                                      & 0.1                 & 0.1                       \\ \hline
+\end{tabular}
+\end{table}
+
+Trong quá trình mô phỏng, sử dụng mô hình mô phỏng 3D sẽ phù hợp hơn cho việc đánh giá kiểm nghiệm kết quả nhưng lại đòi hỏi khối lượng tính toán và thời gian mô phỏng lớn. Dựa trên đặc điểm ưu thế của tua-bin với tiết diện không thay đổi dọc theo chiều cao, tua-bin Savonius được nghiên cứu bằng phương pháp mô phỏng số hai chiều (2D). Miền tính toán được sử dụng cho mô phỏng được minh họa trong Hình \ref{fig:domain}. Thông thường, các biên phải được đặt đủ xa so với rô-to để bỏ qua ảnh hưởng của nó đến kết quả và nắm bắt tốt hơn dòng wake phía sau rô-to. Miền tính toán được chia thành hai vùng là vùng tĩnh (Stationary zone) và vùng quay (Rotating zone), được liên kết với nhau bằng phương pháp Interface. Vùng quay với rô-to bên trong có đường kính $D^* =$ 1.15D nằm dọc theo đường tâm đối xứng. Biên vào (Velocity inlet) và biên ra (Pressure outlet) nằm cách tâm O của rô-to theo trục y lần lượt là 6D và 16D. Hai biên bên (symmetry) nằm cách tâm O của rô-to theo trục x một khoảng là 7D để bỏ qua ảnh hưởng của tường biên đến dòng chảy xung quanh rô-to. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{img/chapter3/domain .jpg}
+    \caption{Miền tính toán cho cấu hình Fx.}
+    \label{fig:domain}
+\end{figure}
+
+
+
