@@ -1,5 +1,5 @@
 Vấn đề hiện tại:
-- Thừa phần Machine Learning: Random Forest
+- Thừa phần Machine Learning: Random Forest (không còn sử dụng mô hình này nữa)
 - Cấu trúc chưa chuẩn và còn thiếu một số phần. Thứ tự chính xác phải là:
     + Tóm tắt
     + Lời cam đoan
