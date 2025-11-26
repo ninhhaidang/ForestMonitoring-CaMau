@@ -20,9 +20,6 @@ subtitle: |
 author: "Ninh Hải Đăng"
 date: "2025"
 lang: vi
-toc: true
-toc-depth: 3
-numbersections: true
 ---
 
 \newpage
@@ -45,7 +42,7 @@ numbersections: true
 
 \newpage
 
-# PHẦN MỞ ĐẦU
+# Phần mở đầu
 
 ## Lý do chọn đề tài
 
@@ -193,7 +190,7 @@ Phát triển mô hình học sâu dựa trên kiến trúc CNN để phát hi�
 
 \newpage
 
-# CHƯƠNG 1: TỔNG QUAN VỀ VẤN ĐỀ NGHIÊN CỨU
+# Tổng quan về vấn đề nghiên cứu
 
 ## Bối cảnh và tình hình mất rừng
 
@@ -514,7 +511,7 @@ Xuất phát từ các khoảng trống trên, đồ án này định hướng:
 
 \newpage
 
-# CHƯƠNG 2: CƠ SỞ LÝ THUYẾT
+# Cơ sở lý thuyết
 
 ## Công nghệ viễn thám và ảnh vệ tinh
 
@@ -953,7 +950,7 @@ $$F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + 
 
 \newpage
 
-# CHƯƠNG 3: PHƯƠNG PHÁP NGHIÊN CỨU
+# Phương pháp nghiên cứu
 
 ## Khu vực và dữ liệu nghiên cứu
 
@@ -981,7 +978,7 @@ Tỉnh Cà Mau nằm ở cực Nam Tổ Quốc, thuộc vùng Đồng bằng sô
 
 ### Dữ liệu viễn thám
 
-**Bảng 3.1: Tổng quan dữ liệu**
+**Tổng quan dữ liệu**
 
 | Nguồn dữ liệu | Độ phân giải | Kỳ ảnh | Số bands | Dung lượng |
 |---------------|--------------|--------|----------|------------|
@@ -997,7 +994,7 @@ Tỉnh Cà Mau nằm ở cực Nam Tổ Quốc, thuộc vùng Đồng bằng sô
 
 ### Ground Truth Data
 
-**Bảng 3.2: Thống kê Ground Truth**
+**Thống kê Ground Truth**
 
 | Class | Tên | Số điểm | Tỷ lệ (%) | Mô tả |
 |-------|-----|---------|-----------|-------|
@@ -1044,7 +1041,7 @@ S1_delta = S1_after - S1_before                   # 2 bands
 feature_stack = [S2_before, S2_after, S2_delta, S1_before, S1_after, S1_delta]
 ```
 
-**Bảng 3.3: Chi tiết 27 features**
+**Chi tiết 27 features**
 
 | Index | Nguồn | Temporal | Feature | Mô tả |
 |-------|-------|----------|---------|-------|
@@ -1107,7 +1104,7 @@ OUTPUT: (batch_size, 4)  # Logits for 4 classes
 
 ### Parameter Count
 
-**Bảng 3.4: Tổng số trainable parameters**
+**Tổng số trainable parameters**
 
 | Layer | Type | Parameters | Calculation |
 |-------|------|------------|-------------|
@@ -1125,7 +1122,7 @@ OUTPUT: (batch_size, 4)  # Logits for 4 classes
 
 ### Training Configuration
 
-**Bảng 3.5: Hyperparameters**
+**Hyperparameters**
 
 | Parameter | Value | Justification |
 |-----------|-------|---------------|
@@ -1169,7 +1166,7 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 
 \newpage
 
-# CHƯƠNG 4: KẾT QUẢ VÀ THẢO LUẬN
+# Kết quả và thảo luận
 
 ## Tổng quan về kết quả thực nghiệm
 
@@ -1202,7 +1199,7 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 
 ### Thời gian thực thi
 
-**Bảng 4.1: Thời gian thực thi các giai đoạn**
+**Thời gian thực thi các giai đoạn**
 
 | Giai đoạn | Thời gian | Ghi chú |
 |-----------|-----------|---------|
@@ -1216,7 +1213,7 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 
 ### Kết quả 5-Fold Cross Validation
 
-**Bảng 4.2: Kết quả từng fold**
+**Kết quả từng fold**
 
 | Fold | Accuracy | F1-Score |
 |------|----------|----------|
@@ -1238,7 +1235,7 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 
 ### Kết quả trên tập test (Test Set)
 
-**Bảng 4.3: Metrics trên tập test (526 patches)**
+**Metrics trên tập test (526 patches)**
 
 | Metric | Giá trị | Phần trăm |
 |--------|---------|-----------|
@@ -1260,7 +1257,7 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 > **[TODO: Cần chèn Hình ảnh tại đây]**
 > *Gợi ý:* Confusion matrix dạng heatmap với màu sắc và số liệu.
 
-**Bảng 4.4: Phân tích chi tiết từng lớp - Test Set**
+**Phân tích chi tiết từng lớp - Test Set**
 
 | Lớp | Precision | Recall | F1-Score | Support | Số lỗi |
 |-----|-----------|--------|----------|---------|--------|
@@ -1282,7 +1279,7 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 
 ### Đường cong ROC
 
-**Bảng 4.5: ROC-AUC score cho từng lớp (Test Set)**
+**ROC-AUC score cho từng lớp (Test Set)**
 
 | Lớp | ROC-AUC | Độ phân biệt |
 |-----|---------|--------------|
@@ -1299,7 +1296,7 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 
 ### Thống kê phân loại
 
-**Bảng 4.6: Thống kê phân loại full raster**
+**Thống kê phân loại full raster**
 
 | Thông số | Giá trị |
 |----------|---------|
@@ -1310,7 +1307,7 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 | Độ phân giải | 10m × 10m |
 | Hệ tọa độ | EPSG:32648 (UTM Zone 48N) |
 
-**Bảng 4.7: Phân bố diện tích theo lớp**
+**Phân bố diện tích theo lớp**
 
 | Lớp | Tên lớp | Số pixels | Tỷ lệ (%) | Diện tích (ha) | Diện tích (km²) |
 |-----|---------|-----------|-----------|----------------|-----------------|
@@ -1330,7 +1327,7 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 
 ### So sánh hiệu suất
 
-**Bảng 4.8: So sánh metrics trên Test Set**
+**So sánh metrics trên Test Set**
 
 | Metric | CNN (3×3 patches) | Random Forest (pixels) | Chênh lệch |
 |--------|-------------------|------------------------|------------|
@@ -1368,7 +1365,7 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 
 ### Ảnh hưởng của patch size
 
-**Bảng 4.9: So sánh các patch sizes**
+**So sánh các patch sizes**
 
 | Patch Size | Test Accuracy | ROC-AUC | Training Time | Model Params |
 |------------|---------------|---------|---------------|--------------|
@@ -1384,7 +1381,7 @@ Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn b
 
 ### Ảnh hưởng của data sources
 
-**Bảng 4.10: Ablation các nguồn dữ liệu**
+**Ablation các nguồn dữ liệu**
 
 | Configuration | Features | Test Accuracy | ROC-AUC |
 |---------------|----------|---------------|---------|
@@ -1428,7 +1425,7 @@ CNN chỉ sai **6/526 mẫu** trên test set (1.14% error rate):
 
 ### So sánh với các nghiên cứu khác
 
-**Bảng 4.11: So sánh với literature**
+**So sánh với literature**
 
 | Nghiên cứu | Phương pháp | Data | Accuracy | ROC-AUC |
 |------------|-------------|------|----------|---------|
@@ -1456,7 +1453,7 @@ CNN chỉ sai **6/526 mẫu** trên test set (1.14% error rate):
 
 \newpage
 
-# KẾT LUẬN VÀ KIẾN NGHỊ
+# Kết luận và kiến nghị
 
 ## Kết luận
 
@@ -1592,19 +1589,19 @@ CNN chỉ sai **6/526 mẫu** trên test set (1.14% error rate):
 
 \newpage
 
-# PHỤ LỤC
+# Phụ lục
 
-## Phụ lục A: Danh mục hình ảnh
+## Phụ lục A. Danh mục hình ảnh
 
 > **[TODO: Cập nhật sau khi chèn hình ảnh]**
 > *Gợi ý:* Liệt kê tất cả hình ảnh trong đồ án với số thứ tự, tên và trang.
 
-## Phụ lục B: Danh mục bảng biểu
+## Phụ lục B. Danh mục bảng biểu
 
 > **[TODO: Cập nhật sau khi hoàn thiện]**
 > *Gợi ý:* Liệt kê tất cả bảng trong đồ án với số thứ tự, tên và trang.
 
-## Phụ lục C: Mã nguồn chính
+## Phụ lục C. Mã nguồn chính
 
 > **[TODO: Bổ sung code snippets quan trọng nếu cần]**
 > *Gợi ý:* Các đoạn code quan trọng như CNN architecture definition, training loop, data preprocessing.
