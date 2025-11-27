@@ -141,6 +141,13 @@
 
 % Định dạng danh mục tài liệu tham khảo
 \usepackage[numbers,sort&compress]{natbib}
+\usepackage{multibib}
+\newcites{vi,en}{{},{}}
+
+% Loại bỏ chapter header của multibib
+\makeatletter
+\renewcommand{\bibsection}{}
+\makeatother
 
 % Định dạng lại các tiêu đề section và subsection
 \sectionfont{\fontsize{15}{15}\selectfont}
@@ -209,9 +216,20 @@
 \input{chapters/conclusions}\newpage\cleardoublepage
 
 % Tài liệu tham khảo
-\phantomsection 
+\phantomsection
 \addcontentsline{toc}{chapter}{Tài liệu tham khảo}
-\bibliography{references} % Đảm bảo rằng file "references.bib" có chứa tất cả các mục tài liệu tham khảo của bạn
-\bibliographystyle{unsrt} % Đảm bảo chỉ sử dụng một lệnh 
+\chapter*{TÀI LIỆU THAM KHẢO}
+
+% Tài liệu tiếng Việt
+\nocitevi{*}
+\bibliographystylevi{vnuvi}
+{\renewcommand{\chapter}[2]{}\bibliographyvi{references_vi}}
+
+\vspace{1em}
+
+% Tài liệu tiếng Anh
+\nociteen{*}
+\bibliographystyleen{vnu}
+{\renewcommand{\chapter}[2]{}\bibliographyen{references_en}}
 
 \end{document}
