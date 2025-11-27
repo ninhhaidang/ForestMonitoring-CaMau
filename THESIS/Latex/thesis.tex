@@ -1,11 +1,28 @@
 \documentclass[a4paper,13pt]{report}
 
-% Encoding
-\usepackage[utf8]{vietnam}
+% Encoding and Vietnamese support
+% Keep UTF-8 input encoding (used by pdfLaTeX) and use T5 font encoding
+% for Vietnamese (vntex) so control sequences like \uhorn, \ocircumflex, etc. are available.
+\usepackage[utf8]{inputenc} % keep for pdfLaTeX; not used with XeLaTeX
+\usepackage[T5]{fontenc}    % T5 encoding (Vietnamese) - required for vntex/vietnam
+\usepackage[utf8]{vietnam}  % Vietnamese support (vntex)
 \usepackage{amsmath, amsfonts, amssymb}
+\usepackage{textcomp}
 
-% set font, font size and spacing
-\usepackage{mathptmx}
+% Note: If you prefer to compile with XeLaTeX or LuaLaTeX (recommended for Unicode):
+%  - remove or comment out the `inputenc` and `fontenc` lines above
+%  - uncomment the fontspec lines below and set an appropriate system font
+%  - compile with: `latexmk -pdfxe thesis.tex` or `latexmk -pdflua thesis.tex`
+%
+% %%% XeLaTeX / LuaTeX example (uncomment when using XeLaTeX/LuaTeX):
+% \usepackage{fontspec}
+% \setmainfont{Times New Roman}
+% \usepackage{polyglossia}
+% \setmainlanguage{vietnamese}
+
+% set font, font size and spacing (use Latin Modern for better T5 coverage under pdfLaTeX)
+\usepackage{lmodern}
+\usepackage{microtype} % micro-typography
 \usepackage{scrextend}
 \changefontsizes{13pt}
 \renewcommand{\baselinestretch}{1.3}
