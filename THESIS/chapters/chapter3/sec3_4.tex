@@ -1,0 +1,49 @@
+\section{Huấn luyện và tối ưu hóa mô hình}
+
+\subsection{Training Configuration}
+
+\begin{table}[H]
+\centering
+\caption{Hyperparameters huấn luyện}
+\label{tab:hyperparameters}
+\begin{tabular}{|l|c|p{6cm}|}
+\hline
+\textbf{Parameter} & \textbf{Value} & \textbf{Justification} \\
+\hline
+\texttt{epochs} & 200 & Max epochs với early stopping \\
+\hline
+\texttt{batch\_size} & 64 & Cân bằng giữa stability và speed \\
+\hline
+\texttt{learning\_rate} & 0.001 & Learning rate chuẩn cho Adam \\
+\hline
+\texttt{weight\_decay} & 1e-3 & L2 regularization \\
+\hline
+\texttt{optimizer} & AdamW & Adaptive learning với decoupled weight decay \\
+\hline
+\texttt{loss\_function} & CrossEntropyLoss & Phù hợp cho phân loại đa lớp \\
+\hline
+\texttt{dropout\_rate} & 0.7 & Dropout cao để regularization mạnh \\
+\hline
+\texttt{early\_stopping\_patience} & 15 & Số epochs chờ trước khi dừng \\
+\hline
+\texttt{lr\_scheduler\_patience} & 10 & Giảm LR sau 10 epochs không cải thiện \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Data Splitting Strategy}
+
+\textbf{Stratified Random Split:}
+\begin{enumerate}
+    \item \textbf{Step 1:} Tách 20\% dữ liệu làm Fixed Test Set (526 mẫu)
+    \item \textbf{Step 2:} 5-Fold Cross Validation trên 80\% còn lại (Train+Val = 2,104 mẫu)
+    \item \textbf{Step 3:} Huấn luyện Final Model trên toàn bộ 80\%
+    \item \textbf{Step 4:} Đánh giá Final Model trên 20\% Test Set
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Sơ đồ minh họa chiến lược chia dữ liệu\\ với 5-Fold CV và fixed test set\vspace{2cm}}}
+    \caption{Chiến lược phân chia dữ liệu}
+    \label{fig:data_split}
+\end{figure}

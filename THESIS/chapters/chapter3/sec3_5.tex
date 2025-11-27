@@ -1,0 +1,16 @@
+\section{Dự đoán và đánh giá kết quả}
+
+\subsection{Test Set Evaluation}
+
+Mô hình được đánh giá trên 20\% fixed test set (526 mẫu) thông qua các metrics bao gồm Accuracy, Precision, Recall, F1-Score (per-class và macro-average), ROC-AUC (One-vs-Rest) và Confusion Matrix.
+
+\subsection{Full Raster Prediction}
+
+Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn bộ 16,246,850 valid pixels trong vùng nghiên cứu. Quy trình prediction:
+\begin{enumerate}
+    \item Trích xuất patch 3×3 cho mỗi valid pixel
+    \item Chuẩn hóa patch với mean/std từ training data
+    \item Forward pass qua trained model
+    \item Lấy argmax để xác định class
+    \item Xuất kết quả dưới dạng GeoTIFF
+\end{enumerate}

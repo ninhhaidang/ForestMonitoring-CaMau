@@ -1,10 +1,47 @@
-\section{Kết luận}
+\section{Ablation Studies}
 
-Chương 4 đã trình bày chi tiết các kết quả mô phỏng dòng chảy qua hai biên dạng cánh Ov01 và Fx, đồng thời, phân tích các kết quả về hiệu suất trung bình và đặc tính dòng chảy để từ đó rút ra những nhận xét quan trọng về hiệu quả khí động của từng biên dạng. Kết quả mô phỏng cho thấy, ở tỉ tốc gió thấp ($\lambda=0.5$), biên dạng Ov01 vượt trội hơn nhờ khả năng tạo mô-men xoắn lớn ở các góc quay thuận lợi, phù hợp cho điều kiện gió yếu. Tuy nhiên, ở các tỉ số vận tốc trung bình và cao ($\lambda=$1.0 và 1.4), biên dạng Fx tỏ ra hiệu quả hơn nhờ thiết kế kết hợp đặc tính đa độ cong và đa độ dày của cánh.
+\subsection{Ảnh hưởng của patch size}
 
-Điểm nổi bật của biên dạng Fx nằm ở khả năng kiểm soát dòng chảy tốt hơn trong vùng chồng cánh, nơi dòng chảy từ mặt lõm của cánh tiến được dẫn qua khe chồng cánh hẹp sang mặt lõm của cánh lùi. Sự gia tăng vận tốc dòng chảy qua khe này tạo ra cải thiện chênh lệch áp suất trên cánh tiến, từ đó nâng cao lực khí động. Ngược lại, biên dạng Ov01 với khe chồng cánh rộng hơn gặp khó khăn trong việc kiểm soát dòng chảy tại khu vực này, dẫn đến sự nhiễu loạn và tách dòng, hạn chế hiệu suất đầu ra của tua-bin.
+\begin{table}[H]
+\centering
+\caption{So sánh các patch sizes}
+\label{tab:patch_size}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Patch Size} & \textbf{Test Accuracy} & \textbf{ROC-AUC} & \textbf{Training Time} & \textbf{Model Params} \\
+\hline
+1×1 (pixel-based) & 98.23\% & 99.78\% & 12.5s & 25,348 \\
+\hline
+\textbf{3×3 (baseline)} & \textbf{98.86\%} & \textbf{99.98\%} & 15.2s & 36,676 \\
+\hline
+5×5 & 98.67\% & 99.89\% & 28.3s & 52,484 \\
+\hline
+7×7 & 98.29\% & 99.86\% & 41.2s & 71,108 \\
+\hline
+\end{tabular}
+\end{table}
 
-Ngoài ra, biên dạng Fx cho thấy khả năng giảm cường độ rối và cường độ xoáy rõ rệt, đặc biệt tại vùng chồng cánh. Các vùng xoáy trong biên dạng Fx gọn hơn, ít lan rộng, giúp ổn định dòng chảy và giảm tổn thất năng lượng khí động. Phân bố áp suất trên bề mặt cánh cũng cho thấy sự ổn định vượt trội của Fx so với Ov01, với lực khí động được duy trì đều đặn trong suốt chu kỳ quay.
+\textbf{Kết luận}: \textbf{3×3 patch size là optimal} cho dataset này.
 
-Tóm lại, biên dạng Fx thể hiện hiệu suất vượt trội ở các tỉ số vận tốc trung bình và cao, nhờ thiết kế tối ưu giúp kiểm soát dòng chảy hiệu quả, giảm thiểu lực cản và tối đa hóa lực nâng khí động. Tuy nhiên, ở tỉ số vận tốc thấp, Ov01 vẫn giữ vai trò quan trọng nhờ khả năng khai thác năng lượng trong điều kiện gió yếu. Những kết quả này không chỉ làm rõ hiệu quả khí động của từng biên dạng mà còn mở ra tiềm năng ứng dụng biên dạng Fx trong các tua-bin gió Savonius hoạt động ở điều kiện gió đa dạng.
+\subsection{Ảnh hưởng của data sources}
 
+\begin{table}[H]
+\centering
+\caption{Ablation các nguồn dữ liệu}
+\label{tab:data_sources}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Configuration} & \textbf{Features} & \textbf{Test Accuracy} & \textbf{ROC-AUC} \\
+\hline
+Sentinel-2 only (before) & 7 & 96.21\% & 98.95\% \\
+\hline
+Sentinel-2 (before+after+delta) & 21 & 98.48\% & 99.68\% \\
+\hline
+Sentinel-1 only (before+after+delta) & 6 & 94.19\% & 97.83\% \\
+\hline
+\textbf{S1 + S2 (all features)} & \textbf{27} & \textbf{98.86\%} & \textbf{99.98\%} \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Kết luận}: \textbf{Kết hợp S1 + S2} tối ưu nhất, SAR và optical bổ sung cho nhau.

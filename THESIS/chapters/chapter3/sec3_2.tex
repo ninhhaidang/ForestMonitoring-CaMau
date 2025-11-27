@@ -1,13 +1,62 @@
-\section{Chia lưới và rời rạc hoá mô hình tính toán}
+\section{Quy trình xử lý dữ liệu}
 
-Trong quá trình mô phỏng động lực học chất lỏng bằng phương pháp số, chia lưới là một bước quan trọng nhằm chuyển miền tính toán liên tục thành các ô nhỏ để máy tính có thể giải được các phương trình dòng chảy. Đối với mô hình tua-bin gió Savonius, cấu trúc lưới được thiết kế như trong Hình \ref{fig:mesh}, sao cho phù hợp với các vùng có tính chất dòng chảy khác nhau để đảm bảo độ chính xác cao và hiệu quả tính toán.
+\subsection{Tổng quan quy trình}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{img/chapter3/mesh.jpg}
-    \caption{Lưới mô phỏng được tạo cho biên dạng Fx.}
-    \label{fig:mesh}
+    \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Sơ đồ quy trình xử lý dữ liệu dạng flowchart:\\Raw Data $\rightarrow$ Data Loading $\rightarrow$ Feature Extraction $\rightarrow$\\Patch Extraction $\rightarrow$ Normalization $\rightarrow$ Data Splitting $\rightarrow$ Ready Dataset\vspace{2cm}}}
+    \caption{Quy trình xử lý dữ liệu tổng quan}
+    \label{fig:data_pipeline}
 \end{figure}
-Với vùng quay, do dòng chảy phức tạp và chuyển động của rô-to, lưới phi cấu trúc được sử dụng. Loại lưới này có khả năng mô tả tốt hơn sự biến đổi của dòng chảy tại các mặt phân cách và trong các khu vực có chuyển động trượt của lưới. Để đảm bảo sự chính xác của mô phỏng, lưới được làm mịn đặc biệt ở khu vực quanh cánh tua-bin và phía sau rô-to, nơi mà dòng chảy xoáy và hiện tượng wake diễn ra rõ ràng. Việc này giúp giảm thiểu sai số trong các phép tính và nắm bắt đầy đủ các hiện tượng dòng chảy.
 
-Ngược lại, trong vùng tĩnh, lưới có cấu trúc được áp dụng. Loại lưới này giúp tăng tốc độ tính toán và đảm bảo độ chính xác cao hơn trong các vùng có dòng chảy ổn định. Ở khu vực gần bề mặt cánh tua-bin, lớp lưới được thiết kế với độ dày nhỏ, dao động từ $1\times10^{-5}$ m đến $3\times10^{-5}$ m, nhằm đảm bảo mô phỏng chính xác dòng chảy trong lớp biên. Việc chuyển tiếp giữa các lớp lưới diễn ra mượt mà, với tổng cộng 20 lớp lưới biên để đảm bảo giá trị $y^+$ luôn nằm dưới 1. Đây là một yêu cầu quan trọng để xác định chính xác tác động của dòng chảy trong vùng lớp biên.
+\textbf{Quy trình xử lý:}
+\begin{enumerate}
+    \item \textbf{Data Loading \& Validation:} Tải và kiểm tra dữ liệu Sentinel-1/2 cùng ground truth.
+    \item \textbf{Feature Extraction:} Xây dựng 27 features (21 từ Sentinel-2 và 6 từ Sentinel-1).
+    \item \textbf{Patch Extraction:} Trích xuất các patches kích thước 3×3 tại các vị trí ground truth.
+    \item \textbf{Normalization:} Chuẩn hóa dữ liệu bằng phương pháp Z-score.
+    \item \textbf{Stratified Data Splitting:} Chia dữ liệu với tỷ lệ 80\% Train+Val và 20\% Test cố định.
+\end{enumerate}
+
+\subsection{Feature Extraction chi tiết}
+
+\textbf{Feature stack construction:}
+
+\begin{verbatim}
+# Sentinel-2 features (21)
+S2_before = [B4, B8, B11, B12, NDVI, NBR, NDMI]  # 7 bands
+S2_after = [B4, B8, B11, B12, NDVI, NBR, NDMI]   # 7 bands
+S2_delta = S2_after - S2_before                   # 7 bands
+
+# Sentinel-1 features (6)
+S1_before = [VV, VH]                              # 2 bands
+S1_after = [VV, VH]                               # 2 bands
+S1_delta = S1_after - S1_before                   # 2 bands
+
+# Stack tất cả features: Total = 27
+feature_stack = [S2_before, S2_after, S2_delta,
+                 S1_before, S1_after, S1_delta]
+\end{verbatim}
+
+\begin{table}[H]
+\centering
+\caption{Chi tiết 27 features sử dụng}
+\label{tab:features}
+\begin{tabular}{|c|c|c|l|l|}
+\hline
+\textbf{Index} & \textbf{Nguồn} & \textbf{Temporal} & \textbf{Feature} & \textbf{Mô tả} \\
+\hline
+0-6 & S2 & Before & B4, B8, B11, B12, NDVI, NBR, NDMI & Quang phổ kỳ trước \\
+\hline
+7-13 & S2 & After & B4, B8, B11, B12, NDVI, NBR, NDMI & Quang phổ kỳ sau \\
+\hline
+14-20 & S2 & Delta & $\Delta$B4, $\Delta$B8, ... & Biến đổi quang phổ \\
+\hline
+21-22 & S1 & Before & VV, VH & SAR kỳ trước \\
+\hline
+23-24 & S1 & After & VV, VH & SAR kỳ sau \\
+\hline
+25-26 & S1 & Delta & $\Delta$VV, $\Delta$VH & Biến đổi SAR \\
+\hline
+\end{tabular}
+\end{table}

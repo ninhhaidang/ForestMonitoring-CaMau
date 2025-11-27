@@ -1,48 +1,36 @@
-\section{Kết quả khảo sát độc lập lưới và kiểm nghiệm phương pháp mô phỏng số}
+\section{Tổng quan về kết quả thực nghiệm}
 
-Trong các bài toán mô phỏng số động lực học chất lỏng (CFD), kích thước và mật độ lưới ảnh hưởng đáng kể đến khả năng mô tả các đặc điểm dòng chảy. Nếu lưới quá thô, các chi tiết quan trọng của dòng chảy có thể bị bỏ qua, dẫn đến sai số lớn. Ngược lại, lưới quá mịn sẽ làm tăng thời gian và chi phí tính toán mà không mang lại sự cải thiện đáng kể về độ chính xác. Phân tích tính độc lập của lưới nhằm xác định kích thước lưới tối ưu, mức mà việc tăng thêm phần tử lưới không còn mang lại cải thiện đáng kể cho kết quả, giúp tối ưu hóa tài nguyên tính toán và giảm thiểu sai số rời rạc hóa. Chính vì vậy, thực hiện khảo sát độc lập lưới là cần thiết để đảm bảo kết quả mô phỏng số chính xác và đáng tin cậy.
+\subsection{Cấu hình thực nghiệm}
 
-\begin{figure} [h]
-    \centering
-    \includegraphics[width=0.75\linewidth]{img/chapter4/Moment 0.8.png}
-    \caption{Phân bố mô-men trên cánh theo thời gian của biên dạng Fx tại tỉ tốc gió $\lambda$ = 0.8.}
-    \label{fig:torque}
-\end{figure}
+\textbf{Phần cứng và phần mềm:}
 
-Trong đồ án này, tính độc lập của lưới được khảo sát cho cả hai biên dạng: Ov01 và Fx, với số Reynolds $Re = 4.3 \times 10^5$. Hình \ref{fig:torque} thể hiện phân bố theo thời gian của mô-men xoắn $T$ trên cấu hình Fx tại $\lambda$ = 0.8. Kết quả cho thấy mô-men xoắn $T$ đạt xu hướng tuần hoàn ổn định sau bốn hoặc năm vòng quay. Xét phân bố mô-men xoắn trong ba vòng quay cuối như trong Hình \ref{fig:last3rounds}, kết quả thu được gần như tương đồng giữa ba lưới được khảo sát. Cũng tại đây, giá trị mô-men xoắn trung bình $T_{av}$ đã được tính toán trong Bảng \ref{tab:mesh-ind} và cho thấy sự chênh lệch không đáng kể giữa ba lưới. Quá trình tương tự cũng được thực hiện cho cấu hình Ov01. Dựa trên phân tích phương pháp số, cân nhắc giữa độ chính xác và thời gian tính toán, Lưới 2 với 191,452 phần tử cho Ov01 và 182,646 phần tử cho Fx đã được lựa chọn là kích thước lưới tối ưu và được sử dụng trong các bài toán mô phỏng.
+Môi trường thí nghiệm gồm phần cứng như GPU NVIDIA GeForce RTX 4080 (16GB VRAM), bộ nhớ RAM 16GB trở lên và ổ lưu trữ SSD nhằm đảm bảo tốc độ I/O cao. Về phần mềm, hệ thống sử dụng Python 3.8 trở lên cùng PyTorch 2.0+ có hỗ trợ CUDA để huấn luyện mô hình, GDAL 3.4+ cho xử lý dữ liệu không gian và các thư viện khoa học dữ liệu như NumPy, scikit-learn và pandas.
 
-\begin{figure} [H]
-    \centering
-    \includegraphics[width=0.5\linewidth]{img/chapter4/last 3 round.png}
-    \caption{Phân bố mô-men 3 vòng quay cuối của cấu hình Fx tại tỉ tốc $\lambda=$ 0.8, tính toán bằng ba lưới dược khảo sát.}
-    \label{fig:last3rounds}
-\end{figure}
+\textbf{Dữ liệu đầu vào:}
 
-\begin{table}[h]
-\caption{Kết quả khảo sát độc lập lưới tại tỉ tốc gió $\lambda$ = 0.8 cho hai biên dạng.}
-\label{tab:mesh-ind}
+Tổng số mẫu ground truth là 2,630 điểm, trong đó phân bố lớp gần như cân bằng: Lớp 0 (Rừng ổn định) 656 điểm (24.94\%), Lớp 1 (Mất rừng) 650 điểm (24.71\%), Lớp 2 (Phi rừng) 664 điểm (25.25\%) và Lớp 3 (Phục hồi rừng) 660 điểm (25.10\%).
+
+Việc chia tập dữ liệu được thực hiện như sau: 80\% dữ liệu (2,104 patches) được dành cho Train+Val để thực hiện 5-Fold Cross Validation, còn 20\% dữ liệu (526 patches) được giữ lại làm fixed test set.
+
+\subsection{Thời gian thực thi}
+
+\begin{table}[H]
 \centering
-\begin{tabular}{|lcccl|}
+\caption{Thời gian thực thi các giai đoạn}
+\label{tab:execution_time}
+\begin{tabular}{|l|c|l|}
 \hline
-\multicolumn{1}{|c|}{\textbf{Lưới}} & \multicolumn{1}{c|}{\textbf{Số phần tử}} & \multicolumn{1}{c|}{\textbf{$T_{av}$}} & \multicolumn{1}{c|}{\textbf{Sai số (\%)}} & \multicolumn{1}{c|}{\textbf{Chất lượng}}                                \\ \hline
-\multicolumn{5}{|c|}{\textbf{Biên dạng Ov01}}                                                                                                                                                                                     \\ \hline
-\multicolumn{1}{|l|}{Lưới 1}      & \multicolumn{1}{c|}{112,008}             & \multicolumn{1}{c|}{4.048}             & \multicolumn{1}{c|}{1.575\%}                    &                                                                         \\ \hline
-\multicolumn{1}{|l|}{Lưới 2}      & \multicolumn{1}{c|}{191,452}             & \multicolumn{1}{c|}{4.111}             & \multicolumn{1}{c|}{-}                   & \begin{tabular}[c]{@{}l@{}}Max. Skewness: 0.71\\ Orthogonality: 0.96\end{tabular} \\ \hline
-\multicolumn{1}{|l|}{Lưới 3}      & \multicolumn{1}{c|}{275,544}             & \multicolumn{1}{c|}{4.118}             & \multicolumn{1}{c|}{0.169\%}                    &                                                                         \\ \hline
-\multicolumn{5}{|c|}{\textbf{Biên dạng Fx}} \\ \hline
-\multicolumn{1}{|l|}{Lưới 1}      & \multicolumn{1}{c|}{106,392}             & \multicolumn{1}{c|}{3.994}        & \multicolumn{1}{c|}{0.707\%}               &                                                                         \\ \hline
-\multicolumn{1}{|l|}{Lưới 2}      & \multicolumn{1}{c|}{182,646}             & \multicolumn{1}{c|}{4.022}        & \multicolumn{1}{c|}{-}                   & \begin{tabular}[c]{@{}l@{}}Max. Skewness: 0.69\\ Orthogonality: 0.97\end{tabular} \\ \hline
-\multicolumn{1}{|l|}{Lưới 3}      & \multicolumn{1}{c|}{264,904}             & \multicolumn{1}{c|}{4.018}        & \multicolumn{1}{c|}{0.114\%}               &                                                                         \\ \hline
+\textbf{Giai đoạn} & \textbf{Thời gian} & \textbf{Ghi chú} \\
+\hline
+Data preprocessing & ~2-3 phút & Extract patches, normalization \\
+\hline
+5-Fold Cross Validation & 1.58 phút & 5 folds training \\
+\hline
+Final Model Training & 0.25 phút & Training trên toàn bộ 80\% \\
+\hline
+Full raster prediction & 14.58 phút & 16,246,850 valid pixels \\
+\hline
+\textbf{Tổng cộng} & \textbf{~18.41 phút} & Không tính thời gian load dữ liệu \\
+\hline
 \end{tabular}
 \end{table}
-
-Để kiểm chứng độ chính xác và khả năng áp dụng của phương pháp số được sử dụng, quá trình kiểm nghiệm đã được tiến hành bằng cách so sánh kết quả mô phỏng với các dữ liệu thực nghiệm và lý thuyết đã công bố. Cụ thể, cấu hình Ov01 được lựa chọn để phân tích tính chính xác của mô hình. Kết quả trong Hình \ref{fig:validation} trình bày xu hướng của hệ số mô-men xoắn $C_T$ được tính toán từ phương pháp số hiện tại, ký hiệu là Ov01 (Sim.), và so sánh với dữ liệu thực nghiệm của nhóm nghiên cứu Blackwell\cite{blackwell_wind_tunnel_1977}, ký hiệu Ov01 (Exp.) cũng như các kết quả lý thuyết từ các nghiên cứu khác.\cite{chemengich2022effect}\cite{kragic2022global}
-
-\begin{figure} [H]
-    \centering
-    \includegraphics[width=0.5\linewidth]{img/chapter4/Validation.png}
-    \caption{Kết quả kiểm nghiệm phương pháp số hiện tại so với kết quả thực nghiệm và các dữ liệu mô phỏng khác.}
-    \label{fig:validation}
-\end{figure}
-
-Khi đối chiếu với các nguồn dữ liệu tham khảo, phương pháp số hiện tại cho thấy dự đoán có độ chính xác tốt với sai số nhỏ tại các tỉ tốc khác nhau. Một phần sai số có thể bắt nguồn từ lí do sau: (1) việc đơn giản hóa hình học thành mô hình tính toán 2D đã bỏ qua một số hiệu ứng ba chiều; (2) sự khác biệt trong việc tính toán giá trị trung bình từ dữ liệu thực nghiệm, vốn có thể được lấy từ hàng chục vòng quay của rô-to, trong khi đồ án này áp dụng trong ba vòng quay cuối. Mặc dù vẫn còn một số sai số nhỏ, nhưng kết quả kiểm nghiệm cho thấy phương pháp số đang được áp dụng có độ tin cậy cao, và kết quả mô phỏng có thể phản ánh tốt hiện tượng dòng chảy cũng như hiệu suất khí động học của rô-to. Điều này làm nền tảng cho các phân tích và thảo luận chuyên sâu trong phần sau của đồ án.

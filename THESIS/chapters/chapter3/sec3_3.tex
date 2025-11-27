@@ -1,109 +1,74 @@
-\section{Thiết lập môi trường mô phỏng và tính toán}
+\section{Kiến trúc mô hình CNN đề xuất}
 
-Sau khi hoàn thành chia lưới, bước tiếp theo trong quy trình mô phỏng là thiết lập các điều kiện biên và môi trường tính toán nhằm tái hiện chính xác các điều kiện thực tế của dòng chảy qua tua-bin gió Savonius. Các điều kiện biên được thiết lập dựa trên các thông số từ thực nghiệm và tiêu chuẩn đã được xác định, nhằm đảm bảo tính khách quan và độ chính xác của kết quả mô phỏng. Cụ thể, mô phỏng trong đồ án được thiết lập các điều kiện biên bao gồm:
+\subsection{Thiết kế kiến trúc}
 
-\begin{itemize}
-    \item Đầu vào (inlet): vận tốc gió được chọn là 7 m/s, tương ứng với các điều kiện thí nghiệm của Blackwell và cộng sự\cite{blackwell_wind_tunnel_1977}, giúp phản ánh thực tế các mức vận tốc gió thường gặp. Để mô phỏng đặc tính dòng chảy rối, cường độ rối $I$ được đặt ở mức 3\%, cùng với thang chiều dài rối $l$ là 0.2 m để đảm bảo nắm bắt được các đặc trưng dòng chảy rối trong môi trường tự nhiên và các đặc trưng nhiễu động của môi trường xung quanh.\cite{minh_performance_enhancement_2023}\cite{anh_high_efficiency}\cite{anh_modified_savonius}
-    \item Đầu ra (outlet): thiết lập với áp suất không đổi $p_0= 0$, với áp suất tham chiếu là 101325 Pa, nhằm đảm bảo sự liên tục của dòng chảy và áp suất giữa vùng tính toán và môi trường xung quanh. 
-    \item Các biên cạnh bên của miền tính toán được áp dụng điều kiện đối xứng (symmetry), giúp giảm thiểu ảnh hưởng của các biên đến dòng chảy trong miền.
-    \item Bề mặt cánh của tua-bin được thiết lập là tường (wall) không trượt (no slip). Góc quay tương đối của cánh được xác định so với Vùng quay, giúp mô phỏng chính xác chuyển động quay của rô-to.
-    \item Vùng quay của rô-to được thiết lập với chuyển động của lưới trượt với tốc độ quay $\omega$ theo hướng ngược chiều kim đồng hồ. Cụ thể, các giá trị tốc độ quay theo tỉ tốc gió tương ứng với hai cấu hình tua-bin được tính toán theo công thức 2.34 trình bày trong Bảng \ref{tab:omega}. 
-\end{itemize}
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.9\textwidth}{\centering\vspace{3cm}\textbf{[PLACEHOLDER]}\\ Sơ đồ kiến trúc CNN chi tiết với các layer,\\ kích thước tensor ở mỗi bước, và số parameters\vspace{3cm}}}
+    \caption{Kiến trúc mô hình CNN đề xuất}
+    \label{fig:cnn_architecture}
+\end{figure}
+
+\textbf{Tổng quan architecture:}
+
+\begin{verbatim}
+INPUT: (batch_size, 3, 3, 27)
+    |
+PERMUTE -> (batch_size, 27, 3, 3)  # PyTorch format (N, C, H, W)
+    |
+CONVOLUTIONAL BLOCK 1
+    Conv2D(27 -> 64, kernel=3x3)
+    BatchNorm2D(64)
+    ReLU()
+    Dropout2D(p=0.7)
+    | (batch_size, 64, 3, 3)
+CONVOLUTIONAL BLOCK 2
+    Conv2D(64 -> 32, kernel=3x3)
+    BatchNorm2D(32)
+    ReLU()
+    Dropout2D(p=0.7)
+    | (batch_size, 32, 3, 3)
+GLOBAL AVERAGE POOLING
+    | (batch_size, 32)
+FULLY CONNECTED BLOCK
+    Linear(32 -> 64)
+    BatchNorm1D(64)
+    ReLU()
+    Dropout(p=0.7)
+    | (batch_size, 64)
+OUTPUT LAYER
+    Linear(64 -> 4)
+    |
+OUTPUT: (batch_size, 4)  # Logits for 4 classes
+\end{verbatim}
+
+\subsection{Parameter Count}
 
 \begin{table}[H]
-\caption{Tốc độ quay của rô-to theo tỉ tốc gió [rad/s].}
-\label{tab:omega}
 \centering
-\begin{tabular}{|lc|c|c|c|c|c|c|c|c|c|c|c|}
+\caption{Tổng số trainable parameters}
+\label{tab:parameters}
+\begin{tabular}{|l|l|c|l|}
 \hline
-\multicolumn{2}{|c|}{$\lambda$}                                                                             & \textbf{0.4} & \textbf{0.5} & \textbf{0.6} & \textbf{0.7} & \textbf{0.8} & \textbf{0.9} & \textbf{1.0} & \textbf{1.1} & \textbf{1.2} & \textbf{1.3} & \textbf{1.4} \\ \hline
-\multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}Ov01\end{tabular}} & \textbf{$\omega_1$} & 5.9         & 7.4         & 8.8         & 10.3        & 11.8        & 13.3        & 14.7        & 16.2        & 17.7        & 19.2        & 20.6        \\ \hline
-\multicolumn{1}{|l|}{Fx}                                                    & \textbf{$\omega_2$} & 5.9         & 7.5         & 8.9         & 10.4        & 11.9        & 13.4        & 14.9        & 16.4        & 17.9        & 19.4        & 20.9        \\ \hline
+\textbf{Layer} & \textbf{Type} & \textbf{Parameters} & \textbf{Calculation} \\
+\hline
+Conv1 & Weights & 15,552 & 27×3×3×64 \\
+\hline
+BN1 & $\gamma$, $\beta$ & 128 & 64 + 64 \\
+\hline
+Conv2 & Weights & 18,432 & 64×3×3×32 \\
+\hline
+BN2 & $\gamma$, $\beta$ & 64 & 32 + 32 \\
+\hline
+GAP & - & 0 & No params \\
+\hline
+FC1 & Weights, bias & 2,112 & 32×64 + 64 \\
+\hline
+BN3 & $\gamma$, $\beta$ & 128 & 64 + 64 \\
+\hline
+FC2 & Weights, bias & 260 & 64×4 + 4 \\
+\hline
+\textbf{TOTAL} & & \textbf{36,676} & \\
+\hline
 \end{tabular}
 \end{table}
-
-Như đã đề cập trên phần 3.1, trong đồ án này, phương pháp mô phỏng số hai chiều (2D) được lựa chọn để mô phỏng dòng chảy qua rô-to Savonius. Phương pháp này thường được áp dụng vì khả năng cung cấp độ chính xác và độ ổn định hợp lý trong các nghiên cứu trước đó. Mô hình 2D, bao gồm các đĩa quay ở phần trên và dưới của rô-to, đã cho thấy tính khả thi trong việc mô phỏng dòng chảy với chi phí tính toán thấp hơn so với không gian ba chiều (3D). Mặc dù mô hình 3D cho phép tái hiện chi tiết hơn về hiện tượng vật lý, nhưng sự sai lệch giữa kết quả mô phỏng và dữ liệu thực nghiệm được ghi nhận trong nhiều nghiên cứu đã khiến cho mô phỏng 2D trở thành lựa chọn khả thi trong nghiên cứu này. \cite{anh_modified_savonius}\cite{anh_high_efficiency}\cite{minh_performance_enhancement_2023}\cite{hassanzadeh2021comparison}\cite{hashem_performance_investigation_2022}
-
-Hệ phương trình Navier-Stokes trung bình (URANS) cho dòng chảy không nén được áp dụng, kết hợp với mô hình rối Realizable $k-\varepsilon$ để dự đoán dòng chảy qua tua-bin gió trục đứng. Mô hình Realizable $k-\varepsilon$ được lựa chọn vì khả năng dự đoán hiệu quả các hiện tượng liên quan đến chuyển động quay, sự phân tách dòng chảy, và các lớp biên chịu gradient áp suất bất lợi mạnh. Để mô phỏng dòng chảy, phần mềm CFD ANSYS Fluent được sử dụng. Hàm tường nâng cao (Enhanced wall function) được áp dụng nhằm mô hình hóa chính xác các đặc tính dòng chảy và nhiễu loạn gần bề mặt tường. Hàm tường này kết hợp các quy luật tuyến tính và logarit để mô tả vùng gần tường, bao gồm cả lớp nhớt phụ, vùng đệm và lớp rối hoàn toàn bên ngoài.
-
-Các phương trình chủ đạo, bao gồm phương trình liên tục, động lượng, động năng rối và phương trình tốc độ tiêu tán rối, được mô tả như sau:
-
-Hệ phương trình Navier-Stokes trung bình (URANS) cho dòng chảy không nén:
-
-\begin{equation}
-    \frac{\partial \bar{u}_i }{\partial x_i}=0
-\end{equation}
-
-\begin{equation}
-    \frac{\partial \bar{u}_i}{\partial t} + \bar{u}_j\frac{\partial \bar{u}_i}{\partial x_j}=\frac{-1}{\rho}\frac{\partial \bar{p} }{\partial x_i}+\nu\frac{\partial^{2} \bar{u}_i}{\partial x_j \partial x_j} - \frac{\partial \overline{u'_i u'_j}}{\partial x_j}
-\end{equation}
-
-Trong đó:
-\begin{itemize}
-    \item $\bar{p}$: Áp suất trung bình
-    \item $\bar{u}$: Vận tốc trung bình
-    \item $i, j$: Chỉ số biểu thị thành phần hướng
-    \item $\nu$: Độ nhớt động học
-    \item $-\overline{u'_i u'_j}$: tensor ứng suất Reynolds
-\end{itemize}
-
-Hệ phương trình động năng rối và tốc độ tiêu tán rối của mô hình rối Realizable $k-\varepsilon$:
-
-\begin{equation}
-    \frac{\partial \rho k }{\partial t}+\frac{\partial \rho k u_j }{\partial x_j} = \frac{\partial }{\partial x_j}[(\mu+\frac{\mu_t}{\sigma_k})\frac{\partial k}{\partial x_j}] + G_k + G_b-\rho \varepsilon - Y_M + S_k
-\end{equation}
-
-\begin{equation}
-    \frac{\partial \rho \varepsilon }{\partial t}+\frac{\partial \rho \varepsilon u_j }{\partial x_j} = \frac{\partial }{\partial x_j}[(\mu+\frac{\mu_t}{\sigma_\varepsilon})\frac{\partial \varepsilon}{\partial x_j}] + C_1S\rho \varepsilon-C_2\rho\frac{\varepsilon^2}{k+\sqrt{\nu\varepsilon}} + C_{1\varepsilon}\frac{\varepsilon}{k}C_{3\varepsilon}G_b + S_\varepsilon
-\end{equation}
-
-
-\begin{equation}
-    C_1 = max[0.43,\frac{\eta}{\eta+5}], \eta=S\frac{k}{\varepsilon}, S = \sqrt{2S_{ij}S_{ij}}
-\end{equation}
-
-Với các hệ số mặc định trong Ansys Fluent như sau:
-
-\begin{equation}
-    \sigma_k = 1.0, \sigma_{\varepsilon} = 1.2, C_{1\varepsilon} = 1.44, C_2 = 1.9
-\end{equation}
-
-\begin{itemize}
-    \item $k$: Động năng rối
-    \item $\varepsilon$: Tốc độ tiêu tán rối
-    \item $\mu$: Độ nhớt động lực học của chất lỏng
-    \item $G_k$: Biểu thị sự sinh năng lượng động học nhiễu loạn do gradient vận tốc trung bình
-    \item $G_b$: Biểu thị sự sinh năng lượng động học nhiễu loạn do lực nổi
-    \item $Y_M$: Đại diện cho đóng góp của sự giãn nở dao động trong dòng chảy nhiễu loạn nén được vào tốc độ tiêu tán tổng thể
-    \item $C_{1\varepsilon}, C_2$: Hằng số
-    \item $\sigma_k, \sigma_{\varepsilon}$: Các số Prandtl nhiễu loạn tương ứng với $k$ và $\varepsilon$
-    \item $S_k$, $S_\varepsilon$: Các thành phần nguồn do người dùng định nghĩa.
-\end{itemize}
-
-Độ nhớt xoáy được tính toán theo các công thức:
-\begin{equation}
-    \mu_{t}=\rho C\mu \frac{k^2}{\varepsilon}
-\end{equation}
-
-\begin{equation}
-    C\mu=\frac{1}{A_0 + A_s \frac{kU^*}{\varepsilon}}
-\end{equation}
-
-\begin{equation}
-    U^*\equiv  \sqrt{S_{ij}S_{ij} + \tilde{\Omega}_{ij} \tilde{\Omega}_{ij}}
-\end{equation}
-    
-\begin{equation}
-    \tilde{\Omega}_{ij} = \Omega_{ij} - 2\varepsilon_{ijk}\omega_k
-\end{equation}
-
-\begin{equation}
-    \Omega_{ij} = \bar{\Omega_{ij}}-2\varepsilon_{ijk}\omega_k
-\end{equation}
-
-Phương pháp thể tích hữu hạn (FVM) được sử dụng để giải các phương trình chủ đạo, bao gồm phương trình liên tục, động lượng, động năng rối, và phương trình tốc độ tiêu tán rối. Thuật giải cho dòng không nén được thực hiện theo Phương pháp bán tường minh cho các phương trình liên kết áp suất - SIMPLE (Semi-Implicit Method for Pressure-linked Equation). Phương pháp này giúp đảm bảo hội tụ nhanh chóng và chính xác cho các bài toán dòng chảy phức tạp. Rời rạc hóa các phương trình động lượng và rối được thực hiện với độ chính xác cấp hai (Second Order Upwind), trong khi thuật toán Bình phương tối thiểu dựa trên ô lưới (Least-square cell-based) được sử dụng để tính các gradient. Các phương trình áp suất và thời gian cũng được rời rạc hoá theo độ chính xác cấp hai để đảm bảo tính ổn định và độ chính xác cao trong quá trình tính toán.
-
-Với vùng quay của tua-bin, mô hình lưới trượt (Sliding mesh) được áp dụng để mô phỏng chuyển động tương đối của các phần tử lưới theo chiều quay của rô-to. Trong tất cả các phương trình, tiêu chí hội tụ được thiết lập là $10^{-6}$, đảm bảo các giá trị sai số hội tụ trong quá trình tính toán là rất nhỏ. Mô phỏng tức thời được thực hiện với bước thời gian tương ứng với một độ quay của rô-to, và mỗi bước thời gian được lặp lại 50 lần nhằm đảm bảo hội tụ cho các phương trình dòng chảy. Phương pháp số này đã được kiểm nghiệm và xác nhận thông qua các công trình trước đó, cho thấy khả năng dự đoán chính xác và đáng tin cậy cho các nghiên cứu dòng chảy qua tua-bin gió.
-
-
-
