@@ -1,11 +1,65 @@
 \documentclass[a4paper,13pt]{report}
 
+% --------------------------------------------------------------------
+% Compile instructions:
+% - To compile with XeLaTeX (recommended for Times New Roman and Unicode):
+%     latexmk -pdfxe thesis.tex
+%   or
+%     xelatex thesis.tex
+%
+% - To compile with LuaLaTeX, use:
+%     latexmk -pdflua thesis.tex
+%
+% - To compile with pdfLaTeX (default behaviour):
+%     latexmk -pdf thesis.tex
+%   (This uses Latin Modern and T5 encoding for Vietnamese.)
+% --------------------------------------------------------------------
+
 % Encoding and Vietnamese support
-% Keep UTF-8 input encoding (used by pdfLaTeX) and use T5 font encoding
-% for Vietnamese (vntex) so control sequences like \uhorn, \ocircumflex, etc. are available.
-\usepackage[utf8]{inputenc} % keep for pdfLaTeX; not used with XeLaTeX
-\usepackage[T5]{fontenc}    % T5 encoding (Vietnamese) - required for vntex/vietnam
-\usepackage[utf8]{vietnam}  % Vietnamese support (vntex)
+% This file supports both pdfLaTeX and XeLaTeX/LuaLaTeX. The default
+% behaviour below keeps the existing pdfLaTeX setup (Latin Modern + T5
+% encoding for Vietnamese). If you switch to XeLaTeX/LuaLaTeX, the
+% document will use system fonts via `fontspec` (set to Times New Roman).
+\usepackage{iftex}
+\ifPDFTeX
+	% pdfLaTeX: keep older encoding packages and Latin Modern.
+	\usepackage[utf8]{inputenc} % keep for pdfLaTeX; not used with XeLaTeX
+	\usepackage[T5]{fontenc}    % T5 encoding (Vietnamese) - required for vntex/vietnam
+	\usepackage[utf8]{vietnam}  % Vietnamese support (vntex)
+	% If you want a Times-like font with pdfLaTeX you can enable the
+	% following packages, but note: T5 encoding support and some
+	% Vietnamese glyphs may not be complete with these fonts. Test the
+	% output before enabling.
+	% \usepackage{newtxtext,newtxmath} % Times-like fonts (for pdfLaTeX)
+\else
+	% XeLaTeX/LuaLaTeX: use fontspec and polyglossia for Unicode & Vietnamese
+	% NOTE: If your source uses TeX accent macros (e.g., `\h{a}` or `\'a`)
+	% instead of raw Unicode characters, you may need to either (A) keep
+	% the `vietnam` package loaded or (B) convert source files to Unicode
+	% characters for Vietnamese. Loading both `polyglossia` and `vietnam`
+	% may cause conflicts; test carefully.
+	\usepackage{fontspec}
+	\usepackage{polyglossia}
+	% If your source contains TeX accent macros rather than raw Unicode
+	% characters (e.g. `\h{a}`), uncomment the following line to load
+	% the `vietnam` package which defines such macros. Keep in mind
+	% that `vietnam` is designed for T5 encoding and may sometimes
+	% overlap with `polyglossia` macros.
+	\usepackage[utf8]{vietnam}
+	\setmainlanguage{vietnamese}
+	% Set Times New Roman as the main font. You can change the name if
+	% your OS has a differently named Times family (e.g., "Times").
+	\setmainfont{Times New Roman}[
+		Ligatures=TeX,
+		Script=Latin
+	]
+	% If you want math fonts to match Times, you can add e.g.:
+	% \usepackage{unicode-math}
+	% \setmathfont{TeX Gyre Termes Math}
+	% Optional: specify sans/mono fonts to better match system defaults
+	\setsansfont{Arial}
+	\setmonofont{Courier New}
+\fi
 \usepackage{amsmath, amsfonts, amssymb}
 \usepackage{textcomp}
 
@@ -20,8 +74,12 @@
 % \usepackage{polyglossia}
 % \setmainlanguage{vietnamese}
 
-% set font, font size and spacing (use Latin Modern for better T5 coverage under pdfLaTeX)
-\usepackage{lmodern}
+% set font, font size and spacing
+% If compiling with pdfLaTeX, keep Latin Modern for T5 coverage. For
+% XeLaTeX/LuaLaTeX the fontspec package (above) will set Times.
+\ifPDFTeX
+	\usepackage{lmodern}
+\fi
 \usepackage{microtype} % micro-typography
 \usepackage{scrextend}
 \changefontsizes{13pt}
