@@ -1,193 +1,92 @@
-\section{Định luật Betz về giới hạn lý thuyết của hiệu suất tua-bin gió}
+\section{Công nghệ viễn thám và ảnh vệ tinh}
 
-Định luật Betz, hay còn gọi là giới hạn Betz, là một nguyên tắc cơ bản trong lĩnh vực năng lượng gió, được công bố lần đầu tiên bởi nhà vật lý người Đức Albert Betz vào năm 1919. Định luật này đưa ra giới hạn lý thuyết về hiệu suất tối đa mà một tua-bin gió có thể chuyển đổi từ động năng của gió thành công suất cơ học.
+\subsection{Nguyên lý viễn thám}
 
-Theo định luật Betz, tua-bin gió chỉ có thể thu được tối đa 59.3\% năng lượng động học của luồng gió đi qua nó. Giới hạn này được gọi là hệ số Betz và thường được ký hiệu là 0.593 hoặc 59.3\%. Điều này có nghĩa là trong điều kiện lý tưởng nhất, bất kỳ tua-bin gió nào cũng không thể chuyển đổi quá 59.3\% năng lượng của gió thành năng lượng cơ học để sử dụng. Lý do là khi gió đi qua tua-bin, một phần năng lượng phải được giữ lại để duy trì sự chuyển động của luồng không khí phía sau cánh quạt, nhằm tránh làm ngừng luồng khí và cho phép không khí tiếp tục lưu thông.
+Viễn thám (Remote Sensing) là khoa học và kỹ thuật thu thập thông tin về một đối tượng hoặc khu vực từ xa, thường thông qua việc ghi nhận bức xạ điện từ phản xạ hoặc phát ra từ bề mặt Trái Đất. Nguyên lý cơ bản của viễn thám dựa trên tương tác giữa bức xạ điện từ và các đối tượng trên bề mặt.
 
-Cụ thể, lý thuyết giới hạn Betz có thể được tính toán như sau:
+\textbf{Quá trình viễn thám bị động (Passive Remote Sensing):}
 
-Bằng cách sử dụng phương pháp đĩa truyền động, ta biểu diễn tua bin gió như một đĩa đơn giản có kích thước tương tự như rô-to và được sử dụng để tính gần đúng các lực tác dụng lên dòng chảy.
+Trong hệ thống viễn thám bị động, nguồn năng lượng chính là bức xạ từ Mặt Trời. Khi các sóng này truyền qua khí quyển, một phần năng lượng bị hấp thụ hoặc tán xạ. Sau đó bức xạ tương tác với bề mặt, chịu các quá trình phản xạ, hấp thụ hoặc truyền qua tùy theo đặc tính vật liệu. Tín hiệu phản xạ được vệ tinh ghi nhận bởi cảm biến và được xử lý, truyền về trạm mặt đất để phục vụ phân tích.
+
+\textbf{Phương trình cân bằng năng lượng:}
+\begin{equation}
+E_{incident} = E_{reflected} + E_{absorbed} + E_{transmitted}
+\end{equation}
+
+Trong đó, $E_{incident}$ là năng lượng tới từ Mặt Trời, $E_{reflected}$ là phần năng lượng phản xạ được cảm biến ghi nhận, $E_{absorbed}$ là phần năng lượng bị hấp thụ và chuyển thành nhiệt, và $E_{transmitted}$ là phần năng lượng truyền qua vật chất.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{img/chapter2/actuator_disk.jpg}
-    \caption{Mô hình đĩa truyền động.\cite{betzlimit}}
-    \label{fig:enter-label}
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Sơ đồ minh họa nguyên lý viễn thám\\ bị động và chủ động\vspace{2cm}}}
+    \caption{Nguyên lý viễn thám bị động và chủ động}
+    \label{fig:remote_sensing_principle}
 \end{figure}
 
-Trong đó:
+\subsection{Radar khẩu độ tổng hợp (SAR)}
 
-\begin{itemize}
-    \item $U_u$: Vận tốc dòng vào
-    \item $A_u$: Diện tích tiết diện dòng vào
-    \item $P_1$: Áp suất dòng vào tác dụng lên đĩa
-    \item $U_t$: Vận tốc qua đĩa
-    \item $A_t$: Diện tích tiết diện đĩa
-    \item $P_2$: Áp suất dòng ra qua đĩa
-    \item $U_d$: Vận tốc dòng ra
-    \item $A_d$: Diện tích tiết diện dòng ra
-    \item $P_\infty$: Áp suất khí quyển
-    \item $\dot{m}$: Tốc độ dòng chất lưu
-\end{itemize}
+\textbf{Nguyên lý hoạt động:}
 
-Theo tính chất liên tục của dòng chảy, ta có phương trình:
+Khác với viễn thám bị động, SAR là hệ thống chủ động (active remote sensing): anten phát xung sóng điện từ về phía Trái Đất, các sóng này tương tác với bề mặt và tạo hiện tượng phản xạ ngược (backscatter) với cường độ phụ thuộc vào nhiều yếu tố như độ nhám bề mặt, hàm lượng nước (độ ẩm), hằng số điện môi và góc tới.
 
+\textbf{Hệ số Backscatter ($\sigma^0$):}
 \begin{equation}
-    A_t U_t = A_u U_u = A_d U_d
+\sigma^0 (dB) = 10 \times \log_{10}(\sigma^0_{linear})
 \end{equation}
 
-Trong mô hình đĩa truyền động, lực tác dụng lên tua-bin dẫn đến thay đổi động lượng:
+Giá trị $\sigma^0$ phụ thuộc vào nhiều yếu tố. Về độ nhám bề mặt, bề mặt nhẵn như nước cho $\sigma^0$ thấp, trong khi bề mặt nhám như rừng cho $\sigma^0$ cao. Về hàm lượng nước, độ ẩm làm tăng $\sigma^0$ do hằng số điện môi lớn của nước. Về cấu trúc thực vật, khu vực rừng có cấu trúc phức tạp thường cho backscatter mạnh.
 
-\begin{equation}
-    F = \dot{m}\Delta_{v}
-\end{equation}
-\begin{equation}
-    (P_1-P_2 ) A_t=\rho A_u U_u(U_u-U_d )
-\end{equation}
-\begin{equation}
-    P_1-P_2=\frac{\rho A_u U_u(U_u-U_d )}{A_t}
-\end{equation}
+\textbf{Polarization:}
 
+SAR có thể phát và thu theo các chế độ phân cực khác nhau: VV (phát V, thu V) nhạy với độ ẩm bề mặt, VH (phát V, thu H) thường nhạy với cấu trúc thực vật (volume scattering).
 
-Từ công thức (2.1) và (2.4) trên, ta có:
+\subsection{Ảnh quang học đa phổ (Optical Multispectral)}
 
+\textbf{Dải phổ điện từ:}
+
+Ảnh quang học ghi nhận bức xạ phản xạ từ bề mặt Trái Đất ở các dải phổ khác nhau. Dải nhìn thấy (VIS) có bước sóng 400–700 nm, bao gồm Blue (450–520 nm), Green (520–600 nm) và Red (630–690 nm). Dải cận hồng ngoại (NIR) có bước sóng 700–1400 nm, với đặc trưng phản xạ cao ở thực vật xanh do chlorophyll. Dải hồng ngoại sóng ngắn (SWIR) có bước sóng 1400–3000 nm, nhạy với độ ẩm của thực vật và đất.
+
+\textbf{Chữ ký phổ (Spectral Signature):}
+
+Mỗi loại đối tượng có chữ ký phổ đặc trưng - mẫu phản xạ qua các dải phổ:
 \begin{equation}
-    P_1-P_2=\frac{\rho A_t U_t(U_u-U_d )}{A_t}
-\end{equation}
-\begin{equation}
-    P_1-P_2=\rho U_t(U_u-U_d )
+S = [\rho(\lambda_1), \rho(\lambda_2), ..., \rho(\lambda_n)]
 \end{equation}
 
-Theo định luật Bernoulli, trong chất lưu lý tưởng với dòng chảy ổn định, tổng áp suất động và áp suất tĩnh có giá trị không đổi tại mọi vị trí dọc theo ống dòng.
+Ví dụ: thực vật xanh có phản xạ thấp ở dải Red (hấp thụ bởi chlorophyll) và phản xạ cao ở dải NIR; đất trống có phản xạ trung bình và tăng dần theo bước sóng; nước có phản xạ thấp ở hầu hết các dải, đặc biệt là NIR và SWIR.
 
-Phương trình định luật Bernoulli có dạng:
+\begin{table}[H]
+\centering
+\caption{Các dải phổ Sentinel-2 sử dụng trong nghiên cứu}
+\label{tab:s2_bands}
+\begin{tabular}{|c|l|c|c|l|}
+\hline
+\textbf{Band} & \textbf{Tên} & \textbf{Bước sóng (nm)} & \textbf{Độ phân giải (m)} & \textbf{Ứng dụng} \\
+\hline
+B4 & Red & 665 & 10 & Chlorophyll absorption \\
+\hline
+B8 & NIR & 842 & 10 & Biomass, NDVI \\
+\hline
+B11 & SWIR1 & 1610 & 20 & Độ ẩm, NDMI \\
+\hline
+B12 & SWIR2 & 2190 & 20 & NBR \\
+\hline
+\end{tabular}
+\end{table}
 
+\subsection{Phát hiện biến động rừng}
+
+\textbf{Change Detection Approach:}
 \begin{equation}
-    p+\frac{1}{2} \rho v^2+\rho gz=const
+\Delta Feature = Feature_{after} - Feature_{before}
 \end{equation}
 
-Trong đó:
-\begin{itemize}
-    \item $1/2 \rho v^2$: Áp suất động $(N/m^2)$
-    \item $p+\rho gz$: Áp suất tĩnh $(N/m^2)$
-    \item $g$: Gia tốc trọng trường $(m/s^2)$
-    \item $z$: Độ cao trục của ống so với mặt đất $(m)$
-\end{itemize}
+\textbf{Temporal Features:}
 
-Với trường hợp ống dòng nằm ngang và độ cao $z$ không đáng kể thì (2.7) trở thành:
+Temporal features bao gồm các ``before features'' thể hiện trạng thái rừng tại thời điểm $t_1$, các ``after features'' thể hiện trạng thái rừng tại thời điểm $t_2$, và các ``delta features'' biểu diễn biến đổi giữa hai thời điểm ($t_2 - t_1$).
 
+\textbf{Ví dụ với NDVI:}
 \begin{equation}
-    p+\frac{1}{2} \rho v^2=const
+\Delta NDVI = NDVI_{after} - NDVI_{before}
 \end{equation}
 
-Xét các vị trí có tiết diện và vận tốc lần lượt là $U_u$, $A_u$, $U_t$, $A_t$, $U_d$, $A_d$ ta có:
-
-\begin{equation}
-    P_\infty+\frac{1}{2} \rho U_u^2=P_1+\frac{1}{2} \rho U_t^2
-\end{equation}
-\begin{equation}
-    P_2+\frac{1}{2} \rho U_t^2=P_\infty+\frac{1}{2} \rho U_d^2
-\end{equation}
-
-Suy ra:
-
-\begin{equation}
-    P_1+\frac{1}{2} \rho U_d^2=P_2+\frac{1}{2} \rho U_u^2
-\end{equation}
-\begin{equation}
-    P_1-P_2=\frac{1}{2} \rho U_u^2-\frac{1}{2} \rho U_d^2=\frac{1}{2} \rho (U_u^2-U_d^2 )
-\end{equation}
-
-Từ (2.6) và (2.12) suy ra:
-\begin{equation}
-    \rho U_t(U_u-U_d )=\frac{1}{2} \rho(U_u^2-U_d^2 )
-\end{equation}
-\begin{equation}
-    U_t=\frac{1}{2}\frac{U_u^2-U_d^2}{U_u-U_d}=\frac{1}{2}(U_u+U_d )
-\end{equation}
-
-Ta có công thức tính hiệu suất:
-
-\begin{equation}
-    \eta=\frac{power_{out}}{power_{in}}
-\end{equation}
-
-Công thức tính công suất:
-
-\begin{equation}
-    power=\frac{1}{2}\dot{m}v^2
-\end{equation}
-\begin{equation}
-    \dot{m}=\rho A_t U_t
-\end{equation}
-\begin{equation}
-    power_{in}=\frac{1}{2} \rho A_t U_t U_u^2
-\end{equation}
-
-Giả sử:
-
-\begin{equation}
-    U_t=U_u
-\end{equation}
-
-Suy ra:
-
-\begin{equation}
-    power_{in}=\frac{1}{2} \rho A_t U_u^3
-\end{equation}
-
-Công suất từ tua-bin:
-
-\begin{equation}
-    power_{out}=Fv=(P_1-P_2 ) A_t U_t
-\end{equation}
-
-Từ công thức (2.6) suy ra:
-
-\begin{equation}
-    power_{out}=\rho U_t^2 A_t(U_u-U_d )
-\end{equation}
-
-Từ công thức (2.14), suy ra:
-
-\begin{equation}
-    power_{out}= \rho(\frac{1}{2}(U_u+U_d ))^2 A_t(U_u-U_d )
-\end{equation}
-\begin{equation}
-    \Leftrightarrow power_{out}=\frac{1}{4} \rho A_t (U_u^2-U_d^2 )(U_u+U_d )
-\end{equation}
-\begin{equation}
-    \Leftrightarrow power_{out}=\frac{1}{4} \rho A_t U_u^2 (\frac{U_u^2}{U_u^2}- \frac{U_d^2}{U_u^2}) U_u (\frac{U_u}{U_u} + \frac{U_d}{U_u})
-\end{equation}
-\begin{equation}
-    \Leftrightarrow power_{out}=\frac{1}{4} \rho A_t U_u^2 (1- \frac{U_d^2}{U_u^2}) U_u (1 + \frac{U_d}{U_u})
-\end{equation}
-
-Thay (2.20) và (2.26) vào công thức (2.15), ta có:
-
-\begin{equation}
-    \eta=\frac{\frac{1}{4} \rho A_t U_u^2 (1-\frac{U_d^2}{U_u^2}) U_u (1+\frac{U_d}{U_u})}{\frac{1}{2}\rho A_t U_u^3}
-\end{equation}
-\begin{equation}
-    \eta=\frac{1}{2}(1-\frac{U_d^2}{U_u^2})(1+\frac{U_d}{U_u})
-\end{equation}
-
-Đặt $b = \frac{U_d}{U_u}$, công thức (2.28) trở thành:
-
-\begin{equation}
-    \eta=\frac{1}{2}(1-b^2)(1+b)
-\end{equation}
-
-Ta có:
-
-\begin{equation}
-    \eta_{max} \Leftrightarrow b = \frac{1}{3}
-\end{equation}
-
-Thay $b$ vào (2.29), ta được:
-
-\begin{equation}
-    \eta_{max} = \frac{16}{27} \approx 0.593
-\end{equation}
-
-Vậy hiệu suất lớn nhất mà tua bin gió có thể đạt được theo định luật Betz là 59.3\%
+Khi $\Delta NDVI$ giảm mạnh (rất nhỏ hơn 0) thì đó là dấu hiệu mất rừng; khi $\Delta NDVI$ xấp xỉ 0 thì vùng được xem là rừng ổn định; và khi $\Delta NDVI$ tăng mạnh (rất lớn hơn 0) thì biểu hiện tái trồng rừng.

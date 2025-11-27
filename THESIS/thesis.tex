@@ -89,6 +89,11 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows, positioning, arrows.meta, calc, fit}
+% PGFPlots: required for axis environment and plotting
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+% Disable thousand separators by default for axis tick labels (e.g., 1990 shows as 1990, not 1,990)
+\pgfplotsset{every axis/.append style={xticklabel style={/pgf/number format/1000 sep={}}}}
 \usepackage[justification=centering]{caption}
 
 % Định dạng bảng và caption
@@ -121,6 +126,7 @@
 \usepackage{pdflscape} % Gói giúp xoay trang ngang trong PDF
 \usepackage{graphicx}
 \usepackage{float} % Để cố định vị trí bảng
+\graphicspath{{img/}{img/chapter1/}{img/chapter2/}{img/chapter3/}{img/chapter4/}{img/chapter5/}}
 \usepackage{longtable} % Nếu bảng dài
 \usepackage{lscape} % Để hỗ trợ xoay trang (tuỳ chọn)
 

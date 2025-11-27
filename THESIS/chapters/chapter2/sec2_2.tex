@@ -1,29 +1,126 @@
-\section{Tính toán các tham số đặc trưng hiệu suất của tua-bin gió Savonius}
+\section{Mạng Neural Tích chập (Convolutional Neural Networks)}
 
-Đặc tính dòng chảy qua tua-bin Savonius có thể được mô tả qua sự phân bố của các đại lượng khí động học như áp suất, vận tốc và độ xoáy của dòng khí. Những yếu tố này đóng vai trò quan trọng trong việc xác định hiệu suất chuyển hóa năng lượng của tua-bin, tức là khả năng chuyển đổi năng lượng động học của gió thành năng lượng cơ học để sinh công. Để đánh giá hiệu suất của tua-bin Savonius, các thông số quan trọng như hệ số mô-men xoắn $C_T$, hệ số công suất $C_P$ và tỉ tốc gió $\lambda$ được sử dụng.
+\subsection{Giới thiệu về Neural Networks}
 
-Hệ số công suất $C_P$ biểu thị tỷ lệ giữa công suất thực tế của tua-bin và công suất động năng của gió đi qua diện tích quét của rô-to. Đây là một chỉ số quan trọng để đánh giá hiệu quả chuyển đổi năng lượng của tua-bin. Hệ số mô-men $C_T$ phản ánh sự thay đổi mô-men quay trên các cánh quạt của tua-bin, và có mối liên hệ chặt chẽ với sự phân bố áp suất và lực khí động học tác động lên cánh quạt. Tỉ tốc gió $\lambda$ là tỷ số giữa vận tốc đầu cánh tua-bin $v$ và vận tốc gió đầu vào $U_0$ thể hiện khả năng tua-bin hoạt động hiệu quả ở các điều kiện gió khác nhau.
+\textbf{Perceptron - Đơn vị cơ bản:}
 
-Các thông số này được tính toán qua các biểu thức:
+Một neuron nhân tạo thực hiện phép biến đổi tuyến tính và hàm kích hoạt:
 \begin{equation}
-    C_{T}=\frac{4T}{\rho AD^{2}U_{0}^{2}}
-\end{equation}
-\begin{equation}
-    C_{P}=\frac{2P}{\rho AD^{2}U_{0}^{3}}=\lambda C_{T}
-\end{equation}
-\begin{equation}
-    \lambda=\frac{\omega D}{2U_{0}}
+y = f(\mathbf{w}^T \mathbf{x} + b)
 \end{equation}
 
-Trong đó, 
-\begin{itemize}
-    \item $P$ là công suất của tua-bin [W]
-    \item $T$ là mô-men xoắn trên cánh của tua-bin [Nm]
-    \item $A$ là diện tích quét của rô-to [m²]
-    \item $U_0$ là tốc độ gió [m/s]
-    \item $\omega$ là vận tốc góc [rad/s]
-    \item $D$ là đường kính vùng quay của tua-bin [m]
-    \item $\lambda$ là tỉ tốc gió
-\end{itemize}
- 
-Mỗi thông số đóng góp vào việc đánh giá và tối ưu hóa thiết kế tua-bin, từ đó cải thiện khả năng khai thác năng lượng gió. Việc phân tích đặc tính dòng chảy và các chỉ số hiệu suất này giúp cải tiến thiết kế tua-bin Savonius, đặc biệt là tối ưu hóa biên dạng cánh và điều kiện vận hành. Điều này có ý nghĩa quan trọng trong việc tăng cường hiệu suất khí động học, giảm thiểu tổn thất năng lượng và phát huy tối đa tiềm năng của năng lượng gió trong thực tế.
+Trong đó, $\mathbf{x} \in \mathbb{R}^n$ là input vector chứa $n$ feature, $\mathbf{w} \in \mathbb{R}^n$ là weight vector, $b \in \mathbb{R}$ là bias, $f(\cdot)$ là hàm kích hoạt và $y$ là output.
+
+\textbf{Multi-Layer Perceptron (MLP):}
+
+Một mạng neural gồm nhiều layers:
+\begin{align}
+\text{Layer 1: } & \mathbf{h}_1 = f_1(\mathbf{W}_1 \mathbf{x} + \mathbf{b}_1) \\
+\text{Layer 2: } & \mathbf{h}_2 = f_2(\mathbf{W}_2 \mathbf{h}_1 + \mathbf{b}_2) \\
+\text{Output: } & \mathbf{y} = f_n(\mathbf{W}_n \mathbf{h}_{n-1} + \mathbf{b}_n)
+\end{align}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Sơ đồ cấu trúc một perceptron\\ với inputs, weights, bias, activation function\vspace{2cm}}}
+    \caption{Cấu trúc cơ bản của một perceptron}
+    \label{fig:perceptron}
+\end{figure}
+
+\subsection{Convolutional Layer}
+
+\textbf{Phép tích chập 2D (2D Convolution):}
+
+Đây là thành phần cốt lõi của CNN, thực hiện phép tích chập giữa input và kernel:
+\begin{equation}
+(I * K)(i, j) = \sum_m \sum_n I(i+m, j+n) \times K(m, n)
+\end{equation}
+
+Trong đó, $I$ là input feature map với kích thước height × width × channels, $K$ là kernel hoặc filter có kích thước $k_h \times k_w$, $(i,j)$ là vị trí trong output và $(m,n)$ là vị trí trong kernel.
+
+\textbf{Ưu điểm của Convolution:}
+
+Phép tích chập mang lại nhiều ưu điểm quan trọng. Về parameter sharing, cùng một kernel áp dụng toàn bộ input giúp tiết kiệm tham số. Về translation invariance, mạng có khả năng nhận diện các đặc trưng bất kể vị trí xuất hiện. Về local connectivity, mỗi neuron chỉ kết nối với vùng cục bộ của input, giảm số lượng kết nối cần thiết.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Hình minh họa phép tích chập 2D\\ với kernel 3×3 trượt trên input\vspace{2cm}}}
+    \caption{Minh họa phép tích chập 2D}
+    \label{fig:convolution}
+\end{figure}
+
+\subsection{Activation Functions}
+
+\textbf{ReLU (Rectified Linear Unit):}
+\begin{equation}
+f(x) = \max(0, x) = \begin{cases} x & \text{if } x > 0 \\ 0 & \text{if } x \leq 0 \end{cases}
+\end{equation}
+
+ReLU có các ưu điểm như tính toán nhanh, giảm vấn đề vanishing gradient và cho sparse activation.
+
+\textbf{Softmax (cho Output Layer):}
+\begin{equation}
+\text{softmax}(\mathbf{x})_i = \frac{\exp(x_i)}{\sum_j \exp(x_j)}
+\end{equation}
+
+Các đầu ra của hàm softmax là các xác suất thuộc khoảng [0, 1] và tổng bằng 1, phù hợp cho bài toán phân loại đa lớp.
+
+\subsection{Batch Normalization}
+
+\textbf{Batch Normalization Algorithm:}
+
+Với một mini-batch $B = \{x_1, x_2, ..., x_m\}$:
+\begin{align}
+\mu_B &= \frac{1}{m} \sum_i x_i \\
+\sigma^2_B &= \frac{1}{m} \sum_i (x_i - \mu_B)^2 \\
+\hat{x}_i &= \frac{x_i - \mu_B}{\sqrt{\sigma^2_B + \epsilon}} \\
+y_i &= \gamma \hat{x}_i + \beta
+\end{align}
+
+Batch Normalization giúp tăng tốc độ huấn luyện, giảm độ nhạy với khởi tạo trọng số, và đóng vai trò như một phương pháp regularization.
+
+\subsection{Dropout}
+
+\textbf{Motivation:}
+
+Overfitting xảy ra khi model học quá chi tiết training data, không generalize tốt cho unseen data.
+
+\textbf{Dropout Algorithm (Training):}
+\begin{equation}
+\text{For each neuron } i: \quad r_i \sim \text{Bernoulli}(p), \quad \tilde{y}_i = r_i \times y_i
+\end{equation}
+
+Với xác suất $p$ giữ lại neuron, nếu $r_i = 0$, neuron bị tắt.
+
+\textbf{Dropout2d (Spatial Dropout):}
+
+Thay vì dropout từng neuron, dropout toàn bộ feature maps, phù hợp cho CNN vì features trong cùng channel có correlation không gian cao.
+
+\subsection{Loss Functions}
+
+\textbf{Cross-Entropy Loss (Multi-class Classification):}
+\begin{equation}
+L = -\sum_i y_i \log(\hat{y}_i)
+\end{equation}
+
+Trong đó, $y_i$ là nhãn thực tế (true label) được mã hóa one-hot và $\hat{y}_i$ là xác suất dự đoán xuất ra từ hàm softmax.
+
+\subsection{Optimization Algorithms}
+
+\textbf{Adam (Adaptive Moment Estimation):}
+\begin{align}
+m_t &= \beta_1 m_{t-1} + (1-\beta_1) \nabla L(\theta_t) \\
+v_t &= \beta_2 v_{t-1} + (1-\beta_2) (\nabla L(\theta_t))^2 \\
+\hat{m}_t &= \frac{m_t}{1 - \beta_1^t} \\
+\hat{v}_t &= \frac{v_t}{1 - \beta_2^t} \\
+\theta_{t+1} &= \theta_t - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
+\end{align}
+
+Hyperparameters thường sử dụng: $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon = 10^{-8}$, $\eta = 0.001$.
+
+\textbf{AdamW (Adam with Weight Decay):}
+\begin{equation}
+\theta_{t+1} = \theta_t - \eta \left( \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon} + \lambda \theta_t \right)
+\end{equation}
+
+Trong đó $\lambda$ là weight decay coefficient (L2 regularization).
