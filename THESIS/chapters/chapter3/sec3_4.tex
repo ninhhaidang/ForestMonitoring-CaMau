@@ -34,6 +34,9 @@
 \subsection{Data Splitting Strategy}
 
 \textbf{Stratified Random Split:}
+
+Chiến lược chia dữ liệu được thiết kế theo khuyến nghị của Roberts et al. \cite{roberts2017} về cross-validation cho dữ liệu không gian, đảm bảo đánh giá khách quan và tránh data leakage:
+
 \begin{enumerate}
     \item \textbf{Step 1:} Tách 20\% dữ liệu làm Fixed Test Set (526 mẫu)
     \item \textbf{Step 2:} 5-Fold Cross Validation trên 80\% còn lại (Train+Val = 2,104 mẫu)

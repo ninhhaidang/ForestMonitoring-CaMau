@@ -92,6 +92,9 @@
 % PGFPlots: required for axis environment and plotting
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
+\usepgfplotslibrary{fillbetween}
+% Pie chart support
+\usepackage{pgf-pie}
 % Disable thousand separators by default for axis tick labels (e.g., 1990 shows as 1990, not 1,990)
 \pgfplotsset{every axis/.append style={xticklabel style={/pgf/number format/1000 sep={}}}}
 \usepackage[justification=centering]{caption}

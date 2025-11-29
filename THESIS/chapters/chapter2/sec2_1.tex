@@ -24,6 +24,8 @@ Trong đó, $E_{incident}$ là năng lượng tới từ Mặt Trời, $E_{refle
 
 \subsection{Radar khẩu độ tổng hợp (SAR)}
 
+SAR là công nghệ viễn thám chủ động đóng vai trò quan trọng trong giám sát rừng nhiệt đới nhờ khả năng quan sát trong mọi điều kiện thời tiết \cite{esa2024s1, reiche2018}.
+
 \textbf{Nguyên lý hoạt động:}
 
 Khác với viễn thám bị động, SAR là hệ thống chủ động (active remote sensing): anten phát xung sóng điện từ về phía Trái Đất, các sóng này tương tác với bề mặt và tạo hiện tượng phản xạ ngược (backscatter) với cường độ phụ thuộc vào nhiều yếu tố như độ nhám bề mặt, hàm lượng nước (độ ẩm), hằng số điện môi và góc tới.
@@ -40,6 +42,8 @@ Giá trị $\sigma^0$ phụ thuộc vào nhiều yếu tố. Về độ nhám b�
 SAR có thể phát và thu theo các chế độ phân cực khác nhau: VV (phát V, thu V) nhạy với độ ẩm bề mặt, VH (phát V, thu H) thường nhạy với cấu trúc thực vật (volume scattering).
 
 \subsection{Ảnh quang học đa phổ (Optical Multispectral)}
+
+Ảnh quang học từ các vệ tinh như Sentinel-2 là nguồn dữ liệu quan trọng cho phân loại lớp phủ đất và giám sát thực vật \cite{esa2024s2, khatami2016}.
 
 \textbf{Dải phổ điện từ:}
 
@@ -85,6 +89,8 @@ B12 & SWIR2 & 2190 & 20 & NBR \\
 Temporal features bao gồm các ``before features'' thể hiện trạng thái rừng tại thời điểm $t_1$, các ``after features'' thể hiện trạng thái rừng tại thời điểm $t_2$, và các ``delta features'' biểu diễn biến đổi giữa hai thời điểm ($t_2 - t_1$).
 
 \textbf{Ví dụ với NDVI:}
+
+Chỉ số thực vật khác biệt chuẩn hóa (NDVI) là một trong những chỉ số quan trọng nhất trong giám sát thực vật từ viễn thám \cite{huang2021}:
 \begin{equation}
 \Delta NDVI = NDVI_{after} - NDVI_{before}
 \end{equation}

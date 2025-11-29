@@ -2,29 +2,6 @@
 
 \subsection{Thống kê phân loại}
 
-\begin{table}[H]
-\centering
-\caption{Thống kê phân loại full raster}
-\label{tab:raster_stats}
-\begin{tabular}{|l|r|}
-\hline
-\textbf{Thông số} & \textbf{Giá trị} \\
-\hline
-Tổng số pixels được xử lý & 136,975,599 pixels \\
-\hline
-Pixels hợp lệ (valid data) & 16,246,850 pixels (11.86\%) \\
-\hline
-Pixels bị mask (nodata) & 120,728,749 pixels (88.14\%) \\
-\hline
-Kích thước raster & 12,547 × 10,917 pixels \\
-\hline
-Độ phân giải & 10m × 10m \\
-\hline
-Hệ tọa độ & EPSG:32648 (UTM Zone 48N) \\
-\hline
-\end{tabular}
-\end{table}
-
 \textbf{Phân bố diện tích theo lớp:}
 
 \begin{table}[H]
@@ -57,7 +34,53 @@ Hệ tọa độ & EPSG:32648 (UTM Zone 48N) \\
 
 \begin{figure}[H]
     \centering
-    \fbox{\parbox{0.6\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Biểu đồ tròn (pie chart) thể hiện\\ tỷ lệ phần trăm diện tích từng lớp\vspace{2cm}}}
+    \begin{tikzpicture}
+        \pie[
+            radius=3,
+            text=legend,
+            color={green!60!black, red!70, gray!50, blue!50!green},
+            explode={0, 0.1, 0, 0}
+        ]{
+            74.30/Rừng ổn định (74.30\%),
+            4.48/Mất rừng (4.48\%),
+            18.17/Phi rừng (18.17\%),
+            3.04/Phục hồi rừng (3.04\%)
+        }
+    \end{tikzpicture}
     \caption{Tỷ lệ diện tích các lớp phân loại}
     \label{fig:pie_chart}
 \end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar,
+            width=0.85\textwidth,
+            height=8cm,
+            ylabel={Diện tích (ha)},
+            symbolic x coords={Rừng ổn định, Mất rừng, Phi rừng, Phục hồi rừng},
+            xtick=data,
+            xticklabel style={rotate=15, anchor=east, font=\small},
+            nodes near coords,
+            nodes near coords align={vertical},
+            every node near coord/.append style={font=\scriptsize},
+            ymin=0,
+            ymax=140000,
+            bar width=25pt,
+            enlarge x limits=0.2,
+            legend style={at={(0.5,-0.25)}, anchor=north, legend columns=2},
+        ]
+        \addplot[fill=green!60!black] coordinates {
+            (Rừng ổn định, 120717)
+            (Mất rừng, 7282)
+            (Phi rừng, 29529)
+            (Phục hồi rừng, 4941)
+        };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Biểu đồ cột phân bố diện tích theo lớp phân loại}
+    \label{fig:area_bar_chart}
+\end{figure}
+
+\textbf{Lưu ý về ước tính diện tích:} Theo khuyến nghị của Olofsson và cộng sự \cite{olofsson2014}, diện tích ước tính từ bản đồ phân loại cần được hiệu chỉnh dựa trên Confusion Matrix để đảm bảo tính không chệch. Với Accuracy cao của mô hình (98.86\%, Precision và Recall đều trên 96\% cho tất cả các lớp), sai số giữa diện tích thô và diện tích hiệu chỉnh được kỳ vọng là nhỏ. Tuy nhiên, việc thực hiện hiệu chỉnh đầy đủ theo phương pháp Olofsson sẽ là hướng phát triển trong tương lai.

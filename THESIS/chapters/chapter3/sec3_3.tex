@@ -46,9 +46,9 @@ OUTPUT: (batch_size, 4)  # Logits for 4 classes
 
 Với bộ dữ liệu có quy mô nhỏ (2,630 mẫu), việc áp dụng các kỹ thuật regularization mạnh là cần thiết để tránh hiện tượng overfitting. Nghiên cứu này kết hợp ba kỹ thuật regularization chính:
 
-\textbf{(1) Batch Normalization:} Được áp dụng sau mỗi lớp tích chập và lớp fully-connected, giúp ổn định quá trình huấn luyện, cho phép sử dụng learning rate cao hơn và đóng vai trò như một dạng regularization ngầm định.
+\textbf{(1) Batch Normalization} \cite{ioffe2015}: Được áp dụng sau mỗi lớp tích chập và lớp fully-connected, giúp ổn định quá trình huấn luyện, cho phép sử dụng learning rate cao hơn và đóng vai trò như một dạng regularization ngầm định.
 
-\textbf{(2) Dropout với tỷ lệ 0.7:} Tỷ lệ dropout 70\% được lựa chọn dựa trên các yếu tố sau:
+\textbf{(2) Dropout với tỷ lệ 0.7} \cite{srivastava2014}: Tỷ lệ dropout 70\% được lựa chọn dựa trên các yếu tố sau:
 \begin{itemize}
     \item \textbf{Quy mô dữ liệu nhỏ:} Với chỉ 2,630 mẫu huấn luyện và mô hình có 36,676 tham số, tỷ lệ mẫu/tham số thấp (~72:1) đòi hỏi regularization mạnh để tránh overfitting.
     \item \textbf{Kết quả thực nghiệm:} Qua quá trình thử nghiệm với các giá trị dropout từ 0.3 đến 0.8, tỷ lệ 0.7 cho kết quả tối ưu với khoảng cách nhỏ nhất giữa training accuracy và validation accuracy.

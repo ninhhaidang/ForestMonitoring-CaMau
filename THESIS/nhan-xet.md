@@ -2,7 +2,7 @@
 
 ## Đề tài: "Ứng dụng viễn thám và học sâu trong giám sát biến động rừng tỉnh Cà Mau"
 
-**Sinh viên:** Đặng Ninh Hải
+**Sinh viên:** Ninh Hải Đăng
 **Cơ sở đào tạo:** Trường Đại học Công nghệ - ĐHQGHN
 **Người phản biện:** [Giáo sư chuyên ngành Viễn thám & GIS]
 
@@ -21,14 +21,14 @@
 ### 1.2. Chất lượng học thuật
 
 **Điểm mạnh:**
-- Sử dụng phương pháp Cross Validation 5-Fold - đây là thực hành tốt
-- Có Ablation Studies để phân tích ảnh hưởng của các thành phần
-- Kết quả định lượng rõ ràng với các metrics chuẩn
+- Sử dụng phương pháp 5-Fold Cross Validation - đây là thực hành tốt
+- Có Nghiên cứu loại trừ (Ablation Study) để phân tích ảnh hưởng của các thành phần
+- Kết quả định lượng rõ ràng với các chỉ số chuẩn (Accuracy, Precision, Recall, F1-Score)
 
 **Điểm yếu nghiêm trọng:**
 - **Thiếu validation thực địa (field validation)** - đây là lỗi phương pháp luận nghiêm trọng
-- Ground truth data nguồn gốc không rõ ràng, không mô tả quy trình thu thập
-- Thiếu phân tích uncertainty và confidence intervals
+- Dữ liệu mẫu (Ground Truth) nguồn gốc không rõ ràng, không mô tả quy trình thu thập
+- Thiếu phân tích uncertainty và Khoảng tin cậy (Confidence Intervals)
 
 ---
 
@@ -44,21 +44,21 @@
 
 **Vấn đề cụ thể:**
 - Mục tiêu "phát triển mô hình CNN" nhưng thực chất là thiết kế kiến trúc CNN đơn giản, không phải đóng góp về architectural innovation
-- Không đặt mục tiêu định lượng trước (ví dụ: đạt accuracy >95%)
+- Không đặt mục tiêu định lượng trước (ví dụ: đạt Accuracy >95%)
 
 ### 2.2. PHƯƠNG PHÁP NGHIÊN CỨU
 
 #### 2.2.1. Thu thập dữ liệu
 
-**Vấn đề nghiêm trọng #1: Nguồn gốc Ground Truth không minh bạch**
+**Vấn đề nghiêm trọng #1: Nguồn gốc Dữ liệu mẫu (Ground Truth) không minh bạch**
 
-Đồ án nêu có 2,630 điểm ground truth nhưng:
+Đồ án nêu có 2,630 điểm Dữ liệu mẫu nhưng:
 - Không mô tả **ai** thu thập, **khi nào**, **bằng phương pháp gì**
 - Không có thông tin về **độ chính xác định vị** (GPS accuracy)
-- Không nêu rõ ground truth được lấy từ **giải đoán ảnh** hay **khảo sát thực địa**
+- Không nêu rõ Dữ liệu mẫu được lấy từ **giải đoán ảnh** hay **khảo sát thực địa**
 - Không có **sampling design** (random, stratified, systematic?)
 
-> **Câu hỏi phản biện:** Ground truth này được thu thập như thế nào? Nếu chỉ giải đoán từ ảnh vệ tinh khác thì đây là **circular validation** - một sai lầm phương pháp luận cơ bản.
+> **Câu hỏi phản biện:** Dữ liệu mẫu này được thu thập như thế nào? Nếu chỉ giải đoán từ ảnh vệ tinh khác thì đây là **circular validation** - một sai lầm phương pháp luận cơ bản.
 
 **Vấn đề #2: Thời điểm dữ liệu**
 
@@ -87,7 +87,7 @@ Khoảng cách ~13 tháng là hợp lý, nhưng:
 
 **Phân tích kỹ thuật:**
 
-Kiến trúc CNN với ~36,676 tham số là **quá đơn giản** cho bài toán này:
+Kiến trúc CNN với ~36,676 Số tham số là **quá đơn giản** cho bài toán này:
 
 ```
 Input (3×3×27) → Conv(64) → Conv(32) → GAP → FC(64) → Output(4)
@@ -108,31 +108,31 @@ Input (3×3×27) → Conv(64) → Conv(32) → GAP → FC(64) → Output(4)
 20% Test (fixed)
 ```
 
-- Không có **spatial stratification** - các điểm gần nhau có thể rơi vào cả train và test → **spatial autocorrelation** gây overestimate accuracy
+- Không có **spatial stratification** - các điểm gần nhau có thể rơi vào cả train và test → **spatial autocorrelation** gây overestimate Accuracy
 - Không sử dụng **spatial blocking** hoặc **leave-one-region-out** cross validation
 
-**Kết quả 98.86% accuracy là đáng ngờ:**
+**Kết quả 98.86% Accuracy là đáng ngờ:**
 
-Độ chính xác này cao bất thường vì:
+Accuracy này cao bất thường vì:
 1. Các nghiên cứu tương tự chỉ đạt 85-96%
 2. Có thể do **spatial autocorrelation** trong data (Tobler's First Law)
 3. Có thể do **data leakage** trong normalization
-4. Ground truth có thể không độc lập với dữ liệu training
+4. Dữ liệu mẫu có thể không độc lập với dữ liệu training
 
 ### 2.3. PHÂN TÍCH KẾT QUẢ
 
 #### 2.3.1. Kết quả phân loại
 
 **Vấn đề thống kê:**
-- Không có **confidence intervals** cho các metrics
+- Không có **Khoảng tin cậy** cho các chỉ số
 - Không có **statistical significance tests** so sánh các configurations
-- Ablation studies thiếu **p-values** hoặc **effect sizes**
+- Nghiên cứu loại trừ thiếu **p-values** hoặc **effect sizes**
 
 **Vấn đề diễn giải:**
 
 Đồ án kết luận phát hiện 7,282 ha mất rừng (4.48%) nhưng:
-- Không có **error propagation analysis** từ model accuracy sang area estimation
-- Không áp dụng **confusion matrix adjustment** cho area estimates (theo Olofsson et al., 2014)
+- Không có **error propagation analysis** từ Accuracy của mô hình sang area estimation
+- Không áp dụng **Confusion Matrix adjustment** cho area estimates (theo Olofsson và cs., 2014)
 - Không có **uncertainty bounds** cho diện tích ước tính
 
 > **Công thức cần áp dụng:** Diện tích hiệu chỉnh = Diện tích thô × (User's Accuracy / Producer's Accuracy)
@@ -148,7 +148,7 @@ Input (3×3×27) → Conv(64) → Conv(32) → GAP → FC(64) → Output(4)
 ### 2.4. THẢO LUẬN VÀ HẠN CHẾ
 
 **Điểm tốt:**
-- Tác giả nhận ra một số hạn chế (thời gian dự đoán, black-box, quy mô ground truth)
+- Tác giả nhận ra một số hạn chế (thời gian dự đoán, black-box, quy mô Dữ liệu mẫu)
 
 **Thiếu sót trong thảo luận:**
 - Không phân tích **nguyên nhân lỗi phân loại** giữa Forest Stable và Deforestation
@@ -164,11 +164,11 @@ Input (3×3×27) → Conv(64) → Conv(32) → GAP → FC(64) → Output(4)
 
 | # | Vấn đề | Mức độ | Khuyến nghị |
 |---|--------|--------|-------------|
-| 1 | Ground truth không có validation thực địa | Nghiêm trọng | Cần khảo sát thực địa ít nhất 100 điểm |
+| 1 | Dữ liệu mẫu không có validation thực địa | Nghiêm trọng | Cần khảo sát thực địa ít nhất 100 điểm |
 | 2 | Không có spatial stratification trong data splitting | Nghiêm trọng | Áp dụng spatial blocking CV |
 | 3 | Thiếu atmospheric correction cho S2 | Trung bình | Sử dụng Sen2Cor hoặc FORCE |
 | 4 | Thiếu speckle filtering cho S1 | Trung bình | Áp dụng Lee filter hoặc Refined Lee |
-| 5 | Không có area estimation with uncertainty | Nghiêm trọng | Theo Olofsson et al. (2014) |
+| 5 | Không có area estimation with uncertainty | Nghiêm trọng | Theo Olofsson và cs. (2014) |
 
 ### 3.2. Khoảng trống học thuật
 
@@ -191,7 +191,7 @@ from sklearn.model_selection import GroupKFold
 ```
 
 **2. Area Estimation theo chuẩn quốc tế:**
-Áp dụng methodology của Olofsson et al. (2014) "Good practices for estimating area and assessing accuracy of land change" - Remote Sensing of Environment.
+Áp dụng methodology của Olofsson và cs. (2014) "Good practices for estimating area and assessing accuracy of land change" - Remote Sensing of Environment.
 
 **3. Ensemble approach:**
 Thay vì chỉ dùng CNN đơn lẻ:
@@ -209,7 +209,7 @@ Thay vì 1 ảnh/thời điểm, sử dụng median composite của nhiều ản
 - Topographic variables (DEM-derived)
 - Distance to roads/settlements
 
-**3. Ground truth:**
+**3. Dữ liệu mẫu:**
 - Cần protocol thu thập rõ ràng
 - Field validation ít nhất 5% total points
 - Photointerpretation guidelines documented
@@ -276,7 +276,7 @@ Thử nghiệm: 5×5, 7×7, 11×11, 15×15 với proper validation
 
 ### 6.1. Những điểm không chấp nhận được
 
-1. **Ground truth không minh bạch:** Đây là nền tảng của toàn bộ nghiên cứu. Không biết nguồn gốc ground truth thì không thể tin kết quả.
+1. **Dữ liệu mẫu không minh bạch:** Đây là nền tảng của toàn bộ nghiên cứu. Không biết nguồn gốc Dữ liệu mẫu thì không thể tin kết quả.
 
 2. **Không có validation thực địa:** Một nghiên cứu về giám sát rừng mà không có một lần khảo sát thực địa là thiếu sót nghiêm trọng về phương pháp.
 
@@ -289,10 +289,10 @@ Thử nghiệm: 5×5, 7×7, 11×11, 15×15 với proper validation
 
 ### 6.2. Những câu hỏi cần trả lời
 
-1. Ground truth 2,630 điểm được thu thập như thế nào? Ai đã validate?
+1. Dữ liệu mẫu 2,630 điểm được thu thập như thế nào? Ai đã validate?
 2. Tại sao không có một điểm khảo sát thực địa nào?
 3. Normalization được thực hiện trước hay sau khi split data?
-4. Các điểm ground truth có phân bố đều không gian không hay clustered?
+4. Các điểm Dữ liệu mẫu có phân bố đều không gian không hay clustered?
 5. Kết quả 7,282 ha mất rừng có khớp với số liệu thống kê chính thức không?
 
 ---
@@ -321,9 +321,9 @@ Thử nghiệm: 5×5, 7×7, 11×11, 15×15 với proper validation
 
 ### 8.1. Kết luận
 
-Đồ án cho thấy sinh viên có **nền tảng kỹ thuật tốt** về deep learning và xử lý dữ liệu viễn thám. Tuy nhiên, còn **thiếu sót đáng kể về phương pháp luận khoa học**, đặc biệt là:
+Đồ án cho thấy sinh viên có **nền tảng kỹ thuật tốt** về Deep Learning và xử lý dữ liệu viễn thám. Tuy nhiên, còn **thiếu sót đáng kể về phương pháp luận khoa học**, đặc biệt là:
 - Validation thực địa
-- Minh bạch về nguồn dữ liệu
+- Minh bạch về nguồn Dữ liệu mẫu
 - Uncertainty quantification
 - Hoàn thiện bản đồ sản phẩm
 
@@ -333,7 +333,7 @@ Thử nghiệm: 5×5, 7×7, 11×11, 15×15 với proper validation
 
 1. **Bắt buộc:**
    - Hoàn thiện tất cả hình ảnh và bản đồ (thay placeholder)
-   - Giải thích rõ nguồn gốc ground truth
+   - Giải thích rõ nguồn gốc Dữ liệu mẫu
    - Thực hiện spatial cross-validation và so sánh kết quả
 
 2. **Khuyến nghị mạnh:**
@@ -354,4 +354,4 @@ Thử nghiệm: 5×5, 7×7, 11×11, 15×15 với proper validation
 
 **Ghi chú cuối cùng cho sinh viên:**
 
-Đồ án của bạn có tiềm năng và nền tảng kỹ thuật tốt. Tuy nhiên, trong nghiên cứu khoa học về viễn thám, **validation thực địa** và **minh bạch phương pháp** là không thể thiếu. Kết quả accuracy cao không có ý nghĩa nếu không có cơ sở khoa học vững chắc để đảm bảo độ tin cậy. Hãy xem những nhận xét này như cơ hội để hoàn thiện công trình của mình trước khi bảo vệ.
+Đồ án của bạn có tiềm năng và nền tảng kỹ thuật tốt. Tuy nhiên, trong nghiên cứu khoa học về viễn thám, **validation thực địa** và **minh bạch phương pháp** là không thể thiếu. Kết quả Accuracy cao không có ý nghĩa nếu không có cơ sở khoa học vững chắc để đảm bảo độ tin cậy. Hãy xem những nhận xét này như cơ hội để hoàn thiện công trình của mình trước khi bảo vệ.
