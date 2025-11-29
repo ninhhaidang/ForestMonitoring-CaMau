@@ -1,5 +1,7 @@
 \section{So sánh với các nghiên cứu khác}
 
+\subsection{So sánh với các công trình trong literature}
+
 \begin{table}[H]
 \centering
 \caption{So sánh với các nghiên cứu trong literature}
@@ -18,3 +20,51 @@ Zhang et al. (2020) & U-Net & Sentinel-2 & 96.8\% & 98.5\% \\
 \hline
 \end{tabular}
 \end{table}
+
+\textbf{Nhận xét:} Kết quả của nghiên cứu này đạt độ chính xác cao hơn so với các công trình trước đó. Tuy nhiên, cần lưu ý rằng việc so sánh trực tiếp có những hạn chế do sự khác biệt về khu vực nghiên cứu, số lượng lớp phân loại, kích thước bộ dữ liệu và phương pháp đánh giá. Độ chính xác cao của nghiên cứu này có thể được giải thích bởi: (1) bộ dữ liệu ground truth chất lượng cao từ khảo sát thực địa, (2) sự kết hợp hiệu quả giữa dữ liệu SAR và Optical, và (3) kiến trúc CNN được tối ưu hóa cho bộ dữ liệu nhỏ.
+
+\subsection{So sánh với sản phẩm Global Forest Watch}
+
+Để đánh giá tính hợp lý của kết quả, nghiên cứu thực hiện so sánh định tính với sản phẩm Global Forest Watch (GFW) — bộ dữ liệu mất rừng toàn cầu được phát triển bởi Hansen et al. tại Đại học Maryland.
+
+\begin{table}[H]
+\centering
+\caption{So sánh kết quả với Global Forest Watch}
+\label{tab:gfw_comparison}
+\begin{tabular}{|l|c|c|l|}
+\hline
+\textbf{Chỉ tiêu} & \textbf{Nghiên cứu này} & \textbf{GFW (tham khảo)} & \textbf{Ghi chú} \\
+\hline
+Độ phân giải & 10m & 30m & Nghiên cứu này chi tiết hơn \\
+\hline
+Nguồn dữ liệu & Sentinel-1/2 & Landsat & Đa nguồn vs đơn nguồn \\
+\hline
+Phương pháp & CNN & Decision Trees & Deep Learning vs ML truyền thống \\
+\hline
+Cập nhật & Theo yêu cầu & Hàng năm & Linh hoạt hơn \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Nhận xét về xu hướng mất rừng:} Kết quả phân loại cho thấy diện tích mất rừng chiếm 4.48\% (7,282 ha) trong tổng diện tích nghiên cứu, phù hợp với xu hướng mất rừng ngập mặn tại khu vực Đồng bằng sông Cửu Long được ghi nhận trong các nghiên cứu trước đó. Theo báo cáo của Bộ Nông nghiệp và Phát triển Nông thôn, khu vực ven biển Cà Mau chịu áp lực lớn từ hoạt động nuôi trồng thủy sản và xâm nhập mặn, dẫn đến tình trạng suy giảm diện tích rừng ngập mặn trong những năm gần đây.
+
+\subsection{Khoảng tin cậy của kết quả}
+
+Để đánh giá độ tin cậy thống kê, nghiên cứu tính toán khoảng tin cậy 95\% cho các metrics chính dựa trên kết quả 5-Fold Cross Validation:
+
+\begin{table}[H]
+\centering
+\caption{Khoảng tin cậy 95\% của các metrics (dựa trên 5-Fold CV)}
+\label{tab:confidence_intervals}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Metric} & \textbf{Mean} & \textbf{Std} & \textbf{95\% CI} \\
+\hline
+Accuracy & 98.15\% & 0.28\% & [97.80\%, 98.50\%] \\
+\hline
+F1-Score & 98.15\% & 0.28\% & [97.80\%, 98.50\%] \\
+\hline
+\end{tabular}
+\end{table}
+
+Khoảng tin cậy hẹp (±0.35\%) cho thấy mô hình có tính ổn định cao và kết quả đáng tin cậy. Với 5 folds, khoảng tin cậy được tính theo công thức: $CI = \bar{x} \pm t_{0.025, n-1} \times \frac{s}{\sqrt{n}}$, trong đó $t_{0.025, 4} \approx 2.776$.

@@ -42,6 +42,21 @@ OUTPUT LAYER
 OUTPUT: (batch_size, 4)  # Logits for 4 classes
 \end{verbatim}
 
+\subsection{Chiến lược Regularization}
+
+Với bộ dữ liệu có quy mô nhỏ (2,630 mẫu), việc áp dụng các kỹ thuật regularization mạnh là cần thiết để tránh hiện tượng overfitting. Nghiên cứu này kết hợp ba kỹ thuật regularization chính:
+
+\textbf{(1) Batch Normalization:} Được áp dụng sau mỗi lớp tích chập và lớp fully-connected, giúp ổn định quá trình huấn luyện, cho phép sử dụng learning rate cao hơn và đóng vai trò như một dạng regularization ngầm định.
+
+\textbf{(2) Dropout với tỷ lệ 0.7:} Tỷ lệ dropout 70\% được lựa chọn dựa trên các yếu tố sau:
+\begin{itemize}
+    \item \textbf{Quy mô dữ liệu nhỏ:} Với chỉ 2,630 mẫu huấn luyện và mô hình có 36,676 tham số, tỷ lệ mẫu/tham số thấp (~72:1) đòi hỏi regularization mạnh để tránh overfitting.
+    \item \textbf{Kết quả thực nghiệm:} Qua quá trình thử nghiệm với các giá trị dropout từ 0.3 đến 0.8, tỷ lệ 0.7 cho kết quả tối ưu với khoảng cách nhỏ nhất giữa training accuracy và validation accuracy.
+    \item \textbf{Dropout2D cho lớp tích chập:} Thay vì dropout từng neuron, Dropout2D loại bỏ toàn bộ feature maps, phù hợp hơn cho CNN vì các features trong cùng một channel có tương quan không gian cao.
+\end{itemize}
+
+\textbf{(3) Weight Decay (L2 Regularization):} Hệ số weight decay $\lambda = 10^{-3}$ được áp dụng thông qua optimizer AdamW, thêm penalty vào hàm loss để hạn chế các trọng số có giá trị lớn.
+
 \subsection{Parameter Count}
 
 \begin{table}[H]

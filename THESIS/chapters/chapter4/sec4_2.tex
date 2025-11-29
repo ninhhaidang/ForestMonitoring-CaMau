@@ -112,6 +112,22 @@ ROC-AUC (macro-avg) & 0.9998 & 99.98\% \\
 
 Tổng cộng chỉ có 6/526 mẫu bị phân loại sai, tương đương tỷ lệ lỗi 1.14\%. Trong đó, hai mẫu thuộc Lớp 0 (Rừng ổn định) bị nhầm thành Lớp 1 (Mất rừng) và bốn mẫu thuộc Lớp 1 (Mất rừng) bị nhầm thành Lớp 0 (Rừng ổn định). Đánh giá chi tiết cho thấy Lớp 2 (Phi rừng) và Lớp 3 (Phục hồi rừng) được phân loại hoàn hảo với độ chính xác 100\%.
 
+\textbf{Phân tích nguyên nhân nhầm lẫn giữa Rừng ổn định và Mất rừng:}
+
+Việc nhầm lẫn chỉ xảy ra giữa hai lớp Rừng ổn định (Lớp 0) và Mất rừng (Lớp 1) có thể được giải thích bởi các yếu tố sau:
+
+\begin{itemize}
+    \item \textbf{Sự tương đồng về đặc trưng quang phổ:} Cả hai lớp đều có sự hiện diện của rừng ở ít nhất một thời điểm. Các khu vực rừng bị suy thoái nhẹ (degradation) có thể có chữ ký phổ tương tự với rừng ổn định, đặc biệt khi mức độ mất rừng không rõ ràng.
+
+    \item \textbf{Hiệu ứng biên (Edge effects):} Tại ranh giới giữa vùng rừng và vùng mất rừng, các pixel có thể chứa cả hai loại lớp phủ (mixed pixels), dẫn đến vector đặc trưng không điển hình cho một lớp cụ thể.
+
+    \item \textbf{Biến động theo mùa:} Một số khu vực rừng ngập mặn có thể có biến động theo mùa về mật độ tán lá, tạo ra sự thay đổi NDVI tương tự như mất rừng nhưng thực tế là biến động tự nhiên.
+
+    \item \textbf{Độ phân giải thời gian:} Với chỉ hai thời điểm quan sát (bi-temporal), một số biến động ngắn hạn hoặc phục hồi nhanh có thể không được ghi nhận chính xác.
+\end{itemize}
+
+Tuy nhiên, với tỷ lệ nhầm lẫn rất thấp (chỉ 6/526 mẫu, ~1.14\%), mô hình vẫn đạt hiệu quả cao trong việc phân biệt các lớp biến động rừng.
+
 \subsection{Đường cong ROC}
 
 \begin{table}[H]

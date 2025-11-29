@@ -97,6 +97,7 @@
 \usepackage[justification=centering]{caption}
 
 % Định dạng bảng và caption
+\usepackage{array}
 \usepackage{booktabs}
 \usepackage[font=small]{caption}
 \usepackage{makecell}
@@ -108,20 +109,27 @@
 % Hyperlinks và danh mục
 \usepackage[unicode]{hyperref}
 
-% Định dạng tiêu đề chương, mục
-\usepackage{titlesec} 
-\titleformat{\chapter}[display]
-{\raggedright\large}
-{\MakeUppercase{\chaptertitlename}~\thechapter}
-{0pt}
-{\vspace{2\baselineskip}\bfseries\huge}
-%\titlespacing*{\chapter}{0cm}{-\topskip}{0pt}[0pt]
-
-\titleformat{\chapter}[block]{\normalfont\Large\bfseries}{\thechapter.}{1em}{}
-\renewcommand{\contentsname}{\MakeUppercase{MỤC LỤC}} 
-
 % Tùy chỉnh các phần khác
 \usepackage{scrextend, enumerate, float, afterpage, sectsty, tocloft, calc, listings}
+
+% Thêm dấu chấm (...) cho chapter trong mục lục
+\renewcommand{\cftchapdotsep}{\cftdotsep}
+
+% Định dạng tiêu đề chương, mục (phải đặt SAU sectsty và tocloft)
+\usepackage{titlesec}
+\titleformat{\chapter}[block]{\centering\normalfont\fontsize{13pt}{16pt}\selectfont\bfseries}{CHƯƠNG \thechapter.}{0.5em}{\MakeUppercase}
+\titleformat{name=\chapter,numberless}[block]{\centering\normalfont\fontsize{13pt}{16pt}\selectfont\bfseries}{}{0pt}{\MakeUppercase}
+\titlespacing*{\chapter}{0pt}{-20pt}{10pt}
+
+% Định dạng chung cho các tiêu đề không đánh số: chữ hoa, 13pt, đậm, căn giữa
+\newcommand{\unnumberedchapter}[1]{%
+  \vspace*{-20pt}%
+  \begin{center}
+    {\fontsize{13pt}{16pt}\selectfont\textbf{\MakeUppercase{#1}}}
+  \end{center}
+  \vspace{10pt}%
+}
+
 
 \usepackage{pdflscape} % Gói giúp xoay trang ngang trong PDF
 \usepackage{graphicx}
@@ -149,9 +157,14 @@
 \renewcommand{\bibsection}{}
 \makeatother
 
-% Định dạng lại các tiêu đề section và subsection
-\sectionfont{\fontsize{15}{15}\selectfont}
-\subsectionfont{\fontsize{13}{15}\selectfont}
+% Định dạng lại các tiêu đề section và subsection (dùng sectsty)
+% Không dùng \chapterfont vì titlesec đã định dạng chapter
+\sectionfont{\fontsize{13pt}{16pt}\selectfont\bfseries}
+\subsectionfont{\fontsize{13pt}{16pt}\selectfont\bfseries}
+
+% Thêm dấu chấm sau số section và subsection (1.1. thay vì 1.1)
+\renewcommand{\thesection}{\thechapter.\arabic{section}.}
+\renewcommand{\thesubsection}{\thechapter.\arabic{section}.\arabic{subsection}.}
 
 % Điều chỉnh khoảng cách giữa các đoạn
 \usepackage{indentfirst}
@@ -190,23 +203,33 @@
 \input{chapters/acknowledgement}\newpage\cleardoublepage
 
 % Mục lục, danh sách hình ảnh, bảng, thuật toán
-\addcontentsline{toc}{chapter}{Mục lục}
-\tableofcontents\newpage\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{MỤC LỤC}
+\unnumberedchapter{MỤC LỤC}
+\makeatletter\@starttoc{toc}\makeatother
+\newpage\cleardoublepage
 
-\addcontentsline{toc}{chapter}{\listfigurename}
-\listoffigures\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{DANH MỤC HÌNH ẢNH}
+\unnumberedchapter{DANH MỤC HÌNH ẢNH}
+\makeatletter\@starttoc{lof}\makeatother
+\cleardoublepage
 
-\addcontentsline{toc}{chapter}{\listtablename}
-\listoftables\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{DANH MỤC BẢNG}
+\unnumberedchapter{DANH MỤC BẢNG}
+\makeatletter\@starttoc{lot}\makeatother
+\cleardoublepage
 
 % Thuật ngữ
 \input{chapters/glossary}\newpage\cleardoublepage
 
+% Chuyển sang đánh số trang kiểu Ả Rập từ MỞ ĐẦU (theo quy định)
+\pagenumbering{arabic}
+
 % Phần mở đầu
 \input{chapters/preface}\newpage\cleardoublepage
 
-% Chuyển sang đánh số trang kiểu Ả Rập
-\pagenumbering{arabic}
 \setcounter{secnumdepth}{3}
 % Chương nội dung
 \input{chapters/chapter1/chapter1}\newpage\cleardoublepage
@@ -217,8 +240,8 @@
 
 % Tài liệu tham khảo
 \phantomsection
-\addcontentsline{toc}{chapter}{Tài liệu tham khảo}
-\chapter*{TÀI LIỆU THAM KHẢO}
+\addcontentsline{toc}{chapter}{TÀI LIỆU THAM KHẢO}
+\unnumberedchapter{TÀI LIỆU THAM KHẢO}
 
 % Tài liệu tiếng Việt
 \nocitevi{*}

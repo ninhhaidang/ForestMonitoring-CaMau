@@ -26,21 +26,25 @@ Theo Nghị quyết số 1278/NQ-UBTVQH15 ngày 24/10/2024 của Ủy ban Thư�
 
 \subsection{Dữ liệu viễn thám}
 
+\textbf{Tiêu chí lựa chọn ảnh vệ tinh:}
+
+Việc lựa chọn ảnh vệ tinh tuân theo các tiêu chí nhằm đảm bảo chất lượng dữ liệu đầu vào. Đối với ảnh Sentinel-2, nghiên cứu sử dụng sản phẩm \texttt{S2\_SR\_HARMONIZED} (Surface Reflectance Level-2A đã đồng nhất hóa) từ Google Earth Engine, ưu tiên các ảnh trong mùa khô (tháng 1-3) để giảm thiểu ảnh hưởng của mây và đảm bảo tính so sánh giữa hai thời kỳ. Mặt nạ mây được tạo từ bộ sưu tập \texttt{S2\_CLOUD\_PROBABILITY} với ngưỡng xác suất 50\% để loại bỏ các pixel bị mây che phủ. Đối với ảnh Sentinel-1, sử dụng sản phẩm \texttt{S1\_GRD} đã được tiền xử lý bởi ESA, các cảnh được chọn có thời gian thu nhận gần nhất với ảnh Sentinel-2 tương ứng (trong phạm vi ±7 ngày) để đảm bảo tính đồng bộ về thời gian.
+
 \begin{table}[H]
 \centering
 \caption{Tổng quan dữ liệu viễn thám sử dụng}
 \label{tab:data_overview}
-\begin{tabular}{|l|c|c|c|c|}
+\begin{tabular}{|l|c|c|c|l|}
 \hline
-\textbf{Nguồn dữ liệu} & \textbf{Độ phân giải} & \textbf{Kỳ ảnh} & \textbf{Số bands} & \textbf{Dung lượng} \\
+\textbf{Nguồn dữ liệu} & \textbf{Độ phân giải} & \textbf{Kỳ ảnh} & \textbf{Số bands} & \textbf{Ghi chú} \\
 \hline
-Sentinel-2 Before & 10m & 30/01/2024 & 7 & ~850 MB \\
+Sentinel-2 Before & 10m & 30/01/2024 & 7 & Level-2A (SR), cloud $<$10\% \\
 \hline
-Sentinel-2 After & 10m & 28/02/2025 & 7 & ~850 MB \\
+Sentinel-2 After & 10m & 28/02/2025 & 7 & Level-2A (SR), cloud $<$10\% \\
 \hline
-Sentinel-1 Before & 10m & 04/02/2024 & 2 & ~250 MB \\
+Sentinel-1 Before & 10m & 04/02/2024 & 2 & GRD, IW mode \\
 \hline
-Sentinel-1 After & 10m & 22/02/2025 & 2 & ~250 MB \\
+Sentinel-1 After & 10m & 22/02/2025 & 2 & GRD, IW mode \\
 \hline
 Ground Truth & - & - & - & 2,630 points \\
 \hline
@@ -57,6 +61,16 @@ Forest Boundary & Vector & - & - & Shapefile \\
 \end{figure}
 
 \subsection{Ground Truth Data}
+
+Dữ liệu ground truth được thu thập thông qua quy trình khảo sát thực địa chuyên nghiệp với sự phối hợp giữa Chi cục Kiểm lâm tỉnh Cà Mau và Công ty TNHH Tư vấn và Công nghệ Đồng Xanh (GFD). Quy trình thu thập bao gồm ba giai đoạn chính:
+
+\textbf{Giai đoạn 1 - Khảo sát thực địa:} Các nhân viên kiểm lâm thuộc Chi cục Kiểm lâm tỉnh Cà Mau tiến hành khảo sát thực địa tại các khu vực rừng trong phạm vi nghiên cứu. Việc khảo sát được thực hiện bằng thiết bị bay không người lái (drone) để ghi nhận hình ảnh thực tế và xác định trạng thái rừng tại từng vị trí. Tọa độ các điểm khảo sát được đánh dấu và ghi nhận trong quá trình bay.
+
+\textbf{Giai đoạn 2 - Số hóa và xử lý:} Dữ liệu tọa độ và hình ảnh drone thu thập được chuyển giao cho Công ty TNHH Tư vấn và Công nghệ Đồng Xanh (GFD) — đối tác chuyên môn của Chi cục Kiểm lâm tỉnh Cà Mau. Các chuyên viên GIS của công ty tiến hành số hóa các điểm ground truth trên phần mềm QGIS, đối chiếu với ảnh vệ tinh Sentinel-2 và phân loại trạng thái biến động rừng cho từng điểm.
+
+\textbf{Giai đoạn 3 - Kiểm tra và hoàn thiện:} Bộ dữ liệu ground truth được kiểm tra chéo giữa thông tin thực địa và ảnh vệ tinh, loại bỏ các điểm không rõ ràng hoặc nằm trong vùng mây che phủ. Dữ liệu cuối cùng được xuất dưới dạng file CSV với cấu trúc gồm 4 trường: \texttt{id} (mã định danh điểm), \texttt{label} (nhãn lớp phân loại), \texttt{x} và \texttt{y} (tọa độ theo hệ quy chiếu EPSG:32648 - WGS 84 / UTM Zone 48N), đảm bảo tương thích với dữ liệu ảnh vệ tinh Sentinel.
+
+\textbf{Thống kê ground truth:}
 
 \begin{table}[H]
 \centering
