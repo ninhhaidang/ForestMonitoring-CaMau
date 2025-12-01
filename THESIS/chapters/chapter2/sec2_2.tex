@@ -67,6 +67,41 @@ ReLU có các ưu điểm như tính toán nhanh, giảm vấn đề vanishing g
 
 Các đầu ra của hàm softmax là các xác suất thuộc khoảng [0, 1] và tổng bằng 1, phù hợp cho bài toán phân loại đa lớp.
 
+\subsection{Pooling Layers}
+
+Pooling là phép toán giảm chiều không gian (spatial dimensions) của feature maps, giúp giảm số lượng tham số, giảm chi phí tính toán và tăng khả năng translation invariance của mạng \cite{lecun2015}.
+
+\textbf{Max Pooling:}
+
+Max Pooling chọn giá trị lớn nhất trong mỗi vùng cục bộ:
+\begin{equation}
+y_{i,j} = \max_{(m,n) \in R_{i,j}} x_{m,n}
+\end{equation}
+
+Trong đó, $R_{i,j}$ là vùng pooling (thường là 2×2) tại vị trí $(i,j)$. Max Pooling giữ lại các đặc trưng nổi bật nhất (edge, texture) và loại bỏ thông tin ít quan trọng.
+
+\textbf{Average Pooling:}
+
+Average Pooling tính trung bình các giá trị trong vùng pooling:
+\begin{equation}
+y_{i,j} = \frac{1}{|R_{i,j}|} \sum_{(m,n) \in R_{i,j}} x_{m,n}
+\end{equation}
+
+Average Pooling giữ lại thông tin tổng quát hơn, phù hợp khi tất cả các giá trị trong vùng đều có ý nghĩa.
+
+\textbf{Global Average Pooling (GAP):}
+
+Global Average Pooling là trường hợp đặc biệt của Average Pooling, trong đó vùng pooling bao trùm toàn bộ feature map \cite{lin2013}:
+\begin{equation}
+y_c = \frac{1}{H \times W} \sum_{i=1}^{H} \sum_{j=1}^{W} x_{c,i,j}
+\end{equation}
+
+Trong đó, $H$ và $W$ là chiều cao và chiều rộng của feature map, $c$ là chỉ số channel. GAP biến đổi mỗi feature map có kích thước $H \times W$ thành một giá trị scalar, tạo ra vector có chiều bằng số channels.
+
+\textbf{Ưu điểm của Global Average Pooling:}
+
+GAP mang lại nhiều lợi ích quan trọng. Thứ nhất, GAP giảm mạnh số lượng tham số bằng cách loại bỏ hoàn toàn các fully-connected layers truyền thống. Thứ hai, GAP có tính chất regularization tự nhiên, giảm nguy cơ overfitting do không có tham số cần học. Thứ ba, GAP tạo ra spatial invariance hoàn toàn, cho phép mạng xử lý input có kích thước khác nhau. Trong nghiên cứu này, GAP được sử dụng ở cuối mạng CNN để tổng hợp thông tin từ tất cả các spatial locations trước khi đưa vào lớp classification.
+
 \subsection{Batch Normalization}
 
 \textbf{Batch Normalization Algorithm:}

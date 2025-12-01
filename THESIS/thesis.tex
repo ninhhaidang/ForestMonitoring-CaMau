@@ -97,12 +97,14 @@
 \usepackage{pgf-pie}
 % Disable thousand separators by default for axis tick labels (e.g., 1990 shows as 1990, not 1,990)
 \pgfplotsset{every axis/.append style={xticklabel style={/pgf/number format/1000 sep={}}}}
-\usepackage[justification=centering]{caption}
 
 % Định dạng bảng và caption
 \usepackage{array}
 \usepackage{booktabs}
-\usepackage[font=small]{caption}
+% Combine caption options to avoid duplicate package load and enable sub-captions
+\usepackage[justification=centering,font=small]{caption}
+% Sub-figures support (provides the `subfigure` environment used in chapters)
+\usepackage{subcaption}
 \usepackage{makecell}
 \usepackage{multirow}
 

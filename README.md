@@ -141,6 +141,136 @@ Total Parameters: ~36,676
 
 ---
 
+## Quy trình xử lý dữ liệu (Methodology Flowchart)
+
+```mermaid
+flowchart TD
+    %% ===== GIAI ĐOẠN 1: THU THẬP DỮ LIỆU =====
+    subgraph P1["1. THU THẬP DỮ LIỆU"]
+        direction LR
+        A1[("GEE")]
+        A2["Sentinel-2<br/>7 kênh phổ"]
+        A3["Sentinel-1<br/>2 phân cực"]
+
+        A1 --> A2 & A3
+    end
+
+    %% ===== GIAI ĐOẠN 2: TIỀN XỬ LÝ =====
+    subgraph P2["2. TIỀN XỬ LÝ"]
+        direction TB
+        B1[/"Ảnh Sentinel-2<br/>(T₁, T₂) × 7 kênh"/]
+        B2[/"Ảnh Sentinel-1<br/>(T₁, T₂) × 2 kênh"/]
+        B3[/"Dữ liệu mẫu<br/>2.630 điểm"/]
+        B4["Nạp & Kiểm tra<br/>Hệ quy chiếu, Độ phân giải"]
+
+        B1 & B2 & B3 --> B4
+    end
+
+    %% ===== GIAI ĐOẠN 3: TRÍCH XUẤT ĐẶC TRƯNG =====
+    subgraph P3["3. TRÍCH XUẤT ĐẶC TRƯNG"]
+        direction TB
+        C1["Đặc trưng S2<br/>21 kênh"]
+        C2["Đặc trưng S1<br/>6 kênh"]
+        C3["Hiệu thời gian<br/>ΔX = X(T₂) − X(T₁)"]
+        C4[("Chồng đặc trưng<br/>27 kênh")]
+
+        C1 --> C3
+        C2 --> C3
+        C3 --> C4
+    end
+
+    %% ===== GIAI ĐOẠN 4: CHUẨN BỊ MẪU =====
+    subgraph P4["4. CHUẨN BỊ MẪU"]
+        direction TB
+        D1["Chuyển đổi tọa độ<br/>Địa lý → Pixel"]
+        D2["Trích xuất mảnh<br/>Cửa sổ 3×3"]
+        D3["Chuẩn hóa Z-score<br/>μ=0, σ=1"]
+        D4[("Tập dữ liệu<br/>N × 3 × 3 × 27")]
+
+        D1 --> D2 --> D3 --> D4
+    end
+
+    %% ===== GIAI ĐOẠN 5: HUẤN LUYỆN MÔ HÌNH =====
+    subgraph P5["5. HUẤN LUYỆN MÔ HÌNH"]
+        direction TB
+        E1["Phân chia phân tầng"]
+        E2[/"Tập huấn luyện<br/>80%"/]
+        E3[/"Tập kiểm tra<br/>20%"/]
+        E4["Kiểm chứng chéo<br/>5 lần"]
+        E5["Huấn luyện CNN"]
+        E6{"Hội tụ?"}
+        E7["Đánh giá mô hình"]
+        E8[("Mô hình<br/>đã huấn luyện")]
+
+        E1 --> E2 & E3
+        E2 --> E4 --> E5 --> E6
+        E6 -->|Chưa| E5
+        E6 -->|Rồi| E7
+        E3 --> E7 --> E8
+    end
+
+    %% ===== GIAI ĐOẠN 6: DỰ ĐOÁN =====
+    subgraph P6["6. DỰ ĐOÁN"]
+        direction TB
+        F1[/"Ảnh vệ tinh mới<br/>(T₁', T₂')"/]
+        F2["Trích xuất<br/>đặc trưng"]
+        F3["Cửa sổ trượt"]
+        F4["Dự đoán<br/>theo lô"]
+        F5[("Bản đồ<br/>phân loại")]
+
+        F1 --> F2 --> F3 --> F4 --> F5
+    end
+
+    %% ===== LUỒNG CHÍNH =====
+    P1 --> P2 --> P3 --> P4 --> P5 --> P6
+
+    %% ===== ĐỊNH DẠNG =====
+    classDef phase1 fill:#E3F2FD,stroke:#1565C0,stroke-width:2px
+    classDef phase2 fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
+    classDef phase3 fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px
+    classDef phase4 fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px
+    classDef phase5 fill:#FCE4EC,stroke:#C2185B,stroke-width:2px
+    classDef phase6 fill:#E0F2F1,stroke:#00695C,stroke-width:2px
+
+    class P1 phase1
+    class P2 phase2
+    class P3 phase3
+    class P4 phase4
+    class P5 phase5
+    class P6 phase6
+```
+
+### Chi tiết phương pháp nghiên cứu
+
+| Giai đoạn | Tên | Đầu vào | Đầu ra | Phương pháp |
+|:---------:|-----|---------|--------|-------------|
+| **1** | Thu thập dữ liệu | Vùng nghiên cứu, Khoảng thời gian | Ảnh vệ tinh (S1, S2) | GEE API, Lọc mây |
+| **2** | Tiền xử lý | Ảnh thô, Dữ liệu mẫu | Mảng đã kiểm tra | Rasterio, GeoPandas |
+| **3** | Trích xuất đặc trưng | 4 ảnh (2 cảm biến × 2 thời điểm) | Chồng 27 kênh | Hiệu thời gian |
+| **4** | Chuẩn bị mẫu | Chồng đặc trưng, Điểm mẫu | Tập mảnh (N, 3, 3, 27) | Cửa sổ trượt, Z-score |
+| **5** | Huấn luyện | Mảnh, Nhãn | Mô hình CNN (.pth) | 5-Fold CV, Dừng sớm |
+| **6** | Dự đoán | Ảnh mới, Mô hình | Bản đồ phân loại | Dự đoán theo lô GPU |
+
+### Cấu trúc 27 Features
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        FEATURE STACK (27 bands)                      │
+├─────────────────────────────────────────────────────────────────────┤
+│  SENTINEL-2 (21 features)                                            │
+│  ├── Before [0-6]:  B4, B8, B11, B12, NDVI, NBR, NDMI               │
+│  ├── After  [7-13]: B4, B8, B11, B12, NDVI, NBR, NDMI               │
+│  └── Delta [14-20]: ΔB4, ΔB8, ΔB11, ΔB12, ΔNDVI, ΔNBR, ΔNDMI        │
+├─────────────────────────────────────────────────────────────────────┤
+│  SENTINEL-1 (6 features)                                             │
+│  ├── Before [21-22]: VV, VH                                          │
+│  ├── After  [23-24]: VV, VH                                          │
+│  └── Delta  [25-26]: ΔVV, ΔVH                                        │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## Cấu trúc dự án
 
 ```

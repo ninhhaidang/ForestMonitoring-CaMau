@@ -96,3 +96,54 @@ Chỉ số thực vật khác biệt chuẩn hóa (NDVI) là một trong những
 \end{equation}
 
 Khi $\Delta NDVI$ giảm mạnh (rất nhỏ hơn 0) thì đó là dấu hiệu mất rừng; khi $\Delta NDVI$ xấp xỉ 0 thì vùng được xem là rừng ổn định; và khi $\Delta NDVI$ tăng mạnh (rất lớn hơn 0) thì biểu hiện tái trồng rừng.
+
+\subsection{Các chỉ số thực vật viễn thám}
+
+Các chỉ số thực vật (Vegetation Indices) là các công thức toán học kết hợp giá trị phản xạ từ các kênh phổ khác nhau để tăng cường thông tin về thực vật và giảm nhiễu từ các yếu tố khác như đất, khí quyển. Nghiên cứu này sử dụng ba chỉ số chính:
+
+\textbf{NDVI (Normalized Difference Vegetation Index):}
+
+NDVI là chỉ số được sử dụng phổ biến nhất để đánh giá sức khỏe và mật độ thực vật \cite{rouse1974}:
+\begin{equation}
+NDVI = \frac{NIR - Red}{NIR + Red} = \frac{B8 - B4}{B8 + B4}
+\label{eq:ndvi}
+\end{equation}
+
+Giá trị NDVI nằm trong khoảng [-1, 1]. Thực vật xanh khỏe mạnh có NDVI từ 0.3 đến 0.8 do chlorophyll hấp thụ mạnh ánh sáng đỏ và phản xạ mạnh hồng ngoại gần. Đất trống có NDVI từ 0.1 đến 0.2, nước có NDVI âm (< 0) do phản xạ thấp ở cả hai kênh.
+
+\textbf{NBR (Normalized Burn Ratio):}
+
+NBR được thiết kế ban đầu để phát hiện khu vực cháy rừng, nhưng cũng hiệu quả trong phát hiện mất rừng do sử dụng kênh SWIR nhạy với độ ẩm và cấu trúc thực vật \cite{key2006}:
+\begin{equation}
+NBR = \frac{NIR - SWIR2}{NIR + SWIR2} = \frac{B8 - B12}{B8 + B12}
+\label{eq:nbr}
+\end{equation}
+
+Rừng khỏe mạnh có NBR cao (0.3--0.8) do NIR cao và SWIR thấp. Khu vực mất rừng hoặc cháy rừng có NBR thấp hoặc âm do NIR giảm và SWIR tăng. Chỉ số dNBR (differenced NBR) = NBR\textsubscript{before} - NBR\textsubscript{after} thường được sử dụng để đánh giá mức độ thiệt hại.
+
+\textbf{NDMI (Normalized Difference Moisture Index):}
+
+NDMI đo lường hàm lượng nước trong tán lá thực vật, là chỉ số quan trọng để phát hiện stress thực vật và thay đổi độ ẩm \cite{gao1996}:
+\begin{equation}
+NDMI = \frac{NIR - SWIR1}{NIR + SWIR1} = \frac{B8 - B11}{B8 + B11}
+\label{eq:ndmi}
+\end{equation}
+
+Giá trị NDMI nằm trong khoảng [-1, 1]. Thực vật có hàm lượng nước cao có NDMI dương (0.2--0.6). Thực vật bị stress hoặc khô có NDMI thấp hoặc âm. NDMI nhạy với sự thay đổi độ ẩm trước khi NDVI phản ánh sự suy giảm sức khỏe thực vật.
+
+\begin{table}[H]
+\centering
+\caption{Tổng hợp các chỉ số thực vật sử dụng trong nghiên cứu}
+\label{tab:vegetation_indices}
+\begin{tabular}{|l|c|l|l|}
+\hline
+\textbf{Chỉ số} & \textbf{Công thức} & \textbf{Phạm vi} & \textbf{Ý nghĩa} \\
+\hline
+NDVI & (B8-B4)/(B8+B4) & [-1, 1] & Mật độ, sức khỏe thực vật \\
+\hline
+NBR & (B8-B12)/(B8+B12) & [-1, 1] & Phát hiện cháy/mất rừng \\
+\hline
+NDMI & (B8-B11)/(B8+B11) & [-1, 1] & Độ ẩm tán lá \\
+\hline
+\end{tabular}
+\end{table}

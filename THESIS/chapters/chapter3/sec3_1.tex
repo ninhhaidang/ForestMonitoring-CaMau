@@ -53,11 +53,132 @@ Forest Boundary & Vector & - & - & Shapefile \\
 \end{tabular}
 \end{table}
 
+% Figure 1: Bands phản xạ (B4 Red, B8 NIR)
 \begin{figure}[H]
     \centering
-    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Ảnh tổ hợp màu Sentinel-2 (RGB)\\ của khu vực nghiên cứu ở 2 thời điểm\\ (before và after)\vspace{2cm}}}
-    \caption{Ảnh Sentinel-2 khu vực nghiên cứu tại hai thời điểm}
-    \label{fig:s2_images}
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T1-B4.png}
+        \caption{B4 (Red) - T1 (30/01/2024)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T2-B4.png}
+        \caption{B4 (Red) - T2 (28/02/2025)}
+    \end{subfigure}
+
+    \vspace{0.3cm}
+
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T1-B8.png}
+        \caption{B8 (NIR) - T1 (30/01/2024)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T2-B8.png}
+        \caption{B8 (NIR) - T2 (28/02/2025)}
+    \end{subfigure}
+    \caption{Bands phản xạ Sentinel-2: B4 (Red) và B8 (NIR)}
+    \label{fig:s2_reflectance_bands}
+\end{figure}
+
+% Figure 2: Bands SWIR (B11, B12)
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T1-B11.png}
+        \caption{B11 (SWIR1) - T1 (30/01/2024)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T2-B11.png}
+        \caption{B11 (SWIR1) - T2 (28/02/2025)}
+    \end{subfigure}
+
+    \vspace{0.3cm}
+
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T1-B12.png}
+        \caption{B12 (SWIR2) - T1 (30/01/2024)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T2-B12.png}
+        \caption{B12 (SWIR2) - T2 (28/02/2025)}
+    \end{subfigure}
+    \caption{Bands hồng ngoại sóng ngắn Sentinel-2: B11 (SWIR1) và B12 (SWIR2)}
+    \label{fig:s2_swir_bands}
+\end{figure}
+
+% Figure 3: Chỉ số thực vật (NDVI, NBR)
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T1-NDVI.png}
+        \caption{NDVI - T1 (30/01/2024)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T2-NDVI.png}
+        \caption{NDVI - T2 (28/02/2025)}
+    \end{subfigure}
+
+    \vspace{0.3cm}
+
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T1-NBR.png}
+        \caption{NBR - T1 (30/01/2024)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T2-NBR.png}
+        \caption{NBR - T2 (28/02/2025)}
+    \end{subfigure}
+    \caption{Chỉ số thực vật Sentinel-2: NDVI và NBR}
+    \label{fig:s2_vegetation_indices}
+\end{figure}
+
+% Figure 4: Chỉ số độ ẩm (NDMI)
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T1-NDMI.png}
+        \caption{NDMI - T1 (30/01/2024)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T2-NDMI.png}
+        \caption{NDMI - T2 (28/02/2025)}
+    \end{subfigure}
+    \caption{Chỉ số độ ẩm Sentinel-2: NDMI}
+    \label{fig:s2_ndmi}
+\end{figure}
+
+% Figure 5: Dữ liệu SAR Sentinel-1 (VV, VH)
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T1-VV.png}
+        \caption{VV - T1 (04/02/2024)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T2-VV.png}
+        \caption{VV - T2 (22/02/2025)}
+    \end{subfigure}
+
+    \vspace{0.3cm}
+
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T1-VH.png}
+        \caption{VH - T1 (04/02/2024)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/chapter3/T2-VH.png}
+        \caption{VH - T2 (22/02/2025)}
+    \end{subfigure}
+    \caption{Dữ liệu SAR Sentinel-1: VV và VH}
+    \label{fig:s1_sar_data}
 \end{figure}
 
 \subsection{Ground Truth Data}
