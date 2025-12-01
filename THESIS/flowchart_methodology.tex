@@ -131,10 +131,10 @@
 % S1: 2 before + 2 after + 2 delta = 6
 \node[process] (p3b) at (2.5, -9.2) {S1: $T_1 + T_2 + \Delta$\\$2 \times 3 = 6$ kênh};
 % Ghép kênh (process) -> 27 kênh (io - dữ liệu đầu ra)
-\node[process] (p3c) at (6, -8.3) {Ghép kênh};
-\node[io] (o3) at (7.7, -8.3) {27 kênh};
-\draw[arrow] (p3a.east) -- ++(0.3,0) |- (p3c.west);
-\draw[arrow] (p3b.east) -- ++(0.3,0) |- (p3c.west);
+\node[process] (p3c) at (5, -8.3) {Ghép kênh};
+\node[io] (o3) at (7.5, -8.3) {27 kênh};
+\draw[arrow] (p3a.east) -- (p3a.east -| p3c.north) -- (p3c.north);
+\draw[arrow] (p3b.east) -- (p3b.east -| p3c.south) -- (p3c.south);
 \draw[arrow] (p3c) -- (o3);
 
 % --- KHUNG PHASE 3: CHUẨN BỊ MẪU (bên trái) ---
