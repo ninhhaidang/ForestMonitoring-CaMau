@@ -16,7 +16,7 @@ Dự án phát triển hệ thống tự động giám sát biến động rừn
 - **Sentinel-1** (SAR - Synthetic Aperture Radar): Hoạt động mọi điều kiện thời tiết
 - **Sentinel-2** (Optical Multispectral): Thông tin quang phổ phong phú
 
-**Phương pháp:** Convolutional Neural Network (CNN) với kiến trúc lightweight (~36,676 tham số), sử dụng patches 3×3 pixels để khai thác ngữ cảnh không gian.
+**Phương pháp:** Convolutional Neural Network (CNN) với kiến trúc lightweight (~36,676 tham số), sử dụng patches 3×3 pixels để khai thác ngữ cảnh không gian. Dữ liệu được tiền xử lý trên GEE (lọc mây, chuẩn hóa, tính chỉ số thực vật).
 
 **Kết quả:** Đạt độ chính xác **98.86%** trên tập test với ROC-AUC **99.98%**.
 
@@ -145,84 +145,89 @@ Total Parameters: ~36,676
 
 ```mermaid
 flowchart TD
-    %% ===== GIAI ĐOẠN 1: THU THẬP DỮ LIỆU =====
-    subgraph P1["1. THU THẬP DỮ LIỆU"]
+    %% ===== GIAI ĐOẠN 1: THU THẬP & TIỀN XỬ LÝ DỮ LIỆU =====
+    subgraph P1["1. THU THẬP & TIỀN XỬ LÝ DỮ LIỆU"]
         direction LR
         A1[("GEE")]
-        A2["Sentinel-2<br/>7 kênh phổ"]
-        A3["Sentinel-1<br/>2 phân cực"]
+        A2[("GFD Ltd.")]
+        A3["Ranh giới lâm nghiệp<br/>tỉnh Cà Mau"]
+        A4["Lọc mây<br/>Tính các chỉ số<br/>Cắt theo ranh giới"]
+        A5[/"Sentinel-1 (T₁, T₂):<br/>2 phân cực"/]
+        A6[/"Sentinel-2 (T₁, T₂):<br/>4 băng tần + 3 chỉ số"/]
+        A7[/"2630 điểm<br/>dữ liệu mẫu<br/>(4 lớp)"/]
 
-        A1 --> A2 & A3
+        A1 --> A4
+        A2 --> A3
+        A3 --> A4
+        A4 --> A5
+        A4 --> A6
+        A2 --> A7
     end
 
-    %% ===== GIAI ĐOẠN 2: TIỀN XỬ LÝ =====
-    subgraph P2["2. TIỀN XỬ LÝ"]
+    %% ===== GIAI ĐOẠN 2: TRÍCH XUẤT ĐẶC TRƯNG =====
+    subgraph P2["2. TRÍCH XUẤT ĐẶC TRƯNG"]
         direction TB
-        B1[/"Ảnh Sentinel-2<br/>(T₁, T₂) × 7 kênh"/]
-        B2[/"Ảnh Sentinel-1<br/>(T₁, T₂) × 2 kênh"/]
-        B3[/"Dữ liệu mẫu<br/>2.630 điểm"/]
-        B4["Nạp & Kiểm tra<br/>Hệ quy chiếu, Độ phân giải"]
+        B1["S2: Trước + Sau + Δ<br/>7 × 3 = 21 kênh"]
+        B2["S1: Trước + Sau + Δ<br/>2 × 3 = 6 kênh"]
+        B3["Hiệu thời gian<br/>Δ = Sau − Trước"]
+        B4[("Chồng đặc trưng<br/>21 + 6 = 27 kênh")]
 
-        B1 & B2 & B3 --> B4
+        B1 --> B3
+        B2 --> B3
+        B3 --> B4
     end
 
-    %% ===== GIAI ĐOẠN 3: TRÍCH XUẤT ĐẶC TRƯNG =====
-    subgraph P3["3. TRÍCH XUẤT ĐẶC TRƯNG"]
+    %% ===== GIAI ĐOẠN 3: CHUẨN BỊ MẪU =====
+    subgraph P3["3. CHUẨN BỊ MẪU"]
         direction TB
-        C1["Đặc trưng S2<br/>21 kênh"]
-        C2["Đặc trưng S1<br/>6 kênh"]
-        C3["Hiệu thời gian<br/>ΔX = X(T₂) − X(T₁)"]
-        C4[("Chồng đặc trưng<br/>27 kênh")]
+        C1["Chuyển tọa độ<br/>Địa lý → Pixel (hàng, cột)"]
+        C2["Trích mảnh 3×3<br/>tại vị trí mẫu"]
+        C3["Tính thống kê toàn cục<br/>từ Huấn luyện+Kiểm chứng 80%"]
+        C4["Chuẩn hóa Z-score<br/>μ_hl, σ_hl"]
+        C5[("Tập dữ liệu<br/>N × 3 × 3 × 27")]
 
-        C1 --> C3
-        C2 --> C3
-        C3 --> C4
+        C1 --> C2 --> C3 --> C4 --> C5
     end
 
-    %% ===== GIAI ĐOẠN 4: CHUẨN BỊ MẪU =====
-    subgraph P4["4. CHUẨN BỊ MẪU"]
+    %% ===== GIAI ĐOẠN 4: HUẤN LUYỆN MÔ HÌNH =====
+    subgraph P4["4. HUẤN LUYỆN MÔ HÌNH"]
         direction TB
-        D1["Chuyển đổi tọa độ<br/>Địa lý → Pixel"]
-        D2["Trích xuất mảnh<br/>Cửa sổ 3×3"]
-        D3["Chuẩn hóa Z-score<br/>μ=0, σ=1"]
-        D4[("Tập dữ liệu<br/>N × 3 × 3 × 27")]
+        D1["Phân chia phân tầng"]
+        D2[/"Huấn luyện+Kiểm chứng 80%<br/>(~2.104 mẫu)"/]
+        D3[/"Kiểm tra 20%<br/>(~526 mẫu)"/]
+        D4["Kiểm chứng chéo 5 lần"]
+        D5["Tính số epochs<br/>tối ưu"]
+        D6["Huấn luyện cuối<br/>100% của 80%"]
+        D7["Đánh giá<br/>trên tập kiểm tra 20%"]
+        D8[("Mô hình CNN<br/>.pth")]
 
-        D1 --> D2 --> D3 --> D4
+        D1 --> D2 & D3
+        D2 --> D4
+        D4 --> D5
+        D5 --> D6
+        D6 --> D7
+        D3 --> D7
+        D7 --> D8
     end
 
-    %% ===== GIAI ĐOẠN 5: HUẤN LUYỆN MÔ HÌNH =====
-    subgraph P5["5. HUẤN LUYỆN MÔ HÌNH"]
+    %% ===== GIAI ĐOẠN 5: DỰ ĐOÁN TOÀN VÙNG =====
+    subgraph P5["5. DỰ ĐOÁN TOÀN VÙNG"]
         direction TB
-        E1["Phân chia phân tầng"]
-        E2[/"Tập huấn luyện<br/>80%"/]
-        E3[/"Tập kiểm tra<br/>20%"/]
-        E4["Kiểm chứng chéo<br/>5 lần"]
-        E5["Huấn luyện CNN"]
-        E6{"Hội tụ?"}
-        E7["Đánh giá mô hình"]
-        E8[("Mô hình<br/>đã huấn luyện")]
+        E1["Dự đoán theo lô"]
+        E2[("Bản đồ phân loại<br/>4 lớp GeoTIFF")]
 
-        E1 --> E2 & E3
-        E2 --> E4 --> E5 --> E6
-        E6 -->|Chưa| E5
-        E6 -->|Rồi| E7
-        E3 --> E7 --> E8
+        E1 --> E2
     end
 
-    %% ===== GIAI ĐOẠN 6: DỰ ĐOÁN =====
-    subgraph P6["6. DỰ ĐOÁN"]
-        direction TB
-        F1[/"Ảnh vệ tinh mới<br/>(T₁', T₂')"/]
-        F2["Trích xuất<br/>đặc trưng"]
-        F3["Cửa sổ trượt"]
-        F4["Dự đoán<br/>theo lô"]
-        F5[("Bản đồ<br/>phân loại")]
-
-        F1 --> F2 --> F3 --> F4 --> F5
-    end
-
-    %% ===== LUỒNG CHÍNH =====
-    P1 --> P2 --> P3 --> P4 --> P5 --> P6
+    %% ===== LUỒNG CHÍNH - NỐI CÁC NODE GIỮA CÁC PHASE =====
+    A5 --> B2
+    A6 --> B1
+    A7 --> C1
+    B4 --> C2
+    C5 --> D1
+    D8 --> E1
+    B4 --> E1
+    C5 --> E1
 
     %% ===== ĐỊNH DẠNG =====
     classDef phase1 fill:#E3F2FD,stroke:#1565C0,stroke-width:2px
@@ -230,26 +235,23 @@ flowchart TD
     classDef phase3 fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px
     classDef phase4 fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px
     classDef phase5 fill:#FCE4EC,stroke:#C2185B,stroke-width:2px
-    classDef phase6 fill:#E0F2F1,stroke:#00695C,stroke-width:2px
 
     class P1 phase1
     class P2 phase2
     class P3 phase3
     class P4 phase4
     class P5 phase5
-    class P6 phase6
 ```
 
 ### Chi tiết phương pháp nghiên cứu
 
 | Giai đoạn | Tên | Đầu vào | Đầu ra | Phương pháp |
 |:---------:|-----|---------|--------|-------------|
-| **1** | Thu thập dữ liệu | Vùng nghiên cứu, Khoảng thời gian | Ảnh vệ tinh (S1, S2) | GEE API, Lọc mây |
-| **2** | Tiền xử lý | Ảnh thô, Dữ liệu mẫu | Mảng đã kiểm tra | Rasterio, GeoPandas |
-| **3** | Trích xuất đặc trưng | 4 ảnh (2 cảm biến × 2 thời điểm) | Chồng 27 kênh | Hiệu thời gian |
-| **4** | Chuẩn bị mẫu | Chồng đặc trưng, Điểm mẫu | Tập mảnh (N, 3, 3, 27) | Cửa sổ trượt, Z-score |
-| **5** | Huấn luyện | Mảnh, Nhãn | Mô hình CNN (.pth) | 5-Fold CV, Dừng sớm |
-| **6** | Dự đoán | Ảnh mới, Mô hình | Bản đồ phân loại | Dự đoán theo lô GPU |
+| **1** | Thu thập & Tiền xử lý | Vùng nghiên cứu, Thời gian | S2 (7 kênh) + S1 (2 kênh) + Mẫu | GEE: Lọc mây, chia 10000, tính chỉ số |
+| **2** | Trích xuất đặc trưng | S2(T₁,T₂), S1(T₁,T₂) | Chồng 27 kênh | Trước, Sau, Hiệu |
+| **3** | Chuẩn bị mẫu | Chồng 27, Điểm 2630 | Mảnh (N,3,3,27) | Trích 3×3, Chuẩn hóa-Z |
+| **4** | Huấn luyện | Mảnh, Nhãn | CNN .pth | Chia 80/20 → KC-chéo 5 → Cuối |
+| **5** | Dự đoán | Raster đầy đủ, Mô hình | GeoTIFF 4 lớp | Cửa sổ trượt, Theo lô |
 
 ### Cấu trúc 27 Features
 
