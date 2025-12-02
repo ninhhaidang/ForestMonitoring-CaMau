@@ -48,12 +48,7 @@ Confusion Matrix (Ma trận nhầm lẫn) là công cụ cơ bản để đánh 
 
 \textbf{Các thành phần của Confusion Matrix:}
 
-\begin{itemize}
-    \item \textbf{True Positive (TP)}: Số mẫu dương được dự đoán đúng là dương. Trong bài toán phát hiện mất rừng, đây là các điểm thực sự mất rừng và mô hình dự đoán đúng.
-    \item \textbf{True Negative (TN)}: Số mẫu âm được dự đoán đúng là âm. Các điểm không mất rừng được mô hình nhận diện chính xác.
-    \item \textbf{False Positive (FP)}: Số mẫu âm bị dự đoán nhầm là dương (lỗi loại I). Các điểm không mất rừng nhưng bị mô hình phân loại nhầm là mất rừng.
-    \item \textbf{False Negative (FN)}: Số mẫu dương bị dự đoán nhầm là âm (lỗi loại II). Các điểm thực sự mất rừng nhưng mô hình không phát hiện được.
-\end{itemize}
+Ma trận nhầm lẫn bao gồm bốn thành phần chính. \textbf{True Positive (TP)} là số mẫu dương được dự đoán đúng là dương — trong bài toán phát hiện mất rừng, đây là các điểm thực sự mất rừng và mô hình dự đoán đúng. \textbf{True Negative (TN)} là số mẫu âm được dự đoán đúng là âm, tức các điểm không mất rừng được mô hình nhận diện chính xác. \textbf{False Positive (FP)} là số mẫu âm bị dự đoán nhầm là dương (lỗi loại I), tức các điểm không mất rừng nhưng bị mô hình phân loại nhầm là mất rừng. \textbf{False Negative (FN)} là số mẫu dương bị dự đoán nhầm là âm (lỗi loại II), tức các điểm thực sự mất rừng nhưng mô hình không phát hiện được.
 
 \textbf{Confusion Matrix đa lớp:}
 
@@ -112,11 +107,8 @@ Stratified K-Fold là biến thể của K-Fold, đảm bảo tỷ lệ các l�
 Ví dụ: Nếu tập dữ liệu có 80\% lớp ``Rừng ổn định'' và 5\% lớp ``Mất rừng'', Stratified K-Fold đảm bảo mỗi fold cũng duy trì tỷ lệ này, giúp mô hình được đánh giá công bằng trên tất cả các lớp.
 
 \textbf{Ưu điểm của Cross Validation:}
-\begin{itemize}
-    \item Tận dụng tối đa dữ liệu cho cả huấn luyện và đánh giá
-    \item Giảm variance trong ước lượng hiệu suất
-    \item Phát hiện overfitting hiệu quả hơn so với chia train/test đơn giản
-\end{itemize}
+
+Cross Validation mang lại nhiều lợi ích quan trọng: tận dụng tối đa dữ liệu cho cả huấn luyện và đánh giá, giảm variance trong ước lượng hiệu suất, và phát hiện overfitting hiệu quả hơn so với chia train/test đơn giản.
 
 \subsection{Data Normalization}
 
@@ -132,37 +124,25 @@ z = \frac{x - \mu}{\sigma}
 Trong đó, $x$ là giá trị gốc, $\mu$ là trung bình của feature và $\sigma$ là độ lệch chuẩn. Sau chuẩn hóa, khoảng 68\% dữ liệu nằm trong $[-1, 1]$ và 95\% nằm trong $[-2, 2]$.
 
 \textbf{Tại sao cần chuẩn hóa cho CNN:}
-\begin{itemize}
-    \item Các features có scale khác nhau (ví dụ: NDVI trong $[-1, 1]$, backscatter trong $[-25, 0]$ dB) sẽ ảnh hưởng không đều đến gradient
-    \item Chuẩn hóa giúp gradient descent hội tụ nhanh hơn
-    \item Tránh các vấn đề số học như overflow/underflow
-    \item Batch Normalization hoạt động hiệu quả hơn khi input đã được chuẩn hóa
-\end{itemize}
 
-\textbf{Lưu ý quan trọng:} Các tham số $\mu$ và $\sigma$ phải được tính trên tập huấn luyện và áp dụng cho cả tập kiểm tra. Việc tính $\mu$, $\sigma$ trên toàn bộ dữ liệu (bao gồm cả test set) sẽ gây ra data leakage.
+Việc chuẩn hóa dữ liệu cho CNN là cần thiết vì các features có scale khác nhau (ví dụ: NDVI trong $[-1, 1]$, backscatter trong $[-25, 0]$ dB) sẽ ảnh hưởng không đều đến gradient. Chuẩn hóa giúp gradient descent hội tụ nhanh hơn, tránh các vấn đề số học như overflow/underflow, và Batch Normalization hoạt động hiệu quả hơn khi input đã được chuẩn hóa.
 
-\subsection{Ground Truth và Data Leakage}
+\textbf{Lưu ý quan trọng:} Các tham số $\mu$ và $\sigma$ phải được tính trên tập huấn luyện và áp dụng cho cả tập kiểm tra. Việc tính $\mu$, $\sigma$ trên toàn bộ dữ liệu (bao gồm cả test set) sẽ gây ra rò rỉ dữ liệu.
 
-\textbf{Ground Truth (Dữ liệu mẫu):}
+\subsection{Dữ liệu thực địa và Rò rỉ dữ liệu}
 
-Ground Truth là tập dữ liệu tham chiếu với nhãn chính xác, được sử dụng để huấn luyện và đánh giá mô hình phân loại \cite{foody2002}. Trong viễn thám, Ground Truth có thể thu thập từ nhiều nguồn:
-\begin{itemize}
-    \item Khảo sát thực địa (field survey): Đáng tin cậy nhất nhưng tốn kém
-    \item Diễn giải ảnh độ phân giải cao: Sử dụng ảnh Google Earth, máy bay không người lái
-    \item Dữ liệu lịch sử: Bản đồ quy hoạch rừng, số liệu kiểm kê
-\end{itemize}
+\textbf{Dữ liệu thực địa (Ground Truth):}
 
-Chất lượng Ground Truth ảnh hưởng trực tiếp đến độ tin cậy của kết quả phân loại. Ground Truth không chính xác hoặc không đại diện sẽ dẫn đến mô hình học sai và đánh giá không phản ánh thực tế.
+Dữ liệu thực địa là tập dữ liệu tham chiếu với nhãn chính xác, được sử dụng để huấn luyện và đánh giá mô hình phân loại \cite{foody2002}. Trong viễn thám, dữ liệu thực địa có thể thu thập từ nhiều nguồn: khảo sát thực địa (field survey) là phương pháp đáng tin cậy nhất nhưng tốn kém; diễn giải ảnh độ phân giải cao sử dụng ảnh Google Earth hoặc máy bay không người lái; và dữ liệu lịch sử như bản đồ quy hoạch rừng, số liệu kiểm kê.
 
-\textbf{Data Leakage (Rò rỉ dữ liệu):}
+Chất lượng dữ liệu thực địa ảnh hưởng trực tiếp đến độ tin cậy của kết quả phân loại. Dữ liệu thực địa không chính xác hoặc không đại diện sẽ dẫn đến mô hình học sai và đánh giá không phản ánh thực tế.
 
-Data Leakage xảy ra khi thông tin từ tập kiểm tra ``rò rỉ'' vào quá trình huấn luyện, dẫn đến kết quả đánh giá quá lạc quan và mô hình không generalize tốt trên dữ liệu thực tế \cite{kaufman2012}.
+\textbf{Rò rỉ dữ liệu (Data Leakage):}
 
-\textbf{Các dạng Data Leakage phổ biến trong viễn thám:}
-\begin{itemize}
-    \item \textbf{Spatial leakage}: Các điểm huấn luyện và kiểm tra nằm gần nhau về mặt địa lý, dẫn đến spatial autocorrelation. Giải pháp: chia dữ liệu theo vùng địa lý hoặc đảm bảo khoảng cách tối thiểu giữa train/test.
-    \item \textbf{Temporal leakage}: Sử dụng thông tin từ thời điểm sau để dự đoán thời điểm trước. Giải pháp: chia dữ liệu theo thời gian, đảm bảo tập huấn luyện chỉ chứa dữ liệu trước tập kiểm tra.
-    \item \textbf{Feature leakage}: Tính toán statistics (mean, std) trên toàn bộ dữ liệu thay vì chỉ trên tập huấn luyện. Giải pháp: fit scaler trên train set, transform cả train và test.
-\end{itemize}
+Rò rỉ dữ liệu xảy ra khi thông tin từ tập kiểm tra ``rò rỉ'' vào quá trình huấn luyện, dẫn đến kết quả đánh giá quá lạc quan và mô hình không generalize tốt trên dữ liệu thực tế \cite{kaufman2012}.
 
-Trong nghiên cứu này, data leakage được phòng tránh bằng cách sử dụng Stratified K-Fold Cross Validation và tính toán các tham số chuẩn hóa riêng cho từng fold.
+\textbf{Các dạng rò rỉ dữ liệu phổ biến trong viễn thám:}
+
+Có ba dạng rò rỉ dữ liệu phổ biến trong viễn thám. \textbf{Rò rỉ không gian (Spatial leakage)} xảy ra khi các điểm huấn luyện và kiểm tra nằm gần nhau về mặt địa lý, dẫn đến spatial autocorrelation; giải pháp là chia dữ liệu theo vùng địa lý hoặc đảm bảo khoảng cách tối thiểu giữa train/test. \textbf{Rò rỉ thời gian (Temporal leakage)} xảy ra khi sử dụng thông tin từ thời điểm sau để dự đoán thời điểm trước; giải pháp là chia dữ liệu theo thời gian, đảm bảo tập huấn luyện chỉ chứa dữ liệu trước tập kiểm tra. \textbf{Rò rỉ đặc trưng (Feature leakage)} xảy ra khi tính toán statistics (mean, std) trên toàn bộ dữ liệu thay vì chỉ trên tập huấn luyện; giải pháp là fit scaler trên train set, transform cả train và test.
+
+Trong nghiên cứu này, rò rỉ dữ liệu được phòng tránh bằng cách sử dụng Stratified K-Fold Cross Validation và tính toán các tham số chuẩn hóa riêng cho từng fold.

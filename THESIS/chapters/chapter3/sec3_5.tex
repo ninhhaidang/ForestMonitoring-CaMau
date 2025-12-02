@@ -1,16 +1,13 @@
-\section{Dự đoán và đánh giá kết quả}
+\section{Áp dụng mô hình}
 
-\subsection{Test Set Evaluation}
+\subsection{Dự đoán toàn vùng nghiên cứu}
 
-Mô hình được đánh giá trên 20\% fixed test set (526 mẫu) thông qua các metrics bao gồm Accuracy, Precision, Recall, F1-Score (per-class và macro-average), ROC-AUC (One-vs-Rest) và Confusion Matrix.
+Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn bộ vùng nghiên cứu với khoảng 16.2 triệu pixels hợp lệ. Quy trình dự đoán bao gồm: (1) Tải feature stack 27 channels cho toàn vùng; (2) Trích xuất patch 3×3 cho mỗi pixel hợp lệ; (3) Chuẩn hóa Z-score sử dụng mean/std từ tập training; (4) Forward pass qua mô hình và lấy argmax; (5) Xuất kết quả dưới dạng GeoTIFF.
 
-\subsection{Full Raster Prediction}
+Do kích thước lớn của vùng nghiên cứu, việc dự đoán được thực hiện theo batch (10,000 pixels) với GPU inference và mixed precision (FP16) để tối ưu hóa bộ nhớ và tốc độ.
 
-Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn bộ 16,246,850 valid pixels trong vùng nghiên cứu. Quy trình prediction:
-\begin{enumerate}
-    \item Trích xuất patch 3×3 cho mỗi valid pixel
-    \item Chuẩn hóa patch với mean/std từ training data
-    \item Forward pass qua trained model
-    \item Lấy argmax để xác định class
-    \item Xuất kết quả dưới dạng GeoTIFF
-\end{enumerate}
+\subsection{Các độ đo đánh giá}
+
+Hiệu suất của mô hình được đánh giá thông qua các độ đo chuẩn cho bài toán phân loại đa lớp. \textbf{Accuracy} đo tỷ lệ dự đoán đúng trên tổng số mẫu. \textbf{Precision} đo tỷ lệ dự đoán đúng trong số các mẫu được dự đoán thuộc mỗi lớp. \textbf{Recall} đo tỷ lệ phát hiện đúng trong số các mẫu thực sự thuộc mỗi lớp. \textbf{F1-Score} là trung bình điều hòa của Precision và Recall. \textbf{Macro-Average} là trung bình các metrics trên tất cả các lớp. \textbf{ROC-AUC} đo khả năng phân biệt giữa các lớp (One-vs-Rest). \textbf{Confusion Matrix} cho thấy chi tiết hiệu suất phân loại giữa các lớp.
+
+Mô hình được đánh giá trên 20\% tập test cố định (526 mẫu) — hoàn toàn độc lập với quá trình huấn luyện. Kết quả chi tiết được trình bày trong Chương~\ref{chap:results}.

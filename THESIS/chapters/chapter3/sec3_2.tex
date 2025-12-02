@@ -1,116 +1,36 @@
-\section{Quy trình xử lý dữ liệu}
+\section{Trích xuất đặc trưng}
 
-\subsection{Tổng quan quy trình}
-
-\begin{figure}[H]
-    \centering
-    \fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Sơ đồ quy trình xử lý dữ liệu dạng flowchart:\\Raw Data $\rightarrow$ Data Loading $\rightarrow$ Feature Extraction $\rightarrow$\\Patch Extraction $\rightarrow$ Normalization $\rightarrow$ Data Splitting $\rightarrow$ Ready Dataset\vspace{2cm}}}
-    \caption{Quy trình xử lý dữ liệu tổng quan}
-    \label{fig:data_pipeline}
-\end{figure}
-
-\textbf{Quy trình xử lý:}
-\begin{enumerate}
-    \item \textbf{Data Loading \& Validation:} Tải và kiểm tra dữ liệu Sentinel-1/2 cùng ground truth.
-    \item \textbf{Feature Extraction:} Xây dựng 27 features (21 từ Sentinel-2 và 6 từ Sentinel-1).
-    \item \textbf{Patch Extraction:} Trích xuất các patches kích thước 3×3 tại các vị trí ground truth.
-    \item \textbf{Normalization:} Chuẩn hóa dữ liệu bằng phương pháp Z-score.
-    \item \textbf{Stratified Data Splitting:} Chia dữ liệu với tỷ lệ 80\% Train+Val và 20\% Test cố định.
-\end{enumerate}
-
-\subsection{Thu thập và xử lý dữ liệu trên Google Earth Engine}
-
-Toàn bộ dữ liệu ảnh vệ tinh được thu thập và xử lý trên nền tảng Google Earth Engine (GEE) — một hệ thống điện toán đám mây cho phép truy cập và xử lý khối lượng lớn dữ liệu viễn thám. Việc sử dụng GEE mang lại nhiều ưu điểm: truy cập trực tiếp kho dữ liệu Sentinel đã được tiền xử lý, khả năng xử lý song song trên hạ tầng đám mây, và đảm bảo tính nhất quán trong quy trình xử lý.
-
-\textbf{Xử lý dữ liệu Sentinel-2:}
-
-Dữ liệu Sentinel-2 được truy xuất từ bộ sưu tập \texttt{COPERNICUS/S2\_SR\_HARMONIZED} — sản phẩm Surface Reflectance Level-2A đã được hiệu chỉnh khí quyển và đồng nhất hóa giữa các cảm biến Sentinel-2A và 2B. Quy trình xử lý bao gồm:
-
-\begin{enumerate}
-    \item \textbf{Lọc theo không gian và thời gian:} Chọn các cảnh phủ khu vực nghiên cứu (AOI) trong ngày chỉ định.
-    \item \textbf{Loại bỏ mây:} Sử dụng bộ sưu tập \texttt{S2\_CLOUD\_PROBABILITY} để tạo mặt nạ mây với ngưỡng xác suất 50\%, loại bỏ các pixel có khả năng bị mây che phủ cao.
-    \item \textbf{Trích xuất bands và tính chỉ số:} Chọn 4 bands cần thiết (B4-Red, B8-NIR, B11-SWIR1, B12-SWIR2), chuyển đổi sang giá trị phản xạ (chia cho 10,000), và tính toán 3 chỉ số thực vật: NDVI, NBR, NDMI.
-    \item \textbf{Ghép ảnh:} Mosaic các tiles để tạo ảnh liền mạch phủ toàn bộ khu vực nghiên cứu.
-\end{enumerate}
-
-\textbf{Xử lý dữ liệu Sentinel-1:}
-
-Dữ liệu Sentinel-1 được truy xuất từ bộ sưu tập \texttt{COPERNICUS/S1\_GRD} — sản phẩm Ground Range Detected đã được tiền xử lý bởi ESA bao gồm: hiệu chỉnh quỹ đạo, loại bỏ nhiễu biên và nhiễu nhiệt, hiệu chỉnh bức xạ (radiometric calibration) và hiệu chỉnh địa hình sử dụng DEM SRTM. Quy trình xử lý bổ sung trên GEE bao gồm:
-
-\begin{enumerate}
-    \item \textbf{Lọc theo thời gian:} Tìm cảnh Sentinel-1 có thời gian thu nhận gần nhất với ảnh Sentinel-2 tương ứng (trong phạm vi ±7 ngày).
-    \item \textbf{Lọc theo chế độ thu nhận:} Chọn ảnh ở chế độ Interferometric Wide (IW), quỹ đạo đi xuống (Descending), với cả hai phân cực VV và VH.
-    \item \textbf{Trích xuất bands:} Lấy hai bands VV và VH (đơn vị dB) và mosaic các tiles.
-\end{enumerate}
-
-\textbf{Xuất dữ liệu:}
-
-Sau khi xử lý, dữ liệu được xuất ra định dạng GeoTIFF với độ phân giải 10m và hệ quy chiếu EPSG:32648 (WGS 84 / UTM Zone 48N), lưu trữ trên Google Drive để sử dụng cho các bước tiếp theo.
-
-\subsection{Feature Extraction chi tiết}
+\subsection{Xây dựng feature stack}
 
 Việc kết hợp dữ liệu SAR và quang học (data fusion) đã được chứng minh là hiệu quả trong nhiều nghiên cứu phân loại lớp phủ đất \cite{ienco2019, hu2020}. Cách tiếp cận này tận dụng ưu điểm bổ sung của hai nguồn dữ liệu: SAR cung cấp thông tin về cấu trúc và độ ẩm bề mặt, trong khi quang học cung cấp thông tin về đặc tính quang phổ của thực vật.
 
-\textbf{Feature stack construction:}
-
-\begin{verbatim}
-# Sentinel-2 features (21)
-S2_before = [B4, B8, B11, B12, NDVI, NBR, NDMI]  # 7 bands
-S2_after = [B4, B8, B11, B12, NDVI, NBR, NDMI]   # 7 bands
-S2_delta = S2_after - S2_before                   # 7 bands
-
-# Sentinel-1 features (6)
-S1_before = [VV, VH]                              # 2 bands
-S1_after = [VV, VH]                               # 2 bands
-S1_delta = S1_after - S1_before                   # 2 bands
-
-# Stack tất cả features: Total = 27
-feature_stack = [S2_before, S2_after, S2_delta,
-                 S1_before, S1_after, S1_delta]
-\end{verbatim}
+Tổng cộng 27 features được xây dựng từ hai nguồn dữ liệu. \textbf{Sentinel-2} đóng góp 21 features, bao gồm 7 bands/chỉ số (B4, B8, B11, B12, NDVI, NBR, NDMI) cho kỳ trước, 7 bands/chỉ số tương ứng cho kỳ sau, và 7 giá trị delta (hiệu số giữa kỳ sau và kỳ trước). \textbf{Sentinel-1} đóng góp 6 features, bao gồm 2 bands (VV, VH) cho kỳ trước, 2 bands tương ứng cho kỳ sau, và 2 giá trị delta.
 
 \begin{table}[H]
 \centering
-\caption{Chi tiết 27 features sử dụng}
-\label{tab:features}
+\caption{Chi tiết 27 đặc trưng sử dụng trong mô hình}
+\label{tab:features_detail}
 \begin{tabular}{|c|c|c|l|l|}
 \hline
-\textbf{Index} & \textbf{Nguồn} & \textbf{Temporal} & \textbf{Feature} & \textbf{Mô tả} \\
+\textbf{Chỉ số} & \textbf{Nguồn} & \textbf{Thời kỳ} & \textbf{Đặc trưng} & \textbf{Mô tả} \\
 \hline
-0-6 & S2 & Before & B4, B8, B11, B12, NDVI, NBR, NDMI & Quang phổ kỳ trước \\
+0-6 & S2 & Kỳ trước & B4, B8, B11, B12, NDVI, NBR, NDMI & Quang phổ kỳ trước \\
 \hline
-7-13 & S2 & After & B4, B8, B11, B12, NDVI, NBR, NDMI & Quang phổ kỳ sau \\
+7-13 & S2 & Kỳ sau & B4, B8, B11, B12, NDVI, NBR, NDMI & Quang phổ kỳ sau \\
 \hline
-14-20 & S2 & Delta & $\Delta$B4, $\Delta$B8, ... & Biến đổi quang phổ \\
+14-20 & S2 & Biến đổi & $\Delta$B4, $\Delta$B8, ... & Biến đổi quang phổ \\
 \hline
-21-22 & S1 & Before & VV, VH & SAR kỳ trước \\
+21-22 & S1 & Kỳ trước & VV, VH & SAR kỳ trước \\
 \hline
-23-24 & S1 & After & VV, VH & SAR kỳ sau \\
+23-24 & S1 & Kỳ sau & VV, VH & SAR kỳ sau \\
 \hline
-25-26 & S1 & Delta & $\Delta$VV, $\Delta$VH & Biến đổi SAR \\
+25-26 & S1 & Biến đổi & $\Delta$VV, $\Delta$VH & Biến đổi SAR \\
 \hline
 \end{tabular}
 \end{table}
 
-\subsection{Chuẩn hóa dữ liệu (Normalization)}
+\subsection{Trích xuất patch 3×3}
 
-Việc chuẩn hóa dữ liệu là bước quan trọng để đảm bảo các features có cùng phạm vi giá trị, giúp quá trình huấn luyện mô hình hội tụ nhanh và ổn định hơn. Nghiên cứu này áp dụng phương pháp Z-score normalization (standardization):
+Với mỗi điểm thực địa, một patch kích thước 3×3 pixels được trích xuất từ feature stack. Kích thước 3×3 được lựa chọn vì cho phép mô hình học được thông tin ngữ cảnh không gian xung quanh pixel trung tâm, phù hợp với độ phân giải 10m của Sentinel (mỗi patch tương đương vùng 30m × 30m), và giảm thiểu nhiễu từ các pixel lân cận không đồng nhất.
 
-\begin{equation}
-x_{normalized} = \frac{x - \mu}{\sigma}
-\end{equation}
-
-Trong đó $x$ là giá trị gốc, $\mu$ là giá trị trung bình và $\sigma$ là độ lệch chuẩn.
-
-\textbf{Quy trình chuẩn hóa để tránh data leakage:}
-
-Để đảm bảo tính khoa học và tránh hiện tượng rò rỉ dữ liệu (data leakage), các tham số chuẩn hóa ($\mu$ và $\sigma$) được tính toán \textbf{chỉ trên tập huấn luyện (training set)} theo quy trình sau:
-
-\begin{enumerate}
-    \item \textbf{Bước 1 - Chia dữ liệu:} Thực hiện stratified split để tách 20\% dữ liệu làm tập test cố định trước khi tính toán bất kỳ thống kê nào.
-    \item \textbf{Bước 2 - Tính tham số:} Tính mean ($\mu$) và standard deviation ($\sigma$) cho từng feature trên tập training (80\% dữ liệu).
-    \item \textbf{Bước 3 - Áp dụng chuẩn hóa:} Sử dụng các tham số đã tính để chuẩn hóa cả tập training, validation và test.
-    \item \textbf{Bước 4 - Lưu tham số:} Lưu lại $\mu$ và $\sigma$ để áp dụng cho dữ liệu mới khi dự đoán toàn vùng nghiên cứu.
-\end{enumerate}
-
-Phương pháp này đảm bảo tập test hoàn toàn độc lập và không bị ảnh hưởng bởi thông tin từ quá trình huấn luyện, phản ánh chính xác khả năng tổng quát hóa của mô hình trên dữ liệu chưa từng thấy.
+Kết quả là mỗi mẫu có kích thước (3, 3, 27) — tương ứng với chiều cao, chiều rộng và số kênh đặc trưng.

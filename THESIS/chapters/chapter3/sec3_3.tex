@@ -1,89 +1,43 @@
-\section{Kiến trúc mô hình CNN đề xuất}
+\section{Chuẩn bị mẫu huấn luyện}
 
-\subsection{Thiết kế kiến trúc}
+\subsection{Chuẩn hóa dữ liệu}
 
-\begin{figure}[H]
-    \centering
-    \fbox{\parbox{0.9\textwidth}{\centering\vspace{3cm}\textbf{[PLACEHOLDER]}\\ Sơ đồ kiến trúc CNN chi tiết với các layer,\\ kích thước tensor ở mỗi bước, và số parameters\vspace{3cm}}}
-    \caption{Kiến trúc mô hình CNN đề xuất}
-    \label{fig:cnn_architecture}
-\end{figure}
+Việc chuẩn hóa dữ liệu là bước quan trọng để đảm bảo các features có cùng phạm vi giá trị, giúp quá trình huấn luyện mô hình hội tụ nhanh và ổn định hơn. Nghiên cứu này áp dụng phương pháp chuẩn hóa Z-score:
 
-\textbf{Tổng quan architecture:}
+\begin{equation}
+x_{normalized} = \frac{x - \mu}{\sigma}
+\end{equation}
 
-\begin{verbatim}
-INPUT: (batch_size, 3, 3, 27)
-    |
-PERMUTE -> (batch_size, 27, 3, 3)  # PyTorch format (N, C, H, W)
-    |
-CONVOLUTIONAL BLOCK 1
-    Conv2D(27 -> 64, kernel=3x3)
-    BatchNorm2D(64)
-    ReLU()
-    Dropout2D(p=0.7)
-    | (batch_size, 64, 3, 3)
-CONVOLUTIONAL BLOCK 2
-    Conv2D(64 -> 32, kernel=3x3)
-    BatchNorm2D(32)
-    ReLU()
-    Dropout2D(p=0.7)
-    | (batch_size, 32, 3, 3)
-GLOBAL AVERAGE POOLING
-    | (batch_size, 32)
-FULLY CONNECTED BLOCK
-    Linear(32 -> 64)
-    BatchNorm1D(64)
-    ReLU()
-    Dropout(p=0.7)
-    | (batch_size, 64)
-OUTPUT LAYER
-    Linear(64 -> 4)
-    |
-OUTPUT: (batch_size, 4)  # Logits for 4 classes
-\end{verbatim}
+trong đó $x$ là giá trị gốc, $\mu$ là giá trị trung bình và $\sigma$ là độ lệch chuẩn.
 
-\subsection{Chiến lược Regularization}
+Để đảm bảo tính khoa học và tránh hiện tượng rò rỉ dữ liệu, các tham số chuẩn hóa ($\mu$ và $\sigma$) được tính toán \textbf{chỉ trên tập huấn luyện} theo quy trình: (1) Thực hiện stratified split để tách 20\% dữ liệu làm tập test cố định trước khi tính toán bất kỳ thống kê nào; (2) Tính mean và std cho từng feature trên tập training; (3) Sử dụng các tham số đã tính để chuẩn hóa cả tập training, validation và test; (4) Lưu lại các tham số để áp dụng cho dữ liệu mới khi dự đoán.
 
-Với bộ dữ liệu có quy mô nhỏ (2,630 mẫu), việc áp dụng các kỹ thuật regularization mạnh là cần thiết để tránh hiện tượng overfitting. Nghiên cứu này kết hợp ba kỹ thuật regularization chính:
+\subsection{Phân chia dữ liệu}
 
-\textbf{(1) Batch Normalization} \cite{ioffe2015}: Được áp dụng sau mỗi lớp tích chập và lớp fully-connected, giúp ổn định quá trình huấn luyện, cho phép sử dụng learning rate cao hơn và đóng vai trò như một dạng regularization ngầm định.
+Chiến lược chia dữ liệu được thiết kế theo khuyến nghị của Roberts et al. \cite{roberts2017} về cross-validation cho dữ liệu không gian, đảm bảo đánh giá khách quan:
 
-\textbf{(2) Dropout với tỷ lệ 0.7} \cite{srivastava2014}: Tỷ lệ dropout 70\% được lựa chọn dựa trên các yếu tố sau:
-\begin{itemize}
-    \item \textbf{Quy mô dữ liệu nhỏ:} Với chỉ 2,630 mẫu huấn luyện và mô hình có 36,676 tham số, tỷ lệ mẫu/tham số thấp (~72:1) đòi hỏi regularization mạnh để tránh overfitting.
-    \item \textbf{Kết quả thực nghiệm:} Qua quá trình thử nghiệm với các giá trị dropout từ 0.3 đến 0.8, tỷ lệ 0.7 cho kết quả tối ưu với khoảng cách nhỏ nhất giữa training accuracy và validation accuracy.
-    \item \textbf{Dropout2D cho lớp tích chập:} Thay vì dropout từng neuron, Dropout2D loại bỏ toàn bộ feature maps, phù hợp hơn cho CNN vì các features trong cùng một channel có tương quan không gian cao.
-\end{itemize}
-
-\textbf{(3) Weight Decay (L2 Regularization):} Hệ số weight decay $\lambda = 10^{-3}$ được áp dụng thông qua optimizer AdamW, thêm penalty vào hàm loss để hạn chế các trọng số có giá trị lớn.
-
-\subsection{Parameter Count}
+\begin{enumerate}
+    \item \textbf{Bước 1:} Tách 20\% dữ liệu làm tập test cố định (526 mẫu) — tập này không được sử dụng trong quá trình huấn luyện hay tinh chỉnh siêu tham số.
+    \item \textbf{Bước 2:} Áp dụng 5-Fold Cross Validation trên 80\% còn lại (2,104 mẫu) để tìm kiếm siêu tham số tối ưu và đánh giá độ ổn định của mô hình.
+    \item \textbf{Bước 3:} Huấn luyện mô hình cuối cùng trên toàn bộ 80\% dữ liệu training.
+    \item \textbf{Bước 4:} Đánh giá mô hình cuối cùng trên 20\% tập test để báo cáo kết quả.
+\end{enumerate}
 
 \begin{table}[H]
 \centering
-\caption{Tổng số trainable parameters}
-\label{tab:parameters}
-\begin{tabular}{|l|l|c|l|}
+\caption{Phân bố dữ liệu theo tập huấn luyện và kiểm tra}
+\label{tab:data_split_info}
+\begin{tabular}{|l|c|c|}
 \hline
-\textbf{Layer} & \textbf{Type} & \textbf{Parameters} & \textbf{Calculation} \\
+\textbf{Tập dữ liệu} & \textbf{Số mẫu} & \textbf{Tỷ lệ} \\
 \hline
-Conv1 & Weights & 15,552 & 27×3×3×64 \\
+Training + Validation (5-Fold CV) & 2,104 & 80\% \\
 \hline
-BN1 & $\gamma$, $\beta$ & 128 & 64 + 64 \\
+Test (cố định) & 526 & 20\% \\
 \hline
-Conv2 & Weights & 18,432 & 64×3×3×32 \\
-\hline
-BN2 & $\gamma$, $\beta$ & 64 & 32 + 32 \\
-\hline
-GAP & - & 0 & No params \\
-\hline
-FC1 & Weights, bias & 2,112 & 32×64 + 64 \\
-\hline
-BN3 & $\gamma$, $\beta$ & 128 & 64 + 64 \\
-\hline
-FC2 & Weights, bias & 260 & 64×4 + 4 \\
-\hline
-\textbf{TOTAL} & & \textbf{36,676} & \\
+\textbf{Tổng} & \textbf{2,630} & \textbf{100\%} \\
 \hline
 \end{tabular}
 \end{table}
+
+Việc sử dụng stratified sampling đảm bảo tỷ lệ các lớp (Rừng ổn định, Mất rừng, Phi rừng, Phục hồi rừng) được duy trì đồng đều trong cả tập training và test.

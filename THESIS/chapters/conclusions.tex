@@ -6,7 +6,7 @@
 
 Đồ án đã hoàn thành các mục tiêu đề ra và đạt được một số kết quả chính:
 
-\textbf{Về xây dựng bộ dữ liệu huấn luyện:} Nhóm nghiên cứu đã thu thập, tiền xử lý hai kỳ dữ liệu Sentinel-1/2 (01/2024 và 02/2025) và tạo feature stack 27 chiều (kết hợp SAR và Optical) cùng với việc thu thập 2,630 điểm ground truth cho 4 lớp phân loại với phân bố cân bằng.
+\textbf{Về xây dựng bộ dữ liệu huấn luyện:} Nhóm nghiên cứu đã thu thập, tiền xử lý hai kỳ dữ liệu Sentinel-1/2 (01/2024 và 02/2025) và tạo feature stack 27 chiều (kết hợp SAR và Optical) cùng với việc thu thập 2,630 điểm thực địa cho 4 lớp phân loại với phân bố cân bằng.
 
 \textbf{Về thiết kế kiến trúc CNN:} Kiến trúc CNN nhẹ với khoảng 36,676 tham số được thiết kế và áp dụng các kỹ thuật regularization hiệu quả (BatchNorm, Dropout 0.7, Weight Decay), phù hợp cho bộ dữ liệu nhỏ khoảng 2,600 mẫu.
 
@@ -18,11 +18,11 @@
 
 \textbf{Về mặt phương pháp:} Đồ án đã áp dụng 5-Fold Stratified Cross Validation nhằm đánh giá độ ổn định của mô hình, chứng minh hiệu quả sử dụng patches 3×3 cho bài toán phát hiện mất rừng, và tiến hành các thí nghiệm ablation toàn diện để khảo sát ảnh hưởng của kích thước patch, nguồn dữ liệu và kỹ thuật regularization.
 
-\textbf{Về mặt ứng dụng:} Đồ án là một trong những nghiên cứu đầu tiên áp dụng CNN cho phát hiện biến động rừng tại Cà Mau, chứng minh hiệu quả trong việc kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2), đồng thời đóng góp một bộ ground truth chất lượng cao gồm 2,630 điểm với 4 lớp phân loại.
+\textbf{Về mặt ứng dụng:} Đồ án là một trong những nghiên cứu đầu tiên áp dụng CNN cho phát hiện biến động rừng tại Cà Mau, chứng minh hiệu quả trong việc kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2), đồng thời đóng góp một bộ dữ liệu thực địa chất lượng cao gồm 2,630 điểm với 4 lớp phân loại.
 
 \section*{Hạn chế}
 
-Đồ án vẫn tồn tại các hạn chế cần lưu ý. Thứ nhất, thời gian dự đoán toàn bộ raster còn dài (khoảng 14.83 phút cho 16.2 triệu pixel hợp lệ). Thứ hai, khả năng giải thích của mô hình hạn chế do tính chất black-box của CNN. Thứ ba, quy mô ground truth còn nhỏ (chỉ 2,630 điểm), chưa có khảo sát thực địa đầy đủ. Thứ tư, phân tích chỉ dừng lại ở bi-temporal mà chưa khai thác chuỗi thời gian đầy đủ.
+Đồ án vẫn tồn tại các hạn chế cần lưu ý. Thứ nhất, thời gian dự đoán toàn bộ raster còn dài (khoảng 14.83 phút cho 16.2 triệu pixel hợp lệ). Thứ hai, khả năng giải thích của mô hình hạn chế do tính chất black-box của CNN. Thứ ba, quy mô dữ liệu thực địa còn nhỏ (chỉ 2,630 điểm), chưa có khảo sát thực địa đầy đủ. Thứ tư, phân tích chỉ dừng lại ở bi-temporal mà chưa khai thác chuỗi thời gian đầy đủ.
 
 \section*{Kiến nghị}
 
@@ -34,4 +34,4 @@
 
 \textbf{Ứng dụng thực tế:} Hướng phát triển bao gồm triển khai hệ thống giám sát near-real-time, mở rộng phạm vi áp dụng sang các tỉnh trong vùng Đồng bằng sông Cửu Long, và tích hợp kết quả với hệ thống GIS của cơ quan quản lý rừng.
 
-\textbf{Tăng cường thu thập dữ liệu:} Cần khảo sát thực địa để validate kết quả, mở rộng bộ ground truth, và thu thập thêm dữ liệu multi-temporal để nâng cao khả năng khai thác chuỗi thời gian.
+\textbf{Tăng cường thu thập dữ liệu:} Cần khảo sát thực địa để validate kết quả, mở rộng bộ dữ liệu thực địa, và thu thập thêm dữ liệu multi-temporal để nâng cao khả năng khai thác chuỗi thời gian.

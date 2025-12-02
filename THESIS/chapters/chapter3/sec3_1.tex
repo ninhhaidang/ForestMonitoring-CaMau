@@ -1,32 +1,6 @@
-\section{Khu vực và dữ liệu nghiên cứu}
+\section{Thu thập và tiền xử lý dữ liệu}
 
-\subsection{Khu vực nghiên cứu}
-
-\textbf{Vị trí địa lý:}
-
-Theo Nghị quyết số 1278/NQ-UBTVQH15 ngày 24/10/2024 của Ủy ban Thường vụ Quốc hội, kể từ ngày 01/07/2025, tỉnh Cà Mau và tỉnh Bạc Liêu được sáp nhập thành tỉnh Cà Mau mới. Tỉnh Cà Mau mới nằm ở cực Nam Tổ Quốc, thuộc vùng Đồng bằng sông Cửu Long; tọa độ địa lý nằm trong khoảng 8°36'–9°40' Bắc và 104°43'–105°50' Đông, diện tích tự nhiên là 7,942.38 km², dân số khoảng 2.6 triệu người, và chiều dài đường bờ biển khoảng 300 km (bao gồm cả bờ biển Bạc Liêu cũ).
-
-\begin{figure}[H]
-    \centering
-    \fbox{\parbox{0.8\textwidth}{\centering\vspace{3cm}\textbf{[PLACEHOLDER]}\\ Bản đồ vị trí khu vực nghiên cứu:\\(a) Vị trí Cà Mau trong Việt Nam\\(b) Ranh giới tỉnh Cà Mau\\(c) Vùng rừng nghiên cứu với tọa độ UTM\vspace{3cm}}}
-    \caption{Bản đồ vị trí khu vực nghiên cứu}
-    \label{fig:study_area}
-\end{figure}
-
-\textbf{Vùng nghiên cứu:}
-
-Đồ án tập trung vào toàn bộ vùng quy hoạch lâm nghiệp của tỉnh Cà Mau mới. Dữ liệu ranh giới quy hoạch lâm nghiệp được cung cấp bởi Công ty TNHH Tư vấn và Công nghệ Đồng Xanh — đối tác của Chi cục Kiểm lâm tỉnh Cà Mau.
-
-\begin{itemize}
-    \item \textbf{Tổng diện tích ranh giới quy hoạch:} 170,178.82 hecta (tương đương 1,701.79 km²), bao gồm 666 polygon trong file shapefile ranh giới.
-    \item \textbf{Diện tích thực tế được phân loại:} 162,468.50 hecta (khoảng 95.5\% diện tích ranh giới). Phần còn lại (~7,710 ha, chiếm 4.5\%) bị loại do mây che phủ hoặc dữ liệu không hợp lệ (nodata) trong quá trình xử lý ảnh vệ tinh.
-    \item \textbf{Kích thước raster:} 12,547 × 10,917 pixels (ở độ phân giải 10m).
-    \item \textbf{Hệ quy chiếu:} EPSG:32648 (WGS 84 / UTM Zone 48N).
-\end{itemize}
-
-\subsection{Dữ liệu viễn thám}
-
-\textbf{Tiêu chí lựa chọn ảnh vệ tinh:}
+\subsection{Dữ liệu viễn thám Sentinel}
 
 Việc lựa chọn ảnh vệ tinh tuân theo các tiêu chí nhằm đảm bảo chất lượng dữ liệu đầu vào. Đối với ảnh Sentinel-2, nghiên cứu sử dụng sản phẩm \texttt{S2\_SR\_HARMONIZED} (Surface Reflectance Level-2A đã đồng nhất hóa) từ Google Earth Engine, ưu tiên các ảnh trong mùa khô (tháng 1-3) để giảm thiểu ảnh hưởng của mây và đảm bảo tính so sánh giữa hai thời kỳ. Mặt nạ mây được tạo từ bộ sưu tập \texttt{S2\_CLOUD\_PROBABILITY} với ngưỡng xác suất 50\% để loại bỏ các pixel bị mây che phủ. Đối với ảnh Sentinel-1, sử dụng sản phẩm \texttt{S1\_GRD} đã được tiền xử lý bởi ESA, các cảnh được chọn có thời gian thu nhận gần nhất với ảnh Sentinel-2 tương ứng (trong phạm vi ±7 ngày) để đảm bảo tính đồng bộ về thời gian.
 
@@ -46,177 +20,50 @@ Sentinel-1 Before & 10m & 04/02/2024 & 2 & GRD, IW mode \\
 \hline
 Sentinel-1 After & 10m & 22/02/2025 & 2 & GRD, IW mode \\
 \hline
-Ground Truth & - & - & - & 2,630 points \\
+Dữ liệu thực địa & - & - & - & 2,630 points \\
 \hline
 Forest Boundary & Vector & - & - & Shapefile \\
 \hline
 \end{tabular}
 \end{table}
 
-% Figure 1: Bands phản xạ (B4 Red, B8 NIR)
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T1-B4.png}
-        \caption{B4 (Red) - T1 (30/01/2024)}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T2-B4.png}
-        \caption{B4 (Red) - T2 (28/02/2025)}
-    \end{subfigure}
+\subsection{Thu thập dữ liệu trên Google Earth Engine}
 
-    \vspace{0.3cm}
+Toàn bộ dữ liệu ảnh vệ tinh được thu thập và xử lý trên nền tảng Google Earth Engine (GEE) — một hệ thống điện toán đám mây cho phép truy cập và xử lý khối lượng lớn dữ liệu viễn thám. Việc sử dụng GEE mang lại nhiều ưu điểm: truy cập trực tiếp kho dữ liệu Sentinel đã được tiền xử lý, khả năng xử lý song song trên hạ tầng đám mây, và đảm bảo tính nhất quán trong quy trình xử lý.
 
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T1-B8.png}
-        \caption{B8 (NIR) - T1 (30/01/2024)}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T2-B8.png}
-        \caption{B8 (NIR) - T2 (28/02/2025)}
-    \end{subfigure}
-    \caption{Bands phản xạ Sentinel-2: B4 (Red) và B8 (NIR)}
-    \label{fig:s2_reflectance_bands}
-\end{figure}
+\textbf{Xử lý dữ liệu Sentinel-2:}
 
-% Figure 2: Bands SWIR (B11, B12)
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T1-B11.png}
-        \caption{B11 (SWIR1) - T1 (30/01/2024)}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T2-B11.png}
-        \caption{B11 (SWIR1) - T2 (28/02/2025)}
-    \end{subfigure}
+Dữ liệu Sentinel-2 được truy xuất từ bộ sưu tập \texttt{COPERNICUS/S2\_SR\_HARMONIZED} — sản phẩm Surface Reflectance Level-2A đã được hiệu chỉnh khí quyển và đồng nhất hóa giữa các cảm biến Sentinel-2A và 2B. Quy trình xử lý bao gồm: (1) Lọc theo không gian và thời gian để chọn các cảnh phủ khu vực nghiên cứu trong ngày chỉ định; (2) Loại bỏ mây sử dụng bộ sưu tập \texttt{S2\_CLOUD\_PROBABILITY} với ngưỡng xác suất 50\%; (3) Trích xuất 4 bands cần thiết (B4-Red, B8-NIR, B11-SWIR1, B12-SWIR2), chuyển đổi sang giá trị phản xạ và tính toán 3 chỉ số thực vật: NDVI, NBR, NDMI; (4) Mosaic các tiles để tạo ảnh liền mạch phủ toàn bộ khu vực nghiên cứu.
 
-    \vspace{0.3cm}
+\textbf{Xử lý dữ liệu Sentinel-1:}
 
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T1-B12.png}
-        \caption{B12 (SWIR2) - T1 (30/01/2024)}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T2-B12.png}
-        \caption{B12 (SWIR2) - T2 (28/02/2025)}
-    \end{subfigure}
-    \caption{Bands hồng ngoại sóng ngắn Sentinel-2: B11 (SWIR1) và B12 (SWIR2)}
-    \label{fig:s2_swir_bands}
-\end{figure}
+Dữ liệu Sentinel-1 được truy xuất từ bộ sưu tập \texttt{COPERNICUS/S1\_GRD} — sản phẩm Ground Range Detected đã được tiền xử lý bởi ESA bao gồm: hiệu chỉnh quỹ đạo, loại bỏ nhiễu biên và nhiễu nhiệt, hiệu chỉnh bức xạ và hiệu chỉnh địa hình sử dụng DEM SRTM. Quy trình xử lý bổ sung bao gồm: lọc theo thời gian (±7 ngày so với Sentinel-2), chọn chế độ Interferometric Wide (IW) với quỹ đạo đi xuống, và trích xuất hai bands VV và VH (đơn vị dB).
 
-% Figure 3: Chỉ số thực vật (NDVI, NBR)
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T1-NDVI.png}
-        \caption{NDVI - T1 (30/01/2024)}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T2-NDVI.png}
-        \caption{NDVI - T2 (28/02/2025)}
-    \end{subfigure}
+Sau khi xử lý, dữ liệu được xuất ra định dạng GeoTIFF với độ phân giải 10m và hệ quy chiếu EPSG:32648 (WGS 84 / UTM Zone 48N).
 
-    \vspace{0.3cm}
+\subsection{Dữ liệu thực địa}
 
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T1-NBR.png}
-        \caption{NBR - T1 (30/01/2024)}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T2-NBR.png}
-        \caption{NBR - T2 (28/02/2025)}
-    \end{subfigure}
-    \caption{Chỉ số thực vật Sentinel-2: NDVI và NBR}
-    \label{fig:s2_vegetation_indices}
-\end{figure}
+Dữ liệu thực địa được thu thập thông qua quy trình khảo sát chuyên nghiệp với sự phối hợp giữa Chi cục Kiểm lâm tỉnh Cà Mau và Công ty TNHH Tư vấn và Công nghệ Đồng Xanh (GFD). Quy trình thu thập bao gồm ba giai đoạn: (1) Khảo sát thực địa bằng thiết bị bay không người lái (drone) để ghi nhận hình ảnh và xác định trạng thái rừng; (2) Số hóa các điểm dữ liệu thực địa trên phần mềm QGIS, đối chiếu với ảnh vệ tinh Sentinel-2; (3) Kiểm tra chéo và loại bỏ các điểm không rõ ràng hoặc nằm trong vùng mây che phủ.
 
-% Figure 4: Chỉ số độ ẩm (NDMI)
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T1-NDMI.png}
-        \caption{NDMI - T1 (30/01/2024)}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T2-NDMI.png}
-        \caption{NDMI - T2 (28/02/2025)}
-    \end{subfigure}
-    \caption{Chỉ số độ ẩm Sentinel-2: NDMI}
-    \label{fig:s2_ndmi}
-\end{figure}
-
-% Figure 5: Dữ liệu SAR Sentinel-1 (VV, VH)
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T1-VV.png}
-        \caption{VV - T1 (04/02/2024)}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T2-VV.png}
-        \caption{VV - T2 (22/02/2025)}
-    \end{subfigure}
-
-    \vspace{0.3cm}
-
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T1-VH.png}
-        \caption{VH - T1 (04/02/2024)}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{img/chapter3/T2-VH.png}
-        \caption{VH - T2 (22/02/2025)}
-    \end{subfigure}
-    \caption{Dữ liệu SAR Sentinel-1: VV và VH}
-    \label{fig:s1_sar_data}
-\end{figure}
-
-\subsection{Ground Truth Data}
-
-Dữ liệu ground truth được thu thập thông qua quy trình khảo sát thực địa chuyên nghiệp với sự phối hợp giữa Chi cục Kiểm lâm tỉnh Cà Mau và Công ty TNHH Tư vấn và Công nghệ Đồng Xanh (GFD). Quy trình thu thập bao gồm ba giai đoạn chính:
-
-\textbf{Giai đoạn 1 - Khảo sát thực địa:} Các nhân viên kiểm lâm thuộc Chi cục Kiểm lâm tỉnh Cà Mau tiến hành khảo sát thực địa tại các khu vực rừng trong phạm vi nghiên cứu. Việc khảo sát được thực hiện bằng thiết bị bay không người lái (drone) để ghi nhận hình ảnh thực tế và xác định trạng thái rừng tại từng vị trí. Tọa độ các điểm khảo sát được đánh dấu và ghi nhận trong quá trình bay.
-
-\textbf{Giai đoạn 2 - Số hóa và xử lý:} Dữ liệu tọa độ và hình ảnh drone thu thập được chuyển giao cho Công ty TNHH Tư vấn và Công nghệ Đồng Xanh (GFD) — đối tác chuyên môn của Chi cục Kiểm lâm tỉnh Cà Mau. Các chuyên viên GIS của công ty tiến hành số hóa các điểm ground truth trên phần mềm QGIS, đối chiếu với ảnh vệ tinh Sentinel-2 và phân loại trạng thái biến động rừng cho từng điểm.
-
-\textbf{Giai đoạn 3 - Kiểm tra và hoàn thiện:} Bộ dữ liệu ground truth được kiểm tra chéo giữa thông tin thực địa và ảnh vệ tinh, loại bỏ các điểm không rõ ràng hoặc nằm trong vùng mây che phủ. Dữ liệu cuối cùng được xuất dưới dạng file CSV với cấu trúc gồm 4 trường: \texttt{id} (mã định danh điểm), \texttt{label} (nhãn lớp phân loại), \texttt{x} và \texttt{y} (tọa độ theo hệ quy chiếu EPSG:32648 - WGS 84 / UTM Zone 48N), đảm bảo tương thích với dữ liệu ảnh vệ tinh Sentinel.
-
-\textbf{Thống kê ground truth:}
+Dữ liệu cuối cùng được xuất dưới dạng file CSV với cấu trúc gồm 4 trường: \texttt{id}, \texttt{label}, \texttt{x} và \texttt{y} (tọa độ theo hệ quy chiếu EPSG:32648).
 
 \begin{table}[H]
 \centering
-\caption{Thống kê Ground Truth}
+\caption{Thống kê dữ liệu thực địa theo lớp biến động}
 \label{tab:ground_truth}
 \begin{tabular}{|c|l|c|c|l|}
 \hline
-\textbf{Class} & \textbf{Tên} & \textbf{Số điểm} & \textbf{Tỷ lệ (\%)} & \textbf{Mô tả} \\
+\textbf{Lớp} & \textbf{Tên} & \textbf{Số điểm} & \textbf{Tỷ lệ} & \textbf{Mô tả} \\
 \hline
-0 & Forest Stable & 656 & 24.9\% & Rừng ổn định (có rừng ở cả 2 kỳ) \\
+0 & Rừng ổn định & 656 & 24.9\% & Có rừng ở cả 2 kỳ \\
 \hline
-1 & Deforestation & 650 & 24.7\% & Mất rừng (có rừng $\rightarrow$ không có rừng) \\
+1 & Mất rừng & 650 & 24.7\% & Có rừng $\rightarrow$ không có rừng \\
 \hline
-2 & Non-forest & 664 & 25.3\% & Không phải rừng (không có rừng ở cả 2 kỳ) \\
+2 & Phi rừng & 664 & 25.3\% & Không có rừng ở cả 2 kỳ \\
 \hline
-3 & Reforestation & 660 & 25.1\% & Tái trồng rừng (không có $\rightarrow$ có rừng) \\
+3 & Phục hồi rừng & 660 & 25.1\% & Không có $\rightarrow$ có rừng \\
 \hline
-\textbf{Tổng} & & \textbf{2,630} & \textbf{100\%} & Balanced distribution \\
+\textbf{Tổng} & & \textbf{2,630} & \textbf{100\%} & Phân bố cân bằng \\
 \hline
 \end{tabular}
 \end{table}
-
-\begin{figure}[H]
-    \centering
-    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Bản đồ phân bố các điểm ground truth\\ theo từng lớp với màu sắc khác nhau\vspace{2cm}}}
-    \caption{Phân bố không gian các điểm ground truth}
-    \label{fig:ground_truth_distribution}
-\end{figure}
