@@ -86,126 +86,72 @@ Sentinel-1 (6 features):
 
 ## Kiến trúc CNN
 
-```
-┌──────────────────────────────────────────────────────────────────────────┐
-│                          INPUT LAYER                                      │
-│  Shape: (batch, 3, 3, 27)                                                │
-│  - 3×3 spatial patch                                                     │
-│  - 27 feature channels (S1+S2 fusion)                                   │
-└────────────────────────────────┬─────────────────────────────────────────┘
-                                 │
-                                 ▼
-┌──────────────────────────────────────────────────────────────────────────┐
-│                          PERMUTE                                          │
-│  Output: (batch, 27, 3, 3)                                               │
-│  - Convert to PyTorch format (N, C, H, W)                                │
-└────────────────────────────────┬─────────────────────────────────────────┘
-                                 │
-                                 ▼
-┌──────────────────────────────────────────────────────────────────────────┐
-│                      CONVOLUTIONAL BLOCK 1                                │
-│  ┌────────────────────────────────────────────────────────────────────┐  │
-│  │ Conv2D: in=27, out=64, kernel=3×3, padding=1, bias=False          │  │
-│  │ Output: (batch, 64, 3, 3)                                          │  │
-│  │ Parameters: 27×3×3×64 = 15,552                                     │  │
-│  └────────────────────────────────┬───────────────────────────────────┘  │
-│                                   ▼                                       │
-│  ┌────────────────────────────────────────────────────────────────────┐  │
-│  │ BatchNorm2d(64)                                                    │  │
-│  │ Parameters: 64×2 = 128                                             │  │
-│  └────────────────────────────────┬───────────────────────────────────┘  │
-│                                   ▼                                       │
-│  ┌────────────────────────────────────────────────────────────────────┐  │
-│  │ ReLU (activation)                                                  │  │
-│  └────────────────────────────────┬───────────────────────────────────┘  │
-│                                   ▼                                       │
-│  ┌────────────────────────────────────────────────────────────────────┐  │
-│  │ Dropout2d(p=0.7) - High dropout for regularization                │  │
-│  │ Output: (batch, 64, 3, 3)                                          │  │
-│  └────────────────────────────────────────────────────────────────────┘  │
-└────────────────────────────────┬─────────────────────────────────────────┘
-                                 │
-                                 ▼
-┌──────────────────────────────────────────────────────────────────────────┐
-│                      CONVOLUTIONAL BLOCK 2                                │
-│  ┌────────────────────────────────────────────────────────────────────┐  │
-│  │ Conv2D: in=64, out=32, kernel=3×3, padding=1, bias=False          │  │
-│  │ Output: (batch, 32, 3, 3)                                          │  │
-│  │ Parameters: 64×3×3×32 = 18,432                                     │  │
-│  └────────────────────────────────┬───────────────────────────────────┘  │
-│                                   ▼                                       │
-│  ┌────────────────────────────────────────────────────────────────────┐  │
-│  │ BatchNorm2d(32)                                                    │  │
-│  │ Parameters: 32×2 = 64                                              │  │
-│  └────────────────────────────────┬───────────────────────────────────┘  │
-│                                   ▼                                       │
-│  ┌────────────────────────────────────────────────────────────────────┐  │
-│  │ ReLU (activation)                                                  │  │
-│  └────────────────────────────────┬───────────────────────────────────┘  │
-│                                   ▼                                       │
-│  ┌────────────────────────────────────────────────────────────────────┐  │
-│  │ Dropout2d(p=0.7)                                                   │  │
-│  │ Output: (batch, 32, 3, 3)                                          │  │
-│  └────────────────────────────────────────────────────────────────────┘  │
-└────────────────────────────────┬─────────────────────────────────────────┘
-                                 │
-                                 ▼
-┌──────────────────────────────────────────────────────────────────────────┐
-│                    GLOBAL AVERAGE POOLING                                 │
-│  AdaptiveAvgPool2d((1, 1))                                               │
-│  - Reduces (batch, 32, 3, 3) → (batch, 32, 1, 1)                        │
-│  - Then flatten → (batch, 32)                                            │
-│  - No learnable parameters                                               │
-└────────────────────────────────┬─────────────────────────────────────────┘
-                                 │
-                                 ▼
-┌──────────────────────────────────────────────────────────────────────────┐
-│                      FULLY CONNECTED BLOCK                                │
-│  ┌────────────────────────────────────────────────────────────────────┐  │
-│  │ Linear: in=32, out=64                                              │  │
-│  │ Output: (batch, 64)                                                │  │
-│  │ Parameters: 32×64 + 64 = 2,112                                     │  │
-│  └────────────────────────────────┬───────────────────────────────────┘  │
-│                                   ▼                                       │
-│  ┌────────────────────────────────────────────────────────────────────┐  │
-│  │ BatchNorm1d(64)                                                    │  │
-│  │ Parameters: 64×2 = 128                                             │  │
-│  └────────────────────────────────┬───────────────────────────────────┘  │
-│                                   ▼                                       │
-│  ┌────────────────────────────────────────────────────────────────────┐  │
-│  │ ReLU (activation)                                                  │  │
-│  └────────────────────────────────┬───────────────────────────────────┘  │
-│                                   ▼                                       │
-│  ┌────────────────────────────────────────────────────────────────────┐  │
-│  │ Dropout(p=0.7)                                                     │  │
-│  │ Output: (batch, 64)                                                │  │
-│  └────────────────────────────────────────────────────────────────────┘  │
-└────────────────────────────────┬─────────────────────────────────────────┘
-                                 │
-                                 ▼
-┌──────────────────────────────────────────────────────────────────────────┐
-│                          OUTPUT LAYER                                     │
-│  Linear: in=64, out=4                                                    │
-│  Output: (batch, 4) - Logits for 4 classes                              │
-│  Parameters: 64×4 + 4 = 260                                              │
-│                                                                           │
-│  Class mapping:                                                          │
-│    0 → Rừng ổn định (Forest Stable)                                     │
-│    1 → Mất rừng (Deforestation)                                          │
-│    2 → Phi rừng (Non-forest)                                             │
-│    3 → Phục hồi rừng (Reforestation)                                     │
-└───────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph INPUT["INPUT LAYER"]
+        I1["Shape: (batch, 3, 3, 27)<br/>3×3 spatial patch<br/>27 feature channels"]
+    end
 
-┌──────────────────────────────────────────────────────────────────────────┐
-│                      PARAMETER SUMMARY                                    │
-├──────────────────────────────────────────────────────────────────────────┤
-│  Conv Block 1:     15,552 + 128 = 15,680 params                         │
-│  Conv Block 2:     18,432 + 64  = 18,496 params                         │
-│  FC Block:          2,112 + 128 = 2,240 params                          │
-│  Output Layer:                     260 params                            │
-├──────────────────────────────────────────────────────────────────────────┤
-│  TOTAL TRAINABLE PARAMETERS: 36,676                                      │
-└──────────────────────────────────────────────────────────────────────────┘
+    subgraph PERMUTE["PERMUTE"]
+        P1["Output: (batch, 27, 3, 3)<br/>Convert to PyTorch format"]
+    end
+
+    subgraph CONV1["CONVOLUTIONAL BLOCK 1"]
+        direction TB
+        C1_1["Conv2D: 27→64, kernel=3×3<br/>padding=1, bias=False<br/>Params: 15,552"]
+        C1_2["BatchNorm2d(64)<br/>Params: 128"]
+        C1_3["ReLU"]
+        C1_4["Dropout2d(p=0.7)<br/>Output: (batch, 64, 3, 3)"]
+        C1_1 --> C1_2 --> C1_3 --> C1_4
+    end
+
+    subgraph CONV2["CONVOLUTIONAL BLOCK 2"]
+        direction TB
+        C2_1["Conv2D: 64→32, kernel=3×3<br/>padding=1, bias=False<br/>Params: 18,432"]
+        C2_2["BatchNorm2d(32)<br/>Params: 64"]
+        C2_3["ReLU"]
+        C2_4["Dropout2d(p=0.7)<br/>Output: (batch, 32, 3, 3)"]
+        C2_1 --> C2_2 --> C2_3 --> C2_4
+    end
+
+    subgraph GAP["GLOBAL AVERAGE POOLING"]
+        G1["AdaptiveAvgPool2d(1,1)<br/>(batch, 32, 3, 3) → (batch, 32)"]
+    end
+
+    subgraph FC["FULLY CONNECTED BLOCK"]
+        direction TB
+        F1["Linear: 32→64<br/>Params: 2,112"]
+        F2["BatchNorm1d(64)<br/>Params: 128"]
+        F3["ReLU"]
+        F4["Dropout(p=0.7)<br/>Output: (batch, 64)"]
+        F1 --> F2 --> F3 --> F4
+    end
+
+    subgraph OUTPUT["OUTPUT LAYER"]
+        O1["Linear: 64→4<br/>Params: 260"]
+        O2["4 Classes:<br/>0: Rừng ổn định<br/>1: Mất rừng<br/>2: Phi rừng<br/>3: Phục hồi rừng"]
+        O1 --> O2
+    end
+
+    subgraph SUMMARY["TOTAL: 36,676 PARAMS"]
+        S1["Conv Block 1: 15,680<br/>Conv Block 2: 18,496<br/>FC Block: 2,240<br/>Output: 260"]
+    end
+
+    INPUT --> PERMUTE --> CONV1 --> CONV2 --> GAP --> FC --> OUTPUT
+
+    classDef inputStyle fill:#E3F2FD,stroke:#1565C0,stroke-width:2px
+    classDef convStyle fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
+    classDef poolStyle fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px
+    classDef fcStyle fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px
+    classDef outputStyle fill:#FCE4EC,stroke:#C2185B,stroke-width:2px
+    classDef summaryStyle fill:#ECEFF1,stroke:#455A64,stroke-width:2px
+
+    class INPUT,PERMUTE inputStyle
+    class CONV1,CONV2 convStyle
+    class GAP poolStyle
+    class FC fcStyle
+    class OUTPUT outputStyle
+    class SUMMARY summaryStyle
 ```
 
 ### Đặc điểm thiết kế

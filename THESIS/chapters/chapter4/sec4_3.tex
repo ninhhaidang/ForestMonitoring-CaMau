@@ -27,18 +27,22 @@
 
 \begin{figure}[H]
     \centering
-    \fbox{\parbox{0.9\textwidth}{\centering\vspace{4cm}\textbf{[PLACEHOLDER]}\\ Bản đồ phân loại biến động rừng toàn vùng nghiên cứu\\ với 4 lớp màu khác nhau và chú thích\vspace{4cm}}}
+    \includegraphics[width=0.95\textwidth]{chapter4/Classification.png}
     \caption{Bản đồ phân loại biến động rừng tỉnh Cà Mau}
     \label{fig:classification_map}
 \end{figure}
 
 \begin{figure}[H]
     \centering
+    \definecolor{stableforest}{HTML}{00734C}
+    \definecolor{deforestation}{HTML}{E60000}
+    \definecolor{nonforest}{HTML}{FFD37F}
+    \definecolor{reforestation}{HTML}{00C5FF}
     \begin{tikzpicture}
         \pie[
             radius=3,
             text=legend,
-            color={green!60!black, red!70, gray!50, blue!50!green},
+            color={stableforest, deforestation, nonforest, reforestation},
             explode={0, 0.1, 0, 0}
         ]{
             74.30/Rừng ổn định (74.30\%),
@@ -53,6 +57,10 @@
 
 \begin{figure}[H]
     \centering
+    \definecolor{stableforest}{HTML}{00734C}
+    \definecolor{deforestation}{HTML}{E60000}
+    \definecolor{nonforest}{HTML}{FFD37F}
+    \definecolor{reforestation}{HTML}{00C5FF}
     \begin{tikzpicture}
         \begin{axis}[
             ybar,
@@ -69,14 +77,11 @@
             ymax=140000,
             bar width=25pt,
             enlarge x limits=0.2,
-            legend style={at={(0.5,-0.25)}, anchor=north, legend columns=2},
         ]
-        \addplot[fill=green!60!black] coordinates {
-            (Rừng ổn định, 120717)
-            (Mất rừng, 7282)
-            (Phi rừng, 29529)
-            (Phục hồi rừng, 4941)
-        };
+        \addplot[fill=stableforest] coordinates {(Rừng ổn định, 120717)};
+        \addplot[fill=deforestation] coordinates {(Mất rừng, 7282)};
+        \addplot[fill=nonforest] coordinates {(Phi rừng, 29529)};
+        \addplot[fill=reforestation] coordinates {(Phục hồi rừng, 4941)};
         \end{axis}
     \end{tikzpicture}
     \caption{Biểu đồ cột phân bố diện tích theo lớp phân loại}

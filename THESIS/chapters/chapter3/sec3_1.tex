@@ -39,7 +39,109 @@ Dữ liệu Sentinel-2 được truy xuất từ bộ sưu tập \texttt{COPERNI
 
 Dữ liệu Sentinel-1 được truy xuất từ bộ sưu tập \texttt{COPERNICUS/S1\_GRD} — sản phẩm Ground Range Detected đã được tiền xử lý bởi ESA bao gồm: hiệu chỉnh quỹ đạo, loại bỏ nhiễu biên và nhiễu nhiệt, hiệu chỉnh bức xạ và hiệu chỉnh địa hình sử dụng DEM SRTM. Quy trình xử lý bổ sung bao gồm: lọc theo thời gian (±7 ngày so với Sentinel-2), chọn chế độ Interferometric Wide (IW) với quỹ đạo đi xuống, và trích xuất hai bands VV và VH (đơn vị dB).
 
-Sau khi xử lý, dữ liệu được xuất ra định dạng GeoTIFF với độ phân giải 10m và hệ quy chiếu EPSG:32648 (WGS 84 / UTM Zone 48N).
+Sau khi xử lý, dữ liệu được xuất ra định dạng GeoTIFF với độ phân giải 10m và hệ quy chiếu EPSG:32648 (WGS 84 / UTM Zone 48N). Hình~\ref{fig:features_t1} và~\ref{fig:features_t2} minh họa trực quan các bands quang học (B4, B8, B11, B12), các chỉ số thực vật (NDVI, NDMI, NBR) và dữ liệu SAR (VV, VH) cho hai thời điểm trước và sau biến động.
+
+% Figure cho T1 (Kỳ trước)
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T1-B4.png}
+    \caption{B4 (Red)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T1-B8.png}
+    \caption{B8 (NIR)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T1-B11.png}
+    \caption{B11 (SWIR1)}
+\end{subfigure}
+
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T1-B12.png}
+    \caption{B12 (SWIR2)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T1-NDVI.png}
+    \caption{NDVI}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T1-NDMI.png}
+    \caption{NDMI}
+\end{subfigure}
+
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T1-NBR.png}
+    \caption{NBR}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T1-VV.png}
+    \caption{VV (SAR)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T1-VH.png}
+    \caption{VH (SAR)}
+\end{subfigure}
+\caption{Các bands quang học, chỉ số thực vật và dữ liệu SAR kỳ trước (T1 - 01/2024)}
+\label{fig:features_t1}
+\end{figure}
+
+% Figure cho T2 (Kỳ sau)
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T2-B4.png}
+    \caption{B4 (Red)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T2-B8.png}
+    \caption{B8 (NIR)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T2-B11.png}
+    \caption{B11 (SWIR1)}
+\end{subfigure}
+
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T2-B12.png}
+    \caption{B12 (SWIR2)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T2-NDVI.png}
+    \caption{NDVI}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T2-NDMI.png}
+    \caption{NDMI}
+\end{subfigure}
+
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T2-NBR.png}
+    \caption{NBR}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T2-VV.png}
+    \caption{VV (SAR)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{chapter3/T2-VH.png}
+    \caption{VH (SAR)}
+\end{subfigure}
+\caption{Các bands quang học, chỉ số thực vật và dữ liệu SAR kỳ sau (T2 - 02/2025)}
+\label{fig:features_t2}
+\end{figure}
 
 \subsection{Dữ liệu thực địa}
 
