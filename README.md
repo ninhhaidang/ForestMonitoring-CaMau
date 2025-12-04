@@ -87,7 +87,7 @@ Sentinel-1 (6 features):
 ## Kiến trúc CNN
 
 ```mermaid
-flowchart TB
+flowchart LR
     subgraph INPUT["INPUT LAYER"]
         I1["Shape: (batch, 3, 3, 27)<br/>3×3 spatial patch<br/>27 feature channels"]
     end

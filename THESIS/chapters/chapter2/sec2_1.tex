@@ -2,7 +2,7 @@
 
 \subsection{Nguyên lý viễn thám}
 
-Viễn thám (Remote Sensing) là khoa học và kỹ thuật thu thập thông tin về một đối tượng hoặc khu vực từ xa, thường thông qua việc ghi nhận bức xạ điện từ phản xạ hoặc phát ra từ bề mặt Trái Đất. Nguyên lý cơ bản của viễn thám dựa trên tương tác giữa bức xạ điện từ và các đối tượng trên bề mặt.
+Viễn thám (Remote Sensing) là khoa học và kỹ thuật thu thập thông tin về một đối tượng hoặc khu vực từ xa, thường thông qua việc ghi nhận bức xạ điện từ phản xạ hoặc phát ra từ bề mặt Trái Đất \cite{lillesand2015}. Nguyên lý cơ bản của viễn thám dựa trên tương tác giữa bức xạ điện từ và các đối tượng trên bề mặt.
 
 \textbf{Quá trình viễn thám bị động (Passive Remote Sensing):}
 
@@ -15,9 +15,17 @@ E_{incident} = E_{reflected} + E_{absorbed} + E_{transmitted}
 
 Trong đó, $E_{incident}$ là năng lượng tới từ Mặt Trời, $E_{reflected}$ là phần năng lượng phản xạ được cảm biến ghi nhận, $E_{absorbed}$ là phần năng lượng bị hấp thụ và chuyển thành nhiệt, và $E_{transmitted}$ là phần năng lượng truyền qua vật chất.
 
+\textbf{Quá trình viễn thám chủ động (Active Remote Sensing):}
+
+Khác với viễn thám bị động, hệ thống viễn thám chủ động tự phát ra nguồn năng lượng điện từ hướng về phía mục tiêu và ghi nhận tín hiệu phản xạ ngược (backscatter) từ bề mặt. Ưu điểm chính của viễn thám chủ động là khả năng hoạt động độc lập với ánh sáng Mặt Trời, cho phép thu thập dữ liệu cả ngày lẫn đêm và trong mọi điều kiện thời tiết (kể cả khi có mây che phủ). Radar khẩu độ tổng hợp (SAR) là ví dụ điển hình của công nghệ viễn thám chủ động, sử dụng sóng vi ba (microwave) có khả năng xuyên qua mây và mưa.
+
+\textbf{So sánh viễn thám bị động và chủ động:}
+
+Viễn thám bị động (như Sentinel-2) cung cấp ảnh quang học đa phổ với độ phân giải không gian và phổ cao, phù hợp cho phân loại lớp phủ đất chi tiết, nhưng bị hạn chế bởi mây và điều kiện chiếu sáng. Viễn thám chủ động (như Sentinel-1 SAR) hoạt động trong mọi điều kiện thời tiết, cung cấp thông tin về cấu trúc và độ ẩm bề mặt, nhưng khó diễn giải hơn. Sự kết hợp cả hai loại dữ liệu (data fusion) cho phép tận dụng ưu điểm của từng nguồn, đặc biệt quan trọng trong giám sát rừng nhiệt đới nơi mây che phủ thường xuyên.
+
 \begin{figure}[H]
     \centering
-    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Sơ đồ minh họa nguyên lý viễn thám\\ bị động và chủ động\vspace{2cm}}}
+    \includegraphics[width=0.9\textwidth]{img/chapter2/Vien-tham.png}
     \caption{Nguyên lý viễn thám bị động và chủ động}
     \label{fig:remote_sensing_principle}
 \end{figure}
@@ -77,26 +85,6 @@ B12 & SWIR2 & 2190 & 20 & NBR \\
 \end{tabular}
 \end{table}
 
-\subsection{Phát hiện biến động rừng}
-
-\textbf{Change Detection Approach:}
-\begin{equation}
-\Delta Feature = Feature_{after} - Feature_{before}
-\end{equation}
-
-\textbf{Temporal Features:}
-
-Temporal features bao gồm các ``before features'' thể hiện trạng thái rừng tại thời điểm $t_1$, các ``after features'' thể hiện trạng thái rừng tại thời điểm $t_2$, và các ``delta features'' biểu diễn biến đổi giữa hai thời điểm ($t_2 - t_1$).
-
-\textbf{Ví dụ với NDVI:}
-
-Chỉ số thực vật khác biệt chuẩn hóa (NDVI) là một trong những chỉ số quan trọng nhất trong giám sát thực vật từ viễn thám \cite{huang2021}:
-\begin{equation}
-\Delta NDVI = NDVI_{after} - NDVI_{before}
-\end{equation}
-
-Khi $\Delta NDVI$ giảm mạnh (rất nhỏ hơn 0) thì đó là dấu hiệu mất rừng; khi $\Delta NDVI$ xấp xỉ 0 thì vùng được xem là rừng ổn định; và khi $\Delta NDVI$ tăng mạnh (rất lớn hơn 0) thì biểu hiện tái trồng rừng.
-
 \subsection{Các chỉ số thực vật viễn thám}
 
 Các chỉ số thực vật (Vegetation Indices) là các công thức toán học kết hợp giá trị phản xạ từ các kênh phổ khác nhau để tăng cường thông tin về thực vật và giảm nhiễu từ các yếu tố khác như đất, khí quyển. Nghiên cứu này sử dụng ba chỉ số chính:
@@ -119,7 +107,7 @@ NBR = \frac{NIR - SWIR2}{NIR + SWIR2} = \frac{B8 - B12}{B8 + B12}
 \label{eq:nbr}
 \end{equation}
 
-Rừng khỏe mạnh có NBR cao (0.3--0.8) do NIR cao và SWIR thấp. Khu vực mất rừng hoặc cháy rừng có NBR thấp hoặc âm do NIR giảm và SWIR tăng. Chỉ số dNBR (differenced NBR) = NBR\textsubscript{before} - NBR\textsubscript{after} thường được sử dụng để đánh giá mức độ thiệt hại.
+Rừng khỏe mạnh có NBR cao (0.3--0.8) do NIR cao và SWIR thấp. Khu vực mất rừng hoặc cháy rừng có NBR thấp hoặc âm do NIR giảm và SWIR tăng.
 
 \textbf{NDMI (Normalized Difference Moisture Index):}
 
@@ -147,3 +135,25 @@ NDMI & (B8-B11)/(B8+B11) & [-1, 1] & Độ ẩm tán lá \\
 \hline
 \end{tabular}
 \end{table}
+
+\subsection{Phát hiện biến động rừng}
+
+Phát hiện biến động rừng (Forest Change Detection) là quá trình xác định sự thay đổi về diện tích, cấu trúc hoặc trạng thái của rừng giữa hai hoặc nhiều thời điểm khác nhau \cite{huang2021}. Phương pháp này dựa trên việc so sánh các đặc trưng viễn thám thu được từ các thời điểm khác nhau.
+
+\textbf{Change Detection Approach:}
+\begin{equation}
+\Delta Feature = Feature_{after} - Feature_{before}
+\end{equation}
+
+\textbf{Temporal Features:}
+
+Temporal features bao gồm các ``before features'' thể hiện trạng thái rừng tại thời điểm $t_1$, các ``after features'' thể hiện trạng thái rừng tại thời điểm $t_2$, và các ``delta features'' biểu diễn biến đổi giữa hai thời điểm ($t_2 - t_1$).
+
+\textbf{Ví dụ với NDVI:}
+
+Sử dụng chỉ số NDVI đã trình bày ở mục trước, ta có thể tính toán sự thay đổi thực vật theo thời gian:
+\begin{equation}
+\Delta NDVI = NDVI_{after} - NDVI_{before}
+\end{equation}
+
+Khi $\Delta NDVI$ giảm mạnh (rất nhỏ hơn 0) thì đó là dấu hiệu mất rừng; khi $\Delta NDVI$ xấp xỉ 0 thì vùng được xem là rừng ổn định; và khi $\Delta NDVI$ tăng mạnh (rất lớn hơn 0) thì biểu hiện tái trồng rừng.

@@ -53,6 +53,8 @@ Phép tích chập mang lại nhiều ưu điểm quan trọng. Về parameter s
 
 \subsection{Activation Functions}
 
+Hàm kích hoạt (Activation Function) đóng vai trò quan trọng trong mạng neural, giúp mô hình học được các mối quan hệ phi tuyến trong dữ liệu \cite{goodfellow2016}.
+
 \textbf{ReLU (Rectified Linear Unit):}
 \begin{equation}
 f(x) = \max(0, x) = \begin{cases} x & \text{if } x > 0 \\ 0 & \text{if } x \leq 0 \end{cases}
@@ -104,6 +106,8 @@ GAP mang lại nhiều lợi ích quan trọng. Thứ nhất, GAP giảm mạnh 
 
 \subsection{Batch Normalization}
 
+Batch Normalization là kỹ thuật chuẩn hóa được đề xuất bởi Ioffe và Szegedy nhằm tăng tốc quá trình huấn luyện mạng neural sâu \cite{ioffe2015}.
+
 \textbf{Batch Normalization Algorithm:}
 
 Với một mini-batch $B = \{x_1, x_2, ..., x_m\}$:
@@ -117,6 +121,8 @@ y_i &= \gamma \hat{x}_i + \beta
 Batch Normalization giúp tăng tốc độ huấn luyện, giảm độ nhạy với khởi tạo trọng số, và đóng vai trò như một phương pháp regularization.
 
 \subsection{Dropout}
+
+Dropout là kỹ thuật regularization hiệu quả được đề xuất bởi Srivastava và cộng sự để ngăn chặn overfitting trong mạng neural \cite{srivastava2014}.
 
 \textbf{Motivation:}
 
@@ -135,6 +141,8 @@ Thay vì dropout từng neuron, dropout toàn bộ feature maps, phù hợp cho 
 
 \subsection{Loss Functions}
 
+Hàm mất mát (Loss Function) đo lường sự khác biệt giữa dự đoán của mô hình và nhãn thực tế, là cơ sở để tối ưu hóa tham số mạng \cite{goodfellow2016}.
+
 \textbf{Cross-Entropy Loss (Multi-class Classification):}
 \begin{equation}
 L = -\sum_i y_i \log(\hat{y}_i)
@@ -143,6 +151,8 @@ L = -\sum_i y_i \log(\hat{y}_i)
 Trong đó, $y_i$ là nhãn thực tế (true label) được mã hóa one-hot và $\hat{y}_i$ là xác suất dự đoán xuất ra từ hàm softmax.
 
 \subsection{Optimization Algorithms}
+
+Các thuật toán tối ưu hóa đóng vai trò quan trọng trong việc huấn luyện mạng neural. Adam (Adaptive Moment Estimation) được đề xuất bởi Kingma và Ba là một trong những optimizer phổ biến nhất hiện nay \cite{kingma2015}.
 
 \textbf{Adam (Adaptive Moment Estimation):}
 \begin{align}
