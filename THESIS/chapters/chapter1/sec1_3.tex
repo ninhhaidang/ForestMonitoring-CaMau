@@ -24,6 +24,10 @@ Các phương pháp đơn giản như phân ngưỡng chỉ số thực vật ND
 
 \subsection{Phương pháp học máy truyền thống}
 
+\textbf{Phân loại không giám sát (Unsupervised Classification):}
+
+Phân loại không giám sát không yêu cầu dữ liệu huấn luyện có nhãn, thay vào đó tự động nhóm các pixel có đặc trưng phổ tương tự thành các cụm. Hai thuật toán phổ biến nhất là K-means và ISODATA (Iterative Self-Organizing Data Analysis Technique) \cite{jensen2015}. K-means phân chia dữ liệu thành k cụm dựa trên khoảng cách Euclidean đến tâm cụm. ISODATA mở rộng K-means bằng cách tự động tách, gộp hoặc loại bỏ cụm dựa trên các ngưỡng thống kê. Phương pháp không giám sát phù hợp khi không có dữ liệu thực địa hoặc khi cần khám phá cấu trúc dữ liệu ban đầu, nhưng có hạn chế là các cụm tạo ra không có ý nghĩa ngữ nghĩa rõ ràng và cần chuyên gia gán nhãn sau đó.
+
 \textbf{Phân loại có giám sát (Supervised Classification):}
 
 Từ thập niên 1990, các thuật toán phân loại thống kê bắt đầu được áp dụng rộng rãi. Maximum Likelihood Classification (MLC) giả định dữ liệu tuân theo phân phối Gaussian và phân loại pixel dựa trên xác suất. Phương pháp này đặt nền tảng cho phân loại ảnh viễn thám định lượng nhưng có hạn chế khi dữ liệu không tuân theo phân phối chuẩn \cite{khatami2016}.

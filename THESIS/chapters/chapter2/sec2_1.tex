@@ -1,6 +1,6 @@
 \section{Công nghệ viễn thám và ảnh vệ tinh}
 
-\subsection{Nguyên lý viễn thám}
+\subsection{Nguyên lý viễn thám và các loại dữ liệu vệ tinh}
 
 Viễn thám (Remote Sensing) là khoa học và kỹ thuật thu thập thông tin về một đối tượng hoặc khu vực từ xa, thường thông qua việc ghi nhận bức xạ điện từ phản xạ hoặc phát ra từ bề mặt Trái Đất \cite{lillesand2015}. Nguyên lý cơ bản của viễn thám dựa trên tương tác giữa bức xạ điện từ và các đối tượng trên bề mặt.
 
@@ -30,26 +30,16 @@ Viễn thám bị động (như Sentinel-2) cung cấp ảnh quang học đa ph�
     \label{fig:remote_sensing_principle}
 \end{figure}
 
-\subsection{Radar khẩu độ tổng hợp (SAR)}
+\textbf{Radar khẩu độ tổng hợp (SAR):}
 
-SAR là công nghệ viễn thám chủ động đóng vai trò quan trọng trong giám sát rừng nhiệt đới nhờ khả năng quan sát trong mọi điều kiện thời tiết \cite{esa2024s1, reiche2018}.
-
-\textbf{Nguyên lý hoạt động:}
-
-Khác với viễn thám bị động, SAR là hệ thống chủ động (active remote sensing): anten phát xung sóng điện từ về phía Trái Đất, các sóng này tương tác với bề mặt và tạo hiện tượng phản xạ ngược (backscatter) với cường độ phụ thuộc vào nhiều yếu tố như độ nhám bề mặt, hàm lượng nước (độ ẩm), hằng số điện môi và góc tới.
-
-\textbf{Hệ số Backscatter ($\sigma^0$):}
+SAR là công nghệ viễn thám chủ động đóng vai trò quan trọng trong giám sát rừng nhiệt đới nhờ khả năng quan sát trong mọi điều kiện thời tiết \cite{esa2024s1, reiche2018}. SAR là hệ thống chủ động: anten phát xung sóng điện từ về phía Trái Đất, các sóng này tương tác với bề mặt và tạo hiện tượng phản xạ ngược (backscatter) với cường độ phụ thuộc vào nhiều yếu tố như độ nhám bề mặt, hàm lượng nước (độ ẩm), hằng số điện môi và góc tới. Hệ số Backscatter ($\sigma^0$) được tính theo công thức:
 \begin{equation}
 \sigma^0 (dB) = 10 \times \log_{10}(\sigma^0_{linear})
 \end{equation}
 
-Giá trị $\sigma^0$ phụ thuộc vào nhiều yếu tố. Về độ nhám bề mặt, bề mặt nhẵn như nước cho $\sigma^0$ thấp, trong khi bề mặt nhám như rừng cho $\sigma^0$ cao. Về hàm lượng nước, độ ẩm làm tăng $\sigma^0$ do hằng số điện môi lớn của nước. Về cấu trúc thực vật, khu vực rừng có cấu trúc phức tạp thường cho backscatter mạnh.
+Giá trị $\sigma^0$ phụ thuộc vào nhiều yếu tố. Về độ nhám bề mặt, bề mặt nhẵn như nước cho $\sigma^0$ thấp, trong khi bề mặt nhám như rừng cho $\sigma^0$ cao. Về hàm lượng nước, độ ẩm làm tăng $\sigma^0$ do hằng số điện môi lớn của nước. Về cấu trúc thực vật, khu vực rừng có cấu trúc phức tạp thường cho backscatter mạnh. SAR có thể phát và thu theo các chế độ phân cực khác nhau: VV (phát V, thu V) nhạy với độ ẩm bề mặt, VH (phát V, thu H) thường nhạy với cấu trúc thực vật (volume scattering).
 
-\textbf{Polarization:}
-
-SAR có thể phát và thu theo các chế độ phân cực khác nhau: VV (phát V, thu V) nhạy với độ ẩm bề mặt, VH (phát V, thu H) thường nhạy với cấu trúc thực vật (volume scattering).
-
-\subsection{Ảnh quang học đa phổ (Optical Multispectral)}
+\textbf{Ảnh quang học đa phổ (Optical Multispectral):}
 
 Ảnh quang học từ các vệ tinh như Sentinel-2 là nguồn dữ liệu quan trọng cho phân loại lớp phủ đất và giám sát thực vật \cite{esa2024s2, khatami2016}.
 
