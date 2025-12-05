@@ -2,15 +2,7 @@
 
 \subsection{Kiến trúc mô hình CNN}
 
-Mô hình nhận đầu vào là tensor kích thước (batch\_size, 3, 3, 27), sau đó được chuyển đổi sang định dạng PyTorch (batch\_size, 27, 3, 3). Kiến trúc bao gồm các thành phần chính:
-
-\begin{enumerate}
-    \item \textbf{Khối tích chập 1:} Conv2D (64 filters, kernel 3×3) → BatchNorm2D → ReLU → Dropout2D (p=0.7)
-    \item \textbf{Khối tích chập 2:} Conv2D (32 filters, kernel 3×3) → BatchNorm2D → ReLU → Dropout2D (p=0.7)
-    \item \textbf{Global Average Pooling:} Gộp thông tin không gian
-    \item \textbf{Khối kết nối đầy đủ:} Linear (32→64) → BatchNorm1D → ReLU → Dropout (p=0.7)
-    \item \textbf{Lớp đầu ra:} Linear (64→4) cho 4 lớp phân loại
-\end{enumerate}
+Mô hình nhận đầu vào là tensor kích thước (batch\_size, 3, 3, 27), sau đó được chuyển đổi sang định dạng PyTorch (batch\_size, 27, 3, 3). Kiến trúc bao gồm năm thành phần chính. Thành phần thứ nhất là khối tích chập 1 gồm Conv2D (64 filters, kernel 3×3), BatchNorm2D, ReLU và Dropout2D (p=0.7). Thành phần thứ hai là khối tích chập 2 gồm Conv2D (32 filters, kernel 3×3), BatchNorm2D, ReLU và Dropout2D (p=0.7). Thành phần thứ ba là lớp Global Average Pooling có chức năng gộp thông tin không gian. Thành phần thứ tư là khối kết nối đầy đủ gồm Linear (32→64), BatchNorm1D, ReLU và Dropout (p=0.7). Thành phần thứ năm là lớp đầu ra Linear (64→4) cho 4 lớp phân loại.
 
 Với 36,676 tham số, mô hình có độ phức tạp vừa phải, phù hợp với quy mô bộ dữ liệu 2,630 mẫu. Kiến trúc tổng quan của mô hình được minh họa trong Hình~\ref{fig:cnn_architecture}.
 

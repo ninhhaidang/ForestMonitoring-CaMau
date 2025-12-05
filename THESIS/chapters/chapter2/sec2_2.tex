@@ -11,23 +11,11 @@ Một neuron nhân tạo thực hiện phép biến đổi tuyến tính và hà
 y = f(\mathbf{w}^T \mathbf{x} + b)
 \end{equation}
 
-Trong đó, $\mathbf{x} \in \mathbb{R}^n$ là input vector chứa $n$ feature, $\mathbf{w} \in \mathbb{R}^n$ là weight vector, $b \in \mathbb{R}$ là bias, $f(\cdot)$ là hàm kích hoạt và $y$ là output.
+\textbf{Thành phần:} $\mathbf{x} \in \mathbb{R}^n$ là input vector chứa $n$ feature đầu vào; $\mathbf{w} \in \mathbb{R}^n$ là weight vector (trọng số) --- mỗi $w_i$ thể hiện mức độ quan trọng của feature $x_i$; $b \in \mathbb{R}$ là bias (độ lệch) --- cho phép dịch chuyển đường quyết định; $f(\cdot)$ là hàm kích hoạt phi tuyến; $y$ là output (đầu ra). \textbf{Ý nghĩa:} Perceptron mô phỏng cách neuron sinh học xử lý tín hiệu --- nhận nhiều đầu vào, tính tổng có trọng số, và kích hoạt khi vượt ngưỡng. \textbf{Mục đích:} Là đơn vị tính toán cơ bản của mạng neural, có khả năng học các mối quan hệ tuyến tính và phi tuyến trong dữ liệu thông qua việc điều chỉnh trọng số $\mathbf{w}$ và bias $b$.
 
 \textbf{Multi-Layer Perceptron (MLP):}
 
-Một mạng neural gồm nhiều layers:
-\begin{align}
-\text{Layer 1: } & \mathbf{h}_1 = f_1(\mathbf{W}_1 \mathbf{x} + \mathbf{b}_1) \\
-\text{Layer 2: } & \mathbf{h}_2 = f_2(\mathbf{W}_2 \mathbf{h}_1 + \mathbf{b}_2) \\
-\text{Output: } & \mathbf{y} = f_n(\mathbf{W}_n \mathbf{h}_{n-1} + \mathbf{b}_n)
-\end{align}
-
-\begin{figure}[H]
-    \centering
-    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Sơ đồ cấu trúc một perceptron\\ với inputs, weights, bias, activation function\vspace{2cm}}}
-    \caption{Cấu trúc cơ bản của một perceptron}
-    \label{fig:perceptron}
-\end{figure}
+Một mạng neural gồm nhiều layers, trong đó mỗi layer nhận đầu ra của layer trước làm đầu vào. Mỗi layer thực hiện phép biến đổi tuyến tính (nhân ma trận trọng số $\mathbf{W}$ và cộng bias $\mathbf{b}$) sau đó áp dụng hàm kích hoạt. Các layer ẩn giúp mạng học được các biểu diễn trừu tượng của dữ liệu, với mỗi layer học các đặc trưng ở mức độ phức tạp tăng dần.
 
 \textbf{Phép tích chập 2D (2D Convolution):}
 
@@ -36,16 +24,11 @@ Một mạng neural gồm nhiều layers:
 (I * K)(i, j) = \sum_m \sum_n I(i+m, j+n) \times K(m, n)
 \end{equation}
 
-Trong đó, $I$ là input feature map với kích thước height × width × channels, $K$ là kernel hoặc filter có kích thước $k_h \times k_w$, $(i,j)$ là vị trí trong output và $(m,n)$ là vị trí trong kernel.
+\textbf{Thành phần:} $I$ là input feature map (ảnh hoặc feature map từ layer trước) với kích thước height × width × channels; $K$ là kernel (filter) có kích thước $k_h \times k_w$ --- chứa các trọng số được học; $(i,j)$ là vị trí trong output feature map; $(m,n)$ là vị trí trong kernel. \textbf{Ý nghĩa:} Phép tích chập trượt kernel qua input, tại mỗi vị trí tính tổng các tích element-wise giữa kernel và vùng tương ứng của input --- tạo ra một giá trị trong output thể hiện mức độ ``khớp'' giữa kernel và vùng đó. \textbf{Mục đích:} Trích xuất các đặc trưng cục bộ (local features) như cạnh, góc, texture từ input; nhờ chia sẻ trọng số (parameter sharing), CNN tiết kiệm tham số và có khả năng nhận diện đặc trưng bất kể vị trí (translation invariance).
 
 Phép tích chập mang lại nhiều ưu điểm quan trọng. Về parameter sharing, cùng một kernel áp dụng toàn bộ input giúp tiết kiệm tham số. Về translation invariance, mạng có khả năng nhận diện các đặc trưng bất kể vị trí xuất hiện. Về local connectivity, mỗi neuron chỉ kết nối với vùng cục bộ của input, giảm số lượng kết nối cần thiết.
 
-\begin{figure}[H]
-    \centering
-    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{[PLACEHOLDER]}\\ Hình minh họa phép tích chập 2D\\ với kernel 3×3 trượt trên input\vspace{2cm}}}
-    \caption{Minh họa phép tích chập 2D}
-    \label{fig:convolution}
-\end{figure}
+Quá trình tích chập diễn ra như sau: kernel có kích thước $k \times k$ trượt qua toàn bộ input với bước nhảy (stride) xác định. Tại mỗi vị trí, kernel thực hiện phép nhân element-wise với vùng tương ứng của input, sau đó cộng tổng tất cả các tích để tạo ra một giá trị trong output feature map. Kích thước output phụ thuộc vào kích thước input, kernel, stride và padding. Với input nhiều kênh (ví dụ: feature stack có 27 kênh như trong nghiên cứu này), kernel cũng có cùng số kênh và phép tích chập được thực hiện đồng thời trên tất cả các kênh, sau đó cộng tổng để tạo ra một feature map đầu ra.
 
 \textbf{Hàm kích hoạt (Activation Functions):}
 
@@ -54,68 +37,28 @@ Hàm kích hoạt đóng vai trò quan trọng trong mạng neural, giúp mô h�
 f(x) = \max(0, x) = \begin{cases} x & \text{if } x > 0 \\ 0 & \text{if } x \leq 0 \end{cases}
 \end{equation}
 
-ReLU có các ưu điểm như tính toán nhanh, giảm vấn đề vanishing gradient và cho sparse activation. Softmax được sử dụng cho lớp đầu ra trong bài toán phân loại đa lớp:
+\textbf{Thành phần:} $x$ là giá trị đầu vào (output của phép biến đổi tuyến tính). \textbf{Ý nghĩa:} ReLU giữ nguyên giá trị dương và chuyển giá trị âm về 0, tạo ra tính phi tuyến đơn giản nhưng hiệu quả. \textbf{Mục đích:} Cho phép mạng học các mối quan hệ phi tuyến phức tạp; ReLU có ưu điểm tính toán nhanh, giảm vấn đề vanishing gradient (gradient không bị triệt tiêu với giá trị dương), và tạo sparse activation (nhiều neuron có output = 0).
+
+Softmax được sử dụng cho lớp đầu ra trong bài toán phân loại đa lớp:
 \begin{equation}
 \text{softmax}(\mathbf{x})_i = \frac{\exp(x_i)}{\sum_j \exp(x_j)}
 \end{equation}
 
-Các đầu ra của hàm softmax là các xác suất thuộc khoảng [0, 1] và tổng bằng 1.
+\textbf{Thành phần:} $\mathbf{x}$ là vector logits (đầu ra thô của layer cuối cùng); $x_i$ là logit của lớp $i$; $\exp(\cdot)$ là hàm mũ. \textbf{Ý nghĩa:} Softmax chuyển đổi các logits thành phân phối xác suất --- giá trị lớn hơn được ánh xạ thành xác suất cao hơn, và tổng tất cả xác suất bằng 1. \textbf{Mục đích:} Cho phép mô hình đưa ra dự đoán xác suất cho bài toán phân loại đa lớp; lớp có xác suất cao nhất được chọn làm kết quả dự đoán.
 
 \subsection{Pooling và các kỹ thuật Regularization}
 
-Pooling là phép toán giảm chiều không gian (spatial dimensions) của feature maps, giúp giảm số lượng tham số, giảm chi phí tính toán và tăng khả năng translation invariance của mạng \cite{lecun2015}.
+Pooling là phép toán giảm chiều không gian (spatial dimensions) của feature maps, giúp giảm số lượng tham số, giảm chi phí tính toán và tăng khả năng translation invariance của mạng \cite{lecun2015}. Có hai loại pooling phổ biến: \textbf{Max Pooling} chọn giá trị lớn nhất trong mỗi vùng cục bộ, giữ lại các đặc trưng nổi bật nhất; \textbf{Average Pooling} tính trung bình các giá trị, giữ lại thông tin tổng quát hơn.
 
-\textbf{Max Pooling:}
-
-Max Pooling chọn giá trị lớn nhất trong mỗi vùng cục bộ:
-\begin{equation}
-y_{i,j} = \max_{(m,n) \in R_{i,j}} x_{m,n}
-\end{equation}
-
-Trong đó, $R_{i,j}$ là vùng pooling (thường là 2×2) tại vị trí $(i,j)$. Max Pooling giữ lại các đặc trưng nổi bật nhất (edge, texture) và loại bỏ thông tin ít quan trọng.
-
-\textbf{Average Pooling:}
-
-Average Pooling tính trung bình các giá trị trong vùng pooling:
-\begin{equation}
-y_{i,j} = \frac{1}{|R_{i,j}|} \sum_{(m,n) \in R_{i,j}} x_{m,n}
-\end{equation}
-
-Average Pooling giữ lại thông tin tổng quát hơn, phù hợp khi tất cả các giá trị trong vùng đều có ý nghĩa.
-
-\textbf{Global Average Pooling (GAP):}
-
-Global Average Pooling là trường hợp đặc biệt của Average Pooling, trong đó vùng pooling bao trùm toàn bộ feature map \cite{lin2013}:
-\begin{equation}
-y_c = \frac{1}{H \times W} \sum_{i=1}^{H} \sum_{j=1}^{W} x_{c,i,j}
-\end{equation}
-
-Trong đó, $H$ và $W$ là chiều cao và chiều rộng của feature map, $c$ là chỉ số channel. GAP biến đổi mỗi feature map có kích thước $H \times W$ thành một giá trị scalar, tạo ra vector có chiều bằng số channels.
-
-\textbf{Ưu điểm của Global Average Pooling:}
-
-GAP mang lại nhiều lợi ích quan trọng. Thứ nhất, GAP giảm mạnh số lượng tham số bằng cách loại bỏ hoàn toàn các fully-connected layers truyền thống. Thứ hai, GAP có tính chất regularization tự nhiên, giảm nguy cơ overfitting do không có tham số cần học. Thứ ba, GAP tạo ra spatial invariance hoàn toàn, cho phép mạng xử lý input có kích thước khác nhau. Trong nghiên cứu này, GAP được sử dụng ở cuối mạng CNN để tổng hợp thông tin từ tất cả các spatial locations trước khi đưa vào lớp classification.
+\textbf{Global Average Pooling (GAP)} là trường hợp đặc biệt trong đó vùng pooling bao trùm toàn bộ feature map, biến đổi mỗi feature map thành một giá trị scalar \cite{lin2013}. GAP mang lại nhiều lợi ích: giảm mạnh số lượng tham số, có tính chất regularization tự nhiên, và tạo ra spatial invariance hoàn toàn. Trong nghiên cứu này, GAP được sử dụng ở cuối mạng CNN để tổng hợp thông tin từ tất cả các spatial locations trước khi đưa vào lớp classification.
 
 \textbf{Batch Normalization:}
 
-Batch Normalization là kỹ thuật chuẩn hóa được đề xuất bởi Ioffe và Szegedy nhằm tăng tốc quá trình huấn luyện mạng neural sâu \cite{ioffe2015}. Với một mini-batch $B = \{x_1, x_2, ..., x_m\}$:
-\begin{align}
-\mu_B &= \frac{1}{m} \sum_i x_i \\
-\sigma^2_B &= \frac{1}{m} \sum_i (x_i - \mu_B)^2 \\
-\hat{x}_i &= \frac{x_i - \mu_B}{\sqrt{\sigma^2_B + \epsilon}} \\
-y_i &= \gamma \hat{x}_i + \beta
-\end{align}
-
-Batch Normalization giúp tăng tốc độ huấn luyện, giảm độ nhạy với khởi tạo trọng số, và đóng vai trò như một phương pháp regularization.
+Batch Normalization là kỹ thuật chuẩn hóa được đề xuất bởi Ioffe và Szegedy nhằm tăng tốc quá trình huấn luyện mạng neural sâu \cite{ioffe2015}. Kỹ thuật này chuẩn hóa các activation trong mỗi mini-batch về phân phối có trung bình 0 và phương sai 1, sau đó áp dụng phép biến đổi tuyến tính với các tham số học được. Batch Normalization giúp tăng tốc độ huấn luyện, giảm độ nhạy với khởi tạo trọng số, và đóng vai trò như một phương pháp regularization.
 
 \textbf{Dropout:}
 
-Dropout là kỹ thuật regularization hiệu quả được đề xuất bởi Srivastava và cộng sự để ngăn chặn overfitting trong mạng neural \cite{srivastava2014}. Overfitting xảy ra khi model học quá chi tiết training data, không generalize tốt cho unseen data. Trong quá trình huấn luyện, mỗi neuron bị tắt với xác suất $(1-p)$:
-\begin{equation}
-\text{For each neuron } i: \quad r_i \sim \text{Bernoulli}(p), \quad \tilde{y}_i = r_i \times y_i
-\end{equation}
-
-Dropout2d (Spatial Dropout) là biến thể dropout toàn bộ feature maps thay vì từng neuron, phù hợp cho CNN vì features trong cùng channel có correlation không gian cao.
+Dropout là kỹ thuật regularization hiệu quả được đề xuất bởi Srivastava và cộng sự để ngăn chặn overfitting trong mạng neural \cite{srivastava2014}. Trong quá trình huấn luyện, mỗi neuron bị tắt ngẫu nhiên với một xác suất nhất định, buộc mạng học các biểu diễn robust hơn. Dropout2d (Spatial Dropout) là biến thể dropout toàn bộ feature maps thay vì từng neuron, phù hợp cho CNN vì features trong cùng channel có correlation không gian cao.
 
 \subsection{Hàm mất mát và thuật toán tối ưu}
 
@@ -124,26 +67,8 @@ Hàm mất mát (Loss Function) đo lường sự khác biệt giữa dự đoá
 L = -\sum_i y_i \log(\hat{y}_i)
 \end{equation}
 
-Trong đó, $y_i$ là nhãn thực tế (true label) được mã hóa one-hot và $\hat{y}_i$ là xác suất dự đoán xuất ra từ hàm softmax.
+\textbf{Thành phần:} $y_i$ là nhãn thực tế (true label) được mã hóa one-hot --- có giá trị 1 tại lớp đúng và 0 ở các lớp khác; $\hat{y}_i$ là xác suất dự đoán của lớp $i$ xuất ra từ hàm softmax; $\log(\cdot)$ là logarit tự nhiên. \textbf{Ý nghĩa:} Cross-Entropy đo lường ``khoảng cách'' giữa phân phối dự đoán và phân phối thực tế --- giá trị loss cao khi mô hình gán xác suất thấp cho lớp đúng, và ngược lại. \textbf{Mục đích:} Làm hàm mục tiêu để huấn luyện mô hình; thuật toán tối ưu sẽ điều chỉnh trọng số để giảm thiểu loss, từ đó tăng xác suất dự đoán đúng.
 
-\textbf{Thuật toán tối ưu Adam:}
+\textbf{Thuật toán tối ưu:}
 
-Các thuật toán tối ưu hóa đóng vai trò quan trọng trong việc huấn luyện mạng neural. Adam (Adaptive Moment Estimation) được đề xuất bởi Kingma và Ba là một trong những optimizer phổ biến nhất hiện nay \cite{kingma2015}.
-
-\textbf{Adam (Adaptive Moment Estimation):}
-\begin{align}
-m_t &= \beta_1 m_{t-1} + (1-\beta_1) \nabla L(\theta_t) \\
-v_t &= \beta_2 v_{t-1} + (1-\beta_2) (\nabla L(\theta_t))^2 \\
-\hat{m}_t &= \frac{m_t}{1 - \beta_1^t} \\
-\hat{v}_t &= \frac{v_t}{1 - \beta_2^t} \\
-\theta_{t+1} &= \theta_t - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
-\end{align}
-
-Hyperparameters thường sử dụng: $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon = 10^{-8}$, $\eta = 0.001$.
-
-\textbf{AdamW (Adam with Weight Decay):}
-\begin{equation}
-\theta_{t+1} = \theta_t - \eta \left( \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon} + \lambda \theta_t \right)
-\end{equation}
-
-Trong đó $\lambda$ là weight decay coefficient (L2 regularization).
+Các thuật toán tối ưu hóa đóng vai trò quan trọng trong việc huấn luyện mạng neural. \textbf{Adam} (Adaptive Moment Estimation) được đề xuất bởi Kingma và Ba là một trong những optimizer phổ biến nhất hiện nay \cite{kingma2015}. Adam kết hợp ưu điểm của hai phương pháp: momentum (sử dụng trung bình động của gradient) và RMSprop (điều chỉnh learning rate theo từng tham số). \textbf{AdamW} là biến thể cải tiến với weight decay được tách riêng khỏi gradient update, giúp regularization hiệu quả hơn. Các hyperparameters thường sử dụng: $\beta_1 = 0.9$, $\beta_2 = 0.999$, learning rate $\eta = 0.001$.

@@ -37,7 +37,7 @@ Dự án phát triển hệ thống tự động giám sát biến động rừn
 | **Hệ quy chiếu** | EPSG:32648 (WGS 84 / UTM Zone 48N) |
 | **Độ phân giải không gian** | 10m |
 
-**Nguồn dữ liệu ranh giới:** Công ty TNHH Tư vấn và Công nghệ Đồng Xanh — đối tác của Chi cục Kiểm lâm tỉnh Cà Mau.
+**Nguồn dữ liệu ranh giới:** Công ty TNHH Tư vấn và Phát triển Đồng Xanh — đối tác của Chi cục Kiểm lâm tỉnh Cà Mau.
 
 ---
 

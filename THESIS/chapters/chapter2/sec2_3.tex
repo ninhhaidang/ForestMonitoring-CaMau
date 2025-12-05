@@ -4,28 +4,9 @@
 
 Trong phân loại ảnh viễn thám, có hai phương pháp tiếp cận chính: phân loại dựa trên pixel và phân loại dựa trên patch \cite{blaschke2010, zhang2016}.
 
-\textbf{Pixel-based Classification:}
+\textbf{Pixel-based Classification:} Mỗi pixel được phân loại độc lập dựa trên vector đặc trưng của riêng nó. Ưu điểm là đơn giản, dễ triển khai, tốc độ xử lý nhanh. Nhược điểm là không tận dụng ngữ cảnh không gian, dễ tạo ra nhiễu dạng salt-and-pepper.
 
-Mỗi pixel được phân loại độc lập dựa trên vector đặc trưng:
-\begin{equation}
-\mathbf{x}_i = [f_1, f_2, ..., f_n], \quad y_i = \text{classifier}(\mathbf{x}_i)
-\end{equation}
-
-\textbf{Ưu điểm:} Đơn giản, dễ triển khai, tốc độ xử lý nhanh.
-
-\textbf{Nhược điểm:} Không tận dụng ngữ cảnh không gian, dễ tạo ra nhiễu dạng salt-and-pepper.
-
-\textbf{Patch-based Classification:}
-
-Trích xuất patches (windows) xung quanh mỗi pixel:
-\begin{equation}
-P_i = \text{extract\_patch}(I, \text{center}=(row_i, col_i), \text{size}=k \times k)
-\end{equation}
-\begin{equation}
-y_i = \text{classifier}(P_i)
-\end{equation}
-
-\textbf{Ưu điểm:} Sử dụng ngữ cảnh không gian, kết quả mượt hơn, phù hợp với CNN.
+\textbf{Patch-based Classification:} Trích xuất các patches (cửa sổ) xung quanh mỗi pixel và phân loại dựa trên toàn bộ patch. Ưu điểm là sử dụng được ngữ cảnh không gian, kết quả mượt hơn và phù hợp với CNN.
 
 \subsection{Ma trận nhầm lẫn và các độ đo đánh giá}
 
@@ -46,34 +27,39 @@ Confusion Matrix (Ma trận nhầm lẫn) là công cụ cơ bản để đánh 
 \label{tab:confusion_matrix_binary}
 \end{table}
 
-Ma trận nhầm lẫn bao gồm bốn thành phần chính. \textbf{True Positive (TP)} là số mẫu dương được dự đoán đúng là dương — trong bài toán phát hiện mất rừng, đây là các điểm thực sự mất rừng và mô hình dự đoán đúng. \textbf{True Negative (TN)} là số mẫu âm được dự đoán đúng là âm. \textbf{False Positive (FP)} là số mẫu âm bị dự đoán nhầm là dương (lỗi loại I). \textbf{False Negative (FN)} là số mẫu dương bị dự đoán nhầm là âm (lỗi loại II). Với bài toán phân loại $K$ lớp, Confusion Matrix có kích thước $K \times K$:
-\begin{equation}
-C_{ij} = \text{số mẫu thuộc lớp } i \text{ được dự đoán là lớp } j
-\end{equation}
+Ma trận nhầm lẫn bao gồm bốn thành phần chính. \textbf{True Positive (TP)} là số mẫu dương được dự đoán đúng là dương — trong bài toán phát hiện mất rừng, đây là các điểm thực sự mất rừng và mô hình dự đoán đúng. \textbf{True Negative (TN)} là số mẫu âm được dự đoán đúng là âm. \textbf{False Positive (FP)} là số mẫu âm bị dự đoán nhầm là dương (lỗi loại I). \textbf{False Negative (FN)} là số mẫu dương bị dự đoán nhầm là âm (lỗi loại II). Với bài toán phân loại $K$ lớp, Confusion Matrix có kích thước $K \times K$, trong đó phần tử $C_{ij}$ thể hiện số mẫu thuộc lớp $i$ được dự đoán là lớp $j$.
 
 \textbf{Các độ đo đánh giá:}
 
 Các chỉ số đánh giá được tính toán dựa trên Confusion Matrix để đo lường hiệu suất phân loại từ nhiều góc độ khác nhau \cite{sokolova2009}.
 
-\textbf{Accuracy:}
+\textbf{Accuracy (Độ chính xác):}
 \begin{equation}
 \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
 \end{equation}
 
-\textbf{Precision (Positive Predictive Value):}
+\textbf{Thành phần:} $TP$ (True Positive), $TN$ (True Negative), $FP$ (False Positive), $FN$ (False Negative) như định nghĩa ở trên. \textbf{Ý nghĩa:} Tỷ lệ các mẫu được phân loại đúng trên tổng số mẫu. \textbf{Mục đích:} Đánh giá hiệu suất tổng thể của mô hình; tuy nhiên, accuracy có thể gây hiểu lầm với dữ liệu mất cân bằng.
+
+\textbf{Precision (Độ chính xác dương):}
 \begin{equation}
 \text{Precision} = \frac{TP}{TP + FP}
 \end{equation}
 
-\textbf{Recall (Sensitivity, True Positive Rate):}
+\textbf{Thành phần:} $TP$ là số mẫu dương được dự đoán đúng, $FP$ là số mẫu âm bị dự đoán nhầm là dương. \textbf{Ý nghĩa:} Trong số các mẫu được dự đoán là dương, tỷ lệ thực sự là dương. \textbf{Mục đích:} Đánh giá độ tin cậy của dự đoán dương; precision cao quan trọng khi chi phí của false positive cao (ví dụ: cảnh báo sai về mất rừng gây lãng phí nguồn lực kiểm tra).
+
+\textbf{Recall (Độ nhạy):}
 \begin{equation}
 \text{Recall} = \frac{TP}{TP + FN}
 \end{equation}
 
-\textbf{F1-Score (Harmonic Mean):}
+\textbf{Thành phần:} $TP$ là số mẫu dương được dự đoán đúng, $FN$ là số mẫu dương bị bỏ sót. \textbf{Ý nghĩa:} Trong số các mẫu thực sự dương, tỷ lệ được phát hiện đúng. \textbf{Mục đích:} Đánh giá khả năng phát hiện các mẫu dương; recall cao quan trọng khi chi phí của false negative cao (ví dụ: bỏ sót vùng mất rừng thực sự gây hậu quả nghiêm trọng về môi trường).
+
+\textbf{F1-Score (Trung bình điều hòa):}
 \begin{equation}
 F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
 \end{equation}
+
+\textbf{Thành phần:} Precision và Recall như định nghĩa ở trên. \textbf{Ý nghĩa:} F1-Score là trung bình điều hòa của Precision và Recall --- cân bằng giữa hai độ đo này, và bị ảnh hưởng mạnh bởi giá trị thấp hơn. \textbf{Mục đích:} Đánh giá tổng hợp khi cần cân bằng giữa precision và recall; F1-Score đặc biệt hữu ích với dữ liệu mất cân bằng.
 
 \textbf{ROC-AUC (Area Under ROC Curve):}
 
@@ -83,21 +69,11 @@ Các tiêu chuẩn diễn giải ROC-AUC theo Hosmer và Lemeshow \cite{hosmer20
 
 \textbf{Cross Validation (Kiểm định chéo):}
 
-Cross Validation là phương pháp đánh giá mô hình giúp ước lượng khả năng generalization của mô hình trên dữ liệu chưa thấy, đồng thời giảm thiểu bias do cách chia dữ liệu \cite{kohavi1995}. Trong K-Fold Cross Validation, dữ liệu được chia thành $K$ phần bằng nhau, mỗi vòng lặp sử dụng một fold làm tập kiểm tra và $K-1$ folds còn lại làm tập huấn luyện:
-\begin{equation}
-\text{CV Score} = \frac{1}{K} \sum_{i=1}^{K} \text{Score}_i
-\end{equation}
-
-Stratified K-Fold là biến thể đảm bảo tỷ lệ các lớp trong mỗi fold tương đương với tỷ lệ trong toàn bộ tập dữ liệu, đặc biệt quan trọng khi dữ liệu mất cân bằng giữa các lớp. Cross Validation mang lại nhiều lợi ích: tận dụng tối đa dữ liệu cho cả huấn luyện và đánh giá, giảm variance trong ước lượng hiệu suất, và phát hiện overfitting hiệu quả hơn.
+Cross Validation là phương pháp đánh giá mô hình giúp ước lượng khả năng generalization của mô hình trên dữ liệu chưa thấy, đồng thời giảm thiểu bias do cách chia dữ liệu \cite{kohavi1995}. Trong K-Fold Cross Validation, dữ liệu được chia thành $K$ phần bằng nhau, mỗi vòng lặp sử dụng một fold làm tập kiểm tra và $K-1$ folds còn lại làm tập huấn luyện; kết quả cuối cùng là trung bình của $K$ lần đánh giá. Stratified K-Fold là biến thể đảm bảo tỷ lệ các lớp trong mỗi fold tương đương với tỷ lệ trong toàn bộ tập dữ liệu, đặc biệt quan trọng khi dữ liệu mất cân bằng giữa các lớp.
 
 \textbf{Chuẩn hóa dữ liệu (Data Normalization):}
 
-Chuẩn hóa dữ liệu là bước tiền xử lý quan trọng trong học máy, giúp các features có cùng scale và cải thiện hiệu suất huấn luyện \cite{sola1997}. Z-score Normalization chuyển đổi dữ liệu về phân phối với trung bình bằng 0 và độ lệch chuẩn bằng 1:
-\begin{equation}
-z = \frac{x - \mu}{\sigma}
-\end{equation}
-
-Việc chuẩn hóa dữ liệu cho CNN là cần thiết vì các features có scale khác nhau (ví dụ: NDVI trong $[-1, 1]$, backscatter trong $[-25, 0]$ dB) sẽ ảnh hưởng không đều đến gradient. \textbf{Lưu ý quan trọng:} Các tham số $\mu$ và $\sigma$ phải được tính trên tập huấn luyện và áp dụng cho cả tập kiểm tra để tránh rò rỉ dữ liệu.
+Chuẩn hóa dữ liệu là bước tiền xử lý quan trọng trong học máy, giúp các features có cùng scale và cải thiện hiệu suất huấn luyện \cite{sola1997}. Z-score Normalization chuyển đổi dữ liệu về phân phối với trung bình bằng 0 và độ lệch chuẩn bằng 1 (chi tiết công thức được trình bày trong Chương 3). Việc chuẩn hóa dữ liệu cho CNN là cần thiết vì các features có scale khác nhau (ví dụ: NDVI trong $[-1, 1]$, backscatter trong $[-25, 0]$ dB) sẽ ảnh hưởng không đều đến gradient. \textbf{Lưu ý quan trọng:} Các tham số chuẩn hóa phải được tính trên tập huấn luyện và áp dụng cho cả tập kiểm tra để tránh rò rỉ dữ liệu.
 
 \textbf{Dữ liệu thực địa (Ground Truth):}
 

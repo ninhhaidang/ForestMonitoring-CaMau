@@ -14,14 +14,7 @@ trong đó $x$ là giá trị gốc, $\mu$ là giá trị trung bình và $\sigm
 
 \subsection{Phân chia dữ liệu}
 
-Chiến lược chia dữ liệu được thiết kế theo khuyến nghị của Roberts et al. \cite{roberts2017} về cross-validation cho dữ liệu không gian, đảm bảo đánh giá khách quan:
-
-\begin{enumerate}
-    \item \textbf{Bước 1:} Tách 20\% dữ liệu làm tập test cố định (526 mẫu) — tập này không được sử dụng trong quá trình huấn luyện hay tinh chỉnh siêu tham số.
-    \item \textbf{Bước 2:} Áp dụng 5-Fold Cross Validation trên 80\% còn lại (2,104 mẫu) để tìm kiếm siêu tham số tối ưu và đánh giá độ ổn định của mô hình.
-    \item \textbf{Bước 3:} Huấn luyện mô hình cuối cùng trên toàn bộ 80\% dữ liệu training.
-    \item \textbf{Bước 4:} Đánh giá mô hình cuối cùng trên 20\% tập test để báo cáo kết quả.
-\end{enumerate}
+Chiến lược chia dữ liệu được thiết kế theo khuyến nghị của Roberts et al. \cite{roberts2017} về cross-validation cho dữ liệu không gian, đảm bảo đánh giá khách quan. Quy trình chia dữ liệu bao gồm bốn bước. Bước thứ nhất, tách 20\% dữ liệu làm tập test cố định (526 mẫu) — tập này không được sử dụng trong quá trình huấn luyện hay tinh chỉnh siêu tham số. Bước thứ hai, áp dụng 5-Fold Cross Validation trên 80\% còn lại (2,104 mẫu) để tìm kiếm siêu tham số tối ưu và đánh giá độ ổn định của mô hình. Bước thứ ba, huấn luyện mô hình cuối cùng trên toàn bộ 80\% dữ liệu training. Bước thứ tư, đánh giá mô hình cuối cùng trên 20\% tập test để báo cáo kết quả.
 
 \begin{table}[H]
 \centering

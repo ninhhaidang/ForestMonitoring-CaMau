@@ -111,7 +111,7 @@ test_*.py
 *.acr
 *.alg
 *.xdy
-
+*.xdv
 # LaTeX generated PDF (comment out if you want to commit the final PDF)
 # THESIS/Latex/*.pdf
 
