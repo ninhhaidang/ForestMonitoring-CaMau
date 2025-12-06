@@ -2,7 +2,7 @@
 
 \subsection{Xây dựng feature stack}
 
-Việc kết hợp dữ liệu SAR và quang học (data fusion) đã được chứng minh là hiệu quả trong nhiều nghiên cứu phân loại lớp phủ đất \cite{ienco2019, hu2020}. Cách tiếp cận này tận dụng ưu điểm bổ sung của hai nguồn dữ liệu: SAR cung cấp thông tin về cấu trúc và độ ẩm bề mặt, trong khi quang học cung cấp thông tin về đặc tính quang phổ của thực vật.
+Việc kết hợp dữ liệu SAR và quang học (data fusion) đã được chứng minh là hiệu quả trong nhiều nghiên cứu phân loại lớp phủ đất \citeen{ienco2019, hu2020}. Cách tiếp cận này tận dụng ưu điểm bổ sung của hai nguồn dữ liệu: SAR cung cấp thông tin về cấu trúc và độ ẩm bề mặt, trong khi quang học cung cấp thông tin về đặc tính quang phổ của thực vật.
 
 Tổng cộng 27 features được xây dựng từ hai nguồn dữ liệu. \textbf{Sentinel-2} đóng góp 21 features, bao gồm 7 bands/chỉ số (B4, B8, B11, B12, NDVI, NBR, NDMI) cho kỳ trước, 7 bands/chỉ số tương ứng cho kỳ sau, và 7 giá trị delta (hiệu số giữa kỳ sau và kỳ trước). \textbf{Sentinel-1} đóng góp 6 features, bao gồm 2 bands (VV, VH) cho kỳ trước, 2 bands tương ứng cho kỳ sau, và 2 giá trị delta.
 

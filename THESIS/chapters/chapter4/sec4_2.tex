@@ -25,8 +25,6 @@ Fold 5 & 97.86\% & 97.86\% \\
 \end{tabular}
 \end{table}
 
-\textbf{Phân tích kết quả kiểm định chéo:}
-
 Kết quả Cross Validation cho thấy sự ổn định của mô hình: độ lệch chuẩn của Accuracy chỉ khoảng 0.28\%, Accuracy từng fold đều vượt ngưỡng 97.8\%, và điều này cho thấy không có dấu hiệu Overfitting nghiêm trọng, tức Accuracy trên tập validation phản ánh tốt khả năng tổng quát hóa của mô hình.
 
 \begin{figure}[H]
@@ -88,8 +86,6 @@ ROC-AUC (macro avg) & 0.9998 & 99.98\% \\
 \hline
 \end{tabular}
 \end{table}
-
-\textbf{Ma trận nhầm lẫn trên tập kiểm tra:}
 
 \begin{figure}[H]
     \centering
@@ -186,8 +182,6 @@ ROC-AUC (macro avg) & 0.9998 & 99.98\% \\
     \label{fig:confusion_heatmap}
 \end{figure}
 
-\textbf{Phân tích chi tiết từng lớp trên tập kiểm tra:}
-
 \begin{table}[H]
 \centering
 \caption{Phân tích chi tiết từng lớp}
@@ -209,11 +203,7 @@ ROC-AUC (macro avg) & 0.9998 & 99.98\% \\
 
 \textit{Ghi chú: FP = False Positive (dương tính giả), FN = False Negative (âm tính giả)}
 
-\textbf{Phân tích lỗi phân loại:}
-
 Tổng cộng chỉ có 6/526 mẫu bị phân loại sai, tương đương tỷ lệ lỗi 1.14\%. Trong đó, hai mẫu thuộc Lớp 0 (Rừng ổn định) bị nhầm thành Lớp 1 (Mất rừng) và bốn mẫu thuộc Lớp 1 (Mất rừng) bị nhầm thành Lớp 0 (Rừng ổn định). Đánh giá chi tiết cho thấy Lớp 2 (Phi rừng) và Lớp 3 (Phục hồi rừng) được phân loại hoàn hảo với Accuracy 100\%.
-
-\textbf{Phân tích nguyên nhân nhầm lẫn giữa Rừng ổn định và Mất rừng:}
 
 Việc nhầm lẫn chỉ xảy ra giữa hai lớp Rừng ổn định (Lớp 0) và Mất rừng (Lớp 1) có thể được giải thích bởi các yếu tố sau. Thứ nhất, về \textbf{sự tương đồng về đặc trưng quang phổ}, cả hai lớp đều có sự hiện diện của rừng ở ít nhất một thời điểm; các khu vực rừng bị suy thoái nhẹ có thể có phổ phản xạ đặc trưng tương tự với rừng ổn định, đặc biệt khi mức độ mất rừng không rõ ràng. Thứ hai, về \textbf{hiệu ứng biên}, tại ranh giới giữa vùng rừng và vùng mất rừng, các điểm ảnh có thể chứa cả hai loại lớp phủ (điểm ảnh hỗn hợp), dẫn đến vector đặc trưng không điển hình cho một lớp cụ thể. Thứ ba, về \textbf{biến động theo mùa}, một số khu vực rừng ngập mặn có thể có biến động theo mùa về mật độ tán lá, tạo ra sự thay đổi NDVI tương tự như mất rừng nhưng thực tế là biến động tự nhiên. Thứ tư, về \textbf{độ phân giải thời gian}, với chỉ hai thời điểm quan sát, một số biến động ngắn hạn hoặc phục hồi nhanh có thể không được ghi nhận chính xác.
 

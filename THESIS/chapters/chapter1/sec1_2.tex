@@ -10,11 +10,11 @@ Chương trình Copernicus của Liên minh Châu Âu (EU) là một trong nhữ
 
 \textbf{Sentinel-1 (SAR - Synthetic Aperture Radar):}
 
-Vệ tinh Sentinel-1 hoạt động ở dải sóng C-band (xấp xỉ 5.5 cm) với hai chế độ phân cực chính là VV (Vertical-Vertical) và VH (Vertical-Horizontal); độ phân giải không gian trong chế độ Interferometric Wide (IW) là 10m \cite{esa2024s1}. Về chu kỳ quay trở lại, Sentinel-1A có chu kỳ khoảng 12 ngày; khi kết hợp với Sentinel-1B (đã ngừng hoạt động từ tháng 12/2021 do sự cố nguồn điện), chu kỳ giảm còn 6 ngày. Sentinel-1C được phóng vào tháng 12/2024 để thay thế Sentinel-1B. Do là hệ thống chủ động, Sentinel-1 có ưu điểm xuyên qua mây và khói, hoạt động được cả ngày lẫn đêm, và nhạy cảm đối với cấu trúc thực vật cũng như độ ẩm.
+Vệ tinh Sentinel-1 hoạt động ở dải sóng C-band (xấp xỉ 5.5 cm) với hai chế độ phân cực chính là VV (Vertical-Vertical) và VH (Vertical-Horizontal); độ phân giải không gian trong chế độ Interferometric Wide (IW) là 10m \citeen{esa2024s1}. Về chu kỳ quay trở lại, Sentinel-1A có chu kỳ khoảng 12 ngày; khi kết hợp với Sentinel-1B (đã ngừng hoạt động từ tháng 12/2021 do sự cố nguồn điện), chu kỳ giảm còn 6 ngày. Sentinel-1C được phóng vào tháng 12/2024 để thay thế Sentinel-1B. Do là hệ thống chủ động, Sentinel-1 có ưu điểm xuyên qua mây và khói, hoạt động được cả ngày lẫn đêm, và nhạy cảm đối với cấu trúc thực vật cũng như độ ẩm.
 
 \textbf{Sentinel-2 (Optical - Multispectral Imaging):}
 
-Vệ tinh Sentinel-2 cung cấp 13 dải phổ từ vùng nhìn thấy đến hồng ngoại ngắn (từ 443 nm đến 2190 nm) với nhiều cấp độ độ phân giải không gian: 10m cho các dải B2, B3, B4 và B8; 20m cho các dải B5, B6, B7, B8a, B11 và B12; và 60m cho B1, B9 và B10 \cite{esa2024s2}. Chu kỳ quay trở lại của tổ hợp hai vệ tinh Sentinel-2A và Sentinel-2B vào khoảng 5 ngày, và vì có thông tin quang phổ phong phú nên Sentinel-2 rất phù hợp để tính toán chỉ số thực vật.
+Vệ tinh Sentinel-2 cung cấp 13 dải phổ từ vùng nhìn thấy đến hồng ngoại ngắn (từ 443 nm đến 2190 nm) với nhiều cấp độ độ phân giải không gian: 10m cho các dải B2, B3, B4 và B8; 20m cho các dải B5, B6, B7, B8a, B11 và B12; và 60m cho B1, B9 và B10 \citeen{esa2024s2}. Chu kỳ quay trở lại của tổ hợp hai vệ tinh Sentinel-2A và Sentinel-2B vào khoảng 5 ngày, và vì có thông tin quang phổ phong phú nên Sentinel-2 rất phù hợp để tính toán chỉ số thực vật.
 
 
  \begin{figure}[H]
@@ -42,7 +42,7 @@ Các chỉ số thực vật (vegetation indices) là công cụ quan trọng tr
 NDVI = \frac{NIR - Red}{NIR + Red}
 \end{equation}
 
-NDVI có dải giá trị từ -1 đến 1; giá trị NDVI lớn hơn 0.6 thường biểu thị thực vật xanh tốt, trong khi giá trị NDVI nhỏ hơn 0.2 thường liên quan đến đất trống, nước hoặc khu vực đô thị \cite{huang2021}.
+NDVI có dải giá trị từ -1 đến 1; giá trị NDVI lớn hơn 0.6 thường biểu thị thực vật xanh tốt, trong khi giá trị NDVI nhỏ hơn 0.2 thường liên quan đến đất trống, nước hoặc khu vực đô thị \citeen{huang2021}.
 
 \textbf{NBR (Normalized Burn Ratio):}
 \begin{equation}
@@ -60,4 +60,4 @@ NDMI được dùng để đánh giá hàm lượng nước trong thực vật; 
 
 \subsection{Tích hợp dữ liệu SAR và Optical}
 
-Việc kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2) mang lại nhiều lợi ích thực tế. Về khía cạnh bổ sung thông tin, SAR cung cấp dữ liệu về cấu trúc, độ nhám bề mặt và độ ẩm, trong khi Optical cung cấp thông tin quang phổ và các chỉ số thực vật. Về khía cạnh khắc phục hạn chế, SAR hoạt động hiệu quả trong điều kiện mây mù — điều quan trọng trong môi trường rừng nhiệt đới — còn Optical lại cung cấp dữ liệu trực quan dễ phiên giải. Về khía cạnh nâng cao độ chính xác, nhiều nghiên cứu cho thấy việc kết hợp SAR và Optical giúp tăng accuracy từ khoảng 5 đến 10\% so với việc sử dụng mỗi nguồn dữ liệu riêng lẻ \cite{ienco2019, hu2020}. Về khía cạnh phát hiện biến động đa chiều, SAR nhạy với biến đổi cấu trúc như chặt cây, trong khi Optical nhạy với biến đổi quang phổ thể hiện sức khỏe thực vật.
+Việc kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2) mang lại nhiều lợi ích thực tế. Về khía cạnh bổ sung thông tin, SAR cung cấp dữ liệu về cấu trúc, độ nhám bề mặt và độ ẩm, trong khi Optical cung cấp thông tin quang phổ và các chỉ số thực vật. Về khía cạnh khắc phục hạn chế, SAR hoạt động hiệu quả trong điều kiện mây mù — điều quan trọng trong môi trường rừng nhiệt đới — còn Optical lại cung cấp dữ liệu trực quan dễ phiên giải. Về khía cạnh nâng cao độ chính xác, nhiều nghiên cứu cho thấy việc kết hợp SAR và Optical giúp tăng accuracy từ khoảng 5 đến 10\% so với việc sử dụng mỗi nguồn dữ liệu riêng lẻ \citeen{ienco2019, hu2020}. Về khía cạnh phát hiện biến động đa chiều, SAR nhạy với biến đổi cấu trúc như chặt cây, trong khi Optical nhạy với biến đổi quang phổ thể hiện sức khỏe thực vật.

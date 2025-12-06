@@ -2,7 +2,7 @@
 
 \subsection{Các phương pháp phân loại ảnh}
 
-Trong phân loại ảnh viễn thám, có hai phương pháp tiếp cận chính: phân loại dựa trên pixel và phân loại dựa trên patch \cite{blaschke2010, zhang2016}.
+Trong phân loại ảnh viễn thám, có hai phương pháp tiếp cận chính: phân loại dựa trên pixel và phân loại dựa trên patch \citeen{blaschke2010, zhang2016}.
 
 \textbf{Pixel-based Classification:} Mỗi pixel được phân loại độc lập dựa trên vector đặc trưng của riêng nó. Ưu điểm là đơn giản, dễ triển khai, tốc độ xử lý nhanh. Nhược điểm là không tận dụng ngữ cảnh không gian, dễ tạo ra nhiễu dạng salt-and-pepper.
 
@@ -10,7 +10,7 @@ Trong phân loại ảnh viễn thám, có hai phương pháp tiếp cận chín
 
 \subsection{Ma trận nhầm lẫn và các độ đo đánh giá}
 
-Confusion Matrix (Ma trận nhầm lẫn) là công cụ cơ bản để đánh giá hiệu suất của mô hình phân loại, đặc biệt quan trọng trong các bài toán phân loại ảnh viễn thám \cite{foody2002}. Ma trận này tổng hợp kết quả dự đoán của mô hình so với nhãn thực tế.
+Confusion Matrix (Ma trận nhầm lẫn) là công cụ cơ bản để đánh giá hiệu suất của mô hình phân loại, đặc biệt quan trọng trong các bài toán phân loại ảnh viễn thám \citeen{foody2002}. Ma trận này tổng hợp kết quả dự đoán của mô hình so với nhãn thực tế.
 
 \begin{table}[H]
 \centering
@@ -31,54 +31,54 @@ Ma trận nhầm lẫn bao gồm bốn thành phần chính. \textbf{True Positi
 
 \textbf{Các độ đo đánh giá:}
 
-Các chỉ số đánh giá được tính toán dựa trên Confusion Matrix để đo lường hiệu suất phân loại từ nhiều góc độ khác nhau \cite{sokolova2009}.
+Các chỉ số đánh giá được tính toán dựa trên Confusion Matrix để đo lường hiệu suất phân loại từ nhiều góc độ khác nhau \citeen{sokolova2009}.
 
 \textbf{Accuracy (Độ chính xác):}
 \begin{equation}
 \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
 \end{equation}
 
-\textbf{Thành phần:} $TP$ (True Positive), $TN$ (True Negative), $FP$ (False Positive), $FN$ (False Negative) như định nghĩa ở trên. \textbf{Ý nghĩa:} Tỷ lệ các mẫu được phân loại đúng trên tổng số mẫu. \textbf{Mục đích:} Đánh giá hiệu suất tổng thể của mô hình; tuy nhiên, accuracy có thể gây hiểu lầm với dữ liệu mất cân bằng.
+Công thức sử dụng các thành phần $TP$ (True Positive), $TN$ (True Negative), $FP$ (False Positive) và $FN$ (False Negative) như định nghĩa ở trên, cho biết tỷ lệ các mẫu được phân loại đúng trên tổng số mẫu. Chỉ số này đánh giá hiệu suất tổng thể của mô hình, tuy nhiên accuracy có thể gây hiểu lầm với dữ liệu mất cân bằng.
 
 \textbf{Precision (Độ chính xác dương):}
 \begin{equation}
 \text{Precision} = \frac{TP}{TP + FP}
 \end{equation}
 
-\textbf{Thành phần:} $TP$ là số mẫu dương được dự đoán đúng, $FP$ là số mẫu âm bị dự đoán nhầm là dương. \textbf{Ý nghĩa:} Trong số các mẫu được dự đoán là dương, tỷ lệ thực sự là dương. \textbf{Mục đích:} Đánh giá độ tin cậy của dự đoán dương; precision cao quan trọng khi chi phí của false positive cao (ví dụ: cảnh báo sai về mất rừng gây lãng phí nguồn lực kiểm tra).
+Công thức sử dụng $TP$ là số mẫu dương được dự đoán đúng và $FP$ là số mẫu âm bị dự đoán nhầm là dương, cho biết trong số các mẫu được dự đoán là dương, tỷ lệ thực sự là dương. Chỉ số này đánh giá độ tin cậy của dự đoán dương; precision cao quan trọng khi chi phí của false positive cao, ví dụ cảnh báo sai về mất rừng gây lãng phí nguồn lực kiểm tra.
 
 \textbf{Recall (Độ nhạy):}
 \begin{equation}
 \text{Recall} = \frac{TP}{TP + FN}
 \end{equation}
 
-\textbf{Thành phần:} $TP$ là số mẫu dương được dự đoán đúng, $FN$ là số mẫu dương bị bỏ sót. \textbf{Ý nghĩa:} Trong số các mẫu thực sự dương, tỷ lệ được phát hiện đúng. \textbf{Mục đích:} Đánh giá khả năng phát hiện các mẫu dương; recall cao quan trọng khi chi phí của false negative cao (ví dụ: bỏ sót vùng mất rừng thực sự gây hậu quả nghiêm trọng về môi trường).
+Công thức sử dụng $TP$ là số mẫu dương được dự đoán đúng và $FN$ là số mẫu dương bị bỏ sót, cho biết trong số các mẫu thực sự dương, tỷ lệ được phát hiện đúng. Chỉ số này đánh giá khả năng phát hiện các mẫu dương; recall cao quan trọng khi chi phí của false negative cao, ví dụ bỏ sót vùng mất rừng thực sự gây hậu quả nghiêm trọng về môi trường.
 
 \textbf{F1-Score (Trung bình điều hòa):}
 \begin{equation}
 F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
 \end{equation}
 
-\textbf{Thành phần:} Precision và Recall như định nghĩa ở trên. \textbf{Ý nghĩa:} F1-Score là trung bình điều hòa của Precision và Recall --- cân bằng giữa hai độ đo này, và bị ảnh hưởng mạnh bởi giá trị thấp hơn. \textbf{Mục đích:} Đánh giá tổng hợp khi cần cân bằng giữa precision và recall; F1-Score đặc biệt hữu ích với dữ liệu mất cân bằng.
+Công thức sử dụng Precision và Recall như định nghĩa ở trên. F1-Score là trung bình điều hòa của Precision và Recall, cân bằng giữa hai độ đo này và bị ảnh hưởng mạnh bởi giá trị thấp hơn. Chỉ số này đánh giá tổng hợp khi cần cân bằng giữa precision và recall, đặc biệt hữu ích với dữ liệu mất cân bằng.
 
 \textbf{ROC-AUC (Area Under ROC Curve):}
 
-Các tiêu chuẩn diễn giải ROC-AUC theo Hosmer và Lemeshow \cite{hosmer2013}: AUC = 0.5 tương ứng với classifier ngẫu nhiên; 0.5 < AUC < 0.7 là phân biệt kém; 0.7 $\leq$ AUC < 0.8 là chấp nhận được; 0.8 $\leq$ AUC < 0.9 là xuất sắc; và AUC $\geq$ 0.9 là vượt trội.
+Các tiêu chuẩn diễn giải ROC-AUC theo Hosmer và Lemeshow \citeen{hosmer2013}: AUC = 0.5 tương ứng với classifier ngẫu nhiên; 0.5 < AUC < 0.7 là phân biệt kém; 0.7 $\leq$ AUC < 0.8 là chấp nhận được; 0.8 $\leq$ AUC < 0.9 là xuất sắc; và AUC $\geq$ 0.9 là vượt trội.
 
 \subsection{Cross Validation, chuẩn hóa dữ liệu và rò rỉ dữ liệu}
 
 \textbf{Cross Validation (Kiểm định chéo):}
 
-Cross Validation là phương pháp đánh giá mô hình giúp ước lượng khả năng generalization của mô hình trên dữ liệu chưa thấy, đồng thời giảm thiểu bias do cách chia dữ liệu \cite{kohavi1995}. Trong K-Fold Cross Validation, dữ liệu được chia thành $K$ phần bằng nhau, mỗi vòng lặp sử dụng một fold làm tập kiểm tra và $K-1$ folds còn lại làm tập huấn luyện; kết quả cuối cùng là trung bình của $K$ lần đánh giá. Stratified K-Fold là biến thể đảm bảo tỷ lệ các lớp trong mỗi fold tương đương với tỷ lệ trong toàn bộ tập dữ liệu, đặc biệt quan trọng khi dữ liệu mất cân bằng giữa các lớp.
+Cross Validation là phương pháp đánh giá mô hình giúp ước lượng khả năng generalization của mô hình trên dữ liệu chưa thấy, đồng thời giảm thiểu bias do cách chia dữ liệu \citeen{kohavi1995}. Trong K-Fold Cross Validation, dữ liệu được chia thành $K$ phần bằng nhau, mỗi vòng lặp sử dụng một fold làm tập kiểm tra và $K-1$ folds còn lại làm tập huấn luyện; kết quả cuối cùng là trung bình của $K$ lần đánh giá. Stratified K-Fold là biến thể đảm bảo tỷ lệ các lớp trong mỗi fold tương đương với tỷ lệ trong toàn bộ tập dữ liệu, đặc biệt quan trọng khi dữ liệu mất cân bằng giữa các lớp.
 
 \textbf{Chuẩn hóa dữ liệu (Data Normalization):}
 
-Chuẩn hóa dữ liệu là bước tiền xử lý quan trọng trong học máy, giúp các features có cùng scale và cải thiện hiệu suất huấn luyện \cite{sola1997}. Z-score Normalization chuyển đổi dữ liệu về phân phối với trung bình bằng 0 và độ lệch chuẩn bằng 1 (chi tiết công thức được trình bày trong Chương 3). Việc chuẩn hóa dữ liệu cho CNN là cần thiết vì các features có scale khác nhau (ví dụ: NDVI trong $[-1, 1]$, backscatter trong $[-25, 0]$ dB) sẽ ảnh hưởng không đều đến gradient. \textbf{Lưu ý quan trọng:} Các tham số chuẩn hóa phải được tính trên tập huấn luyện và áp dụng cho cả tập kiểm tra để tránh rò rỉ dữ liệu.
+Chuẩn hóa dữ liệu là bước tiền xử lý quan trọng trong học máy, giúp các features có cùng scale và cải thiện hiệu suất huấn luyện \citeen{sola1997}. Z-score Normalization chuyển đổi dữ liệu về phân phối với trung bình bằng 0 và độ lệch chuẩn bằng 1 (chi tiết công thức được trình bày trong Chương 3). Việc chuẩn hóa dữ liệu cho CNN là cần thiết vì các features có scale khác nhau (ví dụ: NDVI trong $[-1, 1]$, backscatter trong $[-25, 0]$ dB) sẽ ảnh hưởng không đều đến gradient. \textbf{Lưu ý quan trọng:} Các tham số chuẩn hóa phải được tính trên tập huấn luyện và áp dụng cho cả tập kiểm tra để tránh rò rỉ dữ liệu.
 
 \textbf{Dữ liệu thực địa (Ground Truth):}
 
-Dữ liệu thực địa là tập dữ liệu tham chiếu với nhãn chính xác, được sử dụng để huấn luyện và đánh giá mô hình phân loại \cite{foody2002}. Trong viễn thám, dữ liệu thực địa có thể thu thập từ khảo sát thực địa, diễn giải ảnh độ phân giải cao, hoặc dữ liệu lịch sử. Chất lượng dữ liệu thực địa ảnh hưởng trực tiếp đến độ tin cậy của kết quả phân loại.
+Dữ liệu thực địa là tập dữ liệu tham chiếu với nhãn chính xác, được sử dụng để huấn luyện và đánh giá mô hình phân loại \citeen{foody2002}. Trong viễn thám, dữ liệu thực địa có thể thu thập từ khảo sát thực địa, diễn giải ảnh độ phân giải cao, hoặc dữ liệu lịch sử. Chất lượng dữ liệu thực địa ảnh hưởng trực tiếp đến độ tin cậy của kết quả phân loại.
 
 \textbf{Rò rỉ dữ liệu (Data Leakage):}
 
-Rò rỉ dữ liệu xảy ra khi thông tin từ tập kiểm tra ``rò rỉ'' vào quá trình huấn luyện, dẫn đến kết quả đánh giá quá lạc quan \cite{kaufman2012}. Có ba dạng rò rỉ phổ biến trong viễn thám: (1) \textbf{Rò rỉ không gian} khi các điểm train/test nằm gần nhau về địa lý; (2) \textbf{Rò rỉ thời gian} khi sử dụng thông tin từ thời điểm sau để dự đoán thời điểm trước; (3) \textbf{Rò rỉ đặc trưng} khi tính statistics trên toàn bộ dữ liệu thay vì chỉ trên tập huấn luyện. Trong nghiên cứu này, rò rỉ dữ liệu được phòng tránh bằng cách sử dụng Stratified K-Fold Cross Validation và tính toán các tham số chuẩn hóa riêng cho từng fold.
+Rò rỉ dữ liệu xảy ra khi thông tin từ tập kiểm tra ``rò rỉ'' vào quá trình huấn luyện, dẫn đến kết quả đánh giá quá lạc quan \citeen{kaufman2012}. Có ba dạng rò rỉ phổ biến trong viễn thám. Dạng thứ nhất là rò rỉ không gian, xảy ra khi các điểm train/test nằm gần nhau về địa lý. Dạng thứ hai là rò rỉ thời gian, xảy ra khi sử dụng thông tin từ thời điểm sau để dự đoán thời điểm trước. Dạng thứ ba là rò rỉ đặc trưng, xảy ra khi tính statistics trên toàn bộ dữ liệu thay vì chỉ trên tập huấn luyện. Trong nghiên cứu này, rò rỉ dữ liệu được phòng tránh bằng cách sử dụng Stratified K-Fold Cross Validation và tính toán các tham số chuẩn hóa riêng cho từng fold.

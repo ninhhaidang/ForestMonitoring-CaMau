@@ -1,6 +1,6 @@
 \section{Mạng nơ-ron tích chập (Convolutional Neural Networks)}
 
-Mạng nơ-ron tích chập (CNN) đã trở thành công cụ chủ đạo trong xử lý ảnh viễn thám và phân loại lớp phủ đất \cite{zhu2017, zhang2016}. Phần này trình bày các khái niệm nền tảng về CNN làm cơ sở cho kiến trúc đề xuất trong Chương 3.
+Mạng nơ-ron tích chập (CNN) đã trở thành công cụ chủ đạo trong xử lý ảnh viễn thám và phân loại lớp phủ đất \citeen{zhu2017, zhang2016}. Phần này trình bày các khái niệm nền tảng về CNN làm cơ sở cho kiến trúc đề xuất trong Chương 3.
 
 \subsection{Kiến trúc cơ bản của CNN}
 
@@ -32,7 +32,7 @@ Quá trình tích chập diễn ra như sau: kernel có kích thước $k \times
 
 \textbf{Hàm kích hoạt (Activation Functions):}
 
-Hàm kích hoạt đóng vai trò quan trọng trong mạng nơ-ron, giúp mô hình học được các mối quan hệ phi tuyến trong dữ liệu \cite{goodfellow2016}. ReLU (Rectified Linear Unit) là hàm kích hoạt phổ biến nhất:
+Hàm kích hoạt đóng vai trò quan trọng trong mạng nơ-ron, giúp mô hình học được các mối quan hệ phi tuyến trong dữ liệu \citeen{goodfellow2016}. ReLU (Rectified Linear Unit) là hàm kích hoạt phổ biến nhất:
 \begin{equation}
 f(x) = \max(0, x) = \begin{cases} x & \text{if } x > 0 \\ 0 & \text{if } x \leq 0 \end{cases}
 \end{equation}
@@ -48,21 +48,21 @@ Softmax được sử dụng cho lớp đầu ra trong bài toán phân loại �
 
 \subsection{Pooling và các kỹ thuật điều chuẩn}
 
-Pooling là phép toán giảm chiều không gian (spatial dimensions) của feature maps, giúp giảm số lượng tham số, giảm chi phí tính toán và tăng khả năng translation invariance của mạng \cite{lecun2015}. Có hai loại pooling phổ biến: \textbf{Max Pooling} chọn giá trị lớn nhất trong mỗi vùng cục bộ, giữ lại các đặc trưng nổi bật nhất; \textbf{Average Pooling} tính trung bình các giá trị, giữ lại thông tin tổng quát hơn.
+Pooling là phép toán giảm chiều không gian (spatial dimensions) của feature maps, giúp giảm số lượng tham số, giảm chi phí tính toán và tăng khả năng translation invariance của mạng \citeen{lecun2015}. Có hai loại pooling phổ biến: \textbf{Max Pooling} chọn giá trị lớn nhất trong mỗi vùng cục bộ, giữ lại các đặc trưng nổi bật nhất; \textbf{Average Pooling} tính trung bình các giá trị, giữ lại thông tin tổng quát hơn.
 
-\textbf{Global Average Pooling (GAP)} là trường hợp đặc biệt trong đó vùng pooling bao trùm toàn bộ feature map, biến đổi mỗi feature map thành một giá trị scalar \cite{lin2014}. GAP mang lại nhiều lợi ích: giảm mạnh số lượng tham số, có tính chất điều chuẩn tự nhiên, và tạo ra spatial invariance hoàn toàn. Trong nghiên cứu này, GAP được sử dụng ở cuối mạng CNN để tổng hợp thông tin từ tất cả các spatial locations trước khi đưa vào lớp classification.
+\textbf{Global Average Pooling (GAP)} là trường hợp đặc biệt trong đó vùng pooling bao trùm toàn bộ feature map, biến đổi mỗi feature map thành một giá trị scalar \citeen{lin2014}. GAP mang lại nhiều lợi ích: giảm mạnh số lượng tham số, có tính chất điều chuẩn tự nhiên, và tạo ra spatial invariance hoàn toàn. Trong nghiên cứu này, GAP được sử dụng ở cuối mạng CNN để tổng hợp thông tin từ tất cả các spatial locations trước khi đưa vào lớp classification.
 
 \textbf{Chuẩn hóa theo lô (Batch Normalization):}
 
-Chuẩn hóa theo lô là kỹ thuật chuẩn hóa được đề xuất bởi Ioffe và Szegedy nhằm tăng tốc quá trình huấn luyện mạng nơ-ron sâu \cite{ioffe2015}. Kỹ thuật này chuẩn hóa các activation trong mỗi mini-batch về phân phối có trung bình 0 và phương sai 1, sau đó áp dụng phép biến đổi tuyến tính với các tham số học được. Chuẩn hóa theo lô giúp tăng tốc độ huấn luyện, giảm độ nhạy với khởi tạo trọng số, và đóng vai trò như một phương pháp điều chuẩn.
+Chuẩn hóa theo lô là kỹ thuật chuẩn hóa được đề xuất bởi Ioffe và Szegedy nhằm tăng tốc quá trình huấn luyện mạng nơ-ron sâu \citeen{ioffe2015}. Kỹ thuật này chuẩn hóa các activation trong mỗi mini-batch về phân phối có trung bình 0 và phương sai 1, sau đó áp dụng phép biến đổi tuyến tính với các tham số học được. Chuẩn hóa theo lô giúp tăng tốc độ huấn luyện, giảm độ nhạy với khởi tạo trọng số, và đóng vai trò như một phương pháp điều chuẩn.
 
 \textbf{Dropout:}
 
-Dropout là kỹ thuật điều chuẩn hiệu quả được đề xuất bởi Srivastava và cộng sự để ngăn chặn overfitting trong mạng nơ-ron \cite{srivastava2014}. Trong quá trình huấn luyện, mỗi nơ-ron bị tắt ngẫu nhiên với một xác suất nhất định, buộc mạng học các biểu diễn robust hơn. Dropout2d (Spatial Dropout) là biến thể dropout toàn bộ feature maps thay vì từng nơ-ron, phù hợp cho CNN vì features trong cùng channel có correlation không gian cao.
+Dropout là kỹ thuật điều chuẩn hiệu quả được đề xuất bởi Srivastava và cộng sự để ngăn chặn overfitting trong mạng nơ-ron \citeen{srivastava2014}. Trong quá trình huấn luyện, mỗi nơ-ron bị tắt ngẫu nhiên với một xác suất nhất định, buộc mạng học các biểu diễn robust hơn. Dropout2d (Spatial Dropout) là biến thể dropout toàn bộ feature maps thay vì từng nơ-ron, phù hợp cho CNN vì features trong cùng channel có correlation không gian cao.
 
 \subsection{Hàm mất mát và thuật toán tối ưu}
 
-Hàm mất mát (Loss Function) đo lường sự khác biệt giữa dự đoán của mô hình và nhãn thực tế, là cơ sở để tối ưu hóa tham số mạng \cite{goodfellow2016}. Cross-Entropy Loss được sử dụng cho bài toán phân loại đa lớp:
+Hàm mất mát (Loss Function) đo lường sự khác biệt giữa dự đoán của mô hình và nhãn thực tế, là cơ sở để tối ưu hóa tham số mạng \citeen{goodfellow2016}. Cross-Entropy Loss được sử dụng cho bài toán phân loại đa lớp:
 \begin{equation}
 L = -\sum_i y_i \log(\hat{y}_i)
 \end{equation}
@@ -71,4 +71,4 @@ L = -\sum_i y_i \log(\hat{y}_i)
 
 \textbf{Thuật toán tối ưu:}
 
-Các thuật toán tối ưu hóa đóng vai trò quan trọng trong việc huấn luyện mạng nơ-ron. \textbf{Adam} (Adaptive Moment Estimation) được đề xuất bởi Kingma và Ba là một trong những optimizer phổ biến nhất hiện nay \cite{kingma2015}. Adam kết hợp ưu điểm của hai phương pháp: momentum (sử dụng trung bình động của gradient) và RMSprop (điều chỉnh learning rate theo từng tham số). \textbf{AdamW} là biến thể cải tiến với phân rã trọng số được tách riêng khỏi gradient update, giúp điều chuẩn hiệu quả hơn. Các hyperparameters thường sử dụng: $\beta_1 = 0.9$, $\beta_2 = 0.999$, learning rate $\eta = 0.001$.
+Các thuật toán tối ưu hóa đóng vai trò quan trọng trong việc huấn luyện mạng nơ-ron. \textbf{Adam} (Adaptive Moment Estimation) được đề xuất bởi Kingma và Ba là một trong những optimizer phổ biến nhất hiện nay \citeen{kingma2015}. Adam kết hợp ưu điểm của hai phương pháp: momentum (sử dụng trung bình động của gradient) và RMSprop (điều chỉnh learning rate theo từng tham số). \textbf{AdamW} là biến thể cải tiến với phân rã trọng số được tách riêng khỏi gradient update, giúp điều chuẩn hiệu quả hơn. Các hyperparameters thường sử dụng: $\beta_1 = 0.9$, $\beta_2 = 0.999$, learning rate $\eta = 0.001$.

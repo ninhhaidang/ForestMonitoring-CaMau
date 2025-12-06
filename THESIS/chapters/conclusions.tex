@@ -4,17 +4,9 @@
 
 \section*{Kết luận}
 
-Đồ án đã hoàn thành các mục tiêu đề ra và đạt được một số kết quả chính:
+Đồ án đã hoàn thành các mục tiêu đề ra và đạt được một số kết quả chính. Về xây dựng bộ dữ liệu huấn luyện, nhóm nghiên cứu đã thu thập và tiền xử lý hai kỳ dữ liệu Sentinel-1/2 (01/2024 và 02/2025), tạo feature stack 27 chiều kết hợp SAR và Optical, đồng thời thu thập 2,630 điểm thực địa cho 4 lớp phân loại với phân bố cân bằng. Về thiết kế kiến trúc CNN, đồ án đã xây dựng kiến trúc CNN nhẹ với khoảng 36,676 tham số và áp dụng các kỹ thuật điều chuẩn hiệu quả bao gồm chuẩn hóa theo lô, Dropout 0.7 và phân rã trọng số, phù hợp cho bộ dữ liệu nhỏ khoảng 2,600 mẫu. Về đánh giá khoa học, phương pháp 5-Fold Stratified Cross Validation cho kết quả CV accuracy 98.15\% ± 0.28\% cho thấy mô hình ổn định, test accuracy đạt 98.86\% và ROC-AUC 99.98\% thể hiện khả năng phân biệt xuất sắc.
 
-\textbf{Về xây dựng bộ dữ liệu huấn luyện:} Nhóm nghiên cứu đã thu thập, tiền xử lý hai kỳ dữ liệu Sentinel-1/2 (01/2024 và 02/2025) và tạo feature stack 27 chiều (kết hợp SAR và Optical) cùng với việc thu thập 2,630 điểm thực địa cho 4 lớp phân loại với phân bố cân bằng.
-
-\textbf{Về thiết kế kiến trúc CNN:} Kiến trúc CNN nhẹ với khoảng 36,676 tham số được thiết kế và áp dụng các kỹ thuật điều chuẩn hiệu quả (chuẩn hóa theo lô, Dropout 0.7, phân rã trọng số), phù hợp cho bộ dữ liệu nhỏ khoảng 2,600 mẫu.
-
-\textbf{Về đánh giá khoa học:} 5-Fold Stratified Cross Validation cho kết quả CV accuracy 98.15\% ± 0.28\% (mô hình ổn định), test accuracy 98.86\% và ROC-AUC 99.98\% (khả năng phân biệt xuất sắc).
-
-\textbf{Về ứng dụng thực tế:} Mô hình đã được áp dụng để phân loại toàn vùng quy hoạch lâm nghiệp tỉnh Cà Mau mới (170,179 ha ranh giới, 162,469 ha phân loại thực tế), phát hiện 7,282 ha mất rừng (4.48\%) và 4,941 ha phục hồi rừng (3.04\%) trong giai đoạn 01/2024 - 02/2025.
-
-\textbf{Về sản phẩm ứng dụng web:} Để trực quan hóa kết quả nghiên cứu, đồ án đã xây dựng một ứng dụng web trên nền tảng Google Earth Engine Apps. Ứng dụng hiển thị bản đồ kết quả phân loại biến động rừng với 4 lớp (rừng ổn định, mất rừng, phi rừng, phục hồi rừng), các layer ảnh vệ tinh Sentinel-1/2 ở hai thời kỳ (01/2024 và 02/2025), cùng với ranh giới khu vực nghiên cứu và các điểm dữ liệu mẫu. Ứng dụng có thể truy cập công khai tại địa chỉ: \url{https://ee-bonglantrungmuoi.projects.earthengine.app/view/giam-sat-bien-dong-rung-ca-mau}. Giao diện ứng dụng được minh họa trong Hình \ref{fig:ee-app}.
+Về ứng dụng thực tế, mô hình đã được áp dụng để phân loại toàn vùng quy hoạch lâm nghiệp tỉnh Cà Mau (170,179 ha ranh giới, 162,469 ha phân loại thực tế), phát hiện 7,282 ha mất rừng (4.48\%) và 4,941 ha phục hồi rừng (3.04\%) trong giai đoạn 01/2024 - 02/2025. Để trực quan hóa kết quả nghiên cứu, đồ án đã xây dựng một ứng dụng web trên nền tảng Google Earth Engine Apps, hiển thị bản đồ kết quả phân loại biến động rừng với 4 lớp (rừng ổn định, mất rừng, phi rừng, phục hồi rừng), các layer ảnh vệ tinh Sentinel-1/2 ở hai thời kỳ, cùng với ranh giới khu vực nghiên cứu và các điểm dữ liệu mẫu. Ứng dụng có thể truy cập công khai tại địa chỉ: \url{https://ee-bonglantrungmuoi.projects.earthengine.app/view/giam-sat-bien-dong-rung-ca-mau}. Giao diện ứng dụng được minh họa trong Hình \ref{fig:ee-app}.
 
 \begin{figure}[H]
     \centering
@@ -25,9 +17,13 @@
 
 \section*{Đóng góp khoa học}
 
-\textbf{Về mặt phương pháp:} Đồ án đã áp dụng 5-Fold Stratified Cross Validation nhằm đánh giá độ ổn định của mô hình, chứng minh hiệu quả sử dụng patches 3×3 cho bài toán phát hiện mất rừng, và tiến hành các thí nghiệm ablation toàn diện để khảo sát ảnh hưởng của kích thước patch, nguồn dữ liệu và kỹ thuật điều chuẩn.
+Đồ án đóng góp vào lĩnh vực giám sát rừng bằng viễn thám và học sâu trên nhiều phương diện, bao gồm phương pháp luận, ứng dụng thực tiễn và kết quả khoa học.
 
-\textbf{Về mặt ứng dụng:} Đồ án là một trong những nghiên cứu đầu tiên áp dụng CNN cho phát hiện biến động rừng tại Cà Mau, chứng minh hiệu quả trong việc kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2), đồng thời đóng góp một bộ dữ liệu thực địa chất lượng cao gồm 2,630 điểm với 4 lớp phân loại.
+Về phương pháp luận, đồ án đề xuất quy trình tích hợp dữ liệu đa nguồn bằng cách xây dựng quy trình hoàn chỉnh kết hợp dữ liệu radar Sentinel-1 và quang học Sentinel-2, khai thác ưu điểm bổ sung của từng nguồn --- radar cung cấp thông tin cấu trúc và độ ẩm, quang học cung cấp thông tin phổ phản xạ chi tiết; kết quả thực nghiệm chứng minh sự kết hợp này cải thiện accuracy 5.44\% so với chỉ sử dụng Sentinel-2 (từ 93.42\% lên 98.86\%). Bên cạnh đó, đồ án thiết kế kiến trúc CNN nhẹ phù hợp cho bộ dữ liệu nhỏ --- thay vì áp dụng các kiến trúc phức tạp như ResNet hay VGG, đồ án đề xuất kiến trúc CNN tối giản với chỉ 36,676 tham số, phù hợp với quy mô dữ liệu thực địa hạn chế (2,630 điểm), qua đó tránh được hiện tượng overfitting thường gặp khi áp dụng mô hình lớn cho dữ liệu nhỏ. Thông qua nghiên cứu loại trừ có hệ thống, đồ án xác định patch size 3×3 (tương đương 30m × 30m) là tối ưu cho dữ liệu Sentinel ở độ phân giải 10m, cân bằng giữa khai thác ngữ cảnh không gian và tránh nhiễu từ vùng lân cận. Ngoài ra, đồ án đề xuất cấu trúc vector đặc trưng bi-temporal 27 chiều kết hợp thông tin ``trước'', ``sau'' và ``delta'' (hiệu số), cho phép mô hình học được cả trạng thái tuyệt đối và sự biến động tương đối của lớp phủ.
+
+Về ứng dụng thực tiễn, đồ án tạo ra bản đồ phân loại biến động rừng ngập mặn Cà Mau với độ chính xác cao (98.86\%) cho toàn bộ vùng nghiên cứu 162,469 ha, cung cấp thông tin chi tiết về phân bố không gian của các lớp biến động. Kết quả định lượng cho thấy 4.48\% diện tích (7,282 ha) bị mất rừng và 3.04\% (4,941 ha) được phục hồi trong giai đoạn nghiên cứu, cung cấp số liệu tham khảo cho công tác quản lý rừng địa phương. Toàn bộ quy trình từ thu thập dữ liệu, tiền xử lý, huấn luyện mô hình đến dự đoán được thiết kế module hóa, có thể áp dụng cho các khu vực rừng ngập mặn khác tại Việt Nam và Đông Nam Á. Đồ án cũng công bố mã nguồn xử lý trên Google Earth Engine và mô hình CNN huấn luyện, tạo điều kiện cho các nghiên cứu tiếp theo và ứng dụng thực tế.
+
+Về kết quả khoa học, mô hình đạt hiệu suất vượt trội với accuracy 98.86\% và ROC-AUC 99.98\%, cao hơn các nghiên cứu tương tự trong tài liệu như Hansen và cs. (85\%), Hethcoat và cs. (94.3\%), Zhang và cs. (96.8\%). Đồ án chỉ ra rằng lỗi phân loại chủ yếu xảy ra giữa hai lớp ``Rừng ổn định'' và ``Mất rừng'' do sự tương đồng về đặc trưng quang phổ tại các vùng ranh giới và khu vực rừng suy thoái nhẹ. Kết quả nghiên cứu loại trừ cho thấy Sentinel-2 đóng góp chính (accuracy 93.42\% khi sử dụng đơn lẻ), trong khi Sentinel-1 có vai trò bổ sung quan trọng (+5.44\% khi kết hợp).
 
 \section*{Hạn chế}
 
@@ -35,12 +31,4 @@
 
 \section*{Kiến nghị}
 
-Đề xuất cho các hướng phát triển tiếp theo:
-
-\textbf{Mở rộng phân tích temporal:} Các nghiên cứu tiếp theo nên sử dụng chuỗi thời gian thay vì chỉ phân tích hai thời kỳ (bi-temporal), đồng thời áp dụng các mô hình như LSTM hoặc Transformer để khai thác các mẫu temporal.
-
-\textbf{Cải thiện mô hình:} Cần thử nghiệm cơ chế attention để tăng khả năng giải thích, tận dụng transfer learning từ các mô hình pretrained, và áp dụng ensemble methods nhằm tăng độ chính xác và độ ổn định.
-
-\textbf{Ứng dụng thực tế:} Hướng phát triển bao gồm triển khai hệ thống giám sát near-real-time, mở rộng phạm vi áp dụng sang các tỉnh trong vùng Đồng bằng sông Cửu Long, và tích hợp kết quả với hệ thống GIS của cơ quan quản lý rừng.
-
-\textbf{Tăng cường thu thập dữ liệu:} Cần khảo sát thực địa để validate kết quả, mở rộng bộ dữ liệu thực địa, và thu thập thêm dữ liệu multi-temporal để nâng cao khả năng khai thác chuỗi thời gian.
+Dựa trên kết quả và hạn chế của đồ án, một số hướng phát triển tiếp theo được đề xuất. Về mở rộng phân tích temporal, các nghiên cứu tiếp theo nên sử dụng chuỗi thời gian thay vì chỉ phân tích hai thời kỳ (bi-temporal), đồng thời áp dụng các mô hình như LSTM hoặc Transformer để khai thác các mẫu temporal. Về cải thiện mô hình, cần thử nghiệm cơ chế attention để tăng khả năng giải thích, tận dụng transfer learning từ các mô hình pretrained, và áp dụng ensemble methods nhằm tăng độ chính xác và độ ổn định. Về ứng dụng thực tế, hướng phát triển bao gồm triển khai hệ thống giám sát near-real-time, mở rộng phạm vi áp dụng sang các tỉnh trong vùng Đồng bằng sông Cửu Long, và tích hợp kết quả với hệ thống GIS của cơ quan quản lý rừng. Về tăng cường thu thập dữ liệu, cần khảo sát thực địa để validate kết quả, mở rộng bộ dữ liệu thực địa, và thu thập thêm dữ liệu multi-temporal để nâng cao khả năng khai thác chuỗi thời gian.

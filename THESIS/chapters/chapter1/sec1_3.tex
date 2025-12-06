@@ -26,15 +26,15 @@ Các phương pháp đơn giản như phân ngưỡng chỉ số thực vật ND
 
 \textbf{Phân loại không giám sát (Unsupervised Classification):}
 
-Phân loại không giám sát không yêu cầu dữ liệu huấn luyện có nhãn, thay vào đó tự động nhóm các pixel có đặc trưng phổ tương tự thành các cụm. Hai thuật toán phổ biến nhất là K-means và ISODATA (Iterative Self-Organizing Data Analysis Technique) \cite{jensen2015}. K-means phân chia dữ liệu thành k cụm dựa trên khoảng cách Euclidean đến tâm cụm. ISODATA mở rộng K-means bằng cách tự động tách, gộp hoặc loại bỏ cụm dựa trên các ngưỡng thống kê. Phương pháp không giám sát phù hợp khi không có dữ liệu thực địa hoặc khi cần khám phá cấu trúc dữ liệu ban đầu, nhưng có hạn chế là các cụm tạo ra không có ý nghĩa ngữ nghĩa rõ ràng và cần chuyên gia gán nhãn sau đó.
+Phân loại không giám sát không yêu cầu dữ liệu huấn luyện có nhãn, thay vào đó tự động nhóm các pixel có đặc trưng phổ tương tự thành các cụm. Hai thuật toán phổ biến nhất là K-means và ISODATA (Iterative Self-Organizing Data Analysis Technique) \citeen{jensen2015}. K-means phân chia dữ liệu thành k cụm dựa trên khoảng cách Euclidean đến tâm cụm. ISODATA mở rộng K-means bằng cách tự động tách, gộp hoặc loại bỏ cụm dựa trên các ngưỡng thống kê. Phương pháp không giám sát phù hợp khi không có dữ liệu thực địa hoặc khi cần khám phá cấu trúc dữ liệu ban đầu, nhưng có hạn chế là các cụm tạo ra không có ý nghĩa ngữ nghĩa rõ ràng và cần chuyên gia gán nhãn sau đó.
 
 \textbf{Phân loại có giám sát (Supervised Classification):}
 
-Từ thập niên 1990, các thuật toán phân loại thống kê bắt đầu được áp dụng rộng rãi. Maximum Likelihood Classification (MLC) giả định dữ liệu tuân theo phân phối Gaussian và phân loại pixel dựa trên xác suất. Phương pháp này đặt nền tảng cho phân loại ảnh viễn thám định lượng nhưng có hạn chế khi dữ liệu không tuân theo phân phối chuẩn \cite{khatami2016}.
+Từ thập niên 1990, các thuật toán phân loại thống kê bắt đầu được áp dụng rộng rãi. Maximum Likelihood Classification (MLC) giả định dữ liệu tuân theo phân phối Gaussian và phân loại pixel dựa trên xác suất. Phương pháp này đặt nền tảng cho phân loại ảnh viễn thám định lượng nhưng có hạn chế khi dữ liệu không tuân theo phân phối chuẩn \citeen{khatami2016}.
 
 \textbf{Decision Trees và Random Forest:}
 
-Hansen và cộng sự \cite{hansen2013} đã sử dụng thuật toán Decision Trees để phát triển Global Forest Change dataset — bộ dữ liệu mất rừng toàn cầu đầu tiên ở độ phân giải 30m từ chuỗi thời gian Landsat (2000-2012). Công trình này đánh dấu bước tiến quan trọng trong giám sát rừng quy mô lớn, đạt accuracy khoảng 85\%. Random Forest, được giới thiệu bởi Breiman (2001), cải thiện Decision Trees bằng cách kết hợp nhiều cây quyết định và trở thành thuật toán phổ biến nhất trong phân loại ảnh viễn thám. Nguyen và cộng sự \cite{nguyen2020} áp dụng Random Forest với Sentinel-2 đa thời gian để lập bản đồ sử dụng đất tại Đắk Nông, Việt Nam và đạt overall accuracy 91.2\%.
+Hansen và cộng sự \citeen{hansen2013} đã sử dụng thuật toán Decision Trees để phát triển Global Forest Change dataset — bộ dữ liệu mất rừng toàn cầu đầu tiên ở độ phân giải 30m từ chuỗi thời gian Landsat (2000-2012). Công trình này đánh dấu bước tiến quan trọng trong giám sát rừng quy mô lớn, đạt accuracy khoảng 85\%. Random Forest, được giới thiệu bởi Breiman (2001), cải thiện Decision Trees bằng cách kết hợp nhiều cây quyết định và trở thành thuật toán phổ biến nhất trong phân loại ảnh viễn thám. Nguyen và cộng sự \citeen{nguyen2020} áp dụng Random Forest với Sentinel-2 đa thời gian để lập bản đồ sử dụng đất tại Đắk Nông, Việt Nam và đạt overall accuracy 91.2\%.
 
 \textbf{Support Vector Machine (SVM):}
 
@@ -44,21 +44,21 @@ SVM được đề xuất cho phân loại ảnh viễn thám từ đầu nhữn
 
 \textbf{Convolutional Neural Networks (CNN):}
 
-Từ năm 2012, với sự thành công của AlexNet trong ImageNet Competition, học sâu bắt đầu cách mạng hóa computer vision và nhanh chóng được áp dụng vào viễn thám. Zhu và cộng sự \cite{zhu2017} tổng hợp các ứng dụng của deep learning trong viễn thám và chỉ ra tiềm năng to lớn của CNN trong phân loại ảnh vệ tinh. Zhang và cộng sự \cite{zhang2016} giới thiệu các kiến trúc CNN phổ biến (AlexNet, VGGNet, ResNet) và ứng dụng của chúng trong viễn thám. Kussul và cộng sự \cite{kussul2017} áp dụng CNN cho phân loại cây trồng từ Sentinel-2 và đạt accuracy 94.5\%, cao hơn đáng kể so với Random Forest.
+Từ năm 2012, với sự thành công của AlexNet trong ImageNet Competition, học sâu bắt đầu cách mạng hóa computer vision và nhanh chóng được áp dụng vào viễn thám. Zhu và cộng sự \citeen{zhu2017} tổng hợp các ứng dụng của deep learning trong viễn thám và chỉ ra tiềm năng to lớn của CNN trong phân loại ảnh vệ tinh. Zhang và cộng sự \citeen{zhang2016} giới thiệu các kiến trúc CNN phổ biến (AlexNet, VGGNet, ResNet) và ứng dụng của chúng trong viễn thám. Kussul và cộng sự \citeen{kussul2017} áp dụng CNN cho phân loại cây trồng từ Sentinel-2 và đạt accuracy 94.5\%, cao hơn đáng kể so với Random Forest.
 
 \textbf{Kiến trúc U-Net và các biến thể:}
 
-Ronneberger và cộng sự \cite{ronneberger2015} đề xuất kiến trúc U-Net với cấu trúc encoder-decoder, ban đầu cho phân đoạn ảnh y sinh nhưng sau đó được áp dụng rộng rãi trong viễn thám nhờ khả năng phân đoạn ngữ nghĩa pixel-wise hiệu quả. Các biến thể như ResU-Net, Attention U-Net tiếp tục cải tiến hiệu suất cho các bài toán phân đoạn ảnh vệ tinh.
+Ronneberger và cộng sự \citeen{ronneberger2015} đề xuất kiến trúc U-Net với cấu trúc encoder-decoder, ban đầu cho phân đoạn ảnh y sinh nhưng sau đó được áp dụng rộng rãi trong viễn thám nhờ khả năng phân đoạn ngữ nghĩa pixel-wise hiệu quả. Các biến thể như ResU-Net, Attention U-Net tiếp tục cải tiến hiệu suất cho các bài toán phân đoạn ảnh vệ tinh.
 
 \textbf{Ứng dụng CNN trong giám sát rừng:}
 
-Hethcoat và cộng sự \cite{hethcoat2019} áp dụng CNN (kiến trúc ResNet) để phát hiện khai thác gỗ chọn lọc tại Amazon từ dữ liệu Sentinel-1 và Sentinel-2, đạt accuracy 94.3\%. Karra và cộng sự \cite{karra2021} ứng dụng deep learning kết hợp Sentinel-2 để tạo bản đồ sử dụng đất toàn cầu ở độ phân giải 10m.
+Hethcoat và cộng sự \citeen{hethcoat2019} áp dụng CNN (kiến trúc ResNet) để phát hiện khai thác gỗ chọn lọc tại Amazon từ dữ liệu Sentinel-1 và Sentinel-2, đạt accuracy 94.3\%. Karra và cộng sự \citeen{karra2021} ứng dụng deep learning kết hợp Sentinel-2 để tạo bản đồ sử dụng đất toàn cầu ở độ phân giải 10m.
 
 \subsection{Xu hướng tích hợp đa nguồn dữ liệu}
 
 \textbf{Kết hợp SAR và Optical:}
 
-Một xu hướng quan trọng trong giám sát rừng hiện đại là tích hợp dữ liệu radar (SAR) và quang học. Reiche và cộng sự \cite{reiche2018} kết hợp Sentinel-1 (SAR) và Landsat (Optical) để phát hiện mất rừng near-real-time tại rừng nhiệt đới khô và đạt accuracy 93.8\%. Hu và cộng sự \cite{hu2020} kết hợp Sentinel-1 và Sentinel-2 để phân loại rừng ở Madagascar và ghi nhận accuracy tăng từ 87\% (chỉ dùng optical) lên 92\% (kết hợp cả hai).
+Một xu hướng quan trọng trong giám sát rừng hiện đại là tích hợp dữ liệu radar (SAR) và quang học. Reiche và cộng sự \citeen{reiche2018} kết hợp Sentinel-1 (SAR) và Landsat (Optical) để phát hiện mất rừng near-real-time tại rừng nhiệt đới khô và đạt accuracy 93.8\%. Hu và cộng sự \citeen{hu2020} kết hợp Sentinel-1 và Sentinel-2 để phân loại rừng ở Madagascar và ghi nhận accuracy tăng từ 87\% (chỉ dùng optical) lên 92\% (kết hợp cả hai).
 
 \textbf{Ưu điểm của tích hợp đa nguồn:}
 
@@ -66,7 +66,7 @@ Việc kết hợp SAR và Optical mang lại nhiều lợi ích. Dữ liệu SA
 
 \textbf{Nghiên cứu tại Việt Nam:}
 
-Pham và cộng sự \cite{pham2016} đã sử dụng kết hợp ảnh QuickBird, LiDAR và chỉ số địa hình GIS để nhận dạng loài cây bản địa trong cảnh quan phức tạp. Vo và cộng sự \cite{vo2020} đã xây dựng hệ thống giám sát biến động rừng ngập mặn hàng năm tại tỉnh Cà Mau sử dụng chuỗi thời gian Landsat-7 và Landsat-8, áp dụng phương pháp tối ưu hóa thời gian sau phân loại để tạo bản đồ rừng liên tục không có khoảng trống dữ liệu.
+Pham và cộng sự \citeen{pham2016} đã sử dụng kết hợp ảnh QuickBird, LiDAR và chỉ số địa hình GIS để nhận dạng loài cây bản địa trong cảnh quan phức tạp. Vo và cộng sự \citeen{vo2020} đã xây dựng hệ thống giám sát biến động rừng ngập mặn hàng năm tại tỉnh Cà Mau sử dụng chuỗi thời gian Landsat-7 và Landsat-8, áp dụng phương pháp tối ưu hóa thời gian sau phân loại để tạo bản đồ rừng liên tục không có khoảng trống dữ liệu.
 
 \subsection{Tổng hợp và so sánh các phương pháp}
 

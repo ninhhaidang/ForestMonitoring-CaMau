@@ -2,7 +2,7 @@
 
 \subsection{Dự đoán toàn vùng nghiên cứu}
 
-Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn bộ vùng nghiên cứu với khoảng 16.2 triệu pixels hợp lệ. Quy trình dự đoán bao gồm: (1) Tải feature stack 27 channels cho toàn vùng; (2) Trích xuất patch 3×3 cho mỗi pixel hợp lệ; (3) Chuẩn hóa Z-score sử dụng mean/std từ tập training; (4) Forward pass qua mô hình và lấy argmax; (5) Xuất kết quả dưới dạng GeoTIFF.
+Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn bộ vùng nghiên cứu với khoảng 16.2 triệu pixels hợp lệ. Quy trình dự đoán bắt đầu bằng việc tải feature stack 27 channels cho toàn vùng, sau đó trích xuất patch 3×3 cho mỗi pixel hợp lệ. Các patches được chuẩn hóa Z-score sử dụng mean và std từ tập training, rồi thực hiện forward pass qua mô hình và lấy argmax để xác định lớp phân loại. Kết quả cuối cùng được xuất dưới dạng GeoTIFF.
 
 Do kích thước lớn của vùng nghiên cứu, việc dự đoán được thực hiện theo batch (10,000 pixels) với GPU inference và mixed precision (FP16) để tối ưu hóa bộ nhớ và tốc độ.
 

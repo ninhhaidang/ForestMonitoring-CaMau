@@ -2,11 +2,7 @@
 
 \subsection{Cấu hình thực nghiệm}
 
-\textbf{Phần cứng và phần mềm:}
-
-Môi trường thí nghiệm gồm phần cứng như GPU NVIDIA GeForce RTX 4080 (16GB VRAM), bộ nhớ RAM 16GB trở lên và ổ lưu trữ SSD nhằm đảm bảo tốc độ I/O cao. Về phần mềm, hệ thống sử dụng Python 3.8 trở lên cùng PyTorch 2.0+ có hỗ trợ CUDA để huấn luyện mô hình, GDAL 3.4+ cho xử lý dữ liệu không gian và các thư viện khoa học dữ liệu như NumPy, scikit-learn và pandas.
-
-\textbf{Dữ liệu đầu vào:}
+Môi trường thí nghiệm gồm phần cứng như GPU NVIDIA GeForce RTX 4080 (16GB VRAM), bộ nhớ RAM 64GB và ổ lưu trữ SSD nhằm đảm bảo tốc độ I/O cao. Về phần mềm, hệ thống sử dụng Python 3.8 trở lên cùng PyTorch 2.0+ có hỗ trợ CUDA để huấn luyện mô hình, GDAL 3.4+ cho xử lý dữ liệu không gian và các thư viện khoa học dữ liệu như NumPy, scikit-learn và pandas.
 
 Bộ dữ liệu thực địa gồm 2,630 điểm, trong đó phân bố lớp gần như cân bằng: Lớp 0 (Rừng ổn định) 656 điểm (24.94\%), Lớp 1 (Mất rừng) 650 điểm (24.71\%), Lớp 2 (Phi rừng) 664 điểm (25.25\%) và Lớp 3 (Phục hồi rừng) 660 điểm (25.10\%).
 
@@ -34,3 +30,7 @@ Full raster prediction & 14.58 phút & 16,246,850 valid pixels \\
 \hline
 \end{tabular}
 \end{table}
+
+Qua Bảng~\ref{tab:execution_time}, có thể thấy toàn bộ quy trình từ tiền xử lý đến dự đoán hoàn tất trong khoảng 18 phút, cho thấy tính khả thi cao của phương pháp trong các ứng dụng thực tế. Giai đoạn tiền xử lý dữ liệu chỉ mất 2-3 phút nhờ việc tối ưu hóa quy trình trích xuất mảnh (patch extraction) và chuẩn hóa dữ liệu bằng thư viện NumPy với các phép toán vector hóa. Giai đoạn huấn luyện diễn ra rất nhanh, tổng cộng dưới 2 phút cho cả Cross Validation và Final Training, nhờ kiến trúc CNN nhỏ gọn (36,676 tham số) và bộ dữ liệu vừa phải (2,630 mẫu), cho phép thực hiện nhiều thí nghiệm điều chỉnh siêu tham số trong thời gian ngắn.
+
+Giai đoạn dự đoán toàn bộ raster chiếm phần lớn thời gian (14.58 phút cho 16.2 triệu pixel) do phải xử lý tuần tự từng mảnh, với tốc độ xử lý trung bình đạt khoảng 18,600 pixel/giây, tương đương khoảng 1.86 ha/giây với độ phân giải 10m. So với phương pháp phân loại thủ công truyền thống thường cần nhiều ngày đến nhiều tuần, phương pháp đề xuất giảm đáng kể thời gian xử lý trong khi vẫn đảm bảo độ chính xác cao, phù hợp với nhu cầu giám sát biến động rừng định kỳ.

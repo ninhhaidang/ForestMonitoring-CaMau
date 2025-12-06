@@ -2,7 +2,7 @@
 
 \subsection{Nguyên lý viễn thám và các loại dữ liệu vệ tinh}
 
-Viễn thám (Remote Sensing) là khoa học và kỹ thuật thu thập thông tin về một đối tượng hoặc khu vực từ xa, thường thông qua việc ghi nhận bức xạ điện từ phản xạ hoặc phát ra từ bề mặt Trái Đất \cite{lillesand2015}. Nguyên lý cơ bản của viễn thám dựa trên tương tác giữa bức xạ điện từ và các đối tượng trên bề mặt.
+Viễn thám (Remote Sensing) là khoa học và kỹ thuật thu thập thông tin về một đối tượng hoặc khu vực từ xa, thường thông qua việc ghi nhận bức xạ điện từ phản xạ hoặc phát ra từ bề mặt Trái Đất \citeen{lillesand2015}. Nguyên lý cơ bản của viễn thám dựa trên tương tác giữa bức xạ điện từ và các đối tượng trên bề mặt.
 
 \textbf{Quá trình viễn thám bị động (Passive Remote Sensing):}
 
@@ -25,38 +25,11 @@ Viễn thám bị động (như Sentinel-2) cung cấp ảnh quang học đa ph�
 
 \textbf{Radar khẩu độ tổng hợp (SAR):}
 
-SAR là công nghệ viễn thám chủ động đóng vai trò quan trọng trong giám sát rừng nhiệt đới nhờ khả năng quan sát trong mọi điều kiện thời tiết \cite{esa2024s1, reiche2018}. SAR là hệ thống chủ động: anten phát xung sóng điện từ về phía Trái Đất, các sóng này tương tác với bề mặt và tạo hiện tượng phản xạ ngược (backscatter) với cường độ phụ thuộc vào nhiều yếu tố như độ nhám bề mặt, hàm lượng nước (độ ẩm), hằng số điện môi và góc tới. Hệ số Backscatter ($\sigma^0$) thường được biểu diễn theo đơn vị decibel (dB), với giá trị phụ thuộc vào nhiều yếu tố. Về độ nhám bề mặt, bề mặt nhẵn như nước cho $\sigma^0$ thấp, trong khi bề mặt nhám như rừng cho $\sigma^0$ cao. Về hàm lượng nước, độ ẩm làm tăng $\sigma^0$ do hằng số điện môi lớn của nước. Về cấu trúc thực vật, khu vực rừng có cấu trúc phức tạp thường cho backscatter mạnh. SAR có thể phát và thu theo các chế độ phân cực khác nhau: VV (phát V, thu V) nhạy với độ ẩm bề mặt, VH (phát V, thu H) thường nhạy với cấu trúc thực vật (volume scattering).
+SAR là công nghệ viễn thám chủ động đóng vai trò quan trọng trong giám sát rừng nhiệt đới nhờ khả năng quan sát trong mọi điều kiện thời tiết \citeen{esa2024s1, reiche2018}. SAR là hệ thống chủ động: anten phát xung sóng điện từ về phía Trái Đất, các sóng này tương tác với bề mặt và tạo hiện tượng phản xạ ngược (backscatter) với cường độ phụ thuộc vào nhiều yếu tố như độ nhám bề mặt, hàm lượng nước (độ ẩm), hằng số điện môi và góc tới. Hệ số Backscatter ($\sigma^0$) thường được biểu diễn theo đơn vị decibel (dB), với giá trị phụ thuộc vào nhiều yếu tố. Về độ nhám bề mặt, bề mặt nhẵn như nước cho $\sigma^0$ thấp, trong khi bề mặt nhám như rừng cho $\sigma^0$ cao. Về hàm lượng nước, độ ẩm làm tăng $\sigma^0$ do hằng số điện môi lớn của nước. Về cấu trúc thực vật, khu vực rừng có cấu trúc phức tạp thường cho backscatter mạnh. SAR có thể phát và thu theo các chế độ phân cực khác nhau: VV (phát V, thu V) nhạy với độ ẩm bề mặt, VH (phát V, thu H) thường nhạy với cấu trúc thực vật (volume scattering).
 
 \textbf{Ảnh quang học đa phổ (Optical Multispectral):}
 
-Ảnh quang học từ các vệ tinh như Sentinel-2 là nguồn dữ liệu quan trọng cho phân loại lớp phủ đất và giám sát thực vật \cite{esa2024s2, khatami2016}.
-
-\textbf{Dải phổ điện từ:}
-
-Ảnh quang học ghi nhận bức xạ phản xạ từ bề mặt Trái Đất ở các dải phổ khác nhau. Dải nhìn thấy (VIS) có bước sóng 400–700 nm, bao gồm Blue (450–520 nm), Green (520–600 nm) và Red (630–690 nm). Dải cận hồng ngoại (NIR) có bước sóng 700–1400 nm, với đặc trưng phản xạ cao ở thực vật xanh do chlorophyll. Dải hồng ngoại sóng ngắn (SWIR) có bước sóng 1400–3000 nm, nhạy với độ ẩm của thực vật và đất.
-
-\textbf{Chữ ký phổ (Spectral Signature):}
-
-Mỗi loại đối tượng có chữ ký phổ đặc trưng - mẫu phản xạ qua các dải phổ khác nhau. Thực vật xanh có phản xạ thấp ở dải Red (hấp thụ bởi chlorophyll) và phản xạ cao ở dải NIR. Đất trống có phản xạ trung bình và tăng dần theo bước sóng. Nước có phản xạ thấp ở hầu hết các dải, đặc biệt là NIR và SWIR.
-
-\begin{table}[H]
-\centering
-\caption{Các dải phổ Sentinel-2 sử dụng trong nghiên cứu}
-\label{tab:s2_bands}
-\begin{tabular}{|c|l|c|c|l|}
-\hline
-\textbf{Band} & \textbf{Tên} & \textbf{Bước sóng (nm)} & \textbf{Độ phân giải (m)} & \textbf{Ứng dụng} \\
-\hline
-B4 & Red & 665 & 10 & Chlorophyll absorption \\
-\hline
-B8 & NIR & 842 & 10 & Biomass, NDVI \\
-\hline
-B11 & SWIR1 & 1610 & 20 & Độ ẩm, NDMI \\
-\hline
-B12 & SWIR2 & 2190 & 20 & NBR \\
-\hline
-\end{tabular}
-\end{table}
+Ảnh quang học từ các vệ tinh như Sentinel-2 là nguồn dữ liệu quan trọng cho phân loại lớp phủ đất và giám sát thực vật \citeen{esa2024s2, khatami2016}. Cảm biến quang học ghi nhận bức xạ phản xạ từ bề mặt Trái Đất ở nhiều dải phổ khác nhau: dải nhìn thấy (VIS, 400–700 nm), dải cận hồng ngoại (NIR, 700–1400 nm) và dải hồng ngoại sóng ngắn (SWIR, 1400–3000 nm). Mỗi loại đối tượng có chữ ký phổ (spectral signature) đặc trưng --- thực vật xanh có phản xạ thấp ở dải đỏ và cao ở dải NIR, đất trống có phản xạ tăng dần theo bước sóng, còn nước có phản xạ thấp ở hầu hết các dải. Sự khác biệt này cho phép phân biệt các loại lớp phủ đất từ ảnh vệ tinh.
 
 \subsection{Các chỉ số thực vật viễn thám}
 
@@ -64,33 +37,33 @@ Các chỉ số thực vật (Vegetation Indices) là các công thức toán h�
 
 \textbf{NDVI (Normalized Difference Vegetation Index):}
 
-NDVI là chỉ số được sử dụng phổ biến nhất để đánh giá sức khỏe và mật độ thực vật \cite{rouse1974}:
+NDVI là chỉ số được sử dụng phổ biến nhất để đánh giá sức khỏe và mật độ thực vật \citeen{rouse1974}:
 \begin{equation}
 NDVI = \frac{NIR - Red}{NIR + Red} = \frac{B8 - B4}{B8 + B4}
 \label{eq:ndvi}
 \end{equation}
 
-\textbf{Thành phần:} $NIR$ (B8) là giá trị phản xạ ở dải cận hồng ngoại, $Red$ (B4) là giá trị phản xạ ở dải đỏ. \textbf{Ý nghĩa:} Công thức khai thác sự khác biệt giữa phản xạ cao ở NIR và phản xạ thấp ở Red của thực vật xanh --- chlorophyll hấp thụ mạnh ánh sáng đỏ để quang hợp nhưng phản xạ mạnh hồng ngoại gần. \textbf{Mục đích:} Định lượng mật độ và sức khỏe thực vật; giá trị NDVI cao (0.3--0.8) chỉ ra thực vật xanh khỏe mạnh, giá trị thấp (0.1--0.2) là đất trống, giá trị âm là nước.
+Chỉ số này sử dụng giá trị phản xạ ở dải cận hồng ngoại $NIR$ (B8) và dải đỏ $Red$ (B4), khai thác sự khác biệt giữa phản xạ cao ở NIR và phản xạ thấp ở Red của thực vật xanh để định lượng mật độ và sức khỏe thực vật. Giá trị NDVI cao (0.3--0.8) chỉ ra thực vật xanh khỏe mạnh, giá trị thấp (0.1--0.2) là đất trống, còn giá trị âm là nước.
 
 \textbf{NBR (Normalized Burn Ratio):}
 
-NBR được thiết kế ban đầu để phát hiện khu vực cháy rừng, nhưng cũng hiệu quả trong phát hiện mất rừng \cite{key2006}:
+NBR được thiết kế ban đầu để phát hiện khu vực cháy rừng, nhưng cũng hiệu quả trong phát hiện mất rừng \citeen{key2006}:
 \begin{equation}
 NBR = \frac{NIR - SWIR2}{NIR + SWIR2} = \frac{B8 - B12}{B8 + B12}
 \label{eq:nbr}
 \end{equation}
 
-\textbf{Thành phần:} $NIR$ (B8) là giá trị phản xạ ở dải cận hồng ngoại, $SWIR2$ (B12) là giá trị phản xạ ở dải hồng ngoại sóng ngắn 2 (2190 nm). \textbf{Ý nghĩa:} Kênh SWIR nhạy với độ ẩm và cấu trúc thực vật --- khi rừng bị phá hoặc cháy, NIR giảm (do mất lá xanh) trong khi SWIR tăng (do bề mặt khô hơn). \textbf{Mục đích:} Phát hiện khu vực cháy rừng và mất rừng; NBR cao (0.3--0.8) chỉ ra rừng khỏe mạnh, NBR thấp hoặc âm chỉ ra khu vực bị tác động.
+Chỉ số này sử dụng giá trị phản xạ ở dải cận hồng ngoại $NIR$ (B8) và dải hồng ngoại sóng ngắn 2 $SWIR2$ (B12, 2190 nm). Kênh SWIR nhạy với độ ẩm và cấu trúc thực vật --- khi rừng bị phá hoặc cháy, NIR giảm do mất lá xanh trong khi SWIR tăng do bề mặt khô hơn. NBR cao (0.3--0.8) chỉ ra rừng khỏe mạnh, NBR thấp hoặc âm chỉ ra khu vực bị tác động.
 
 \textbf{NDMI (Normalized Difference Moisture Index):}
 
-NDMI đo lường hàm lượng nước trong tán lá thực vật, là chỉ số quan trọng để phát hiện stress thực vật \cite{gao1996}:
+NDMI đo lường hàm lượng nước trong tán lá thực vật, là chỉ số quan trọng để phát hiện stress thực vật \citeen{gao1996}:
 \begin{equation}
 NDMI = \frac{NIR - SWIR1}{NIR + SWIR1} = \frac{B8 - B11}{B8 + B11}
 \label{eq:ndmi}
 \end{equation}
 
-\textbf{Thành phần:} $NIR$ (B8) là giá trị phản xạ ở dải cận hồng ngoại, $SWIR1$ (B11) là giá trị phản xạ ở dải hồng ngoại sóng ngắn 1 (1610 nm). \textbf{Ý nghĩa:} Kênh SWIR1 nhạy với hàm lượng nước trong lá --- nước hấp thụ mạnh ở dải này, nên thực vật có nhiều nước sẽ cho phản xạ SWIR thấp. \textbf{Mục đích:} Đánh giá độ ẩm tán lá và phát hiện sớm stress thực vật; NDMI dương (0.2--0.6) chỉ ra thực vật có hàm lượng nước cao, NDMI thấp hoặc âm chỉ ra thực vật bị stress hoặc khô. Đặc biệt, NDMI có thể phát hiện sự thay đổi độ ẩm trước khi NDVI phản ánh sự suy giảm sức khỏe thực vật.
+Chỉ số này sử dụng giá trị phản xạ ở dải cận hồng ngoại $NIR$ (B8) và dải hồng ngoại sóng ngắn 1 $SWIR1$ (B11, 1610 nm). Kênh SWIR1 nhạy với hàm lượng nước trong lá --- nước hấp thụ mạnh ở dải này, nên thực vật có nhiều nước sẽ cho phản xạ SWIR thấp. NDMI dương (0.2--0.6) chỉ ra thực vật có hàm lượng nước cao, NDMI thấp hoặc âm chỉ ra thực vật bị stress hoặc khô. Đặc biệt, NDMI có thể phát hiện sự thay đổi độ ẩm trước khi NDVI phản ánh sự suy giảm sức khỏe thực vật.
 
 \begin{table}[H]
 \centering
@@ -111,7 +84,7 @@ NDMI & (B8-B11)/(B8+B11) & [-1, 1] & Độ ẩm tán lá \\
 
 \subsection{Phát hiện biến động rừng}
 
-Phát hiện biến động rừng (Forest Change Detection) là quá trình xác định sự thay đổi về diện tích, cấu trúc hoặc trạng thái của rừng giữa hai hoặc nhiều thời điểm khác nhau \cite{huang2021}. Phương pháp này dựa trên việc so sánh các đặc trưng viễn thám thu được từ các thời điểm khác nhau.
+Phát hiện biến động rừng (Forest Change Detection) là quá trình xác định sự thay đổi về diện tích, cấu trúc hoặc trạng thái của rừng giữa hai hoặc nhiều thời điểm khác nhau \citeen{huang2021}. Phương pháp này dựa trên việc so sánh các đặc trưng viễn thám thu được từ các thời điểm khác nhau.
 
 Phương pháp phát hiện biến động dựa trên việc so sánh các đặc trưng giữa hai thời điểm, tính toán sự chênh lệch (delta) giữa ``after features'' và ``before features''. Temporal features bao gồm các ``before features'' thể hiện trạng thái rừng tại thời điểm $t_1$, các ``after features'' thể hiện trạng thái rừng tại thời điểm $t_2$, và các ``delta features'' biểu diễn biến đổi giữa hai thời điểm.
 
