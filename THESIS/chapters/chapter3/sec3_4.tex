@@ -9,13 +9,13 @@ Với 36,676 tham số, mô hình có độ phức tạp vừa phải, phù hợ
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{CNN-architecture.png}
-\caption{Kiến trúc mô hình CNN phân loại biến động rừng}
+\caption{Kiến trúc mô hình mạng nơ-ron tích chập (CNN) được sử dụng trong nghiên cứu}
 \label{fig:cnn_architecture}
 \end{figure}
 
 \subsection{Chiến lược điều chuẩn và huấn luyện}
 
-Với bộ dữ liệu có quy mô nhỏ, nghiên cứu kết hợp ba kỹ thuật điều chuẩn: (1) \textbf{Batch Normalization} \cite{ioffe2015} sau mỗi lớp tích chập và fully-connected; (2) \textbf{Dropout 70\%} \cite{srivastava2014} — tỷ lệ cao do tỷ lệ mẫu/tham số thấp (~72:1); (3) \textbf{Weight Decay} $\lambda = 10^{-3}$ thông qua optimizer AdamW.
+Với bộ dữ liệu có quy mô nhỏ, nghiên cứu kết hợp ba kỹ thuật điều chuẩn: (1) \textbf{Chuẩn hóa theo lô} \cite{ioffe2015} sau mỗi lớp tích chập và fully-connected; (2) \textbf{Dropout 70\%} \cite{srivastava2014} — tỷ lệ cao do tỷ lệ mẫu/tham số thấp (~72:1); (3) \textbf{Phân rã trọng số} $\lambda = 10^{-3}$ thông qua optimizer AdamW.
 
 \begin{table}[H]
 \centering
@@ -31,16 +31,16 @@ batch\_size & 64 & Cân bằng giữa độ ổn định và tốc độ \\
 \hline
 learning\_rate & 0.001 & Learning rate khởi tạo cho AdamW \\
 \hline
-weight\_decay & $10^{-3}$ & Hệ số L2 regularization \\
+weight\_decay & $10^{-3}$ & Hệ số điều chuẩn L2 \\
 \hline
-dropout\_rate & 0.7 & Dropout cao để regularization mạnh \\
+dropout\_rate & 0.7 & Dropout cao để điều chuẩn mạnh \\
 \hline
 early\_stopping & 15 epochs & Patience trước khi dừng sớm \\
 \hline
 \end{tabular}
 \end{table}
 
-Nghiên cứu sử dụng AdamW \cite{loshchilov2019} — biến thể cải tiến của Adam với decoupled weight decay. ReduceLROnPlateau scheduler tự động giảm learning rate (factor=0.5, patience=10) khi validation loss không cải thiện.
+Nghiên cứu sử dụng AdamW \cite{loshchilov2019} — biến thể cải tiến của Adam với phân rã trọng số tách rời. ReduceLROnPlateau scheduler tự động giảm learning rate (factor=0.5, patience=10) khi validation loss không cải thiện.
 
 \subsection{Quy trình huấn luyện}
 

@@ -8,7 +8,7 @@
 
 \textbf{Về xây dựng bộ dữ liệu huấn luyện:} Nhóm nghiên cứu đã thu thập, tiền xử lý hai kỳ dữ liệu Sentinel-1/2 (01/2024 và 02/2025) và tạo feature stack 27 chiều (kết hợp SAR và Optical) cùng với việc thu thập 2,630 điểm thực địa cho 4 lớp phân loại với phân bố cân bằng.
 
-\textbf{Về thiết kế kiến trúc CNN:} Kiến trúc CNN nhẹ với khoảng 36,676 tham số được thiết kế và áp dụng các kỹ thuật regularization hiệu quả (BatchNorm, Dropout 0.7, Weight Decay), phù hợp cho bộ dữ liệu nhỏ khoảng 2,600 mẫu.
+\textbf{Về thiết kế kiến trúc CNN:} Kiến trúc CNN nhẹ với khoảng 36,676 tham số được thiết kế và áp dụng các kỹ thuật điều chuẩn hiệu quả (chuẩn hóa theo lô, Dropout 0.7, phân rã trọng số), phù hợp cho bộ dữ liệu nhỏ khoảng 2,600 mẫu.
 
 \textbf{Về đánh giá khoa học:} 5-Fold Stratified Cross Validation cho kết quả CV accuracy 98.15\% ± 0.28\% (mô hình ổn định), test accuracy 98.86\% và ROC-AUC 99.98\% (khả năng phân biệt xuất sắc).
 
@@ -25,7 +25,7 @@
 
 \section*{Đóng góp khoa học}
 
-\textbf{Về mặt phương pháp:} Đồ án đã áp dụng 5-Fold Stratified Cross Validation nhằm đánh giá độ ổn định của mô hình, chứng minh hiệu quả sử dụng patches 3×3 cho bài toán phát hiện mất rừng, và tiến hành các thí nghiệm ablation toàn diện để khảo sát ảnh hưởng của kích thước patch, nguồn dữ liệu và kỹ thuật regularization.
+\textbf{Về mặt phương pháp:} Đồ án đã áp dụng 5-Fold Stratified Cross Validation nhằm đánh giá độ ổn định của mô hình, chứng minh hiệu quả sử dụng patches 3×3 cho bài toán phát hiện mất rừng, và tiến hành các thí nghiệm ablation toàn diện để khảo sát ảnh hưởng của kích thước patch, nguồn dữ liệu và kỹ thuật điều chuẩn.
 
 \textbf{Về mặt ứng dụng:} Đồ án là một trong những nghiên cứu đầu tiên áp dụng CNN cho phát hiện biến động rừng tại Cà Mau, chứng minh hiệu quả trong việc kết hợp dữ liệu SAR (Sentinel-1) và Optical (Sentinel-2), đồng thời đóng góp một bộ dữ liệu thực địa chất lượng cao gồm 2,630 điểm với 4 lớp phân loại.
 
