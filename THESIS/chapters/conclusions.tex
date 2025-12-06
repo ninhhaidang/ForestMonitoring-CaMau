@@ -14,6 +14,15 @@
 
 \textbf{Về ứng dụng thực tế:} Mô hình đã được áp dụng để phân loại toàn vùng quy hoạch lâm nghiệp tỉnh Cà Mau mới (170,179 ha ranh giới, 162,469 ha phân loại thực tế), phát hiện 7,282 ha mất rừng (4.48\%) và 4,941 ha phục hồi rừng (3.04\%) trong giai đoạn 01/2024 - 02/2025.
 
+\textbf{Về sản phẩm ứng dụng web:} Để trực quan hóa kết quả nghiên cứu, đồ án đã xây dựng một ứng dụng web trên nền tảng Google Earth Engine Apps. Ứng dụng hiển thị bản đồ kết quả phân loại biến động rừng với 4 lớp (rừng ổn định, mất rừng, phi rừng, phục hồi rừng), các layer ảnh vệ tinh Sentinel-1/2 ở hai thời kỳ (01/2024 và 02/2025), cùng với ranh giới khu vực nghiên cứu và các điểm dữ liệu mẫu. Ứng dụng có thể truy cập công khai tại địa chỉ: \url{https://ee-bonglantrungmuoi.projects.earthengine.app/view/giam-sat-bien-dong-rung-ca-mau}. Giao diện ứng dụng được minh họa trong Hình \ref{fig:ee-app}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{chapter4/ee-app.png}
+    \caption{Giao diện ứng dụng web Google Earth Engine hiển thị kết quả phân loại biến động rừng tỉnh Cà Mau}
+    \label{fig:ee-app}
+\end{figure}
+
 \section*{Đóng góp khoa học}
 
 \textbf{Về mặt phương pháp:} Đồ án đã áp dụng 5-Fold Stratified Cross Validation nhằm đánh giá độ ổn định của mô hình, chứng minh hiệu quả sử dụng patches 3×3 cho bài toán phát hiện mất rừng, và tiến hành các thí nghiệm ablation toàn diện để khảo sát ảnh hưởng của kích thước patch, nguồn dữ liệu và kỹ thuật regularization.

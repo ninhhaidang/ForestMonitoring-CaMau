@@ -86,73 +86,19 @@ Sentinel-1 (6 features):
 
 ## Kiến trúc CNN
 
-```mermaid
-flowchart LR
-    subgraph INPUT["INPUT LAYER"]
-        I1["Shape: (batch, 3, 3, 27)<br/>3×3 spatial patch<br/>27 feature channels"]
-    end
+![Kiến trúc CNN](THESIS/img/chapter3/CNN-architecture.png)
 
-    subgraph PERMUTE["PERMUTE"]
-        P1["Output: (batch, 27, 3, 3)<br/>Convert to PyTorch format"]
-    end
+### Tóm tắt kiến trúc
 
-    subgraph CONV1["CONVOLUTIONAL BLOCK 1"]
-        direction TB
-        C1_1["Conv2D: 27→64, kernel=3×3<br/>padding=1, bias=False<br/>Params: 15,552"]
-        C1_2["BatchNorm2d(64)<br/>Params: 128"]
-        C1_3["ReLU"]
-        C1_4["Dropout2d(p=0.7)<br/>Output: (batch, 64, 3, 3)"]
-        C1_1 --> C1_2 --> C1_3 --> C1_4
-    end
-
-    subgraph CONV2["CONVOLUTIONAL BLOCK 2"]
-        direction TB
-        C2_1["Conv2D: 64→32, kernel=3×3<br/>padding=1, bias=False<br/>Params: 18,432"]
-        C2_2["BatchNorm2d(32)<br/>Params: 64"]
-        C2_3["ReLU"]
-        C2_4["Dropout2d(p=0.7)<br/>Output: (batch, 32, 3, 3)"]
-        C2_1 --> C2_2 --> C2_3 --> C2_4
-    end
-
-    subgraph GAP["GLOBAL AVERAGE POOLING"]
-        G1["AdaptiveAvgPool2d(1,1)<br/>(batch, 32, 3, 3) → (batch, 32)"]
-    end
-
-    subgraph FC["FULLY CONNECTED BLOCK"]
-        direction TB
-        F1["Linear: 32→64<br/>Params: 2,112"]
-        F2["BatchNorm1d(64)<br/>Params: 128"]
-        F3["ReLU"]
-        F4["Dropout(p=0.7)<br/>Output: (batch, 64)"]
-        F1 --> F2 --> F3 --> F4
-    end
-
-    subgraph OUTPUT["OUTPUT LAYER"]
-        O1["Linear: 64→4<br/>Params: 260"]
-        O2["4 Classes:<br/>0: Rừng ổn định<br/>1: Mất rừng<br/>2: Phi rừng<br/>3: Phục hồi rừng"]
-        O1 --> O2
-    end
-
-    subgraph SUMMARY["TOTAL: 36,676 PARAMS"]
-        S1["Conv Block 1: 15,680<br/>Conv Block 2: 18,496<br/>FC Block: 2,240<br/>Output: 260"]
-    end
-
-    INPUT --> PERMUTE --> CONV1 --> CONV2 --> GAP --> FC --> OUTPUT
-
-    classDef inputStyle fill:#E3F2FD,stroke:#1565C0,stroke-width:2px
-    classDef convStyle fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
-    classDef poolStyle fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px
-    classDef fcStyle fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px
-    classDef outputStyle fill:#FCE4EC,stroke:#C2185B,stroke-width:2px
-    classDef summaryStyle fill:#ECEFF1,stroke:#455A64,stroke-width:2px
-
-    class INPUT,PERMUTE inputStyle
-    class CONV1,CONV2 convStyle
-    class GAP poolStyle
-    class FC fcStyle
-    class OUTPUT outputStyle
-    class SUMMARY summaryStyle
-```
+| Layer | Operation | Input → Output | Parameters |
+|-------|-----------|----------------|------------|
+| **Input** | Permute | (B, 3, 3, 27) → (B, 27, 3, 3) | 0 |
+| **Conv Block 1** | Conv2d + BN + ReLU + Dropout(0.7) | (B, 27, 3, 3) → (B, 64, 3, 3) | 15,680 |
+| **Conv Block 2** | Conv2d + BN + ReLU + Dropout(0.7) | (B, 64, 3, 3) → (B, 32, 3, 3) | 18,496 |
+| **Global Avg Pool** | AdaptiveAvgPool2d(1,1) + Flatten | (B, 32, 3, 3) → (B, 32) | 0 |
+| **FC Block** | Linear + BN + ReLU + Dropout(0.7) | (B, 32) → (B, 64) | 2,240 |
+| **Output** | Linear | (B, 64) → (B, 4) | 260 |
+| | | **Total** | **36,676** |
 
 ### Đặc điểm thiết kế
 
@@ -205,105 +151,7 @@ flowchart LR
 
 ## Quy trình xử lý dữ liệu (Methodology Flowchart)
 
-```mermaid
-flowchart TD
-    %% ===== GIAI ĐOẠN 1: THU THẬP & TIỀN XỬ LÝ DỮ LIỆU =====
-    subgraph P1["1. THU THẬP & TIỀN XỬ LÝ DỮ LIỆU"]
-        direction LR
-        A1[("GEE")]
-        A2[("GFD Ltd.")]
-        A3["Ranh giới lâm nghiệp<br/>tỉnh Cà Mau"]
-        A4["Lọc mây<br/>Tính các chỉ số<br/>Cắt theo ranh giới"]
-        A5[/"Sentinel-1 (T₁, T₂):<br/>2 phân cực"/]
-        A6[/"Sentinel-2 (T₁, T₂):<br/>4 băng tần + 3 chỉ số"/]
-        A7[/"2630 điểm<br/>dữ liệu mẫu<br/>(4 lớp)"/]
-
-        A1 --> A4
-        A2 --> A3
-        A3 --> A4
-        A4 --> A5
-        A4 --> A6
-        A2 --> A7
-    end
-
-    %% ===== GIAI ĐOẠN 2: TRÍCH XUẤT ĐẶC TRƯNG =====
-    subgraph P2["2. TRÍCH XUẤT ĐẶC TRƯNG"]
-        direction TB
-        B1["S2: Trước + Sau + Δ<br/>7 × 3 = 21 kênh"]
-        B2["S1: Trước + Sau + Δ<br/>2 × 3 = 6 kênh"]
-        B3["Hiệu thời gian<br/>Δ = Sau − Trước"]
-        B4[("Chồng đặc trưng<br/>21 + 6 = 27 kênh")]
-
-        B1 --> B3
-        B2 --> B3
-        B3 --> B4
-    end
-
-    %% ===== GIAI ĐOẠN 3: CHUẨN BỊ MẪU =====
-    subgraph P3["3. CHUẨN BỊ MẪU"]
-        direction TB
-        C1["Chuyển tọa độ<br/>Địa lý → Pixel (hàng, cột)"]
-        C2["Trích mảnh 3×3<br/>tại vị trí mẫu"]
-        C3["Tính thống kê toàn cục<br/>từ Huấn luyện+Kiểm chứng 80%"]
-        C4["Chuẩn hóa Z-score<br/>μ_hl, σ_hl"]
-        C5[("Tập dữ liệu<br/>N × 3 × 3 × 27")]
-
-        C1 --> C2 --> C3 --> C4 --> C5
-    end
-
-    %% ===== GIAI ĐOẠN 4: HUẤN LUYỆN MÔ HÌNH =====
-    subgraph P4["4. HUẤN LUYỆN MÔ HÌNH"]
-        direction TB
-        D1["Phân chia phân tầng"]
-        D2[/"Huấn luyện+Kiểm chứng 80%<br/>(~2.104 mẫu)"/]
-        D3[/"Kiểm tra 20%<br/>(~526 mẫu)"/]
-        D4["Kiểm chứng chéo 5 lần"]
-        D5["Tính số epochs<br/>tối ưu"]
-        D6["Huấn luyện cuối<br/>100% của 80%"]
-        D7["Đánh giá<br/>trên tập kiểm tra 20%"]
-        D8[("Mô hình CNN<br/>.pth")]
-
-        D1 --> D2 & D3
-        D2 --> D4
-        D4 --> D5
-        D5 --> D6
-        D6 --> D7
-        D3 --> D7
-        D7 --> D8
-    end
-
-    %% ===== GIAI ĐOẠN 5: DỰ ĐOÁN TOÀN VÙNG =====
-    subgraph P5["5. DỰ ĐOÁN TOÀN VÙNG"]
-        direction TB
-        E1["Dự đoán theo lô"]
-        E2[("Bản đồ phân loại<br/>4 lớp GeoTIFF")]
-
-        E1 --> E2
-    end
-
-    %% ===== LUỒNG CHÍNH - NỐI CÁC NODE GIỮA CÁC PHASE =====
-    A5 --> B2
-    A6 --> B1
-    A7 --> C1
-    B4 --> C2
-    C5 --> D1
-    D8 --> E1
-    B4 --> E1
-    C5 --> E1
-
-    %% ===== ĐỊNH DẠNG =====
-    classDef phase1 fill:#E3F2FD,stroke:#1565C0,stroke-width:2px
-    classDef phase2 fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
-    classDef phase3 fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px
-    classDef phase4 fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px
-    classDef phase5 fill:#FCE4EC,stroke:#C2185B,stroke-width:2px
-
-    class P1 phase1
-    class P2 phase2
-    class P3 phase3
-    class P4 phase4
-    class P5 phase5
-```
+![Quy trình xử lý dữ liệu](THESIS/img/chapter3/flowchart.png)
 
 ### Chi tiết phương pháp nghiên cứu
 
