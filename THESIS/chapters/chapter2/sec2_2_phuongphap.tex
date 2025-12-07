@@ -14,9 +14,9 @@ Phần này trình bày phương pháp nghiên cứu và quy trình được min
 
 \subsubsection{Xây dựng feature stack}
 
-Việc kết hợp dữ liệu SAR và quang học (data fusion) đã được chứng minh là hiệu quả trong nhiều nghiên cứu phân loại lớp phủ đất \citeen{ienco2019, hu2020}. Cách tiếp cận này tận dụng ưu điểm bổ sung của hai nguồn dữ liệu: SAR cung cấp thông tin về cấu trúc và độ ẩm bề mặt, trong khi quang học cung cấp thông tin về đặc tính quang phổ của thực vật.
+Việc kết hợp dữ liệu ra-đa khẩu độ tổng hợp và quang học đã được chứng minh là hiệu quả trong nhiều nghiên cứu phân loại lớp phủ đất \citeen{ienco2019, hu2020}. Cách tiếp cận này tận dụng ưu điểm bổ sung của hai nguồn dữ liệu: ra-đa khẩu độ tổng hợp cung cấp thông tin về cấu trúc và độ ẩm bề mặt, trong khi quang học cung cấp thông tin về đặc tính quang phổ của thực vật.
 
-Tổng cộng 27 features được xây dựng từ hai nguồn dữ liệu. \textbf{Sentinel-2} đóng góp 21 features, bao gồm 7 bands/chỉ số (B4, B8, B11, B12, NDVI, NBR, NDMI) cho kỳ trước, 7 bands/chỉ số tương ứng cho kỳ sau, và 7 giá trị delta (hiệu số giữa kỳ sau và kỳ trước). \textbf{Sentinel-1} đóng góp 6 features, bao gồm 2 bands (VV, VH) cho kỳ trước, 2 bands tương ứng cho kỳ sau, và 2 giá trị delta.
+Tổng cộng 27 đặc trưng được xây dựng từ hai nguồn dữ liệu. \textbf{Sentinel-2} đóng góp 21 đặc trưng, bao gồm 7 bands/chỉ số (B4, B8, B11, B12, NDVI, NBR, NDMI) cho kỳ trước, 7 bands/chỉ số tương ứng cho kỳ sau, và 7 giá trị delta (hiệu số giữa kỳ sau và kỳ trước). \textbf{Sentinel-1} đóng góp 6 đặc trưng, bao gồm 2 bands (VV, VH) cho kỳ trước, 2 bands tương ứng cho kỳ sau, và 2 giá trị delta.
 
 \begin{table}[H]
 \centering
@@ -59,7 +59,7 @@ x_{normalized} = \frac{x - \mu}{\sigma}
 
 trong đó $x$ là giá trị gốc, $\mu$ là giá trị trung bình và $\sigma$ là độ lệch chuẩn.
 
-Để đảm bảo tính khoa học và tránh hiện tượng rò rỉ dữ liệu, các tham số chuẩn hóa ($\mu$ và $\sigma$) được tính toán chỉ trên tập huấn luyện theo quy trình bốn bước. Đầu tiên, stratified split được thực hiện để tách 20\% dữ liệu làm tập test cố định trước khi tính toán bất kỳ thống kê nào. Tiếp theo, mean và std được tính cho từng feature trên tập training. Sau đó, các tham số đã tính được sử dụng để chuẩn hóa cả tập training, validation và test. Cuối cùng, các tham số được lưu lại để áp dụng cho dữ liệu mới khi dự đoán.
+Để đảm bảo tính khoa học và khách quan trong đánh giá mô hình, các tham số chuẩn hóa ($\mu$ và $\sigma$) được tính toán chỉ trên tập huấn luyện theo quy trình bốn bước. Đầu tiên, stratified split được thực hiện để tách 20\% dữ liệu làm tập test cố định trước khi tính toán bất kỳ thống kê nào. Tiếp theo, mean và std được tính cho từng feature trên tập training. Sau đó, các tham số đã tính được sử dụng để chuẩn hóa cả tập training, validation và test. Cuối cùng, các tham số được lưu lại để áp dụng cho dữ liệu mới khi dự đoán.
 
 \subsubsection{Phân chia dữ liệu}
 

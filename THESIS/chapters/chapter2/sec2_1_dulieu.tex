@@ -31,11 +31,7 @@ Forest Boundary & Vector & - & - & Shapefile \\
 
 Toàn bộ dữ liệu ảnh vệ tinh được thu thập và xử lý trên nền tảng Google Earth Engine (GEE) — một hệ thống điện toán đám mây cho phép truy cập và xử lý khối lượng lớn dữ liệu viễn thám. Việc sử dụng GEE mang lại nhiều ưu điểm: truy cập trực tiếp kho dữ liệu Sentinel đã được tiền xử lý, khả năng xử lý song song trên hạ tầng đám mây, và đảm bảo tính nhất quán trong quy trình xử lý.
 
-\textbf{Xử lý dữ liệu Sentinel-2:}
-
 Dữ liệu Sentinel-2 được truy xuất từ bộ sưu tập \texttt{COPERNICUS/S2\_SR\_HARMONIZED} — sản phẩm Surface Reflectance Level-2A đã được hiệu chỉnh khí quyển và đồng nhất hóa giữa các cảm biến Sentinel-2A và 2B. Quy trình xử lý bắt đầu bằng việc lọc theo không gian và thời gian để chọn các cảnh phủ khu vực nghiên cứu trong ngày chỉ định, sau đó loại bỏ mây sử dụng bộ sưu tập \texttt{S2\_CLOUD\_PROBABILITY} với ngưỡng xác suất 50\%. Tiếp theo, 4 bands cần thiết (B4-Red, B8-NIR, B11-SWIR1, B12-SWIR2) được trích xuất, chuyển đổi sang giá trị phản xạ và tính toán 3 chỉ số thực vật NDVI, NBR, NDMI. Cuối cùng, các tiles được mosaic để tạo ảnh liền mạch phủ toàn bộ khu vực nghiên cứu.
-
-\textbf{Xử lý dữ liệu Sentinel-1:}
 
 Dữ liệu Sentinel-1 được truy xuất từ bộ sưu tập \texttt{COPERNICUS/S1\_GRD} — sản phẩm Ground Range Detected đã được tiền xử lý bởi ESA bao gồm: hiệu chỉnh quỹ đạo, loại bỏ nhiễu biên và nhiễu nhiệt, hiệu chỉnh bức xạ và hiệu chỉnh địa hình sử dụng DEM SRTM. Quy trình xử lý bổ sung bao gồm: lọc theo thời gian (±7 ngày so với Sentinel-2), chọn chế độ Interferometric Wide (IW) với quỹ đạo đi xuống, và trích xuất hai bands VV và VH (đơn vị dB).
 
@@ -88,7 +84,7 @@ Sau khi xử lý, dữ liệu được xuất ra định dạng GeoTIFF với đ
     \includegraphics[width=\textwidth]{chapter3/T1-VH.png}
     \caption{VH (SAR)}
 \end{subfigure}
-\caption{Các bands quang học, chỉ số thực vật và dữ liệu SAR kỳ trước (T1 - 01/2024)}
+\caption{Các băng tần quang học, chỉ số thực vật và dữ liệu ra-đa kỳ trước (T1 - 01/2024)}
 \label{fig:features_t1}
 \end{figure}
 
@@ -139,6 +135,6 @@ Sau khi xử lý, dữ liệu được xuất ra định dạng GeoTIFF với đ
     \includegraphics[width=\textwidth]{chapter3/T2-VH.png}
     \caption{VH (SAR)}
 \end{subfigure}
-\caption{Các bands quang học, chỉ số thực vật và dữ liệu SAR kỳ sau (T2 - 02/2025)}
+\caption{Các băng tần quang học, chỉ số thực vật và dữ liệu ra-đa kỳ sau (T2 - 02/2025)}
 \label{fig:features_t2}
 \end{figure}

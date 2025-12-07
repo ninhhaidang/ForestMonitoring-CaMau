@@ -190,13 +190,18 @@
 \renewcommand{\cftchappresnum}{Chương }
 \AtBeginDocument{\addtolength\cftchapnumwidth{\widthof{\bfseries Chương }}}
 
+% Thêm tiền tố "Hình" vào danh mục hình ảnh
+\renewcommand{\cftfigpresnum}{Hình }
+\setlength{\cftfignumwidth}{4.5em}
+
+% Thêm tiền tố "Bảng" vào danh mục bảng
+\renewcommand{\cfttabpresnum}{Bảng }
+\setlength{\cfttabnumwidth}{4.5em}
+
 % Thiết lập tiêu đề và tác giả
 \title{Ứng dụng viễn thám và học sâu trong giám sát biến động rừng tỉnh Cà Mau}
 \author{Ninh Hải Đăng} 
 
-% Khai báo các thư viện cho mục lục hình ảnh và bảng
-\def\l@figure{\@dottedtocline{1}{1em}{2.2em}}
-\def\l@table{\@dottedtocline{1}{1em}{2.2em}}
 
 \newcommand{\argmax}{\arg\!\max}
 
@@ -238,7 +243,7 @@
 % Phần mở đầu
 \input{chapters/preface}\newpage\cleardoublepage
 
-\setcounter{secnumdepth}{3}
+\setcounter{secnumdepth}{2}
 % Chương nội dung
 \input{chapters/chapter1/chapter1}\newpage\cleardoublepage
 \input{chapters/chapter2/chapter2}\newpage\cleardoublepage
