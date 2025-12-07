@@ -4,54 +4,54 @@
 
 \section*{Đặt vấn đề}
 
-Rừng đóng vai trò quan trọng trong việc duy trì cân bằng sinh thái, điều hòa khí hậu, lưu giữ carbon và bảo vệ đa dạng sinh học. Tuy nhiên, tình trạng mất rừng đang diễn ra nghiêm trọng trên toàn cầu, đặc biệt tại các quốc gia đang phát triển. Theo báo cáo ``Global Forest Resources Assessment 2020'' của Tổ chức Lương thực và Nông nghiệp Liên hợp quốc \citeen{fao2020}, thế giới đã mất ròng (net loss) khoảng 178 triệu hecta rừng trong giai đoạn 1990--2020, tương đương diện tích của Libya.
+Rừng đóng vai trò quan trọng trong việc duy trì cân bằng sinh thái, điều hòa khí hậu, lưu giữ carbon và bảo vệ đa dạng sinh học. Tuy nhiên, tình trạng mất rừng đang diễn ra nghiêm trọng trên toàn cầu, đặc biệt tại các quốc gia đang phát triển. Theo báo cáo ``Global Forest Resources Assessment 2020'' của Tổ chức Lương thực và Nông nghiệp Liên hợp quốc \citeen{fao2020}, thế giới đã mất khoảng 178 triệu hecta rừng trong giai đoạn 1990--2020, tương đương diện tích của Libya.
 
 Tại Việt Nam, mặc dù độ che phủ rừng đã tăng từ 37\% (năm 2000) lên 42\% (năm 2020) nhờ các chương trình trồng rừng, nhưng tình trạng suy thoái và mất rừng tự nhiên vẫn đáng báo động, đặc biệt tại các tỉnh ven biển và đồng bằng sông Cửu Long. Tỉnh Cà Mau, nằm ở cực Nam Tổ Quốc, sở hữu hệ sinh thái rừng ngập mặn quan trọng nhưng đang phải đối mặt với áp lực từ nuôi trồng thủy sản, xâm nhập mặn và biến đổi khí hậu.
 
-Phương pháp giám sát rừng truyền thống dựa trên điều tra thực địa tốn kém thời gian, chi phí và khó áp dụng cho diện tích rộng. Công nghệ viễn thám vệ tinh cung cấp giải pháp hiệu quả, cho phép giám sát liên tục, diện rộng với chi phí hợp lý. Chương trình Copernicus của Liên minh Châu Âu cung cấp dữ liệu miễn phí từ các vệ tinh Sentinel-1 (SAR) và Sentinel-2 (Optical) với độ phân giải không gian 10m và chu kỳ quay trở lại ngắn (5--6 ngày), phù hợp cho giám sát rừng nhiệt đới.
+Phương pháp giám sát rừng truyền thống dựa trên điều tra thực địa tốn kém thời gian, chi phí và khó áp dụng cho diện tích rộng. Công nghệ viễn thám vệ tinh cung cấp giải pháp hiệu quả, cho phép giám sát liên tục, diện rộng với chi phí hợp lý. Chương trình Copernicus của Liên minh Châu Âu cung cấp dữ liệu miễn phí từ các vệ tinh Sentinel-1 và Sentinel-2 với độ phân giải không gian 10m và chu kỳ quay trở lại ngắn (5--6 ngày), phù hợp cho giám sát rừng nhiệt đới.
 
-Trong những năm gần đây, trí tuệ nhân tạo và học sâu (Deep Learning) đã đạt được những bước tiến vượt bậc trong xử lý ảnh và nhận dạng mẫu. Mạng nơ-ron tích chập (Convolutional Neural Networks -- CNN) đặc biệt hiệu quả trong phân loại ảnh nhờ khả năng tự động học đặc trưng không gian từ dữ liệu thô.
+Trong những năm gần đây, trí tuệ nhân tạo và học sâu đã đạt được những bước tiến vượt bậc trong xử lý ảnh và nhận dạng mẫu. Mạng nơ-ron tích chập đặc biệt hiệu quả trong phân loại ảnh nhờ khả năng tự động học đặc trưng không gian từ dữ liệu thô.
 
 Xuất phát từ nhu cầu thực tiễn về giám sát rừng hiệu quả và xu hướng ứng dụng công nghệ AI tiên tiến, đồ án này lựa chọn đề tài \textbf{``Ứng dụng viễn thám và học sâu trong giám sát biến động rừng tỉnh Cà Mau''} nhằm phát triển mô hình phát hiện mất rừng với độ chính xác cao.
 
 \section*{Mục tiêu nghiên cứu}
 
-Mục tiêu tổng quát của đồ án là phát triển mô hình học sâu dựa trên kiến trúc CNN để phát hiện và phân loại tự động các khu vực biến động rừng từ ảnh vệ tinh đa nguồn (Sentinel-1 SAR và Sentinel-2 Optical) tại tỉnh Cà Mau.
+Mục tiêu tổng quát của đồ án là phát triển mô hình học sâu dựa trên kiến trúc CNN để phát hiện và phân loại tự động các khu vực biến động rừng từ ảnh vệ tinh đa nguồn (Sentinel-1 và Sentinel-2) tại tỉnh Cà Mau.
 
-Để đạt được mục tiêu tổng quát, đề tài tập trung vào năm mục tiêu cụ thể. Thứ nhất, xây dựng bộ dữ liệu huấn luyện thông qua thu thập và xử lý dữ liệu ảnh vệ tinh Sentinel-1/2 đa thời gian, kết hợp với ground truth points để tạo bộ dữ liệu huấn luyện chất lượng cao. Thứ hai, thiết kế kiến trúc CNN nhẹ (lightweight) phù hợp với bộ dữ liệu có quy mô vừa phải (khoảng 2,600 mẫu). Thứ ba, triển khai phương pháp phân chia dữ liệu khoa học bằng stratified random split kết hợp với 5-Fold Cross Validation. Thứ tư, huấn luyện và tối ưu hóa mô hình bằng các kỹ thuật huấn luyện tiên tiến. Thứ năm, áp dụng mô hình để phân loại biến động rừng toàn bộ khu vực nghiên cứu.
+Để đạt được mục tiêu tổng quát, đề tài tập trung vào năm mục tiêu cụ thể. Thứ nhất, xây dựng bộ dữ liệu huấn luyện thông qua thu thập và xử lý dữ liệu ảnh vệ tinh Sentinel-1/2 đa thời gian, kết hợp với dữ liệu thực địa để tạo bộ dữ liệu huấn luyện chất lượng cao. Thứ hai, thiết kế kiến trúc CNN nhẹ phù hợp với bộ dữ liệu có quy mô vừa phải (khoảng 2,600 mẫu). Thứ ba, triển khai phương pháp phân chia dữ liệu khoa học bằng cách chia mẫu ngẫu nhiên phân tầng (stratified random split) kết hợp với Kiểm chứng chéo 5 lần (5-Fold Cross Validation). Thứ tư, huấn luyện và tối ưu hóa mô hình bằng các kỹ thuật huấn luyện tiên tiến. Thứ năm, áp dụng mô hình để phân loại biến động rừng toàn bộ khu vực nghiên cứu.
 
 \section*{Đối tượng nghiên cứu}
 
-Đối tượng nghiên cứu của đồ án là khu vực ranh giới lâm nghiệp tỉnh Cà Mau (theo địa giới hành chính mới có hiệu lực từ ngày 01/07/2025, sau khi sáp nhập tỉnh Cà Mau cũ và tỉnh Bạc Liêu) với tổng diện tích 170,179 hecta (tương đương 1,701.79 km²). Khu vực này bao gồm các loại hình rừng tự nhiên và rừng trồng, trong đó chủ yếu là rừng ngập mặn và rừng phòng hộ ven biển. Các trạng thái biến động rừng được phân loại thành bốn nhóm: Rừng ổn định (Forest Stable), Mất rừng (Deforestation), Phi rừng (Non-forest) và Phục hồi rừng (Reforestation). Dữ liệu sử dụng bao gồm ảnh vệ tinh Sentinel-1 (radar băng C) và Sentinel-2 (quang học đa phổ) trong giai đoạn từ tháng 01/2024 đến tháng 02/2025. Diện tích thực tế được phân loại là 162,469 hecta (khoảng 95.5\% diện tích ranh giới, phần còn lại bị loại do mây che hoặc dữ liệu không hợp lệ).
+Đối tượng nghiên cứu của đồ án là khu vực ranh giới lâm nghiệp tỉnh Cà Mau (theo địa giới hành chính mới có hiệu lực từ ngày 01/07/2025, sau khi sáp nhập tỉnh Cà Mau cũ và tỉnh Bạc Liêu) với tổng diện tích 170,179 hecta (tương đương 1,701.79 km²). Khu vực này bao gồm các loại hình rừng tự nhiên và rừng trồng, trong đó chủ yếu là rừng ngập mặn và rừng phòng hộ ven biển. Các trạng thái biến động rừng được phân loại thành bốn nhóm: Rừng ổn định (Forest Stable), Mất rừng (Deforestation), Phi rừng (Non-forest) và Phục hồi rừng (Reforestation). Dữ liệu sử dụng bao gồm ảnh vệ tinh Sentinel-1 và Sentinel-2 trong giai đoạn từ tháng 01/2024 đến tháng 02/2025. Diện tích thực tế được phân loại là 162,469 ha (khoảng 95.5\% diện tích ranh giới, phần còn lại bị loại do mây che hoặc dữ liệu không hợp lệ).
 
 \section*{Phương pháp nghiên cứu}
 
 Đồ án áp dụng phương pháp nghiên cứu thực nghiệm, kết hợp giữa viễn thám và học sâu, bao gồm năm giai đoạn chính.
 
-Giai đoạn thứ nhất là thu thập và tiền xử lý dữ liệu, trong đó ảnh vệ tinh Sentinel-1 và Sentinel-2 được thu thập từ nền tảng Google Earth Engine. Quá trình tiền xử lý bao gồm hiệu chỉnh khí quyển, tạo ảnh composite theo mùa và loại bỏ nhiễu.
+Giai đoạn thứ nhất là thu thập và tiền xử lý dữ liệu, trong đó ảnh vệ tinh Sentinel-1 và Sentinel-2 được thu thập từ nền tảng Google Earth Engine. Dữ liệu Sentinel-2 sử dụng sản phẩm đã hiệu chỉnh khí quyển (Level-2A) kết hợp loại bỏ pixel bị mây che phủ, còn dữ liệu Sentinel-1 đã được ESA tiền xử lý bao gồm hiệu chỉnh quỹ đạo và loại bỏ nhiễu.
 
-Giai đoạn thứ hai là trích xuất đặc trưng, bao gồm việc tính toán các kênh phổ và chỉ số thực vật từ dữ liệu Sentinel-2 (B4, B8, B11, B12, NDVI, NBR, NDMI) và các kênh backscatter từ Sentinel-1 (VV, VH) cho hai thời kỳ cùng với giá trị delta, tổng hợp 27 đặc trưng cho mỗi điểm mẫu.
+Giai đoạn thứ hai là trích xuất đặc trưng, bao gồm việc tính toán các kênh phổ và chỉ số thực vật từ dữ liệu Sentinel-2 (B4, B8, B11, B12, NDVI, NBR, NDMI) và các kênh tán xạ ngược (backscatter) từ Sentinel-1 (VV, VH) cho hai thời kỳ cùng với giá trị delta, tổng hợp 27 đặc trưng cho mỗi điểm mẫu.
 
-Giai đoạn thứ ba là chuẩn bị mẫu huấn luyện, trong đó bộ dữ liệu 2,630 mẫu với 4 lớp biến động rừng được xây dựng. Kỹ thuật chuẩn hóa dữ liệu được áp dụng và dữ liệu được phân chia theo tỷ lệ 80\% huấn luyện (với 5-Fold Cross Validation) và 20\% kiểm tra.
+Giai đoạn thứ ba là chuẩn bị mẫu huấn luyện, trong đó bộ dữ liệu 2,630 mẫu với 4 lớp biến động rừng được xây dựng. Kỹ thuật chuẩn hóa dữ liệu được áp dụng và dữ liệu được phân chia theo tỷ lệ 80\% huấn luyện (với kiểm định chéo 5 lần) và 20\% kiểm tra.
 
-Giai đoạn thứ tư là huấn luyện mô hình, bao gồm thiết kế kiến trúc CNN nhẹ với 2 lớp tích chập, sử dụng các kỹ thuật điều chuẩn (Dropout, chuẩn hóa theo lô, phân rã trọng số) và áp dụng 5-Fold Cross Validation để đánh giá độ ổn định của mô hình.
+Giai đoạn thứ tư là huấn luyện mô hình, bao gồm thiết kế kiến trúc CNN nhẹ với 2 lớp tích chập, sử dụng các kỹ thuật điều chuẩn (Dropout, chuẩn hóa theo lô, phân rã trọng số) và áp dụng kiểm định chéo 5 lần để đánh giá độ ổn định của mô hình.
 
 Giai đoạn thứ năm là áp dụng mô hình để phân loại toàn vùng nghiên cứu bằng phương pháp sliding window, tổng hợp kết quả và đánh giá độ chính xác.
 
 \section*{Ý nghĩa khoa học và thực tiễn của đề tài}
 
-Về mặt khoa học, đồ án đề xuất kiến trúc CNN nhẹ và hiệu quả cho bài toán phân loại ảnh viễn thám với bộ dữ liệu quy mô vừa phải. Nghiên cứu chứng minh hiệu quả của việc tích hợp đa nguồn dữ liệu (SAR và Optical) trong phát hiện biến động rừng, đồng thời đóng góp vào hướng nghiên cứu ứng dụng học sâu trong lĩnh vực viễn thám và giám sát môi trường.
+Về mặt khoa học, đồ án đề xuất kiến trúc CNN nhẹ và hiệu quả cho bài toán phân loại ảnh viễn thám với bộ dữ liệu quy mô vừa phải. Nghiên cứu chứng minh hiệu quả của việc tích hợp đa nguồn dữ liệu (ra-đa khẩu độ tổng hợp và quang học đa phổ) trong phát hiện biến động rừng, đồng thời đóng góp vào hướng nghiên cứu ứng dụng học sâu trong lĩnh vực viễn thám và giám sát môi trường.
 
-Về ý nghĩa thực tiễn, mô hình cung cấp công cụ tự động phát hiện mất rừng với độ chính xác cao (trên 98\%), giúp giảm đáng kể thời gian và chi phí so với phương pháp điều tra thực địa truyền thống. Kết quả nghiên cứu có thể hỗ trợ các cơ quan quản lý lâm nghiệp trong việc giám sát và bảo vệ rừng tại tỉnh Cà Mau. Ngoài ra, mô hình có thể mở rộng áp dụng cho các khu vực khác có điều kiện tương tự.
+Về ý nghĩa thực tiễn, đồ án cung cấp mô hình giám sát biến động rừng với độ chính xác cao (trên 98\%), giúp giảm đáng kể thời gian và chi phí so với phương pháp điều tra thực địa truyền thống. Kết quả nghiên cứu có thể hỗ trợ các cơ quan quản lý lâm nghiệp trong việc giám sát và bảo vệ rừng tại tỉnh Cà Mau. Ngoài ra, mô hình có thể mở rộng áp dụng cho các khu vực khác có điều kiện tương tự.
 
 \section*{Cấu trúc đồ án}
 
 Đồ án được tổ chức thành bốn chương chính.
 
-\textbf{Chương 1: Tổng quan về vấn đề nghiên cứu} trình bày tổng quan về bối cảnh mất rừng, công nghệ viễn thám, tổng quan các nghiên cứu liên quan và các khoảng trống nghiên cứu.
+\textbf{Chương 1: Tổng quan về vấn biến động rừng, công nghệ viễn thám và các phương pháp giám sát} trình bày tổng quan về bối cảnh mất rừng, công nghệ viễn thám, tổng quan các nghiên cứu liên quan và các khoảng trống nghiên cứu.
 
-\textbf{Chương 2: Cơ sở lý thuyết} giới thiệu chi tiết về công nghệ viễn thám (Sentinel-1/2), lý thuyết về mạng nơ-ron tích chập (CNN), các phương pháp phân loại ảnh và các tiêu chí đánh giá mô hình.
+\textbf{Chương 2: Cơ sở lý thuyết về viễn thám và học sâu trong giám sát biến động rừng} giới thiệu chi tiết về công nghệ viễn thám (Sentinel-1/2), lý thuyết về mạng nơ-ron tích chập, các phương pháp phân loại ảnh và các tiêu chí đánh giá mô hình.
 
-\textbf{Chương 3: Phương pháp nghiên cứu} mô tả khu vực nghiên cứu, dữ liệu sử dụng, quy trình xử lý, kiến trúc mô hình CNN đề xuất, phương pháp huấn luyện và đánh giá.
+\textbf{Chương 3: Dữ liệu, trích xuất đặc trưng và xây dựng mô hình phân loại} mô tả khu vực nghiên cứu, dữ liệu sử dụng, quy trình xử lý, kiến trúc mô hình CNN đề xuất, phương pháp huấn luyện và đánh giá.
 
 \textbf{Chương 4: Thực nghiệm và kết quả} trình bày các kết quả huấn luyện, đánh giá mô hình, phân loại toàn vùng, phân tích lỗi và trực quan hóa. Đồng thời đưa ra kết luận và kiến nghị cho các nghiên cứu tiếp theo.

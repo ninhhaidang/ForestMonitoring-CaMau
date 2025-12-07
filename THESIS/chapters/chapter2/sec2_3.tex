@@ -73,7 +73,7 @@ Cross Validation là phương pháp đánh giá mô hình giúp ước lượng 
 
 \textbf{Chuẩn hóa dữ liệu (Data Normalization):}
 
-Chuẩn hóa dữ liệu là bước tiền xử lý quan trọng trong học máy, giúp các features có cùng scale và cải thiện hiệu suất huấn luyện \citeen{sola1997}. Z-score Normalization chuyển đổi dữ liệu về phân phối với trung bình bằng 0 và độ lệch chuẩn bằng 1 (chi tiết công thức được trình bày trong Chương 3). Việc chuẩn hóa dữ liệu cho CNN là cần thiết vì các features có scale khác nhau (ví dụ: NDVI trong $[-1, 1]$, backscatter trong $[-25, 0]$ dB) sẽ ảnh hưởng không đều đến gradient. \textbf{Lưu ý quan trọng:} Các tham số chuẩn hóa phải được tính trên tập huấn luyện và áp dụng cho cả tập kiểm tra để tránh rò rỉ dữ liệu.
+Chuẩn hóa dữ liệu là bước tiền xử lý quan trọng trong học máy, giúp các features có cùng scale và cải thiện hiệu suất huấn luyện \citeen{sola1997}. Z-score Normalization chuyển đổi dữ liệu về phân phối với trung bình bằng 0 và độ lệch chuẩn bằng 1 (chi tiết công thức được trình bày trong Chương 3). Việc chuẩn hóa dữ liệu cho CNN là cần thiết vì các features có scale khác nhau (ví dụ: NDVI trong $[-1, 1]$, tán xạ ngược trong $[-25, 0]$ dB) sẽ ảnh hưởng không đều đến gradient. \textbf{Lưu ý quan trọng:} Các tham số chuẩn hóa phải được tính trên tập huấn luyện và áp dụng cho cả tập kiểm tra để tránh rò rỉ dữ liệu.
 
 \textbf{Dữ liệu thực địa (Ground Truth):}
 
