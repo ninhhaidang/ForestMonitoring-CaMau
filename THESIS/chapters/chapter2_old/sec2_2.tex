@@ -1,0 +1,74 @@
+\section{Mạng nơ-ron tích chập (Convolutional Neural Networks)}
+
+Mạng nơ-ron tích chập (CNN) đã trở thành công cụ chủ đạo trong xử lý ảnh viễn thám và phân loại lớp phủ đất \citeen{zhu2017, zhang2016}. Phần này trình bày các khái niệm nền tảng về CNN làm cơ sở cho kiến trúc đề xuất trong Chương 3.
+
+\subsection{Kiến trúc cơ bản của CNN}
+
+\textbf{Perceptron - Đơn vị cơ bản:}
+
+Một nơ-ron nhân tạo thực hiện phép biến đổi tuyến tính và hàm kích hoạt:
+\begin{equation}
+y = f(\mathbf{w}^T \mathbf{x} + b)
+\end{equation}
+
+\textbf{Thành phần:} $\mathbf{x} \in \mathbb{R}^n$ là input vector chứa $n$ feature đầu vào; $\mathbf{w} \in \mathbb{R}^n$ là weight vector (trọng số) --- mỗi $w_i$ thể hiện mức độ quan trọng của feature $x_i$; $b \in \mathbb{R}$ là bias (độ lệch) --- cho phép dịch chuyển đường quyết định; $f(\cdot)$ là hàm kích hoạt phi tuyến; $y$ là output (đầu ra). \textbf{Ý nghĩa:} Perceptron mô phỏng cách nơ-ron sinh học xử lý tín hiệu --- nhận nhiều đầu vào, tính tổng có trọng số, và kích hoạt khi vượt ngưỡng. \textbf{Mục đích:} Là đơn vị tính toán cơ bản của mạng nơ-ron, có khả năng học các mối quan hệ tuyến tính và phi tuyến trong dữ liệu thông qua việc điều chỉnh trọng số $\mathbf{w}$ và bias $b$.
+
+\textbf{Multi-Layer Perceptron (MLP):}
+
+Một mạng nơ-ron gồm nhiều layers, trong đó mỗi layer nhận đầu ra của layer trước làm đầu vào. Mỗi layer thực hiện phép biến đổi tuyến tính (nhân ma trận trọng số $\mathbf{W}$ và cộng bias $\mathbf{b}$) sau đó áp dụng hàm kích hoạt. Các layer ẩn giúp mạng học được các biểu diễn trừu tượng của dữ liệu, với mỗi layer học các đặc trưng ở mức độ phức tạp tăng dần.
+
+\textbf{Phép tích chập 2D (2D Convolution):}
+
+Đây là thành phần cốt lõi của CNN, thực hiện phép tích chập giữa input và kernel:
+\begin{equation}
+(I * K)(i, j) = \sum_m \sum_n I(i+m, j+n) \times K(m, n)
+\end{equation}
+
+\textbf{Thành phần:} $I$ là input feature map (ảnh hoặc feature map từ layer trước) với kích thước height × width × channels; $K$ là kernel (filter) có kích thước $k_h \times k_w$ --- chứa các trọng số được học; $(i,j)$ là vị trí trong output feature map; $(m,n)$ là vị trí trong kernel. \textbf{Ý nghĩa:} Phép tích chập trượt kernel qua input, tại mỗi vị trí tính tổng các tích element-wise giữa kernel và vùng tương ứng của input --- tạo ra một giá trị trong output thể hiện mức độ ``khớp'' giữa kernel và vùng đó. \textbf{Mục đích:} Trích xuất các đặc trưng cục bộ (local features) như cạnh, góc, texture từ input; nhờ chia sẻ trọng số (parameter sharing), CNN tiết kiệm tham số và có khả năng nhận diện đặc trưng bất kể vị trí (translation invariance).
+
+Phép tích chập mang lại nhiều ưu điểm quan trọng. Về parameter sharing, cùng một kernel áp dụng toàn bộ input giúp tiết kiệm tham số. Về translation invariance, mạng có khả năng nhận diện các đặc trưng bất kể vị trí xuất hiện. Về local connectivity, mỗi nơ-ron chỉ kết nối với vùng cục bộ của input, giảm số lượng kết nối cần thiết.
+
+Quá trình tích chập diễn ra như sau: kernel có kích thước $k \times k$ trượt qua toàn bộ input với bước nhảy (stride) xác định. Tại mỗi vị trí, kernel thực hiện phép nhân element-wise với vùng tương ứng của input, sau đó cộng tổng tất cả các tích để tạo ra một giá trị trong output feature map. Kích thước output phụ thuộc vào kích thước input, kernel, stride và padding. Với input nhiều kênh (ví dụ: feature stack có 27 kênh như trong nghiên cứu này), kernel cũng có cùng số kênh và phép tích chập được thực hiện đồng thời trên tất cả các kênh, sau đó cộng tổng để tạo ra một feature map đầu ra.
+
+\textbf{Hàm kích hoạt (Activation Functions):}
+
+Hàm kích hoạt đóng vai trò quan trọng trong mạng nơ-ron, giúp mô hình học được các mối quan hệ phi tuyến trong dữ liệu \citeen{goodfellow2016}. ReLU (Rectified Linear Unit) là hàm kích hoạt phổ biến nhất:
+\begin{equation}
+f(x) = \max(0, x) = \begin{cases} x & \text{if } x > 0 \\ 0 & \text{if } x \leq 0 \end{cases}
+\end{equation}
+
+\textbf{Thành phần:} $x$ là giá trị đầu vào (output của phép biến đổi tuyến tính). \textbf{Ý nghĩa:} ReLU giữ nguyên giá trị dương và chuyển giá trị âm về 0, tạo ra tính phi tuyến đơn giản nhưng hiệu quả. \textbf{Mục đích:} Cho phép mạng học các mối quan hệ phi tuyến phức tạp; ReLU có ưu điểm tính toán nhanh, giảm vấn đề vanishing gradient (gradient không bị triệt tiêu với giá trị dương), và tạo sparse activation (nhiều nơ-ron có output = 0).
+
+Softmax được sử dụng cho lớp đầu ra trong bài toán phân loại đa lớp:
+\begin{equation}
+\text{softmax}(\mathbf{x})_i = \frac{\exp(x_i)}{\sum_j \exp(x_j)}
+\end{equation}
+
+\textbf{Thành phần:} $\mathbf{x}$ là vector logits (đầu ra thô của layer cuối cùng); $x_i$ là logit của lớp $i$; $\exp(\cdot)$ là hàm mũ. \textbf{Ý nghĩa:} Softmax chuyển đổi các logits thành phân phối xác suất --- giá trị lớn hơn được ánh xạ thành xác suất cao hơn, và tổng tất cả xác suất bằng 1. \textbf{Mục đích:} Cho phép mô hình đưa ra dự đoán xác suất cho bài toán phân loại đa lớp; lớp có xác suất cao nhất được chọn làm kết quả dự đoán.
+
+\subsection{Pooling và các kỹ thuật điều chuẩn}
+
+Pooling là phép toán giảm chiều không gian (spatial dimensions) của feature maps, giúp giảm số lượng tham số, giảm chi phí tính toán và tăng khả năng translation invariance của mạng \citeen{lecun2015}. Có hai loại pooling phổ biến: \textbf{Max Pooling} chọn giá trị lớn nhất trong mỗi vùng cục bộ, giữ lại các đặc trưng nổi bật nhất; \textbf{Average Pooling} tính trung bình các giá trị, giữ lại thông tin tổng quát hơn.
+
+\textbf{Global Average Pooling (GAP)} là trường hợp đặc biệt trong đó vùng pooling bao trùm toàn bộ feature map, biến đổi mỗi feature map thành một giá trị scalar \citeen{lin2014}. GAP mang lại nhiều lợi ích: giảm mạnh số lượng tham số, có tính chất điều chuẩn tự nhiên, và tạo ra spatial invariance hoàn toàn. Trong nghiên cứu này, GAP được sử dụng ở cuối mạng CNN để tổng hợp thông tin từ tất cả các spatial locations trước khi đưa vào lớp classification.
+
+\textbf{Chuẩn hóa theo lô (Batch Normalization):}
+
+Chuẩn hóa theo lô là kỹ thuật chuẩn hóa được đề xuất bởi Ioffe và Szegedy nhằm tăng tốc quá trình huấn luyện mạng nơ-ron sâu \citeen{ioffe2015}. Kỹ thuật này chuẩn hóa các activation trong mỗi mini-batch về phân phối có trung bình 0 và phương sai 1, sau đó áp dụng phép biến đổi tuyến tính với các tham số học được. Chuẩn hóa theo lô giúp tăng tốc độ huấn luyện, giảm độ nhạy với khởi tạo trọng số, và đóng vai trò như một phương pháp điều chuẩn.
+
+\textbf{Dropout:}
+
+Dropout là kỹ thuật điều chuẩn hiệu quả được đề xuất bởi Srivastava và cộng sự để ngăn chặn overfitting trong mạng nơ-ron \citeen{srivastava2014}. Trong quá trình huấn luyện, mỗi nơ-ron bị tắt ngẫu nhiên với một xác suất nhất định, buộc mạng học các biểu diễn robust hơn. Dropout2d (Spatial Dropout) là biến thể dropout toàn bộ feature maps thay vì từng nơ-ron, phù hợp cho CNN vì features trong cùng channel có correlation không gian cao.
+
+\subsection{Hàm mất mát và thuật toán tối ưu}
+
+Hàm mất mát (Loss Function) đo lường sự khác biệt giữa dự đoán của mô hình và nhãn thực tế, là cơ sở để tối ưu hóa tham số mạng \citeen{goodfellow2016}. Cross-Entropy Loss được sử dụng cho bài toán phân loại đa lớp:
+\begin{equation}
+L = -\sum_i y_i \log(\hat{y}_i)
+\end{equation}
+
+\textbf{Thành phần:} $y_i$ là nhãn thực tế (true label) được mã hóa one-hot --- có giá trị 1 tại lớp đúng và 0 ở các lớp khác; $\hat{y}_i$ là xác suất dự đoán của lớp $i$ xuất ra từ hàm softmax; $\log(\cdot)$ là logarit tự nhiên. \textbf{Ý nghĩa:} Cross-Entropy đo lường ``khoảng cách'' giữa phân phối dự đoán và phân phối thực tế --- giá trị loss cao khi mô hình gán xác suất thấp cho lớp đúng, và ngược lại. \textbf{Mục đích:} Làm hàm mục tiêu để huấn luyện mô hình; thuật toán tối ưu sẽ điều chỉnh trọng số để giảm thiểu loss, từ đó tăng xác suất dự đoán đúng.
+
+\textbf{Thuật toán tối ưu:}
+
+Các thuật toán tối ưu hóa đóng vai trò quan trọng trong việc huấn luyện mạng nơ-ron. \textbf{Adam} (Adaptive Moment Estimation) được đề xuất bởi Kingma và Ba là một trong những optimizer phổ biến nhất hiện nay \citeen{kingma2015}. Adam kết hợp ưu điểm của hai phương pháp: momentum (sử dụng trung bình động của gradient) và RMSprop (điều chỉnh learning rate theo từng tham số). \textbf{AdamW} là biến thể cải tiến với phân rã trọng số được tách riêng khỏi gradient update, giúp điều chuẩn hiệu quả hơn. Các hyperparameters thường sử dụng: $\beta_1 = 0.9$, $\beta_2 = 0.999$, learning rate $\eta = 0.001$.

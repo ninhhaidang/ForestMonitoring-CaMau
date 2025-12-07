@@ -1,0 +1,126 @@
+\section{So sánh với các nghiên cứu khác}
+
+\subsection{So sánh với các công trình trong tài liệu}
+
+\begin{table}[H]
+\centering
+\caption{So sánh với các nghiên cứu trong tài liệu}
+\label{tab:comparison}
+\begin{tabular}{|l|l|l|c|c|}
+\hline
+\textbf{Nghiên cứu} & \textbf{Phương pháp} & \textbf{Dữ liệu} & \textbf{Accuracy} & \textbf{ROC-AUC} \\
+\hline
+Hansen và cs. (2013) & Decision Trees & Landsat & ~85\% & - \\
+\hline
+Hethcoat và cs. (2019) & CNN (ResNet) & S1/S2 & 94.3\% & - \\
+\hline
+Zhang và cs. (2020) & U-Net & Sentinel-2 & 96.8\% & 98.5\% \\
+\hline
+\textbf{Nghiên cứu này} & \textbf{CNN (custom)} & \textbf{S1/S2} & \textbf{98.86\%} & \textbf{99.98\%} \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar,
+            width=0.9\textwidth,
+            height=7cm,
+            ylabel={Accuracy (\%)},
+            symbolic x coords={Hansen (2013), Hethcoat (2019), Zhang (2020), Nghiên cứu này},
+            xtick=data,
+            xticklabel style={rotate=15, anchor=east, font=\small},
+            ymin=80,
+            ymax=102,
+            bar width=25pt,
+            nodes near coords,
+            nodes near coords align={vertical},
+            every node near coord/.append style={font=\scriptsize},
+            enlarge x limits=0.15,
+        ]
+        \addplot[fill=teal!60] coordinates {
+            (Hansen (2013), 85)
+            (Hethcoat (2019), 94.3)
+            (Zhang (2020), 96.8)
+            (Nghiên cứu này, 98.86)
+        };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{So sánh Accuracy với các nghiên cứu trước đó}
+    \label{fig:literature_comparison}
+\end{figure}
+
+Kết quả của nghiên cứu này đạt Accuracy cao hơn so với các công trình trước đó. Tuy nhiên, cần lưu ý rằng việc so sánh trực tiếp có những hạn chế do sự khác biệt về khu vực nghiên cứu, số lượng lớp phân loại, kích thước bộ dữ liệu và phương pháp đánh giá \citeen{stehman2019}. Accuracy cao của nghiên cứu này có thể được giải thích bởi bộ dữ liệu thực địa chất lượng cao thu thập từ khảo sát thực địa, sự kết hợp hiệu quả giữa dữ liệu radar và quang học, và kiến trúc CNN được tối ưu hóa cho bộ dữ liệu nhỏ.
+
+\subsection{So sánh với sản phẩm Global Forest Watch}
+
+Để đánh giá tính hợp lý của kết quả, nghiên cứu thực hiện so sánh định tính với sản phẩm Giám sát rừng toàn cầu (Global Forest Watch - GFW) — bộ dữ liệu mất rừng toàn cầu được phát triển bởi Hansen và cộng sự \citeen{hansen2013} tại Đại học Maryland và được cập nhật liên tục bởi Potapov và cộng sự \citeen{potapov2022}.
+
+\begin{table}[H]
+\centering
+\caption{So sánh kết quả với Giám sát rừng toàn cầu (GFW)}
+\label{tab:gfw_comparison}
+\begin{tabular}{|l|c|c|l|}
+\hline
+\textbf{Chỉ tiêu} & \textbf{Nghiên cứu này} & \textbf{GFW (tham khảo)} & \textbf{Ghi chú} \\
+\hline
+Độ phân giải & 10m & 30m & Nghiên cứu này chi tiết hơn \\
+\hline
+Nguồn dữ liệu & S1/S2 & Landsat & Đa nguồn và đơn nguồn \\
+\hline
+Phương pháp & CNN & Decision Trees & Deep Learning và ML truyền thống \\
+\hline
+Cập nhật & Theo yêu cầu & Hàng năm & Linh hoạt hơn \\
+\hline
+\end{tabular}
+\end{table}
+
+Kết quả phân loại cho thấy diện tích mất rừng chiếm 4.48\% (7,282 ha) trong tổng diện tích nghiên cứu, phù hợp với xu hướng mất rừng ngập mặn tại khu vực Đồng bằng sông Cửu Long được ghi nhận trong các nghiên cứu trước đó \citeen{vo2020}. Theo báo cáo của Bộ Nông nghiệp và Phát triển Nông thôn \citevi{bnnptnt2021}, khu vực ven biển Cà Mau chịu áp lực lớn từ hoạt động nuôi trồng thủy sản và xâm nhập mặn, dẫn đến tình trạng suy giảm diện tích rừng ngập mặn trong những năm gần đây.
+
+\subsection{So sánh với số liệu thống kê chính thức}
+
+Để đánh giá tính hợp lý của kết quả phân loại, nghiên cứu thực hiện so sánh với số liệu thống kê từ các nguồn chính thức:
+
+\begin{table}[H]
+\centering
+\caption{So sánh kết quả với số liệu thống kê rừng Cà Mau}
+\label{tab:official_comparison}
+\begin{tabular}{|l|c|c|p{4.5cm}|}
+\hline
+\textbf{Chỉ tiêu} & \textbf{Nghiên cứu này} & \textbf{Số liệu chính thức} & \textbf{Ghi chú} \\
+\hline
+Diện tích rừng ổn định & 120,717 ha & ~100,000 ha (2021) & Vùng NC lớn hơn diện tích rừng thống kê \citevi{snnptntcamau2021} \\
+\hline
+Tỷ lệ mất rừng/năm & 4.48\% & 2-5\%/năm & Phù hợp với xu hướng giai đoạn 2015-2020 \citeen{gfw2021} \\
+\hline
+Diện tích phi rừng & 29,529 ha & - & Bao gồm ao nuôi, đất trống \\
+\hline
+Phục hồi rừng & 4,941 ha & - & Tái sinh tự nhiên và trồng rừng \\
+\hline
+\end{tabular}
+\end{table}
+
+Diện tích rừng ổn định phát hiện được (120,717 ha) lớn hơn số liệu thống kê chính thức (~100,000 ha) do vùng nghiên cứu (162,469 ha) bao gồm cả các khu vực rừng mới trồng và rừng ngoài quy hoạch lâm nghiệp chính thức. Tỷ lệ mất rừng 4.48\% trong giai đoạn 01/2024 - 02/2025 nằm trong khoảng 2-5\%/năm được ghi nhận tại khu vực Đồng bằng sông Cửu Long trong giai đoạn 2015-2020 \citeen{gfw2021, vo2020}, cho thấy kết quả nghiên cứu phản ánh đúng xu hướng biến động rừng trong khu vực.
+
+\subsection{Khoảng tin cậy của kết quả}
+
+Để đánh giá độ tin cậy thống kê, nghiên cứu tính toán khoảng tin cậy 95\% cho các chỉ số chính dựa trên kết quả 5-Fold Cross Validation:
+
+\begin{table}[H]
+\centering
+\caption{Khoảng tin cậy 95\% của các chỉ số (dựa trên 5-Fold Cross Validation)}
+\label{tab:confidence_intervals}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Chỉ số} & \textbf{Trung bình} & \textbf{Độ lệch chuẩn} & \textbf{Khoảng tin cậy 95\%} \\
+\hline
+Accuracy & 98.15\% & 0.28\% & [97.80\%; 98.50\%] \\
+\hline
+F1-Score & 98.15\% & 0.28\% & [97.80\%; 98.50\%] \\
+\hline
+\end{tabular}
+\end{table}
+
+Khoảng tin cậy hẹp (±0.35\%) cho thấy mô hình có tính ổn định cao và kết quả đáng tin cậy. Với 5 phần, khoảng tin cậy được tính theo công thức: $CI = \bar{x} \pm t_{0.025, n-1} \times \frac{s}{\sqrt{n}}$, trong đó $t_{0.025, 4} \approx 2.776$.

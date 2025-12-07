@@ -1,0 +1,99 @@
+\section{Kết quả phân loại toàn bộ vùng nghiên cứu}
+
+\subsection{Thống kê phân loại}
+
+\begin{table}[H]
+\centering
+\caption{Phân bố diện tích theo lớp phân loại}
+\label{tab:area_distribution}
+\begin{tabular}{|c|l|r|r|r|r|}
+\hline
+\textbf{Lớp} & \textbf{Tên lớp} & \textbf{Số pixels} & \textbf{Tỷ lệ (\%)} & \textbf{Diện tích (ha)} & \textbf{Diện tích (km²)} \\
+\hline
+0 & Rừng ổn định & 12,071,691 & 74.30\% & 120,716.91 & 1,207.17 \\
+\hline
+1 & Mất rừng & 728,215 & 4.48\% & 7,282.15 & 72.82 \\
+\hline
+2 & Phi rừng & 2,952,854 & 18.17\% & 29,528.54 & 295.29 \\
+\hline
+3 & Phục hồi rừng & 494,090 & 3.04\% & 4,940.90 & 49.41 \\
+\hline
+\textbf{Tổng} & & \textbf{16,246,850} & \textbf{100\%} & \textbf{162,468.50} & \textbf{1,624.69} \\
+\hline
+\end{tabular}
+\end{table}
+
+Kết quả từ Bảng~\ref{tab:area_distribution} cho thấy bức tranh tổng quan về tình trạng rừng tại tỉnh Cà Mau trong giai đoạn nghiên cứu. Lớp rừng ổn định chiếm tỷ lệ lớn nhất với 74.30\% (tương đương 1,207.17 km²), phản ánh nỗ lực bảo tồn và quản lý rừng ngập mặn của địa phương, chủ yếu tập trung tại Vườn Quốc gia Mũi Cà Mau và các vùng đệm được bảo vệ nghiêm ngặt. Diện tích mất rừng chiếm 4.48\% (72.82 km²), đây là tỷ lệ đáng quan ngại khi quy đổi ra diện tích tuyệt đối, với các nguyên nhân chính có thể bao gồm chuyển đổi mục đích sử dụng đất sang nuôi trồng thủy sản, xói lở bờ biển do biến đổi khí hậu và tác động của xâm nhập mặn làm suy thoái rừng.
+
+Lớp phi rừng chiếm 18.17\% (295.29 km²), bao gồm các khu vực ao nuôi tôm, đất trống, khu dân cư và cơ sở hạ tầng, phản ánh áp lực phát triển kinh tế - xã hội lên tài nguyên rừng trong khu vực. Lớp phục hồi rừng chiếm 3.04\% (49.41 km²), cho thấy một phần diện tích đã được tái sinh tự nhiên hoặc trồng rừng mới. Mặc dù tỷ lệ phục hồi còn thấp hơn so với diện tích mất rừng, đây vẫn là tín hiệu tích cực cho công tác phục hồi hệ sinh thái rừng ngập mặn trong khu vực.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img/chapter4/Classification.png}
+    \caption{Bản đồ phân loại biến động rừng tỉnh Cà Mau}
+    \label{fig:classification_map}
+\end{figure}
+
+Bản đồ phân loại biến động rừng (Hình~\ref{fig:classification_map}) cho thấy sự phân bố không gian rõ ràng của các lớp phủ. Vùng rừng ổn định (màu xanh lá đậm) tập trung chủ yếu ở phía Tây và Tây Nam của tỉnh, bao gồm khu vực Vườn Quốc gia Mũi Cà Mau và dải rừng phòng hộ ven biển, trong đó sự liên tục của vùng rừng này cho thấy hiệu quả của các chính sách bảo tồn trong khu vực. Vùng mất rừng (màu đỏ) xuất hiện rải rác, chủ yếu tại các khu vực ranh giới giữa rừng và vùng nuôi trồng thủy sản, đặc biệt ở phía Bắc và Đông Bắc của vùng nghiên cứu, phù hợp với thực tế chuyển đổi đất rừng sang ao nuôi tôm trong khu vực.
+
+Vùng phi rừng (màu vàng nhạt) phân bố chủ yếu ở phía Đông và các khu vực nội địa, tương ứng với vùng đầm nuôi thủy sản và đất canh tác nông nghiệp đã tồn tại từ trước giai đoạn nghiên cứu. Vùng phục hồi rừng (màu xanh dương) xuất hiện tại các khu vực ven rừng ổn định, cho thấy quá trình tái sinh tự nhiên hoặc hoạt động trồng rừng đang diễn ra, đặc biệt ở các vùng đệm của khu bảo tồn.
+
+\begin{figure}[H]
+    \centering
+    \definecolor{stableforest}{HTML}{00734C}
+    \definecolor{deforestation}{HTML}{E60000}
+    \definecolor{nonforest}{HTML}{FFD37F}
+    \definecolor{reforestation}{HTML}{00C5FF}
+    \begin{tikzpicture}
+        \pie[
+            radius=3,
+            text=legend,
+            color={stableforest, deforestation, nonforest, reforestation},
+            explode={0, 0.1, 0, 0}
+        ]{
+            74.30/Rừng ổn định (74.30\%),
+            4.48/Mất rừng (4.48\%),
+            18.17/Phi rừng (18.17\%),
+            3.04/Phục hồi rừng (3.04\%)
+        }
+    \end{tikzpicture}
+    \caption{Tỷ lệ diện tích các lớp phân loại}
+    \label{fig:pie_chart}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \definecolor{stableforest}{HTML}{00734C}
+    \definecolor{deforestation}{HTML}{E60000}
+    \definecolor{nonforest}{HTML}{FFD37F}
+    \definecolor{reforestation}{HTML}{00C5FF}
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar,
+            width=0.85\textwidth,
+            height=8cm,
+            ylabel={Diện tích (ha)},
+            symbolic x coords={Rừng ổn định, Mất rừng, Phi rừng, Phục hồi rừng},
+            xtick=data,
+            xticklabel style={rotate=15, anchor=east, font=\small},
+            nodes near coords,
+            nodes near coords align={vertical},
+            every node near coord/.append style={font=\scriptsize},
+            ymin=0,
+            ymax=140000,
+            bar width=25pt,
+            enlarge x limits=0.2,
+        ]
+        \addplot[fill=stableforest] coordinates {(Rừng ổn định, 120717)};
+        \addplot[fill=deforestation] coordinates {(Mất rừng, 7282)};
+        \addplot[fill=nonforest] coordinates {(Phi rừng, 29529)};
+        \addplot[fill=reforestation] coordinates {(Phục hồi rừng, 4941)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Biểu đồ cột phân bố diện tích theo lớp phân loại}
+    \label{fig:area_bar_chart}
+\end{figure}
+
+Qua biểu đồ tròn (Hình~\ref{fig:pie_chart}) và biểu đồ cột (Hình~\ref{fig:area_bar_chart}), có thể nhận thấy sự chênh lệch rõ rệt về diện tích giữa các lớp. Rừng ổn định chiếm ưu thế tuyệt đối với hơn 3/4 diện tích vùng nghiên cứu, đây là nền tảng quan trọng cho công tác bảo tồn đa dạng sinh học và phòng hộ ven biển. Đáng chú ý, tỷ lệ mất rừng (4.48\%) vượt quá tỷ lệ phục hồi rừng (3.04\%), cho thấy xu hướng suy giảm ròng của diện tích rừng trong giai đoạn nghiên cứu, với chênh lệch khoảng 1.44\% (tương đương 2,341 ha) là mức độ mất rừng ròng mà khu vực đang phải đối mặt. Diện tích phi rừng lớn (18.17\%) phản ánh mức độ khai thác tài nguyên đất đai trong khu vực, chủ yếu cho hoạt động nuôi trồng thủy sản - ngành kinh tế mũi nhọn của tỉnh Cà Mau.
+
+Cần lưu ý rằng theo khuyến nghị của Olofsson và cộng sự \citeen{olofsson2014}, diện tích ước tính từ bản đồ phân loại cần được hiệu chỉnh dựa trên Confusion Matrix để đảm bảo tính không chệch. Với Accuracy cao của mô hình (98.86\%, Precision và Recall đều trên 96\% cho tất cả các lớp), sai số giữa diện tích thô và diện tích hiệu chỉnh được kỳ vọng là nhỏ. Tuy nhiên, việc thực hiện hiệu chỉnh đầy đủ theo phương pháp Olofsson sẽ là hướng phát triển trong tương lai.

@@ -1,0 +1,17 @@
+\section{Khoảng trống nghiên cứu và định hướng đồ án}
+
+Qua tổng quan tài liệu, một số khoảng trống nghiên cứu nổi bật được xác định. Thứ nhất, thiếu nghiên cứu Deep Learning cho rừng nhiệt đới Việt Nam: phần lớn công trình tập trung ở Amazon, Congo hay Indonesia, còn ít nghiên cứu áp dụng CNN cho rừng Việt Nam, đặc biệt là rừng ngập mặn Cà Mau. Thứ hai, kiến trúc CNN cho bộ dữ liệu nhỏ: CNN thường yêu cầu tập dữ liệu lớn (hàng trăm nghìn mẫu), có ít công trình nghiên cứu về kiến trúc CNN tối ưu cho các bộ dữ liệu nhỏ trong viễn thám (khoảng 2,000–5,000 mẫu). Thứ ba, tích hợp SAR và Optical trong Deep Learning: việc tích hợp SAR và Optical trong bối cảnh Deep Learning vẫn còn nhiều thách thức và còn thiếu các khảo sát tối ưu hóa fusion trong kiến trúc CNN.
+
+Xuất phát từ những khoảng trống nghiên cứu đã nêu, đồ án này hướng tới bốn mục tiêu chính. Thứ nhất, phát triển một kiến trúc CNN phù hợp cho các bộ dữ liệu nhỏ bằng cách thiết kế mô hình lightweight (xấp xỉ 36K tham số), áp dụng các kỹ thuật điều chuẩn mạnh như chuẩn hóa theo lô, Dropout và phân rã trọng số. Thứ hai, triển khai một quy trình đánh giá khoa học chặt chẽ bao gồm việc chia mẫu ngẫu nhiên phân tầng, thực hiện 5-Fold Stratified Cross Validation và giữ lại một fixed test set (20\%). Thứ ba, tối ưu hóa phương pháp fusion giữa Sentinel-1 và Sentinel-2 ở cấp độ feature, trích xuất 27 features tổng cộng (21 features từ S2 và 6 features từ S1). Thứ tư, ứng dụng thực tế tại Cà Mau, bao gồm phân loại toàn vùng quy hoạch lâm nghiệp (170,179 ha ranh giới, 162,469 ha diện tích phân loại thực tế), ước tính diện tích mất rừng và tạo bản đồ phân loại ở độ phân giải 10m.
+
+% === PHẦN CÂU HỎI NGHIÊN CỨU (đã comment, bỏ comment nếu cần) ===
+% \subsection{Câu hỏi nghiên cứu}
+%
+% Đồ án tập trung trả lời một số câu hỏi cốt lõi:
+% \begin{enumerate}
+%     \item Liệu 5-Fold Cross Validation có đảm bảo đánh giá mô hình một cách robust và ổn định?
+%     \item Kiến trúc CNN nào là phù hợp nhất cho bộ dữ liệu gồm 2,630 mẫu?
+%     \item Việc tích hợp Sentinel-1 SAR và Sentinel-2 Optical có cải thiện accuracy so với chỉ sử dụng Sentinel-2 hay không?
+%     \item Liệu mô hình CNN có thể được ứng dụng thực tế cho giám sát rừng Cà Mau?
+% \end{enumerate}
+% === KẾT THÚC PHẦN COMMENT ===

@@ -1,0 +1,13 @@
+\section{Đánh giá tổng quan}
+
+\subsection{Điểm mạnh của phương pháp}
+
+Những điểm nổi bật của mô hình bao gồm độ chính xác cao với test accuracy 98.86\% và ROC-AUC 99.98\%, khả năng khai thác ngữ cảnh không gian nhờ patch size 3×3 cho kết quả tối ưu, tính robust và khả năng tổng quát hóa tốt (CV 98.15\% và test 98.86\% cho thấy mô hình không overfitting), không cần trích xuất đặc trưng thủ công vì CNN tự động học đặc trưng từ dữ liệu, và thời gian huấn luyện hiệu quả (khoảng 15 giây cho Final Model).
+
+\subsection{Hạn chế}
+
+Đồ án vẫn tồn tại các hạn chế cần lưu ý. Thứ nhất, thời gian dự đoán toàn bộ raster còn dài (khoảng 14.83 phút cho 16.2 triệu pixel hợp lệ). Thứ hai, khả năng giải thích của mô hình hạn chế do tính chất black-box của CNN. Thứ ba, quy mô dữ liệu thực địa còn nhỏ (chỉ 2,630 điểm). Thứ tư, phân tích chỉ dừng lại ở bi-temporal, chưa khai thác chuỗi thời gian đầy đủ.
+
+\subsection{Tóm tắt chương}
+
+Chương này trình bày kết quả thực nghiệm và đánh giá mô hình CNN cho phân loại biến động rừng ngập mặn Cà Mau. Về kết quả huấn luyện, CV accuracy 5-Fold trung bình đạt 98.15\% ± 0.28\% cho thấy sự ổn định của mô hình, test accuracy đạt 98.86\% với ROC-AUC 99.98\%, trong đó hai lớp ``Phi rừng'' và ``Phục hồi rừng'' có precision và recall đạt 100\% và tổng cộng chỉ có 6/526 mẫu bị phân loại sai (tỷ lệ lỗi 1.14\%). Về kết quả phân loại vùng nghiên cứu với tổng diện tích 162,468.50 ha, rừng ổn định chiếm 74.30\% (120,716.91 ha), mất rừng chiếm 4.48\% (7,282.15 ha), phi rừng chiếm 18.17\% (29,528.54 ha), và phục hồi rừng chiếm 3.04\% (4,940.90 ha).
