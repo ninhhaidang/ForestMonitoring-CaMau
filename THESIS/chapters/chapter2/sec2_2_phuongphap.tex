@@ -1,22 +1,22 @@
 \section{Phương pháp nghiên cứu}
 
-Phần này trình bày phương pháp nghiên cứu và quy trình được minh họa trong Hình~\ref{fig:methodology-flowchart}. Quy trình bao gồm năm giai đoạn chính: thu thập và tiền xử lý dữ liệu, trích xuất đặc trưng, chuẩn bị mẫu huấn luyện, huấn luyện mô hình, và áp dụng mô hình.
+Phần này trình bày phương pháp nghiên cứu và quy trình tổng quan được minh họa trong Hình~\ref{fig:methodology-flowchart}. Quy trình bao gồm năm giai đoạn chính: (1) Thu thập và tiền xử lý dữ liệu, (2) Trích xuất đặc trưng, (3) Chuẩn bị mẫu huấn luyện, (4) Huấn luyện mô hình, và (5) Áp dụng mô hình.
 
 % Sơ đồ quy trình phương pháp nghiên cứu
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9425\textwidth]{img/chapter3/flowchart.png}
+\includegraphics[width=0.9425\textwidth]{img/chapter2/flowchart.png}
 \caption{Sơ đồ quy trình phương pháp nghiên cứu phát hiện biến động rừng}
 \label{fig:methodology-flowchart}
 \end{figure}
 
 \subsection{Trích xuất đặc trưng}
 
-\subsubsection{Xây dựng feature stack}
+% \subsubsection{Xây dựng feature stack}
 
 Việc kết hợp dữ liệu ra-đa khẩu độ tổng hợp và quang học đã được chứng minh là hiệu quả trong nhiều nghiên cứu phân loại lớp phủ đất \citeen{ienco2019, hu2020}. Cách tiếp cận này tận dụng ưu điểm bổ sung của hai nguồn dữ liệu: ra-đa khẩu độ tổng hợp cung cấp thông tin về cấu trúc và độ ẩm bề mặt, trong khi quang học cung cấp thông tin về đặc tính quang phổ của thực vật.
 
-Tổng cộng 27 đặc trưng được xây dựng từ hai nguồn dữ liệu. \textbf{Sentinel-2} đóng góp 21 đặc trưng, bao gồm 7 bands/chỉ số (B4, B8, B11, B12, NDVI, NBR, NDMI) cho kỳ trước, 7 bands/chỉ số tương ứng cho kỳ sau, và 7 giá trị delta (hiệu số giữa kỳ sau và kỳ trước). \textbf{Sentinel-1} đóng góp 6 đặc trưng, bao gồm 2 bands (VV, VH) cho kỳ trước, 2 bands tương ứng cho kỳ sau, và 2 giá trị delta.
+Tổng cộng 27 đặc trưng được xây dựng từ hai nguồn dữ liệu. Sentinel-2 đóng góp 21 đặc trưng, bao gồm 7 băng tần/chỉ số (B4, B8, B11, B12, NDVI, NBR, NDMI) cho kỳ trước, 7 băng tần/chỉ số tương ứng cho kỳ sau, và 7 giá trị delta (hiệu số giữa kỳ sau và kỳ trước). Sentinel-1 đóng góp 6 đặc trưng, bao gồm 2 băng (VV, VH) cho kỳ trước, 2 băng tương ứng cho kỳ sau, và 2 giá trị delta.
 
 \begin{table}[H]
 \centering
@@ -41,17 +41,17 @@ Tổng cộng 27 đặc trưng được xây dựng từ hai nguồn dữ liệu
 \end{tabular}
 \end{table}
 
-\subsubsection{Trích xuất patch 3×3}
+% \subsubsection{Trích xuất patch 3×3}
 
-Với mỗi điểm thực địa, một patch kích thước 3×3 pixels được trích xuất từ feature stack. Kích thước 3×3 được lựa chọn vì cho phép mô hình học được thông tin ngữ cảnh không gian xung quanh pixel trung tâm, phù hợp với độ phân giải 10m của Sentinel (mỗi patch tương đương vùng 30m × 30m), và giảm thiểu nhiễu từ các pixel lân cận không đồng nhất.
+Với mỗi điểm thực địa, một patch kích thước 3×3 điểm ảnh được trích xuất từ stack đặc trưng. Kích thước 3×3 được lựa chọn dựa trên ba tiêu chí: (1) cho phép mô hình học được thông tin ngữ cảnh không gian xung quanh điểm ảnh trung tâm; (2) phù hợp với độ phân giải 10m của Sentinel, mỗi patch tương đương vùng 30m × 30m — kích thước hợp lý cho các lô rừng ngập mặn; và (3) giảm thiểu nhiễu từ các điểm ảnh lân cận không đồng nhất. Kết quả thử nghiệm so sánh các kích thước patch khác nhau (xem Bảng~\ref{tab:patch_size}) xác nhận rằng patch 3×3 cho độ chính xác cao nhất (98.86\%) với số lượng tham số ít nhất.
 
 Kết quả là mỗi mẫu có kích thước (3, 3, 27) — tương ứng với chiều cao, chiều rộng và số kênh đặc trưng.
 
 \subsection{Chuẩn bị mẫu huấn luyện}
 
-\subsubsection{Chuẩn hóa dữ liệu}
+% \subsubsection{Chuẩn hóa dữ liệu}
 
-Việc chuẩn hóa dữ liệu là bước quan trọng để đảm bảo các features có cùng phạm vi giá trị, giúp quá trình huấn luyện mô hình hội tụ nhanh và ổn định hơn. Nghiên cứu này áp dụng phương pháp chuẩn hóa Z-score:
+Việc chuẩn hóa dữ liệu là bước quan trọng để đảm bảo các đặc trưng có cùng phạm vi giá trị, giúp quá trình huấn luyện mô hình hội tụ nhanh và ổn định hơn. Nghiên cứu này áp dụng phương pháp chuẩn hóa Z-score:
 
 \begin{equation}
 x_{normalized} = \frac{x - \mu}{\sigma}
@@ -59,42 +59,52 @@ x_{normalized} = \frac{x - \mu}{\sigma}
 
 trong đó $x$ là giá trị gốc, $\mu$ là giá trị trung bình và $\sigma$ là độ lệch chuẩn.
 
-Để đảm bảo tính khoa học và khách quan trong đánh giá mô hình, các tham số chuẩn hóa ($\mu$ và $\sigma$) được tính toán chỉ trên tập huấn luyện theo quy trình bốn bước. Đầu tiên, stratified split được thực hiện để tách 20\% dữ liệu làm tập test cố định trước khi tính toán bất kỳ thống kê nào. Tiếp theo, mean và std được tính cho từng feature trên tập training. Sau đó, các tham số đã tính được sử dụng để chuẩn hóa cả tập training, validation và test. Cuối cùng, các tham số được lưu lại để áp dụng cho dữ liệu mới khi dự đoán.
+Để tránh rò rỉ dữ liệu (data leakage), các tham số chuẩn hóa ($\mu$ và $\sigma$) được tính toán chỉ trên tập huấn luyện, sau đó áp dụng cho cả tập kiểm định và tập kiểm tra. Các tham số này cũng được lưu lại để sử dụng khi dự đoán trên dữ liệu mới.
 
-\subsubsection{Phân chia dữ liệu}
+% \subsubsection{Phân chia dữ liệu}
 
-Chiến lược chia dữ liệu được thiết kế theo khuyến nghị của Roberts et al. \citeen{roberts2017} về cross-validation cho dữ liệu không gian, đảm bảo đánh giá khách quan. Quy trình chia dữ liệu bao gồm bốn bước. Bước thứ nhất, tách 20\% dữ liệu làm tập test cố định (526 mẫu) — tập này không được sử dụng trong quá trình huấn luyện hay tinh chỉnh siêu tham số. Bước thứ hai, áp dụng 5-Fold Cross Validation trên 80\% còn lại (2,104 mẫu) để tìm kiếm siêu tham số tối ưu và đánh giá độ ổn định của mô hình. Bước thứ ba, huấn luyện mô hình cuối cùng trên toàn bộ 80\% dữ liệu training. Bước thứ tư, đánh giá mô hình cuối cùng trên 20\% tập test để báo cáo kết quả.
+Chiến lược chia dữ liệu được thiết kế theo khuyến nghị của Roberts et al. \citeen{roberts2017} về kiểm định chéo cho dữ liệu không gian. Quy trình chia dữ liệu bao gồm bốn bước. Bước thứ nhất, tách 20\% dữ liệu làm tập kiểm tra cố định (526 mẫu) — tập này không được sử dụng trong quá trình huấn luyện hay tinh chỉnh siêu tham số. Bước thứ hai, áp dụng kiểm định chéo 5 phần trên 80\% còn lại (2,104 mẫu) để đánh giá độ ổn định của mô hình và tìm kiếm siêu tham số tối ưu. Bước thứ ba, sau khi xác định siêu tham số tối ưu, huấn luyện mô hình cuối cùng trên toàn bộ 80\% dữ liệu để tận dụng tối đa dữ liệu huấn luyện. Bước thứ tư, đánh giá mô hình cuối cùng trên 20\% tập kiểm tra để báo cáo kết quả.
 
-Việc sử dụng stratified sampling đảm bảo tỷ lệ các lớp (Rừng ổn định, Mất rừng, Phi rừng, Phục hồi rừng) được duy trì đồng đều trong cả tập training và test.
+Cách phân chia dữ liệu này đảm bảo tỷ lệ các lớp (Rừng ổn định, Mất rừng, Phi rừng, Phục hồi rừng) được duy trì đồng đều trong cả tập huấn luyện và kiểm tra.
 
 \subsection{Kiến trúc mô hình CNN}
 
-Mô hình nhận đầu vào là tensor kích thước (batch\_size, 3, 3, 27), sau đó được chuyển đổi sang định dạng PyTorch (batch\_size, 27, 3, 3). Kiến trúc bao gồm năm thành phần chính. Thành phần thứ nhất là khối tích chập 1 gồm Conv2D (64 filters, kernel 3×3), BatchNorm2D, ReLU và Dropout2D (p=0.7). Thành phần thứ hai là khối tích chập 2 gồm Conv2D (32 filters, kernel 3×3), BatchNorm2D, ReLU và Dropout2D (p=0.7). Thành phần thứ ba là lớp Global Average Pooling có chức năng gộp thông tin không gian. Thành phần thứ tư là khối kết nối đầy đủ gồm Linear (32→64), BatchNorm1D, ReLU và Dropout (p=0.7). Thành phần thứ năm là lớp đầu ra Linear (64→4) cho 4 lớp phân loại.
-
-Với 36,676 tham số, mô hình có độ phức tạp vừa phải, phù hợp với quy mô bộ dữ liệu 2,630 mẫu. Kiến trúc tổng quan của mô hình được minh họa trong Hình~\ref{fig:cnn_architecture}.
+Nghiên cứu này sử dụng một kiến trúc mạng nơ-ron tích chập (CNN) nhẹ, được thiết kế phù hợp với quy mô bộ dữ liệu 2,630 mẫu. Kiến trúc tổng quan của mô hình được minh họa trong Hình~\ref{fig:cnn_architecture}.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{CNN-architecture.png}
+\includegraphics[width=0.95\textwidth]{chapter2/CNN-architecture.png}
 \caption{Kiến trúc mô hình mạng nơ-ron tích chập (CNN) được sử dụng trong nghiên cứu}
 \label{fig:cnn_architecture}
 \end{figure}
 
+Dữ liệu đầu vào là các patch kích thước $3 \times 3$ điểm ảnh với 27 kênh đặc trưng, được biểu diễn dưới dạng tensor $(N, 3, 3, 27)$ với $N$ là số lượng mẫu trong mỗi batch. Luồng xử lý của mô hình được mô tả như sau.
+
+Đầu tiên, dữ liệu đi qua khối tích chập thứ nhất sử dụng 64 bộ lọc kích thước $3 \times 3$. Mỗi bộ lọc kết hợp thông tin từ tất cả 27 kênh đặc trưng để tạo ra một bản đồ đặc trưng mới, giúp mô hình học được mối quan hệ giữa các băng quang phổ, chỉ số thực vật và dữ liệu ra-đa. Sau lớp tích chập là lớp chuẩn hóa theo lô (Batch Normalization) \citeen{ioffe2015} giúp ổn định quá trình huấn luyện, hàm kích hoạt ReLU đưa tính phi tuyến vào mô hình, và lớp Dropout2D với tỷ lệ 70\% để ngăn ngừa quá khớp. Đầu ra có kích thước $(N, 64, 3, 3)$.
+
+Tiếp theo, khối tích chập thứ hai sử dụng 32 bộ lọc để nén thông tin từ 64 kênh xuống 32 kênh, với cấu trúc tương tự khối thứ nhất. Việc giảm số kênh buộc mô hình phải học cách biểu diễn thông tin cô đọng hơn. Đầu ra có kích thước $(N, 32, 3, 3)$.
+
+Sau đó, lớp gộp trung bình toàn cục (Global Average Pooling) tính giá trị trung bình của mỗi kênh đặc trưng trên toàn bộ vùng không gian $3 \times 3$, chuyển đổi bản đồ đặc trưng thành vector 32 chiều. Kỹ thuật này giúp giảm số lượng tham số và tăng khả năng tổng quát hóa của mô hình.
+
+Cuối cùng, hai lớp kết nối đầy đủ thực hiện phân loại. Lớp thứ nhất mở rộng từ 32 lên 64 chiều kèm theo chuẩn hóa theo lô, ReLU và Dropout. Lớp thứ hai (lớp đầu ra) ánh xạ từ 64 chiều xuống 4 chiều, tương ứng với 4 lớp phân loại: Rừng ổn định, Mất rừng, Phi rừng và Phục hồi rừng.
+
+Mô hình sử dụng phương pháp khởi tạo trọng số Kaiming/He \citeen{he2015} cho các lớp tích chập và Xavier cho các lớp kết nối đầy đủ, đảm bảo quá trình huấn luyện ổn định ngay từ đầu. Tổng cộng mô hình có 36,676 tham số có thể huấn luyện, tạo ra tỷ lệ mẫu trên tham số khoảng 72:1 — phù hợp cho việc huấn luyện với bộ dữ liệu nhỏ khi kết hợp với các kỹ thuật điều chuẩn. Bảng~\ref{tab:model_params} trình bày chi tiết số lượng tham số của từng thành phần.
+
 \begin{table}[H]
 \centering
-\caption{Chi tiết số tham số huấn luyện của mô hình}
+\caption{Chi tiết số tham số huấn luyện của mô hình CNN}
 \label{tab:model_params}
 \begin{tabular}{|l|c|l|}
 \hline
-\textbf{Lớp} & \textbf{Số tham số} & \textbf{Cách tính} \\
+\textbf{Thành phần} & \textbf{Số tham số} & \textbf{Công thức tính} \\
 \hline
-Tích chập 1 + Chuẩn hóa batch 1 & 15,680 & 27×3×3×64 + 128 \\
+Khối tích chập 1 (Conv + BN) & 15,680 & $27 \times 3 \times 3 \times 64 + 128$ \\
 \hline
-Tích chập 2 + Chuẩn hóa batch 2 & 18,496 & 64×3×3×32 + 64 \\
+Khối tích chập 2 (Conv + BN) & 18,496 & $64 \times 3 \times 3 \times 32 + 64$ \\
 \hline
-Kết nối đầy đủ 1 + Chuẩn hóa batch 3 & 2,240 & 32×64 + 64 + 128 \\
+Lớp kết nối đầy đủ 1 (FC + BN) & 2,240 & $32 \times 64 + 64 + 128$ \\
 \hline
-Kết nối đầy đủ 2 (Đầu ra) & 260 & 64×4 + 4 \\
+Lớp đầu ra & 260 & $64 \times 4 + 4$ \\
 \hline
 \textbf{Tổng cộng} & \textbf{36,676} & \\
 \hline

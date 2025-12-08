@@ -7,7 +7,7 @@
 
 Kiến trúc CNN nhẹ với khoảng 36,000 tham số được thiết kế, sử dụng patches 3×3 để khai thác ngữ cảnh không gian, áp dụng các kỹ thuật điều chuẩn gồm chuẩn hóa theo lô , Dropout và phân rã trọng số để tránh quá khớp trên bộ dữ liệu thực địa gồm 2,630 điểm với 4 lớp phân loại: Rừng ổn định, Mất rừng, Phi rừng và Phục hồi rừng. Quy trình đánh giá triển khai bằng cách chia mẫu ngẫu nhiên phân tầng kết hợp kiểm định chéo 5 lần, đảm bảo phân bố cân bằng các lớp và giữ lại 20\% dữ liệu làm tập test cố định.
 
-Kết quả cho thấy mô hình đạt độ chính xác 98.86\% trên tập test với ROC-AUC 99.98\%, kiểm chứng chéo cho kết quả trung bình 98.15\% ± 0.28\% chứng tỏ mô hình ổn định và có khả năng tổng quát hóa tốt. Ứng dụng thực tế phân loại toàn vùng quy hoạch lâm nghiệp Cà Mau (170,179 ha ranh giới, 162,469 ha phân loại thực tế), phát hiện 7,282 ha mất rừng (4.48\%) và 4,941 ha phục hồi rừng (3.04\%) trong giai đoạn nghiên cứu, đóng góp phương pháp hiệu quả cho công tác giám sát tài nguyên rừng.
+Kết quả cho thấy mô hình đạt độ chính xác 98.86\% trên tập test với ROC-AUC 99.98\%, kiểm định chéo cho kết quả trung bình 98.15\% ± 0.28\% chứng tỏ mô hình ổn định và có khả năng tổng quát hóa tốt. Ứng dụng thực tế phân loại toàn vùng quy hoạch lâm nghiệp Cà Mau (170,179 ha ranh giới, 162,469 ha phân loại thực tế), phát hiện 7,282 ha mất rừng (4.48\%) và 4,941 ha phục hồi rừng (3.04\%) trong giai đoạn nghiên cứu, đóng góp phương pháp hiệu quả cho công tác giám sát tài nguyên rừng.
 
 \textbf{\textit{Từ khóa:}} CNN, viễn thám, biến động rừng, Cà Mau.
 }
