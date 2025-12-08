@@ -2,7 +2,7 @@
 
 \subsection{Nguyên lý viễn thám}
 
-Viễn thám là khoa học và kỹ thuật thu thập thông tin về một đối tượng hoặc khu vực từ xa, thường thông qua việc ghi nhận bức xạ điện từ phản xạ hoặc phát ra từ bề mặt Trái Đất \cite{lillesand2015}. Nguyên lý cơ bản của viễn thám dựa trên tương tác giữa bức xạ điện từ và các đối tượng trên bề mặt. Dựa vào nguồn năng lượng sử dụng, viễn thám được chia thành hai loại chính: viễn thám bị động (passive remote sensing) và viễn thám chủ động (active remote sensing).
+Viễn thám là khoa học và kỹ thuật thu thập thông tin về một đối tượng hoặc khu vực từ xa, thường thông qua việc ghi nhận bức xạ điện từ phản xạ hoặc phát ra từ bề mặt Trái Đất \citeen{lillesand2015}. Nguyên lý cơ bản của viễn thám dựa trên tương tác giữa bức xạ điện từ và các đối tượng trên bề mặt. Dựa vào nguồn năng lượng sử dụng, viễn thám được chia thành hai loại chính: viễn thám bị động (passive remote sensing) và viễn thám chủ động (active remote sensing).
 
 Trong hệ thống viễn thám bị động, nguồn năng lượng chính là bức xạ từ Mặt Trời. Khi các sóng này truyền qua khí quyển, một phần năng lượng bị hấp thụ hoặc tán xạ. Sau đó bức xạ tương tác với bề mặt, chịu các quá trình phản xạ, hấp thụ hoặc truyền qua tùy theo đặc tính vật liệu. Tín hiệu phản xạ được vệ tinh ghi nhận bởi cảm biến và được xử lý, truyền về trạm mặt đất để phục vụ phân tích. Nguyên lý cân bằng năng lượng cho thấy năng lượng tới bằng tổng năng lượng phản xạ, hấp thụ và truyền qua.
 
@@ -21,9 +21,9 @@ Mỗi loại viễn thám có những ưu nhược điểm riêng. Viễn thám 
 
 Chương trình Copernicus của Liên minh Châu Âu là hệ thống quan sát Trái Đất toàn diện, cung cấp dữ liệu viễn thám miễn phí phục vụ nghiên cứu khoa học và giám sát môi trường. Trong nghiên cứu này, dữ liệu từ hai vệ tinh Sentinel-1 và Sentinel-2 được sử dụng nhờ tính chất bổ sung giữa cảm biến ra-đa và quang học.
 
-Sentinel-1 là vệ tinh mang cảm biến ra-đa khẩu độ tổng hợp hoạt động ở dải sóng C-band với tần số 5.405 GHz (bước sóng 5.55 cm). Trong chế độ IW, Sentinel-1 thu nhận dữ liệu ở hai chế độ phân cực VV và VH với độ phân giải không gian 10m và độ rộng dải quét 250 km \cite{esa2024s1}. Nguyên lý hoạt động của ra-đa dựa trên việc phát xung sóng vi ba và ghi nhận tín hiệu tán xạ ngược từ bề mặt. Cường độ tán xạ ngược phụ thuộc vào độ nhám bề mặt, hằng số điện môi và cấu trúc đối tượng. Đối với thảm thực vật, phân cực VV nhạy với tán xạ bề mặt liên quan đến độ ẩm đất, trong khi VH nhạy với tán xạ thể tích (volume scattering) từ cấu trúc tán lá \cite{torres2012}. Ưu điểm của ra-đa là khả năng xuyên qua mây và hoạt động độc lập với điều kiện chiếu sáng.
+Sentinel-1 là vệ tinh mang cảm biến ra-đa khẩu độ tổng hợp hoạt động ở dải sóng C-band với tần số 5.405 GHz (bước sóng 5.55 cm). Trong chế độ IW, Sentinel-1 thu nhận dữ liệu ở hai chế độ phân cực VV và VH với độ phân giải không gian 10m và độ rộng dải quét 250 km \citeen{esa2024s1}. Nguyên lý hoạt động của ra-đa dựa trên việc phát xung sóng vi ba và ghi nhận tín hiệu tán xạ ngược từ bề mặt. Cường độ tán xạ ngược phụ thuộc vào độ nhám bề mặt, hằng số điện môi và cấu trúc đối tượng. Đối với thảm thực vật, phân cực VV nhạy với tán xạ bề mặt liên quan đến độ ẩm đất, trong khi VH nhạy với tán xạ thể tích (volume scattering) từ cấu trúc tán lá \citeen{torres2012}. Ưu điểm của ra-đa là khả năng xuyên qua mây và hoạt động độc lập với điều kiện chiếu sáng.
 
-Sentinel-2 mang cảm biến quang học đa phổ thu nhận ảnh ở 13 dải phổ từ vùng nhìn thấy đến hồng ngoại sóng ngắn (443--2190 nm). Độ phân giải không gian thay đổi theo dải phổ: 10m cho các dải B2, B3, B4, B8; 20m cho B5, B6, B7, B8a, B11, B12; và 60m cho B1, B9, B10 \cite{esa2024s2}. Với 13 dải phổ bao phủ nhiều vùng bước sóng khác nhau, có thể phân biệt các loại lớp phủ đất dựa trên đặc tính phản xạ riêng biệt của từng đối tượng \cite{khatami2016}. Dữ liệu đa phổ này đặc biệt phù hợp để tính toán các chỉ số thực vật phục vụ giám sát biến động rừng. Bảng \ref{tab:sentinel_comparison} tổng hợp các thông số kỹ thuật chính của hai vệ tinh này.
+Sentinel-2 mang cảm biến quang học đa phổ thu nhận ảnh ở 13 dải phổ từ vùng nhìn thấy đến hồng ngoại sóng ngắn (443--2190 nm). Độ phân giải không gian thay đổi theo dải phổ: 10m cho các dải B2, B3, B4, B8; 20m cho B5, B6, B7, B8a, B11, B12; và 60m cho B1, B9, B10 \citeen{esa2024s2}. Với 13 dải phổ bao phủ nhiều vùng bước sóng khác nhau, có thể phân biệt các loại lớp phủ đất dựa trên đặc tính phản xạ riêng biệt của từng đối tượng \citeen{khatami2016}. Dữ liệu đa phổ này đặc biệt phù hợp để tính toán các chỉ số thực vật phục vụ giám sát biến động rừng. Bảng \ref{tab:sentinel_comparison} tổng hợp các thông số kỹ thuật chính của hai vệ tinh này.
 
 \begin{table}[H]
 \centering
@@ -52,11 +52,13 @@ Thông tin thu nhận & Cấu trúc, độ ẩm, độ nhám & Phản xạ phổ
 \end{tabular}
 \end{table}
 
-Sự kết hợp dữ liệu từ hai nguồn cảm biến mang lại lợi thế quan trọng trong giám sát rừng nhiệt đới. SAR cung cấp dữ liệu liên tục trong điều kiện mây che phủ thường xuyên, đồng thời nhạy với biến đổi cấu trúc rừng như chặt phá cây. Trong khi đó, dữ liệu quang học cung cấp thông tin quang phổ phong phú để tính toán các chỉ số thực vật và đánh giá sức khỏe thảm thực vật. Các nghiên cứu đã chứng minh việc tích hợp SAR và quang học giúp cải thiện độ chính xác phân loại từ 5--15\% so với sử dụng đơn nguồn dữ liệu \cite{ienco2019, hu2020}.
+Sự kết hợp dữ liệu từ hai nguồn cảm biến mang lại lợi thế quan trọng trong giám sát rừng nhiệt đới. SAR cung cấp dữ liệu liên tục trong điều kiện mây che phủ thường xuyên, đồng thời nhạy với biến đổi cấu trúc rừng như chặt phá cây. Trong khi đó, dữ liệu quang học cung cấp thông tin quang phổ phong phú để tính toán các chỉ số thực vật và đánh giá sức khỏe thảm thực vật. Các nghiên cứu đã chứng minh việc tích hợp SAR và quang học giúp cải thiện độ chính xác phân loại từ 5--15\% so với sử dụng đơn nguồn dữ liệu \citeen{ienco2019, hu2020}.
 
 \subsection{Các chỉ số thực vật viễn thám}
 
 Các chỉ số thực vật (Vegetation Indices) là các công thức toán học kết hợp giá trị phản xạ từ các kênh phổ khác nhau nhằm tăng cường thông tin về thực vật và giảm nhiễu từ các yếu tố khác như đất và khí quyển. Nghiên cứu này sử dụng ba chỉ số chính là NDVI, NBR và NDMI, mỗi chỉ số khai thác các đặc tính phổ khác nhau để cung cấp thông tin bổ sung về trạng thái thực vật.
+
+Cơ sở để xây dựng các chỉ số thực vật xuất phát từ đặc tính phản xạ phổ đặc trưng của thực vật \citeen{lillesand2015}. Ở vùng ánh sáng đỏ (Red, 620--700 nm), sắc tố diệp lục trong lá hấp thụ mạnh năng lượng để thực hiện quang hợp, dẫn đến phản xạ thấp. Ngược lại, ở vùng cận hồng ngoại (NIR, 700--1100 nm), cấu trúc xốp của mô thịt lá (mesophyll) tạo ra hiện tượng tán xạ nội bộ mạnh, khiến phản xạ đạt 40--50\%. Ở vùng hồng ngoại sóng ngắn (SWIR, 1100--2500 nm), nước trong lá hấp thụ mạnh bức xạ, do đó phản xạ phụ thuộc trực tiếp vào hàm lượng nước. Sự tương phản rõ rệt giữa các vùng phổ này là nền tảng để xây dựng các chỉ số thực vật: khi thực vật khỏe mạnh, sự chênh lệch giữa phản xạ NIR cao và phản xạ Red thấp sẽ lớn; khi thực vật bị stress hoặc mất đi, sự tương phản này giảm đáng kể.
 
 Chỉ số thực vật chuẩn hóa NDVI (Normalized Difference Vegetation Index) là chỉ số được sử dụng phổ biến nhất để đánh giá sức khỏe và mật độ thực vật \citeen{rouse1974}, được tính theo công thức:
 \begin{equation}
@@ -96,11 +98,11 @@ NDMI & (B8-B11)/(B8+B11) & [-1, 1] & Độ ẩm tán lá \\
 \end{tabular}
 \end{table}
 
-\subsection{Phát hiện biến động rừng và tích hợp đa nguồn dữ liệu}
+\subsection{Giám sát biến động rừng và tích hợp đa nguồn dữ liệu}
 
-Phát hiện biến động rừng (Forest Change Detection) là quá trình xác định sự thay đổi về diện tích, cấu trúc hoặc trạng thái của rừng giữa hai hoặc nhiều thời điểm khác nhau \citeen{huang2021}. Phương pháp này dựa trên việc so sánh các đặc trưng viễn thám thu được từ các thời điểm khác nhau.
+Giám sát biến động rừng là quá trình xác định sự thay đổi về diện tích, cấu trúc hoặc trạng thái của rừng giữa hai hoặc nhiều thời điểm khác nhau \citeen{huang2021}. Phương pháp này dựa trên việc so sánh các đặc trưng viễn thám thu được từ các thời điểm khác nhau.
 
-Phương pháp phát hiện biến động dựa trên việc so sánh các đặc trưng giữa hai thời điểm, tính toán sự chênh lệch (delta) giữa ``after features'' và ``before features''. Temporal features bao gồm các ``before features'' thể hiện trạng thái rừng tại thời điểm $t_1$, các ``after features'' thể hiện trạng thái rừng tại thời điểm $t_2$, và các ``delta features'' biểu diễn biến đổi giữa hai thời điểm.
+Phương pháp phát hiện biến động dựa trên việc so sánh các đặc trưng giữa hai thời điểm, tính toán sự chênh lệch (delta) giữa ``các đặc trưng trước'' và ``các đặc trưng sau''. Các đặc trưng thời gian bao gồm các ``các đặc trưng trước'' thể hiện trạng thái rừng tại thời điểm $t_1$, các ``các đặc trưng sau'' thể hiện trạng thái rừng tại thời điểm $t_2$, và các ``đặc trưng delta'' biểu diễn biến đổi giữa hai thời điểm.
 
 Ví dụ với NDVI, khi $\Delta NDVI$ (hiệu NDVI sau và trước) giảm mạnh thì đó là dấu hiệu mất rừng, khi $\Delta NDVI$ xấp xỉ 0 thì vùng được xem là rừng ổn định, và khi $\Delta NDVI$ tăng mạnh thì biểu hiện tái trồng rừng.
 
