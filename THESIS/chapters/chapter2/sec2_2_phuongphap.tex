@@ -138,13 +138,13 @@ early\_stopping & 15 epochs & Patience dừng sớm \\
 \end{tabular}
 \end{table}
 
-Nghiên cứu sử dụng thuật toán tối ưu AdamW \citeen{loshchilov2019} kết hợp với ReduceLROnPlateau scheduler để tự động giảm tốc độ học khi validation loss không cải thiện. Cơ chế dừng sớm (early stopping) với patience 15 epochs giúp dừng huấn luyện khi mô hình bắt đầu quá khớp và lưu lại phiên bản có validation loss thấp nhất.
+Nghiên cứu sử dụng thuật toán tối ưu AdamW \citeen{loshchilov2019} kết hợp với ReduceLROnPlateau  để tự động giảm tốc độ học khi validation loss không cải thiện. Cơ chế dừng sớm (early stopping) với patience 15 epochs giúp dừng huấn luyện khi mô hình bắt đầu quá khớp và lưu lại phiên bản có validation loss thấp nhất.
 
 Quy trình huấn luyện gồm bốn giai đoạn. Giai đoạn thứ nhất, khởi tạo trọng số theo phương pháp Kaiming/He \citeen{he2015}. Giai đoạn thứ hai, thực hiện kiểm định chéo 5 phần (5-Fold Cross Validation) trên 80\% dữ liệu (2,104 mẫu) để đánh giá độ ổn định của mô hình; trong đó dữ liệu được chia thành 5 phần bằng nhau, mô hình được huấn luyện 5 lần với mỗi lần sử dụng 4 phần làm tập huấn luyện và 1 phần làm tập kiểm định. Giai đoạn thứ ba, huấn luyện mô hình cuối cùng trên toàn bộ 80\% dữ liệu. Giai đoạn thứ tư, đánh giá mô hình trên 20\% tập kiểm tra cố định (526 mẫu) --- tập dữ liệu không được sử dụng trong quá trình huấn luyện.
 
 \subsection{Áp dụng mô hình}
 
-Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn bộ vùng nghiên cứu với khoảng 16.2 triệu điểm ảnh hợp lệ, tương đương diện tích 162,468 hecta. Quy trình dự đoán được thực hiện như sau.
+Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn bộ vùng nghiên cứu với khoảng 16.2 triệu điểm ảnh hợp lệ, tương đương diện tích 162,468 ha. Quy trình dự đoán được thực hiện như sau.
 
 Đầu tiên, dữ liệu đặc trưng (feature stack) gồm 27 kênh được tải vào bộ nhớ. Với mỗi điểm ảnh cần phân loại, một vùng lân cận kích thước 3×3 được trích xuất, chứa thông tin của điểm ảnh trung tâm và 8 điểm ảnh xung quanh. Đối với các điểm ảnh ở biên, kỹ thuật phản chiếu (mirror padding) được sử dụng để tạo đủ ngữ cảnh 3×3. Mỗi patch sau đó được chuẩn hóa Z-score sử dụng các tham số (mean, std) đã tính từ tập huấn luyện.
 

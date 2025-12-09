@@ -42,7 +42,7 @@ Về không gian, nghiên cứu được thực hiện trên khu vực ranh gi�
 
 Giai đoạn thứ nhất là thu thập và tiền xử lý dữ liệu, trong đó ảnh vệ tinh Sentinel-1 và Sentinel-2 được thu thập từ nền tảng Google Earth Engine. Dữ liệu Sentinel-2 sử dụng sản phẩm đã hiệu chỉnh khí quyển (Level-2A) kết hợp loại bỏ pixel bị mây che phủ, còn dữ liệu Sentinel-1 đã được ESA tiền xử lý bao gồm hiệu chỉnh quỹ đạo và loại bỏ nhiễu.
 
-Giai đoạn thứ hai là trích xuất đặc trưng, bao gồm việc tính toán các kênh phổ và chỉ số thực vật từ dữ liệu Sentinel-2 (B4, B8, B11, B12, NDVI, NBR, NDMI) và các kênh tán xạ ngược (backscatter) từ Sentinel-1 (VV, VH) cho hai thời kỳ cùng với giá trị delta, tổng hợp 27 đặc trưng cho mỗi điểm mẫu.
+Giai đoạn thứ hai là trích xuất đặc trưng, bao gồm việc tính toán các kênh phổ và chỉ số thực vật từ dữ liệu Sentinel-2 (B4, B8, B11, B12, NDVI, NBR, NDMI) và các kênh tán xạ ngược từ Sentinel-1 (VV, VH) cho hai thời kỳ cùng với giá trị delta, tổng hợp 27 đặc trưng cho mỗi điểm mẫu.
 
 Giai đoạn thứ ba là chuẩn bị mẫu huấn luyện, trong đó bộ dữ liệu 2,630 mẫu với 4 lớp biến động rừng được xây dựng. Kỹ thuật chuẩn hóa dữ liệu được áp dụng và dữ liệu được phân chia theo tỷ lệ 80\% huấn luyện (với kiểm định chéo 5 lần) và 20\% kiểm tra.
 
