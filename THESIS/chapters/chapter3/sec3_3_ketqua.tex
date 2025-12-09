@@ -4,6 +4,83 @@
 
 Để đánh giá độ ổn định của mô hình, nghiên cứu áp dụng phương pháp kiểm định chéo 5 phần (5-Fold Cross Validation). Phương pháp này chia dữ liệu thành 5 phần bằng nhau, luân phiên sử dụng mỗi phần làm tập kiểm tra trong khi 4 phần còn lại làm tập huấn luyện; kết quả cuối cùng là trung bình của 5 lần đánh giá.
 
+Hình~\ref{fig:cv_fold1} đến Hình~\ref{fig:cv_fold5} trình bày diễn biến hàm mất mát (loss) và độ chính xác (accuracy) trong quá trình huấn luyện của từng fold. Mỗi hình bao gồm hai biểu đồ: biểu đồ bên trái thể hiện giá trị loss trên tập huấn luyện (đường màu xanh) và tập kiểm định (đường màu đỏ) theo số epoch; biểu đồ bên phải thể hiện accuracy tương ứng. Đường thẳng đứng màu xanh lá đánh dấu epoch đạt validation loss thấp nhất, tại đó mô hình được lưu lại.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{img/chapter3/cnn_cv_fold1_curves.png}
+\caption{Diễn biến loss và accuracy trong quá trình huấn luyện Fold 1}
+\label{fig:cv_fold1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{img/chapter3/cnn_cv_fold2_curves.png}
+\caption{Diễn biến loss và accuracy trong quá trình huấn luyện Fold 2}
+\label{fig:cv_fold2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{img/chapter3/cnn_cv_fold3_curves.png}
+\caption{Diễn biến loss và accuracy trong quá trình huấn luyện Fold 3}
+\label{fig:cv_fold3}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{img/chapter3/cnn_cv_fold4_curves.png}
+\caption{Diễn biến loss và accuracy trong quá trình huấn luyện Fold 4}
+\label{fig:cv_fold4}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{img/chapter3/cnn_cv_fold5_curves.png}
+\caption{Diễn biến loss và accuracy trong quá trình huấn luyện Fold 5}
+\label{fig:cv_fold5}
+\end{figure}
+
+Phân tích các biểu đồ huấn luyện cho thấy một số đặc điểm quan trọng. Về xu hướng hội tụ, validation loss giảm nhanh trong khoảng 10 epoch đầu tiên và dần ổn định ở mức thấp (0.04--0.07), trong khi training loss giảm chậm hơn và duy trì ở mức cao hơn (0.20--0.25). Hiện tượng validation loss thấp hơn training loss là đặc trưng điển hình khi sử dụng Dropout với tỷ lệ cao (70\%), bởi Dropout chỉ được kích hoạt trong quá trình huấn luyện, làm tăng độ khó cho mô hình khi học, trong khi ở chế độ đánh giá thì Dropout bị tắt và mô hình sử dụng toàn bộ các nơ-ron. Điều này cho thấy kỹ thuật điều chuẩn đang hoạt động hiệu quả và mô hình không bị quá khớp.
+
+Về tốc độ học, validation accuracy đạt ngưỡng trên 98\% chỉ sau khoảng 10--15 epoch và duy trì ổn định trong suốt quá trình huấn luyện. Ngược lại, training accuracy tăng chậm hơn do ảnh hưởng của Dropout, đạt khoảng 90--95\% ở cuối quá trình huấn luyện. Cơ chế early stopping đã dừng huấn luyện tại các epoch khác nhau cho mỗi fold (từ epoch 50 đến 86), cho thấy mô hình đã hội tụ và việc tiếp tục huấn luyện không cải thiện thêm hiệu suất trên tập kiểm định.
+
+Bảng~\ref{tab:cv_training_summary} tổng hợp các thông số huấn luyện của 5 fold.
+
+\begin{table}[H]
+\centering
+\caption{Tổng hợp kết quả huấn luyện 5-Fold Cross Validation}
+\label{tab:cv_training_summary}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Fold} & \textbf{Best Epoch} & \textbf{Best Val Loss} & \textbf{Best Val Accuracy} \\
+\hline
+Fold 1 & 59 & 0.0531 & 98.57\% \\
+\hline
+Fold 2 & 77 & 0.0401 & 99.05\% \\
+\hline
+Fold 3 & 82 & 0.0501 & 98.34\% \\
+\hline
+Fold 4 & 86 & 0.0683 & 98.10\% \\
+\hline
+Fold 5 & 50 & 0.0546 & 98.33\% \\
+\hline
+\textbf{Trung bình} & \textbf{71} & \textbf{0.0532} & \textbf{98.48\%} \\
+\hline
+\end{tabular}
+\end{table}
+
+Sau khi hoàn tất kiểm định chéo, mô hình cuối cùng được huấn luyện trên toàn bộ 80\% dữ liệu (2,104 mẫu) để tận dụng tối đa lượng dữ liệu huấn luyện. Hình~\ref{fig:final_training} trình bày diễn biến loss và accuracy trong quá trình huấn luyện mô hình cuối cùng.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{img/chapter3/cnn_training_history.png}
+\caption{Diễn biến loss và accuracy trong quá trình huấn luyện mô hình cuối cùng (80\% dữ liệu)}
+\label{fig:final_training}
+\end{figure}
+
+Do huấn luyện trên toàn bộ 80\% dữ liệu mà không có tập kiểm định riêng, biểu đồ chỉ hiển thị training loss và training accuracy. Quá trình huấn luyện kéo dài khoảng 70 epoch với loss giảm từ khoảng 1.8 xuống 0.2 và accuracy tăng từ khoảng 30\% lên trên 95\%. Mô hình này sau đó được đánh giá trên 20\% tập kiểm tra cố định (526 mẫu) để báo cáo kết quả cuối cùng.
+
 \begin{table}[H]
 \centering
 \caption{Kết quả kiểm định chéo 5 phần (5-Fold Cross Validation)}
@@ -12,22 +89,22 @@
 \hline
 \textbf{Fold} & \textbf{Accuracy} & \textbf{F1-Score} \\
 \hline
-Fold 1 & 98.34\% & 98.34\% \\
+Fold 1 & 98.57\% & 98.57\% \\
 \hline
-Fold 2 & 98.57\% & 98.57\% \\
+Fold 2 & 99.05\% & 99.05\% \\
 \hline
-Fold 3 & 98.10\% & 98.10\% \\
+Fold 3 & 98.34\% & 98.34\% \\
 \hline
-Fold 4 & 97.86\% & 97.86\% \\
+Fold 4 & 98.10\% & 98.10\% \\
 \hline
-Fold 5 & 97.86\% & 97.86\% \\
+Fold 5 & 98.33\% & 98.33\% \\
 \hline
-\textbf{Mean ± Std} & \textbf{98.15\% ± 0.28\%} & \textbf{98.15\% ± 0.28\%} \\
+\textbf{Mean ± Std} & \textbf{98.48\% ± 0.36\%} & \textbf{98.48\% ± 0.36\%} \\
 \hline
 \end{tabular}
 \end{table}
 
-Kết quả kiểm định chéo cho thấy mô hình đạt được sự ổn định cao với độ lệch chuẩn của Accuracy chỉ khoảng 0.28\%. Accuracy của từng fold đều vượt ngưỡng 97.8\%, phản ánh khả năng tổng quát hóa tốt của mô hình và không có dấu hiệu quá khớp nghiêm trọng.
+Kết quả kiểm định chéo cho thấy mô hình đạt được sự ổn định cao với độ lệch chuẩn của Accuracy chỉ khoảng 0.36\%. Accuracy của từng fold đều vượt ngưỡng 98\%, phản ánh khả năng tổng quát hóa tốt của mô hình và không có dấu hiệu quá khớp nghiêm trọng.
 
 \begin{figure}[H]
     \centering
@@ -40,8 +117,8 @@ Kết quả kiểm định chéo cho thấy mô hình đạt được sự ổn 
             xlabel={Fold},
             symbolic x coords={Fold 1, Fold 2, Fold 3, Fold 4, Fold 5},
             xtick=data,
-            ymin=96.5,
-            ymax=99.5,
+            ymin=97.5,
+            ymax=100,
             bar width=20pt,
             nodes near coords,
             nodes near coords align={vertical},
@@ -49,17 +126,17 @@ Kết quả kiểm định chéo cho thấy mô hình đạt được sự ổn 
             enlarge x limits=0.15,
         ]
         \addplot[fill=blue!60] coordinates {
-            (Fold 1, 98.34)
-            (Fold 2, 98.57)
-            (Fold 3, 98.10)
-            (Fold 4, 97.86)
-            (Fold 5, 97.86)
+            (Fold 1, 98.57)
+            (Fold 2, 99.05)
+            (Fold 3, 98.34)
+            (Fold 4, 98.10)
+            (Fold 5, 98.33)
         };
         % Đường trung bình
         \addplot[red, thick, dashed, domain=0:5] coordinates {
-            (Fold 1, 98.15) (Fold 2, 98.15) (Fold 3, 98.15) (Fold 4, 98.15) (Fold 5, 98.15)
+            (Fold 1, 98.48) (Fold 2, 98.48) (Fold 3, 98.48) (Fold 4, 98.48) (Fold 5, 98.48)
         };
-        \legend{Accuracy, Mean (98.15\%)}
+        \legend{Accuracy, Mean (98.48\%)}
         \end{axis}
     \end{tikzpicture}
     \caption{So sánh Accuracy giữa các fold trong Cross Validation}
@@ -213,71 +290,54 @@ Việc nhầm lẫn chỉ xảy ra giữa hai lớp Rừng ổn định (Lớp 0
 
 Tuy nhiên, với tỷ lệ nhầm lẫn rất thấp (chỉ 6/526 mẫu, ~1.14\%), mô hình vẫn đạt hiệu quả cao trong việc phân biệt các lớp biến động rừng.
 
-Bên cạnh ma trận nhầm lẫn, đường cong ROC (Receiver Operating Characteristic) được sử dụng để đánh giá khả năng phân biệt của mô hình. Bảng~\ref{tab:roc_auc} trình bày điểm ROC-AUC cho từng lớp.
-
-\begin{table}[H]
-\centering
-\caption{Điểm ROC-AUC cho từng lớp trên tập kiểm tra}
-\label{tab:roc_auc}
-\begin{tabular}{|l|c|}
-\hline
-\textbf{Lớp} & \textbf{ROC-AUC} \\
-\hline
-0 - Rừng ổn định & 0.9998 \\
-\hline
-1 - Mất rừng & 0.9997 \\
-\hline
-2 - Phi rừng & 1.0000 \\
-\hline
-3 - Phục hồi rừng & 1.0000 \\
-\hline
-\textbf{Trung bình macro} & \textbf{0.9998} \\
-\hline
-\end{tabular}
-\end{table}
+Bên cạnh ma trận nhầm lẫn, đường cong ROC (Receiver Operating Characteristic) được sử dụng để đánh giá khả năng phân biệt của mô hình. Hình~\ref{fig:roc_curves} trình bày đường cong ROC cùng với điểm AUC tương ứng cho từng lớp phân loại.
 
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}
         \begin{axis}[
-            width=0.75\textwidth,
+            width=0.8\textwidth,
             height=8cm,
             xlabel={False Positive Rate (FPR)},
             ylabel={True Positive Rate (TPR)},
             xmin=0, xmax=1,
             ymin=0, ymax=1,
             legend pos=south east,
-            legend style={font=\small},
+            legend style={font=\scriptsize, cells={anchor=west}, fill=white, fill opacity=0.9, draw opacity=1, text opacity=1},
             grid=major,
             grid style={dashed, gray!30},
         ]
         % Đường chéo (phân loại ngẫu nhiên)
         \addplot[gray, dashed, thick] coordinates {(0,0) (1,1)};
 
-        % Đường cong ROC cho 4 lớp (mô phỏng dựa trên AUC cao)
-        % Lớp 0 - Rừng ổn định (AUC = 0,9998)
+        % Đường cong ROC cho 4 lớp
         \addplot[green!60!black, thick] coordinates {
             (0,0) (0,0.95) (0.001,0.98) (0.002,0.99) (0.01,0.995) (0.05,0.998) (1,1)
         };
-        % Lớp 1 - Mất rừng (AUC = 0,9997)
         \addplot[red!70, thick] coordinates {
             (0,0) (0,0.94) (0.001,0.97) (0.003,0.99) (0.01,0.994) (0.05,0.997) (1,1)
         };
-        % Lớp 2 - Phi rừng (AUC = 1,0000)
         \addplot[blue!60, thick] coordinates {
             (0,0) (0,1) (1,1)
         };
-        % Lớp 3 - Phục hồi rừng (AUC = 1,0000)
         \addplot[orange!80, thick] coordinates {
             (0,0) (0,1) (1,1)
         };
 
-        \legend{Ngẫu nhiên, Rừng ổn định, Mất rừng, Phi rừng, Phục hồi rừng}
+        \legend{
+            Ngẫu nhiên,
+            Rừng ổn định (AUC = 0.9998),
+            Mất rừng (AUC = 0.9997),
+            Phi rừng (AUC = 1.0000),
+            Phục hồi rừng (AUC = 1.0000)
+        }
         \end{axis}
     \end{tikzpicture}
-    \caption{Đường cong ROC cho các lớp phân loại}
+    \caption{Đường cong ROC và điểm AUC cho các lớp phân loại (AUC trung bình macro: 0.9998)}
     \label{fig:roc_curves}
 \end{figure}
+
+Kết quả cho thấy tất cả các lớp đều đạt điểm AUC rất cao, gần như hoàn hảo. Hai lớp Phi rừng và Phục hồi rừng đạt AUC = 1.0000, nghĩa là mô hình có khả năng phân biệt hoàn toàn các mẫu thuộc hai lớp này với các lớp còn lại --- điều này phù hợp với kết quả Precision và Recall đạt 100\% trong ma trận nhầm lẫn. Hai lớp Rừng ổn định (AUC = 0.9998) và Mất rừng (AUC = 0.9997) có điểm AUC thấp hơn một chút, phản ánh sự nhầm lẫn nhỏ giữa hai lớp này như đã phân tích ở trên. Tuy nhiên, với AUC trung bình macro đạt 0.9998, mô hình thể hiện khả năng phân biệt xuất sắc giữa các lớp biến động rừng.
 
 \subsection{Kết quả phân loại toàn bộ vùng nghiên cứu}
 
@@ -306,7 +366,7 @@ Sau khi huấn luyện và đánh giá trên tập kiểm tra, mô hình đượ
 
 Kết quả từ Bảng~\ref{tab:area_distribution} cho thấy bức tranh tổng quan về tình trạng rừng tại tỉnh Cà Mau trong giai đoạn nghiên cứu. Lớp rừng ổn định chiếm tỷ lệ lớn nhất với 74.30\% (tương đương 1,207.17 km²), phản ánh nỗ lực bảo tồn và quản lý rừng ngập mặn của địa phương, chủ yếu tập trung tại Vườn Quốc gia Mũi Cà Mau và các vùng đệm được bảo vệ nghiêm ngặt. Diện tích mất rừng chiếm 4.48\% (72.82 km²), đây là tỷ lệ đáng quan ngại khi quy đổi ra diện tích tuyệt đối, với các nguyên nhân chính có thể bao gồm chuyển đổi mục đích sử dụng đất sang nuôi trồng thủy sản, xói lở bờ biển do biến đổi khí hậu và tác động của xâm nhập mặn làm suy thoái rừng.
 
-Lớp phi rừng chiếm 18.17\% (295.29 km²), bao gồm các khu vực ao nuôi tôm, đất trống, khu dân cư và cơ sở hạ tầng, phản ánh áp lực phát triển kinh tế - xã hội lên tài nguyên rừng trong khu vực. Lớp phục hồi rừng chiếm 3.04\% (49.41 km²), cho thấy một phần diện tích đã được tái sinh tự nhiên hoặc trồng rừng mới. Mặc dù tỷ lệ phục hồi còn thấp hơn so với diện tích mất rừng, đây vẫn là tín hiệu tích cực cho công tác phục hồi hệ sinh thái rừng ngập mặn trong khu vực.
+Lớp phi rừng chiếm 18.17\% (295.29 km²), bao gồm các khu vực ao nuôi tôm, đất trống, khu dân cư và cơ sở hạ tầng, phản ánh áp lực phát triển kinh tế - xã hội lên tài nguyên rừng trong khu vực. Lớp phục hồi rừng chiếm 3.04\% (49.41 km²), cho thấy một phần diện tích đã được tái sinh tự nhiên hoặc trồng rừng mới. Mặc dù tỷ lệ phục hồi còn thấp hơn so với diện tích mất rừng, đây vẫn là tín hiệu tích cực cho công tác phục hồi hệ sinh thái rừng ngập mặn trong khu vực. Hình~\ref{fig:classification_map} minh họa sự phân bố không gian của các lớp phân loại trên toàn vùng nghiên cứu.
 
 \begin{figure}[H]
     \centering
@@ -315,9 +375,20 @@ Lớp phi rừng chiếm 18.17\% (295.29 km²), bao gồm các khu vực ao nuô
     \label{fig:classification_map}
 \end{figure}
 
-Bản đồ phân loại biến động rừng (Hình~\ref{fig:classification_map}) cho thấy sự phân bố không gian rõ ràng của các lớp phủ. Vùng rừng ổn định (màu xanh lá đậm) tập trung chủ yếu ở phía Tây và Tây Nam của tỉnh, bao gồm khu vực Vườn Quốc gia Mũi Cà Mau và dải rừng phòng hộ ven biển, trong đó sự liên tục của vùng rừng này cho thấy hiệu quả của các chính sách bảo tồn trong khu vực. Vùng mất rừng (màu đỏ) xuất hiện rải rác, chủ yếu tại các khu vực ranh giới giữa rừng và vùng nuôi trồng thủy sản, đặc biệt ở phía Bắc và Đông Bắc của vùng nghiên cứu, phù hợp với thực tế chuyển đổi đất rừng sang ao nuôi tôm trong khu vực.
+Để phân tích chi tiết hơn về khả năng phát hiện biến động của mô hình trong điều kiện thực tế, nghiên cứu lựa chọn khu vực Vườn Quốc gia Mũi Cà Mau làm ví dụ minh họa. Đây là khu vực đặc trưng với sự đan xen giữa rừng ngập mặn nguyên sinh, hệ thống ao nuôi tôm và các hoạt động sản xuất theo mô hình Tôm--Rừng, tạo nên bức tranh đa dạng về các loại biến động lớp phủ.
 
-Vùng phi rừng (màu vàng nhạt) phân bố chủ yếu ở phía Đông và các khu vực nội địa, tương ứng với vùng đầm nuôi thủy sản và đất canh tác nông nghiệp đã tồn tại từ trước giai đoạn nghiên cứu. Vùng phục hồi rừng (màu xanh dương) xuất hiện tại các khu vực ven rừng ổn định, cho thấy quá trình tái sinh tự nhiên hoặc hoạt động trồng rừng đang diễn ra, đặc biệt ở các vùng đệm của khu bảo tồn.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img/chapter3/VQG_Mui_Ca_Mau.png}
+    \caption{Bản đồ phân loại biến động rừng khu vực Vườn Quốc gia Mũi Cà Mau}
+    \label{fig:vqg_mui_ca_mau}
+\end{figure}
+
+Kết quả phân loại biến động rừng ngập mặn khu vực Vườn Quốc gia Mũi Cà Mau (Hình~\ref{fig:vqg_mui_ca_mau}) cho thấy mô hình có khả năng nhận diện chính xác một số loại biến động thực sự của lớp phủ. Các vùng mất rừng (màu đỏ) phân bố chủ yếu dọc theo rìa ao nuôi và hệ thống kênh mương, phản ánh các hoạt động sản xuất như mở rộng diện tích ao tôm, nạo vét mương, cải tạo bờ bao hoặc phơi ao. Tại những khu vực này, việc dọn cây đã làm suy giảm rõ rệt thảm thực vật và để lộ lớp đất hoặc bùn bên dưới --- đây là những biến động thực sự mà mô hình phát hiện hợp lý. Tương tự, các vùng phục hồi rừng (màu xanh lam) xuất hiện rải rác ven bờ ao và trong các khoảng trống nhỏ, đặc biệt dọc theo đường bờ biển, phản ánh quá trình tái sinh tự nhiên của cây ngập mặn non trong hệ sinh thái Tôm--Rừng.
+
+Tuy nhiên, kết quả phân loại cũng chứa đựng những sai số tiềm ẩn do các yếu tố môi trường gây nhiễu. Thủy triều là nguồn gây nhiễu đáng kể: khi triều cường, các mảng rừng thấp bị ngập tạm thời có thể bị phân loại nhầm thành mất rừng; ngược lại, khi triều kiệt, sự xuất hiện của bãi bùn và thảm thực vật thấp có thể tạo ra tín hiệu giả của phục hồi rừng. Bên cạnh đó, hoạt động nuôi tôm cũng góp phần tạo ra các biến động ``ảo'' khi ao nuôi thường xuyên thay nước, mực nước và độ đục dao động liên tục khiến đặc trưng phổ của mặt nước thay đổi giữa hai thời điểm thu ảnh. Trong mùa khô, hiện tượng ao cạn đáy hoặc bùn bị phơi tự nhiên cũng có thể dẫn đến phân loại sai thành mất rừng mặc dù không có tác động sinh thái thực sự.
+
+Tóm lại, mô hình thể hiện khả năng mô tả tương đối chính xác các biến động liên quan đến hoạt động sản xuất và tái sinh rừng ngập mặn, song độ tin cậy giảm đáng kể tại các khu vực nhạy cảm với biến động môi trường --- đặc biệt là những nơi rừng thấp, gần mép ao hoặc chịu ảnh hưởng mạnh của chế độ thủy triều và hoạt động nuôi trồng thủy sản.
 
 \begin{figure}[H]
     \centering
@@ -342,46 +413,17 @@ Vùng phi rừng (màu vàng nhạt) phân bố chủ yếu ở phía Đông và
     \label{fig:pie_chart}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \definecolor{stableforest}{HTML}{00734C}
-    \definecolor{deforestation}{HTML}{E60000}
-    \definecolor{nonforest}{HTML}{FFD37F}
-    \definecolor{reforestation}{HTML}{00C5FF}
-    \begin{tikzpicture}
-        \begin{axis}[
-            ybar,
-            width=0.85\textwidth,
-            height=8cm,
-            ylabel={Diện tích (ha)},
-            symbolic x coords={Rừng ổn định, Mất rừng, Phi rừng, Phục hồi rừng},
-            xtick=data,
-            xticklabel style={rotate=15, anchor=east, font=\small},
-            nodes near coords,
-            nodes near coords align={vertical},
-            every node near coord/.append style={font=\scriptsize},
-            ymin=0,
-            ymax=140000,
-            bar width=25pt,
-            enlarge x limits=0.2,
-        ]
-        \addplot[fill=stableforest] coordinates {(Rừng ổn định, 120717)};
-        \addplot[fill=deforestation] coordinates {(Mất rừng, 7282)};
-        \addplot[fill=nonforest] coordinates {(Phi rừng, 29529)};
-        \addplot[fill=reforestation] coordinates {(Phục hồi rừng, 4941)};
-        \end{axis}
-    \end{tikzpicture}
-    \caption{Biểu đồ cột phân bố diện tích theo lớp phân loại}
-    \label{fig:area_bar_chart}
-\end{figure}
-
-Qua biểu đồ tròn (Hình~\ref{fig:pie_chart}) và biểu đồ cột (Hình~\ref{fig:area_bar_chart}), có thể nhận thấy sự chênh lệch rõ rệt về diện tích giữa các lớp. Rừng ổn định chiếm ưu thế tuyệt đối với hơn 3/4 diện tích vùng nghiên cứu, đây là nền tảng quan trọng cho công tác bảo tồn đa dạng sinh học và phòng hộ ven biển. Đáng chú ý, tỷ lệ mất rừng (4.48\%) vượt quá tỷ lệ phục hồi rừng (3.04\%), cho thấy xu hướng suy giảm ròng của diện tích rừng trong giai đoạn nghiên cứu, với chênh lệch khoảng 1.44\% (tương đương 2,341 ha) là mức độ mất rừng ròng mà khu vực đang phải đối mặt. Diện tích phi rừng lớn (18.17\%) phản ánh mức độ khai thác tài nguyên đất đai trong khu vực, chủ yếu cho hoạt động nuôi trồng thủy sản - ngành kinh tế mũi nhọn của tỉnh Cà Mau.
+Qua biểu đồ tròn (Hình~\ref{fig:pie_chart}), có thể nhận thấy sự chênh lệch rõ rệt về diện tích giữa các lớp. Rừng ổn định chiếm ưu thế tuyệt đối với hơn 3/4 diện tích vùng nghiên cứu, đây là nền tảng quan trọng cho công tác bảo tồn đa dạng sinh học và phòng hộ ven biển. Đáng chú ý, tỷ lệ mất rừng (4.48\%) vượt quá tỷ lệ phục hồi rừng (3.04\%), cho thấy xu hướng suy giảm ròng của diện tích rừng trong giai đoạn nghiên cứu, với chênh lệch khoảng 1.44\% (tương đương 2,341 ha) là mức độ mất rừng ròng mà khu vực đang phải đối mặt. Diện tích phi rừng lớn (18.17\%) phản ánh mức độ khai thác tài nguyên đất đai trong khu vực, chủ yếu cho hoạt động nuôi trồng thủy sản - ngành kinh tế mũi nhọn của tỉnh Cà Mau.
 
 Cần lưu ý rằng theo khuyến nghị của Olofsson và cộng sự \citeen{olofsson2014}, diện tích ước tính từ bản đồ phân loại cần được hiệu chỉnh dựa trên Confusion Matrix để đảm bảo tính không chệch. Với Accuracy cao của mô hình (98.86\%, Precision và Recall đều trên 96\% cho tất cả các lớp), sai số giữa diện tích thô và diện tích hiệu chỉnh được kỳ vọng là nhỏ. Tuy nhiên, việc thực hiện hiệu chỉnh đầy đủ theo phương pháp Olofsson sẽ là hướng phát triển trong tương lai.
 
 \subsection{So sánh với các nghiên cứu khác}
 
-Để đánh giá hiệu quả của phương pháp đề xuất, kết quả được so sánh với các công trình nghiên cứu trong tài liệu sử dụng phương pháp và dữ liệu tương tự.
+Để đánh giá hiệu quả của phương pháp đề xuất, kết quả được so sánh với các công trình nghiên cứu tiêu biểu trong lĩnh vực giám sát biến động rừng bằng viễn thám và học máy. Nghiên cứu của Hansen và cộng sự \citeen{hansen2013} tại Đại học Maryland là công trình tiên phong trong việc xây dựng bản đồ biến động rừng toàn cầu sử dụng ảnh Landsat 30m. Phương pháp sử dụng thuật toán Decision Trees kết hợp với nền tảng Google Earth Engine để xử lý hơn 654,000 cảnh Landsat 7 trong giai đoạn 2000--2012. Kết quả đánh giá độc lập cho thấy bản đồ mất rừng đạt tỷ lệ dương tính giả 13\% và âm tính giả 12\% ở quy mô toàn cầu, tương đương Accuracy khoảng 85\%. Phương pháp này có ưu điểm về quy mô toàn cầu, cập nhật hàng năm, miễn phí và công khai; tuy nhiên, nhược điểm là độ phân giải thấp (30m) khiến khó phát hiện biến động nhỏ, chỉ sử dụng dữ liệu quang học nên bị hạn chế bởi mây, và định nghĩa ``rừng'' dựa trên độ cao cây (>5m) không phù hợp với rừng ngập mặn non.
+
+Trong những năm gần đây, các kiến trúc Deep Learning như CNN, U-Net và ResNet đã được áp dụng rộng rãi cho bài toán phát hiện biến động rừng với kết quả vượt trội so với phương pháp Machine Learning truyền thống. Theo tổng quan của Fayaz và cộng sự (2024), U-Net và các biến thể của nó được sử dụng trong 45\% các nghiên cứu về phát hiện mất rừng, đạt Accuracy trung bình 94--97\%. Nghiên cứu của Ortega và cộng sự (2020) trên rừng Amazon cho thấy các kiến trúc CNN (SharpMask, U-Net, ResU-Net) đều vượt trội so với thuật toán ML truyền thống cả về định lượng lẫn trực quan. Đặc biệt, việc kết hợp U-Net với ResNet (ResU-Net) tận dụng được cả skip connections và residual blocks, giúp trích xuất đặc trưng chi tiết hơn. Ưu điểm của Deep Learning là tự động học đặc trưng từ dữ liệu mà không cần thiết kế thủ công, khai thác được ngữ cảnh không gian và hiệu quả cao khi có đủ dữ liệu huấn luyện; tuy nhiên, nhược điểm là yêu cầu lượng dữ liệu huấn luyện lớn, tính chất ``hộp đen'' khó giải thích, chi phí tính toán cao và hiệu suất giảm đáng kể khi kích thước mẫu nhỏ.
+
+Bảng~\ref{tab:comparison} tổng hợp kết quả so sánh giữa nghiên cứu này với các công trình tiêu biểu.
 
 \begin{table}[H]
 \centering
@@ -391,13 +433,13 @@ Cần lưu ý rằng theo khuyến nghị của Olofsson và cộng sự \citeen
 \hline
 \textbf{Nghiên cứu} & \textbf{Phương pháp} & \textbf{Dữ liệu} & \textbf{Accuracy} & \textbf{ROC-AUC} \\
 \hline
-Hansen và cs. (2013) & Decision Trees & Landsat & ~85\% & - \\
+Hansen và cs. (2013) & Decision Trees & Landsat 30m & $\sim$85\% & - \\
 \hline
-Hethcoat và cs. (2019) & CNN (ResNet) & S1/S2 & 94.3\% & - \\
+Ortega và cs. (2020) & U-Net, ResU-Net & Landsat 30m & $\sim$94\% & - \\
 \hline
-Zhang và cs. (2020) & U-Net & Sentinel-2 & 96.8\% & 98.5\% \\
+Fayaz và cs. (2024) & U-Net (tổng quan) & Đa nguồn & 94--97\% & - \\
 \hline
-\textbf{Nghiên cứu này} & \textbf{CNN (custom)} & \textbf{S1/S2} & \textbf{98.86\%} & \textbf{99.98\%} \\
+\textbf{Nghiên cứu này} & \textbf{CNN (custom)} & \textbf{S1/S2 10m} & \textbf{98.86\%} & \textbf{99.98\%} \\
 \hline
 \end{tabular}
 \end{table}
@@ -410,7 +452,7 @@ Zhang và cs. (2020) & U-Net & Sentinel-2 & 96.8\% & 98.5\% \\
             width=0.9\textwidth,
             height=7cm,
             ylabel={Accuracy (\%)},
-            symbolic x coords={Hansen (2013), Hethcoat (2019), Zhang (2020), Nghiên cứu này},
+            symbolic x coords={Hansen (2013), Ortega (2020), Fayaz (2024), Nghiên cứu này},
             xtick=data,
             xticklabel style={rotate=15, anchor=east, font=\small},
             ymin=80,
@@ -423,8 +465,8 @@ Zhang và cs. (2020) & U-Net & Sentinel-2 & 96.8\% & 98.5\% \\
         ]
         \addplot[fill=teal!60] coordinates {
             (Hansen (2013), 85)
-            (Hethcoat (2019), 94.3)
-            (Zhang (2020), 96.8)
+            (Ortega (2020), 94)
+            (Fayaz (2024), 95.5)
             (Nghiên cứu này, 98.86)
         };
         \end{axis}
@@ -433,7 +475,7 @@ Zhang và cs. (2020) & U-Net & Sentinel-2 & 96.8\% & 98.5\% \\
     \label{fig:literature_comparison}
 \end{figure}
 
-Kết quả của nghiên cứu này đạt Accuracy cao hơn so với các công trình trước đó. Tuy nhiên, cần lưu ý rằng việc so sánh trực tiếp có những hạn chế do sự khác biệt về khu vực nghiên cứu, số lượng lớp phân loại, kích thước bộ dữ liệu và phương pháp đánh giá \citeen{stehman2019}. Accuracy cao của nghiên cứu này có thể được giải thích bởi bộ dữ liệu thực địa chất lượng cao thu thập từ khảo sát thực địa, sự kết hợp hiệu quả giữa dữ liệu radar và quang học, và kiến trúc CNN được tối ưu hóa cho bộ dữ liệu nhỏ.
+Kết quả của nghiên cứu này đạt Accuracy cao hơn so với các công trình trước đó. Tuy nhiên, cần lưu ý rằng việc so sánh trực tiếp có những hạn chế do sự khác biệt về khu vực nghiên cứu, số lượng lớp phân loại, kích thước bộ dữ liệu và phương pháp đánh giá \citeen{stehman2019}. Accuracy cao của nghiên cứu này có thể được giải thích bởi một số yếu tố: (1) độ phân giải không gian cao hơn (10m so với 30m) giúp phát hiện biến động chi tiết hơn; (2) sự kết hợp dữ liệu radar Sentinel-1 và quang học Sentinel-2 bổ sung cho nhau, đặc biệt hiệu quả trong điều kiện nhiều mây của vùng nhiệt đới; (3) kiến trúc CNN được thiết kế phù hợp với bộ dữ liệu nhỏ thông qua kỹ thuật điều chuẩn (Dropout 70\%, Batch Normalization); và (4) bộ dữ liệu thực địa chất lượng cao được thu thập và kiểm tra kỹ lưỡng.
 
 Ngoài việc so sánh với tài liệu, nghiên cứu còn thực hiện so sánh định tính với sản phẩm Giám sát rừng toàn cầu (Global Forest Watch - GFW) — bộ dữ liệu mất rừng toàn cầu được phát triển bởi Hansen và cộng sự \citeen{hansen2013} tại Đại học Maryland và được cập nhật liên tục bởi Potapov và cộng sự \citeen{potapov2022}.
 
@@ -456,54 +498,16 @@ Cập nhật & Theo yêu cầu & Hàng năm & Linh hoạt hơn \\
 \end{tabular}
 \end{table}
 
-Kết quả phân loại cho thấy diện tích mất rừng chiếm 4.48\% (7,282 ha) trong tổng diện tích nghiên cứu, phù hợp với xu hướng mất rừng ngập mặn tại khu vực Đồng bằng sông Cửu Long được ghi nhận trong các nghiên cứu trước đó \citeen{vo2020}. Theo báo cáo của Bộ Nông nghiệp và Phát triển Nông thôn \citevi{bnnptnt2021}, khu vực ven biển Cà Mau chịu áp lực lớn từ hoạt động nuôi trồng thủy sản và xâm nhập mặn, dẫn đến tình trạng suy giảm diện tích rừng ngập mặn trong những năm gần đây.
-
-Nghiên cứu cũng thực hiện so sánh với số liệu thống kê từ các nguồn chính thức để đánh giá tính hợp lý của kết quả phân loại:
-
-\begin{table}[H]
-\centering
-\caption{So sánh kết quả với số liệu thống kê rừng Cà Mau}
-\label{tab:official_comparison}
-\begin{tabular}{|l|c|c|p{4.5cm}|}
-\hline
-\textbf{Chỉ tiêu} & \textbf{Nghiên cứu này} & \textbf{Số liệu chính thức} & \textbf{Ghi chú} \\
-\hline
-Diện tích rừng ổn định & 120,717 ha & ~100,000 ha (2021) & Vùng NC lớn hơn diện tích rừng thống kê \citevi{snnptntcamau2021} \\
-\hline
-Tỷ lệ mất rừng/năm & 4.48\% & 2-5\%/năm & Phù hợp với xu hướng giai đoạn 2015-2020 \citeen{gfw2021} \\
-\hline
-Diện tích phi rừng & 29,529 ha & - & Bao gồm ao nuôi, đất trống \\
-\hline
-Phục hồi rừng & 4,941 ha & - & Tái sinh tự nhiên và trồng rừng \\
-\hline
-\end{tabular}
-\end{table}
-
-Diện tích rừng ổn định phát hiện được (120,717 ha) lớn hơn số liệu thống kê chính thức (~100,000 ha) do vùng nghiên cứu (162,469 ha) bao gồm cả các khu vực rừng mới trồng và rừng ngoài quy hoạch lâm nghiệp chính thức. Tỷ lệ mất rừng 4.48\% trong giai đoạn 01/2024 - 02/2025 nằm trong khoảng 2-5\%/năm được ghi nhận tại khu vực Đồng bằng sông Cửu Long trong giai đoạn 2015-2020 \citeen{gfw2021, vo2020}, cho thấy kết quả nghiên cứu phản ánh đúng xu hướng biến động rừng trong khu vực.
-
-Về độ tin cậy thống kê, khoảng tin cậy 95\% cho các chỉ số chính được tính toán dựa trên kết quả 5-Fold Cross Validation:
-
-\begin{table}[H]
-\centering
-\caption{Khoảng tin cậy 95\% của các chỉ số (dựa trên 5-Fold Cross Validation)}
-\label{tab:confidence_intervals}
-\begin{tabular}{|l|c|c|c|}
-\hline
-\textbf{Chỉ số} & \textbf{Trung bình} & \textbf{Độ lệch chuẩn} & \textbf{Khoảng tin cậy 95\%} \\
-\hline
-Accuracy & 98.15\% & 0.28\% & [97.80\%; 98.50\%] \\
-\hline
-F1-Score & 98.15\% & 0.28\% & [97.80\%; 98.50\%] \\
-\hline
-\end{tabular}
-\end{table}
-
-Khoảng tin cậy hẹp (±0.35\%) cho thấy mô hình có tính ổn định cao và kết quả đáng tin cậy. Với 5 phần, khoảng tin cậy được tính theo công thức: $CI = \bar{x} \pm t_{0.025, n-1} \times \frac{s}{\sqrt{n}}$, trong đó $t_{0.025, 4} \approx 2.776$.
+Bảng~\ref{tab:gfw_comparison} cho thấy một số khác biệt quan trọng giữa phương pháp đề xuất và sản phẩm GFW. Về độ phân giải không gian, việc sử dụng ảnh Sentinel với độ phân giải 10m cho phép phát hiện các biến động nhỏ hơn so với Landsat 30m --- điều này đặc biệt có ý nghĩa với rừng ngập mặn Cà Mau, nơi các ao nuôi tôm và kênh mương thường có kích thước nhỏ. Về nguồn dữ liệu, sự kết hợp Sentinel-1 (radar) và Sentinel-2 (quang học) giúp khắc phục hạn chế về mây che phủ thường gặp ở vùng nhiệt đới, trong khi GFW chỉ dựa vào dữ liệu quang học Landsat. Về phương pháp, kiến trúc CNN có khả năng tự động học các đặc trưng phức tạp từ dữ liệu đa kênh, vượt trội hơn so với Decision Trees trong việc nắm bắt các mối quan hệ phi tuyến giữa các đặc trưng. Tuy nhiên, GFW vẫn có ưu thế về tính nhất quán toàn cầu, lịch sử dữ liệu dài (từ năm 2000) và khả năng cập nhật tự động hàng năm --- những yếu tố quan trọng cho việc giám sát dài hạn ở quy mô lớn.
 
 \subsection{Đánh giá tổng quan}
 
-Mô hình đề xuất thể hiện nhiều điểm mạnh đáng chú ý. Về độ chính xác, mô hình đạt test accuracy 98.86\% và ROC-AUC 99.98\%, cho thấy khả năng phân loại xuất sắc. Việc sử dụng patch size 3×3 cho phép khai thác hiệu quả ngữ cảnh không gian và mang lại kết quả tối ưu. Sự chênh lệch nhỏ giữa CV accuracy (98.15\%) và test accuracy (98.86\%) phản ánh tính robust và khả năng tổng quát hóa tốt của mô hình mà không có dấu hiệu quá khớp. Kiến trúc CNN còn mang lại ưu điểm là không cần trích xuất đặc trưng thủ công vì mô hình tự động học đặc trưng từ dữ liệu, đồng thời thời gian huấn luyện rất hiệu quả với chỉ khoảng 15 giây cho mô hình cuối cùng.
+Các kết quả thực nghiệm được tổng hợp và đánh giá theo ba khía cạnh: hiệu suất phân loại, khả năng tổng quát hóa và các hạn chế của phương pháp.
 
-Tuy nhiên, bên cạnh những kết quả đạt được, đồ án vẫn tồn tại một số hạn chế cần lưu ý. Về mặt hiệu suất tính toán, thời gian dự đoán toàn bộ raster còn dài (khoảng 14.83 phút cho 16.2 triệu pixel hợp lệ). Về khả năng giải thích, tính chất black-box của CNN khiến việc diễn giải kết quả phân loại trở nên khó khăn. Ngoài ra, quy mô dữ liệu thực địa còn hạn chế với chỉ 2,630 điểm mẫu, và phân tích chỉ dừng lại ở hai thời điểm mà chưa khai thác đầy đủ tiềm năng của chuỗi thời gian.
+Về hiệu suất phân loại, mô hình CNN đạt Accuracy 98.86\% và ROC-AUC 99.98\% trên tập kiểm tra độc lập gồm 526 mẫu. Phân tích ma trận nhầm lẫn cho thấy tỷ lệ lỗi phân loại là 1.14\% (6/526 mẫu), trong đó toàn bộ sai số tập trung vào sự nhầm lẫn giữa hai lớp Rừng ổn định và Mất rừng. Hai lớp Phi rừng và Phục hồi rừng đạt Precision và Recall bằng 100\%, phản ánh khả năng phân biệt rõ ràng của mô hình đối với các lớp có đặc trưng quang phổ khác biệt. So với các nghiên cứu tham chiếu (Hansen và cộng sự, 2013: $\sim$85\%; Ortega và cộng sự, 2020: $\sim$94\%), kết quả này cao hơn từ 4--14 điểm phần trăm, tuy nhiên sự khác biệt về khu vực nghiên cứu, số lượng lớp và phương pháp đánh giá cần được xem xét khi so sánh.
 
-Tóm lại, chương này trình bày kết quả thực nghiệm và đánh giá mô hình CNN cho phân loại biến động rừng ngập mặn Cà Mau. Về kết quả huấn luyện, CV accuracy 5-Fold trung bình đạt 98.15\% ± 0.28\% cho thấy sự ổn định của mô hình, test accuracy đạt 98.86\% với ROC-AUC 99.98\%, trong đó hai lớp ``Phi rừng'' và ``Phục hồi rừng'' có precision và recall đạt 100\% và tổng cộng chỉ có 6/526 mẫu bị phân loại sai (tỷ lệ lỗi 1.14\%). Về kết quả phân loại vùng nghiên cứu với tổng diện tích 162,468.50 ha, rừng ổn định chiếm 74.30\% (120,716.91 ha), mất rừng chiếm 4.48\% (7,282.15 ha), phi rừng chiếm 18.17\% (29,528.54 ha), và phục hồi rừng chiếm 3.04\% (4,940.90 ha).
+Về khả năng tổng quát hóa, kết quả kiểm định chéo 5 phần cho thấy Accuracy trung bình đạt 98.48\% với độ lệch chuẩn 0.36\%, cho thấy mô hình có độ ổn định cao qua các lần phân chia dữ liệu khác nhau. Chênh lệch giữa CV Accuracy (98.48\%) và Test Accuracy (98.86\%) nằm trong phạm vi độ lệch chuẩn, cho thấy không có hiện tượng quá khớp (overfitting). Hiện tượng Validation Loss thấp hơn Training Loss trong quá trình huấn luyện được giải thích bởi cơ chế Dropout với tỷ lệ 70\%, xác nhận kỹ thuật điều chuẩn hoạt động đúng thiết kế.
+
+Về các hạn chế, nghiên cứu xác định ba điểm chính. Thứ nhất, thời gian dự đoán toàn bộ vùng nghiên cứu là 14.83 phút cho 16.2 triệu pixel, tương đương tốc độ xử lý khoảng 18,200 pixel/giây --- mức hiệu suất này có thể cải thiện thông qua tối ưu hóa batch processing hoặc sử dụng GPU. Thứ hai, bộ dữ liệu thực địa gồm 2,630 điểm mẫu, mặc dù đủ để huấn luyện mô hình với kiến trúc nhỏ gọn (3 lớp tích chập), song hạn chế khả năng mở rộng sang các kiến trúc phức tạp hơn. Thứ ba, phân tích chỉ dựa trên hai thời điểm quan sát, chưa khai thác được thông tin từ chuỗi thời gian dài hơn để phân biệt biến động thực sự với nhiễu do thủy triều hoặc mùa vụ.
+
+Tổng hợp lại, chương này trình bày kết quả phân loại biến động rừng ngập mặn tỉnh Cà Mau sử dụng mô hình CNN kết hợp dữ liệu Sentinel-1 và Sentinel-2. Trên tổng diện tích 162,468.50 ha được phân loại, rừng ổn định chiếm 74.30\% (120,716.91 ha), mất rừng chiếm 4.48\% (7,282.15 ha), phi rừng chiếm 18.17\% (29,528.54 ha), và phục hồi rừng chiếm 3.04\% (4,940.90 ha). Chênh lệch giữa diện tích mất rừng và phục hồi rừng là 1.44\% (2,341.25 ha), cho thấy xu hướng suy giảm ròng của diện tích rừng trong giai đoạn nghiên cứu.

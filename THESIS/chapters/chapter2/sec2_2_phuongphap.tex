@@ -111,9 +111,9 @@ Lớp đầu ra & 260 & $64 \times 4 + 4$ \\
 \end{tabular}
 \end{table}
 
-\subsection{Chiến lược điều chuẩn và huấn luyện}
+\subsection{Huấn luyện mô hình}
 
-Với bộ dữ liệu có quy mô nhỏ, nghiên cứu kết hợp ba kỹ thuật điều chuẩn. Kỹ thuật thứ nhất là chuẩn hóa theo lô (Batch Normalization) \citeen{ioffe2015} được áp dụng sau mỗi lớp tích chập và fully-connected. Kỹ thuật thứ hai là Dropout với tỷ lệ 70\% \citeen{srivastava2014} --- tỷ lệ cao do tỷ lệ mẫu/tham số thấp (khoảng 72:1). Kỹ thuật thứ ba là phân rã trọng số với hệ số $\lambda = 10^{-3}$ thông qua optimizer AdamW.
+Với bộ dữ liệu gồm 2,630 mẫu và mô hình có 36,676 tham số, tỷ lệ mẫu trên tham số là 72:1. Để ngăn chặn hiện tượng quá khớp (overfitting) --- khi mô hình ghi nhớ dữ liệu huấn luyện thay vì học các quy luật tổng quát --- nghiên cứu áp dụng ba kỹ thuật điều chuẩn: chuẩn hóa theo lô (Batch Normalization) \citeen{ioffe2015} sau mỗi lớp mạng, Dropout với tỷ lệ 70\% \citeen{srivastava2014}, và phân rã trọng số (weight decay) với hệ số $10^{-3}$. Bảng~\ref{tab:hyperparams} trình bày các siêu tham số huấn luyện.
 
 \begin{table}[H]
 \centering
@@ -121,29 +121,33 @@ Với bộ dữ liệu có quy mô nhỏ, nghiên cứu kết hợp ba kỹ thu�
 \label{tab:hyperparams}
 \begin{tabular}{|l|c|l|}
 \hline
-\textbf{Tham số} & \textbf{Giá trị} & \textbf{Giải thích} \\
+\textbf{Tham số} & \textbf{Giá trị} & \textbf{Mô tả} \\
 \hline
-epochs & 200 & Số epochs tối đa với early stopping \\
+epochs & 200 & Số vòng lặp tối đa \\
 \hline
-batch\_size & 64 & Cân bằng giữa độ ổn định và tốc độ \\
+batch\_size & 64 & Số mẫu mỗi lô \\
 \hline
-learning\_rate & 0.001 & Learning rate khởi tạo cho AdamW \\
+learning\_rate & 0.001 & Tốc độ học khởi tạo \\
 \hline
-weight\_decay & $10^{-3}$ & Hệ số điều chuẩn L2 \\
+weight\_decay & $10^{-3}$ & Hệ số phân rã trọng số \\
 \hline
-dropout\_rate & 0.7 & Dropout cao để điều chuẩn mạnh \\
+dropout\_rate & 0.7 & Tỷ lệ Dropout \\
 \hline
-early\_stopping & 15 epochs & Patience trước khi dừng sớm \\
+early\_stopping & 15 epochs & Patience dừng sớm \\
 \hline
 \end{tabular}
 \end{table}
 
-Nghiên cứu sử dụng AdamW \citeen{loshchilov2019} — biến thể cải tiến của Adam với phân rã trọng số tách rời. ReduceLROnPlateau scheduler tự động giảm learning rate (factor=0.5, patience=10) khi validation loss không cải thiện.
+Nghiên cứu sử dụng thuật toán tối ưu AdamW \citeen{loshchilov2019} kết hợp với ReduceLROnPlateau scheduler để tự động giảm tốc độ học khi validation loss không cải thiện. Cơ chế dừng sớm (early stopping) với patience 15 epochs giúp dừng huấn luyện khi mô hình bắt đầu quá khớp và lưu lại phiên bản có validation loss thấp nhất.
 
-Quy trình huấn luyện được thực hiện qua bốn bước. Đầu tiên, trọng số được khởi tạo theo phương pháp Kaiming/He initialization \citeen{he2015}. Tiếp theo, 5-Fold Cross Validation được thực hiện trên 80\% dữ liệu để đánh giá độ ổn định của mô hình. Sau đó, Final Model được huấn luyện trên toàn bộ 80\% dữ liệu với cơ chế early stopping. Cuối cùng, mô hình được đánh giá trên 20\% test set cố định.
+Quy trình huấn luyện gồm bốn giai đoạn. Giai đoạn thứ nhất, khởi tạo trọng số theo phương pháp Kaiming/He \citeen{he2015}. Giai đoạn thứ hai, thực hiện kiểm định chéo 5 phần (5-Fold Cross Validation) trên 80\% dữ liệu (2,104 mẫu) để đánh giá độ ổn định của mô hình; trong đó dữ liệu được chia thành 5 phần bằng nhau, mô hình được huấn luyện 5 lần với mỗi lần sử dụng 4 phần làm tập huấn luyện và 1 phần làm tập kiểm định. Giai đoạn thứ ba, huấn luyện mô hình cuối cùng trên toàn bộ 80\% dữ liệu. Giai đoạn thứ tư, đánh giá mô hình trên 20\% tập kiểm tra cố định (526 mẫu) --- tập dữ liệu không được sử dụng trong quá trình huấn luyện.
 
 \subsection{Áp dụng mô hình}
 
-Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn bộ vùng nghiên cứu với khoảng 16.2 triệu pixels hợp lệ. Quy trình dự đoán bắt đầu bằng việc tải feature stack 27 channels cho toàn vùng, sau đó trích xuất patch 3×3 cho mỗi pixel hợp lệ. Các patches được chuẩn hóa Z-score sử dụng mean và std từ tập training, rồi thực hiện forward pass qua mô hình và lấy argmax để xác định lớp phân loại. Kết quả cuối cùng được xuất dưới dạng GeoTIFF.
+Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn bộ vùng nghiên cứu với khoảng 16.2 triệu điểm ảnh hợp lệ, tương đương diện tích 162,468 hecta. Quy trình dự đoán được thực hiện như sau.
 
-Do kích thước lớn của vùng nghiên cứu, việc dự đoán được thực hiện theo batch (10,000 pixels) với GPU inference và mixed precision (FP16) để tối ưu hóa bộ nhớ và tốc độ.
+Đầu tiên, dữ liệu đặc trưng (feature stack) gồm 27 kênh được tải vào bộ nhớ. Với mỗi điểm ảnh cần phân loại, một vùng lân cận kích thước 3×3 được trích xuất, chứa thông tin của điểm ảnh trung tâm và 8 điểm ảnh xung quanh. Đối với các điểm ảnh ở biên, kỹ thuật phản chiếu (mirror padding) được sử dụng để tạo đủ ngữ cảnh 3×3. Mỗi patch sau đó được chuẩn hóa Z-score sử dụng các tham số (mean, std) đã tính từ tập huấn luyện.
+
+Dữ liệu đã chuẩn hóa được đưa qua mô hình CNN để tính xác suất thuộc về mỗi lớp. Mô hình xuất ra vector 4 chiều cho mỗi điểm ảnh, tương ứng với xác suất thuộc về 4 lớp: Rừng ổn định, Mất rừng, Phi rừng, và Phục hồi rừng. Lớp có xác suất cao nhất được chọn làm kết quả phân loại thông qua hàm argmax.
+
+Do khối lượng dữ liệu lớn, việc dự đoán được thực hiện theo lô (batch), mỗi lô gồm 10,000 điểm ảnh. Kỹ thuật độ chính xác hỗn hợp (mixed precision) với định dạng FP16 được sử dụng để giảm mức sử dụng bộ nhớ GPU và tăng tốc độ tính toán. Kết quả phân loại được xuất ra dưới dạng file GeoTIFF với hệ quy chiếu EPSG:32648 (WGS 84/UTM Zone 48N) và độ phân giải 10m, cho phép tích hợp trực tiếp với các phần mềm GIS.

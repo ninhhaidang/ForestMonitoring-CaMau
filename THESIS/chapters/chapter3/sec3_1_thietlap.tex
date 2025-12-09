@@ -17,13 +17,6 @@ Tuy nhiên, rừng Cà Mau đang phải đối mặt với nhiều thách thức
 
 Đồ án tập trung vào toàn bộ vùng quy hoạch lâm nghiệp của tỉnh Cà Mau mới. Dữ liệu ranh giới quy hoạch lâm nghiệp được cung cấp bởi Công ty TNHH Tư vấn và Phát triển Đồng Xanh — đối tác của Chi cục Kiểm lâm tỉnh Cà Mau.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\textwidth]{img/chapter3/RGB-Ca-Mau.png}
-    \caption{Ảnh vệ tinh tổ hợp màu tự nhiên (RGB) khu vực nghiên cứu tỉnh Cà Mau.}
-    \label{fig:study_area}
-\end{figure}
-
 Tổng diện tích ranh giới quy hoạch là 170,178.82 ha (tương đương 1,701.79 km²), bao gồm 666 polygon trong file shapefile ranh giới. Diện tích thực tế được phân loại là 162,468.50 ha (khoảng 95.5\% diện tích ranh giới); phần còn lại (~7,710 ha, chiếm 4.5\%) bị loại do mây che phủ hoặc dữ liệu không hợp lệ (nodata) trong quá trình xử lý ảnh vệ tinh. Kích thước raster là 12,547 × 10,917 pixels (ở độ phân giải 10m), sử dụng hệ quy chiếu EPSG:32648 (WGS 84 / UTM Zone 48N).
 
 \subsection{Dữ liệu thực địa tại Cà Mau}
@@ -62,9 +55,26 @@ Phân bố không gian của các điểm dữ liệu thực địa được min
 \label{fig:ground_truth_map}
 \end{figure}
 
+Mỗi điểm ảnh trong bộ dữ liệu được biểu diễn bởi 27 đặc trưng: 9 đặc trưng tại thời điểm $T_1$, 9 đặc trưng tại thời điểm $T_2$, và 9 đặc trưng delta ($\Delta = T_2 - T_1$). Mô hình CNN sử dụng toàn bộ 27 đặc trưng này làm đầu vào để tận dụng tối đa thông tin từ cả hai thời điểm quan sát. Tuy nhiên, để phân tích trực quan khả năng phân biệt của dữ liệu, nghiên cứu lựa chọn minh họa 9 đặc trưng delta thông qua biểu đồ pair plot (Hình~\ref{fig:pairplot_delta}). Việc lựa chọn này xuất phát từ hai lý do chính. Thứ nhất, biểu đồ pair plot với 27 đặc trưng sẽ tạo ra ma trận $27 \times 27 = 729$ ô, quá lớn để quan sát và phân tích hiệu quả. Thứ hai, đặc trưng delta trực tiếp biểu diễn sự thay đổi giữa hai thời điểm, do đó phù hợp nhất để đánh giá khả năng phân tách các lớp biến động rừng.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{img/chapter3/pairplot_delta_features.png}
+\caption{Phân bố các đặc trưng delta theo lớp biến động rừng}
+\label{fig:pairplot_delta}
+\end{figure}
+
+Biểu đồ pair plot trình bày mối quan hệ giữa 9 đặc trưng delta bao gồm các band quang phổ Sentinel-2 ($\Delta$B4, $\Delta$B8, $\Delta$B11, $\Delta$B12), các chỉ số thực vật ($\Delta$NDVI, $\Delta$NBR, $\Delta$NDMI) và các kênh radar Sentinel-1 ($\Delta$VV, $\Delta$VH). Trên đường chéo chính, biểu đồ histogram thể hiện phân bố của từng đặc trưng theo bốn lớp biến động; các ô còn lại hiển thị biểu đồ tán xạ (scatter plot) giữa các cặp đặc trưng.
+
+Phân tích phân bố trên đường chéo cho thấy các chỉ số thực vật delta thể hiện khả năng phân biệt vượt trội giữa các lớp biến động. Cụ thể, lớp Rừng ổn định và Phi rừng có phân bố tập trung quanh giá trị 0, phản ánh sự ổn định về lớp phủ thực vật qua hai thời điểm quan sát. Ngược lại, lớp Mất rừng thể hiện phân bố lệch về phía âm do sự suy giảm các chỉ số thực vật khi rừng bị chuyển đổi, trong khi lớp Phục hồi rừng có phân bố lệch về phía dương tương ứng với sự gia tăng sinh khối thực vật. Sự phân tách rõ ràng này khẳng định vai trò then chốt của $\Delta$NDVI, $\Delta$NBR và $\Delta$NDMI trong việc nhận diện biến động rừng.
+
+Đối với các band quang phổ gốc, mức độ chồng chéo giữa các lớp cao hơn so với các chỉ số thực vật, tuy nhiên $\Delta$B8 (kênh cận hồng ngoại) vẫn cho thấy khả năng phân biệt tương đối tốt giữa lớp Mất rừng và Phục hồi rừng. Các đặc trưng radar $\Delta$VV và $\Delta$VH có phân bố chồng chéo đáng kể giữa bốn lớp, cho thấy khả năng phân biệt độc lập hạn chế hơn so với dữ liệu quang học. Tuy nhiên, việc tích hợp dữ liệu radar vẫn mang lại giá trị bổ sung, đặc biệt trong điều kiện mây che phủ thường xuyên tại khu vực nghiên cứu.
+
+Phân tích các biểu đồ tán xạ cho thấy mối tương quan dương mạnh giữa ba chỉ số thực vật ($\Delta$NDVI, $\Delta$NBR, $\Delta$NDMI), thể hiện qua sự phân bố các điểm dữ liệu gần đường chéo. Tương tự, $\Delta$B11 và $\Delta$B12 có tương quan cao do cùng thuộc dải sóng ngắn hồng ngoại (SWIR). Trên không gian đặc trưng hai chiều của các chỉ số thực vật, lớp Mất rừng và Phục hồi rừng phân bố ở hai vùng đối lập nhau, trong khi lớp Rừng ổn định và Phi rừng tập trung quanh gốc tọa độ. Đặc điểm phân bố này tạo điều kiện thuận lợi cho mô hình CNN trong việc học các ranh giới quyết định phân tách bốn lớp biến động.
+
 \subsection{Cấu hình phần cứng và phần mềm}
 
-Môi trường thí nghiệm gồm phần cứng như GPU NVIDIA GeForce RTX 4080 (16GB VRAM), bộ nhớ RAM 64GB và bộ nhớ lưu trữ 1TB SSD. Về phần mềm, hệ thống sử dụng Python 3.8 trở lên cùng PyTorch 2.0+ có hỗ trợ CUDA để huấn luyện mô hình, GDAL 3.4+ cho xử lý dữ liệu không gian và các thư viện khoa học dữ liệu như NumPy, scikit-learn và pandas.
+Môi trường thí nghiệm sử dụng phần cứng với CPU **Intel Xeon E-2334 (4 nhân, 8 luồng)**, GPU NVIDIA GeForce RTX 4080 (16GB VRAM), bộ nhớ RAM 64GB và bộ nhớ lưu trữ 1TB SSD. Về phần mềm, hệ điều hành được sử dụng là Windows 10 Pro, môi trường Python 3.8 cùng PyTorch 2.0 có hỗ trợ CUDA để huấn luyện mô hình, GDAL 3.4 cho xử lý dữ liệu không gian và các thư viện khoa học dữ liệu như NumPy, scikit-learn và pandas.
 
 \subsection{Phân chia dữ liệu}
 
