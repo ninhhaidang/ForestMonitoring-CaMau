@@ -8,6 +8,8 @@ Tỉnh Cà Mau mới nằm ở cực Nam Tổ Quốc, sở hữu hệ sinh thái
 
 Tuy nhiên, rừng Cà Mau đang phải đối mặt với nhiều thách thức. Trước hết là áp lực chuyển đổi sang nuôi tôm do kinh tế, khiến nhiều khu vực rừng bị chuyển đổi thành ao nuôi. Ngoài ra, hiện tượng xâm nhập mặn gia tăng do biến đổi khí hậu làm giảm sức khỏe rừng; đồng thời xói mòn bờ biển cũng làm suy giảm diện tích rừng ven biển; và tình trạng thiếu nước ngọt ảnh hưởng tới khả năng tái sinh tự nhiên của rừng. Giai đoạn 2011--2023, sạt lở vùng ven biển đã làm mất hơn 6,200 ha đất và rừng phòng hộ \citevi{nongnghiepmoitruong2024}.
 
+Để hiểu rõ bối cảnh không gian và đa dạng lớp phủ bề mặt tại khu vực nghiên cứu, Hình~\ref{fig:camau_lulc} trình bày bản đồ phân loại lớp phủ/sử dụng đất (LULC) tỉnh Cà Mau. Phân loại LULC cung cấp thông tin nền tảng về các loại hình sử dụng đất khác nhau trên địa bàn, từ đó giúp xác định ranh giới giữa vùng rừng và phi rừng, cũng như các vùng có nguy cơ chuyển đổi cao \citeen{gong2013}. Bản đồ này được xây dựng từ dữ liệu viễn thám từ Esri phản ánh hiện trạng sử dụng đất phức tạp tại tỉnh Cà Mau, nơi mà sự tương tác giữa các hệ sinh thái tự nhiên (rừng ngập mặn, đất ngập nước) và các hoạt động kinh tế-xã hội (nuôi trồng thủy sản, nông nghiệp) diễn ra liên tục \citeen{renaud2015}.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.95\textwidth]{img/chapter3/LULC-Ca-Mau.png}
@@ -15,15 +17,15 @@ Tuy nhiên, rừng Cà Mau đang phải đối mặt với nhiều thách thức
     \label{fig:camau_lulc}
 \end{figure}
 
+Phân tích bản đồ cho thấy sự phân bố không đồng nhất của các loại hình lớp phủ, với rừng ngập mặn tập trung chủ yếu dọc bờ biển phía Tây và Nam, trong khi các vùng nuôi trồng thủy sản và nông nghiệp chiếm ưu thế ở khu vực trung tâm và phía Đông. Mô hình phân bố này phản ánh lịch sử khai thác và quản lý tài nguyên tại Cà Mau, đồng thời làm nổi bật sự cần thiết phải có công cụ giám sát biến động rừng hiệu quả để hỗ trợ các quyết định quản lý bền vững \citeen{kuenzer2011}.
+
 Đồ án tập trung vào toàn bộ vùng quy hoạch lâm nghiệp của tỉnh Cà Mau mới. Dữ liệu ranh giới quy hoạch lâm nghiệp được cung cấp bởi Công ty TNHH Tư vấn và Phát triển Đồng Xanh — đối tác của Chi cục Kiểm lâm tỉnh Cà Mau.
 
 Tổng diện tích ranh giới quy hoạch là 170,178.82 ha (tương đương 1,701.79 km²), bao gồm 666 polygon trong file shapefile ranh giới. Diện tích thực tế được phân loại là 162,468.50 ha (khoảng 95.5\% diện tích ranh giới); phần còn lại (~7,710 ha, chiếm 4.5\%) bị loại do mây che phủ hoặc dữ liệu không hợp lệ (nodata) trong quá trình xử lý ảnh vệ tinh. Kích thước raster là 12,547 × 10,917 điểm ảnh (ở độ phân giải 10m), sử dụng hệ quy chiếu EPSG:32648 (WGS 84 / UTM Zone 48N).
 
 \subsection{Dữ liệu thực địa tại Cà Mau}
 
-Dữ liệu thực địa được Công ty TNHH Tư vấn và Phát triển Đồng Xanh (GFD) thu thập trong khuôn khổ thực hiện đề tài ``Ứng dụng công nghệ viễn thám, ảnh vệ tinh để quản lý, giám sát tài nguyên rừng và sạt lở ven biển trên địa bàn tỉnh Cà Mau'' \citevi{gfd2025} và được cung cấp cho nghiên cứu này. Quy trình thu thập gồm ba giai đoạn. Giai đoạn đầu tiên là khảo sát thực địa bằng thiết bị bay không người lái (drone) để ghi nhận hình ảnh và xác định trạng thái rừng. Giai đoạn thứ hai là số hóa các điểm dữ liệu thực địa trên phần mềm QGIS, đối chiếu với ảnh vệ tinh Sentinel-2. Giai đoạn cuối cùng là kiểm tra chéo và loại bỏ các điểm không rõ ràng hoặc nằm trong vùng mây che phủ.
-
-Dữ liệu cuối cùng được xuất dưới dạng file CSV với cấu trúc gồm 4 trường: \texttt{id}, \texttt{label}, \texttt{x} và \texttt{y} (tọa độ theo hệ quy chiếu EPSG:32648).
+Dữ liệu thực địa được Công ty TNHH Tư vấn và Phát triển Đồng Xanh (GFD) thu thập trong khuôn khổ thực hiện đề tài ``Ứng dụng công nghệ viễn thám, ảnh vệ tinh để quản lý, giám sát tài nguyên rừng và sạt lở ven biển trên địa bàn tỉnh Cà Mau'' \citevi{gfd2025} và được cung cấp cho nghiên cứu này. Quy trình thu thập gồm ba giai đoạn. Giai đoạn đầu tiên là khảo sát thực địa bằng thiết bị bay không người lái (drone) để ghi nhận hình ảnh và xác định trạng thái rừng. Giai đoạn thứ hai là số hóa các điểm dữ liệu thực địa trên phần mềm QGIS, đối chiếu với ảnh vệ tinh Sentinel-2. Giai đoạn cuối cùng là kiểm tra chéo và loại bỏ các điểm không rõ ràng hoặc nằm trong vùng mây che phủ. Dữ liệu cuối cùng được xuất dưới dạng file CSV với cấu trúc gồm 4 trường: \texttt{id}, \texttt{label}, \texttt{x} và \texttt{y} (tọa độ theo hệ quy chiếu EPSG:32648).
 
 \begin{table}[H]
 \centering
@@ -90,9 +92,9 @@ Bộ dữ liệu thực địa gồm 2,630 điểm, trong đó phân bố lớp 
 \hline
 \textbf{Tập dữ liệu} & \textbf{Số mẫu} & \textbf{Tỷ lệ} \\
 \hline
-Training + Validation (5-Fold CV) & 2,104 & 80\% \\
+Huấn luyện + Kiểm định (5-Fold CV) & 2,104 & 80\% \\
 \hline
-Test (cố định) & 526 & 20\% \\
+Kiểm tra (cố định) & 526 & 20\% \\
 \hline
 \textbf{Tổng} & \textbf{2,630} & \textbf{100\%} \\
 \hline
@@ -101,4 +103,4 @@ Test (cố định) & 526 & 20\% \\
 
 Việc chia tập dữ liệu được thực hiện như sau: 80\% dữ liệu (2,104 patches) được dành cho Train+Val để thực hiện 5-Fold Cross Validation, còn 20\% dữ liệu (526 patches) được giữ lại làm fixed test set.
 
-Kết quả trên hoàn thành mục tiêu xây dựng bộ dữ liệu huấn luyện gồm 2,630 điểm mẫu với 27 đặc trưng từ ảnh vệ tinh Sentinel-1 và Sentinel-2 đa thời gian, bao gồm các kênh phổ, chỉ số thực vật và tán xạ ngược cho khu vực quy hoạch lâm nghiệp tỉnh Cà Mau.
+Kết quả trên hoàn thành nội dung thứ nhất, xây dựng bộ dữ liệu huấn luyện gồm 2,630 điểm mẫu với 27 đặc trưng từ ảnh vệ tinh Sentinel-1 và Sentinel-2 đa thời gian, bao gồm các kênh phổ, chỉ số thực vật và tán xạ ngược cho khu vực quy hoạch lâm nghiệp tỉnh Cà Mau.
