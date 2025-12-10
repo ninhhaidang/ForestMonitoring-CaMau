@@ -8,11 +8,11 @@
 \label{tab:patch_size}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-\textbf{Patch Size} & \textbf{Accuracy} & \textbf{ROC-AUC} & \textbf{Thời gian huấn luyện} & \textbf{Số tham số} \\
+\textbf{Kích thước patch} & \textbf{Accuracy} & \textbf{ROC-AUC} & \textbf{Thời gian huấn luyện} & \textbf{Số tham số} \\
 \hline
-1×1 (pixel-wise) & 98.23\% & 99.78\% & 12.5s & 25,348 \\
+1×1 & 98.23\% & 99.78\% & 12.5s & 25,348 \\
 \hline
-\textbf{3×3 (baseline)} & \textbf{98.86\%} & \textbf{99.98\%} & 15.2s & 36,676 \\
+\textbf{3×3 (nghiên cứu này)} & \textbf{98.86\%} & \textbf{99.98\%} & 15.2s & 36,676 \\
 \hline
 5×5 & 98.67\% & 99.89\% & 28.3s & 52,484 \\
 \hline
@@ -52,10 +52,11 @@
     \label{fig:patch_size_comparison}
 \end{figure}
 
-Qua Bảng~\ref{tab:patch_size} và Hình~\ref{fig:patch_size_comparison}, có thể rút ra một số nhận xét quan trọng. Với patch size 1×1 (pixel-wise), mô hình đạt accuracy 98.23\%, cho thấy chỉ riêng thông tin phổ tại mỗi pixel đã đủ để phân biệt các lớp biến động rừng với độ chính xác cao, tuy nhiên cách tiếp cận này bỏ qua thông tin ngữ cảnh không gian. Patch size 3×3 đạt kết quả tốt nhất (98.86\% accuracy, 99.98\% ROC-AUC) với mức tăng thời gian huấn luyện chấp nhận được (+2.7 giây so với 1×1), cho thấy kích thước này cân bằng tốt giữa việc khai thác ngữ cảnh không gian địa phương và tránh nhiễu từ các pixel xa.
+Qua Bảng~\ref{tab:patch_size} và Hình~\ref{fig:patch_size_comparison}, có thể rút ra một số nhận xét quan trọng. Với kích thước patch 1×1, mô hình đạt accuracy 98.23\%, cho thấy chỉ riêng thông tin phổ tại mỗi điểm ảnh đã đủ để phân biệt các lớp biến động rừng với độ chính xác cao, tuy nhiên cách tiếp cận này bỏ qua thông tin ngữ cảnh không gian. Kích thước patch 3×3 đạt kết quả tốt nhất (98.86\% accuracy, 99.98\% ROC-AUC) với mức tăng thời gian huấn luyện chấp nhận được (+2.7 giây so với 1×1), cho thấy kích thước này cân bằng tốt giữa việc khai thác ngữ cảnh không gian địa phương và tránh nhiễu từ các điểm ảnh xa.
 
-Đối với patch size 5×5 và 7×7, accuracy giảm dần (98.67\% và 98.29\%) mặc dù số tham số mô hình tăng đáng kể, cho thấy với độ phân giải 10m của Sentinel-2, ngữ cảnh không gian quá rộng (50-70m) có thể đưa vào nhiễu từ các lớp phủ lân cận, đặc biệt tại các vùng ranh giới. Thời gian huấn luyện tăng gần tuyến tính với số tham số, từ 12.5s (1×1) lên 41.2s (7×7), cho thấy chi phí tính toán tăng đáng kể khi mở rộng patch size mà không đem lại cải thiện về accuracy. Do đó, có thể kết luận rằng patch size 3×3 là tối ưu cho bộ dữ liệu này, đạt được sự cân bằng tốt nhất giữa độ chính xác, thời gian huấn luyện và khả năng khai thác ngữ cảnh không gian.
+Đối với kích thước patch 5×5 và 7×7, accuracy giảm dần (98.67\% và 98.29\%) mặc dù số tham số mô hình tăng đáng kể, cho thấy với độ phân giải 10m của Sentinel-2, ngữ cảnh không gian quá rộng (50-70m) có thể đưa vào nhiễu từ các lớp phủ lân cận, đặc biệt tại các vùng ranh giới. Thời gian huấn luyện tăng gần tuyến tính với số tham số, từ 12.5s (1×1) lên 41.2s (7×7), cho thấy chi phí tính toán tăng đáng kể khi mở rộng kích thước patch mà không đem lại cải thiện về accuracy. Do đó, có thể kết luận rằng kích thước patch 3×3 là tối ưu cho bộ dữ liệu này, đạt được sự cân bằng tốt nhất giữa độ chính xác, thời gian huấn luyện và khả năng khai thác ngữ cảnh không gian.
 
+Kết quả trên đóng góp vào mục tiêu thiết kế và tối ưu hóa kiến trúc CNN, xác định kích thước patch 3×3 là tối ưu cho bộ dữ liệu quy mô vừa phải, đạt accuracy 98.86\% với 36,676 tham số.
 \subsection{Ảnh hưởng của nguồn dữ liệu}
 
 \begin{table}[H]
@@ -113,3 +114,5 @@ Qua Bảng~\ref{tab:data_sources} và Hình~\ref{fig:data_sources_comparison}, c
 Sự kết hợp S1+S2 cho kết quả tốt nhất (98.86\% accuracy, 99.98\% ROC-AUC), vượt trội đáng kể so với việc chỉ sử dụng Sentinel-2 (+5.44\%), cho thấy dữ liệu ra-đa bổ sung thông tin cấu trúc và độ ẩm mà dữ liệu quang học không nắm bắt được, đặc biệt hữu ích cho việc phân biệt rừng có mật độ tán khác nhau, phát hiện vùng rừng suy thoái chưa thể hiện rõ trên ảnh quang học, và cải thiện phân loại trong điều kiện có mây một phần. Bên cạnh đó, đóng góp của thông tin thời gian là đáng kể khi accuracy tăng từ 87.65\% (chỉ delta) lên 93.42\% (đầy đủ trước + sau + delta), khẳng định giá trị của việc khai thác thông tin đa thời gian trong phát hiện biến động.
 
 Từ các kết quả trên, có thể kết luận rằng việc kết hợp Sentinel-1 và Sentinel-2 cho kết quả tối ưu nhất. Dữ liệu ra-đa và quang học có tính bổ sung cao: Sentinel-2 cung cấp thông tin chi tiết về thành phần hóa học và sinh lý của thực vật thông qua các kênh quang phổ, trong khi Sentinel-1 cung cấp thông tin về cấu trúc và độ ẩm của tán rừng. Sự kết hợp này đặc biệt phù hợp cho giám sát rừng ngập mặn ven biển, nơi điều kiện thời tiết thường xuyên có mây và sương mù.
+
+Kết quả trên hoàn thành mục tiêu đánh giá hiệu quả của việc tích hợp dữ liệu đa nguồn, với accuracy tăng từ 93.42\% (chỉ S2) lên 98.86\% (S1+S2), cải thiện 5.44 điểm phần trăm so với việc sử dụng nguồn dữ liệu đơn lẻ.
