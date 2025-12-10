@@ -2,7 +2,7 @@
 
 \subsection{Dữ liệu viễn thám Sentinel}
 
-Việc lựa chọn ảnh vệ tinh tuân theo các tiêu chí nhằm đảm bảo chất lượng dữ liệu đầu vào. Đối với ảnh Sentinel-2, nghiên cứu sử dụng sản phẩm \texttt{S2\_SR\_HARMONIZED} (Surface Reflectance Level-2A đã hiệu chỉnh) từ Google Earth Engine, ưu tiên các ảnh trong mùa khô (tháng 1-3) để giảm thiểu ảnh hưởng của mây và đảm bảo tính so sánh giữa hai thời kỳ. Mặt nạ mây được tạo từ bộ sưu tập \texttt{S2\_CLOUD\_PROBABILITY} với ngưỡng xác suất 50\% để loại bỏ các điểm ảnh bị mây che phủ. Đối với ảnh Sentinel-1, sử dụng sản phẩm \texttt{S1\_GRD} đã được tiền xử lý bởi ESA, các cảnh được chọn có thời gian thu nhận gần nhất với ảnh Sentinel-2 tương ứng (trong phạm vi ±7 ngày) để đảm bảo tính đồng bộ về thời gian.
+Việc lựa chọn ảnh vệ tinh tuân theo các tiêu chí nhằm đảm bảo chất lượng dữ liệu đầu vào. Đối với ảnh Sentinel-2, nghiên cứu sử dụng sản phẩm \texttt{S2\_SR\_HARMONIZED} (Surface Reflectance Level-2A đã hiệu chỉnh) từ Google Earth Engine, ưu tiên các ảnh trong mùa khô (tháng 1--3) để giảm thiểu ảnh hưởng của mây và đảm bảo tính so sánh giữa hai thời kỳ. Mặt nạ mây được tạo từ bộ sưu tập \texttt{S2\_CLOUD\_PROBABILITY} với ngưỡng xác suất 50\% để loại bỏ các điểm ảnh bị mây che phủ. Đối với ảnh Sentinel-1, sử dụng sản phẩm \texttt{S1\_GRD} đã được tiền xử lý bởi ESA, các cảnh được chọn có thời gian thu nhận gần nhất với ảnh Sentinel-2 tương ứng (trong phạm vi ±7 ngày) để đảm bảo tính đồng bộ về thời gian.
 
 \begin{table}[H]
 \centering
