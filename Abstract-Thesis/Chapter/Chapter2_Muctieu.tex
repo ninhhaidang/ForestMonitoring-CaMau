@@ -1,0 +1,67 @@
+\chapter{Mục tiêu}
+
+Mục tiêu tổng quát của nghiên cứu là ứng dụng mô hình học sâu dựa trên kiến trúc mạng nơ-ron tích chập để phát hiện và phân loại biến động rừng tại khu vực quy hoạch lâm nghiệp tỉnh Cà Mau với độ chính xác cao. Nghiên cứu tập trung vào việc tích hợp dữ liệu đa nguồn từ vệ tinh Sentinel-1 (ra-đa khẩu độ tổng hợp) và Sentinel-2 (quang học đa phổ) để khai thác tối đa thông tin về trạng thái lớp phủ rừng qua hai thời kỳ quan sát.
+
+Thay vì sử dụng các phương pháp học máy truyền thống như Rừng ngẫu nhiên (Random Forest) hay Máy vector hỗ trợ (SVM) vốn phổ biến trong các nghiên cứu tại Việt Nam, đồ án hướng đến thiết kế một kiến trúc CNN có khả năng hoạt động hiệu quả với bộ dữ liệu quy mô vừa phải (khoảng 2,600 mẫu). Giả thuyết nghiên cứu được đặt ra là: \textit{Mô hình CNN kết hợp đặc trưng từ cả hai nguồn dữ liệu ra-đa và quang học có thể đạt độ chính xác cao hơn so với việc chỉ sử dụng một nguồn dữ liệu đơn lẻ}.
+
+Kết quả nghiên cứu không chỉ có ý nghĩa khoa học trong việc đề xuất kiến trúc CNN tối ưu cho bài toán phân loại ảnh viễn thám với dữ liệu hạn chế, mà còn có giá trị thực tiễn cao. Mô hình có thể được triển khai như một công cụ hỗ trợ quan trọng cho các cơ quan quản lý lâm nghiệp trong công tác giám sát và bảo vệ rừng tại tỉnh Cà Mau nói riêng và các tỉnh ven biển đồng bằng sông Cửu Long nói chung. Đặc biệt, với độ chính xác cao (mục tiêu đặt ra là trên 95\%) và khả năng xử lý diện tích lớn, mô hình có thể giúp phát hiện sớm các hoạt động mất rừng bất hợp pháp, từ đó hỗ trợ việc ra quyết định kịp thời trong bảo vệ tài nguyên rừng.
+
+Để đạt được mục tiêu trên, đồ án thực hiện bốn nội dung nghiên cứu chính với các yêu cầu cụ thể:
+
+\section*{Nội dung 1: Xây dựng bộ dữ liệu huấn luyện}
+
+Nội dung này tập trung vào việc thu thập và xử lý dữ liệu viễn thám từ hai nguồn chính là Sentinel-1 và Sentinel-2 cho khu vực nghiên cứu. Các công việc cụ thể bao gồm:
+
+\textbf{Thu thập dữ liệu ảnh vệ tinh:} Sử dụng nền tảng Google Earth Engine để truy cập và tải về dữ liệu Sentinel-1 (sản phẩm GRD) và Sentinel-2 (sản phẩm Level-2A Surface Reflectance) cho hai thời kỳ: kỳ trước (tháng 01/2024) và kỳ sau (tháng 02/2025). Việc lựa chọn thời điểm trong mùa khô nhằm giảm thiểu ảnh hưởng của mây và đảm bảo tính so sánh giữa hai thời kỳ.
+
+\textbf{Tiền xử lý dữ liệu:} Áp dụng các kỹ thuật lọc mây cho Sentinel-2 sử dụng QA band với ngưỡng xác suất mây 50\%, tạo ảnh mosaic từ nhiều tiles để phủ toàn bộ khu vực nghiên cứu, chuyển đổi dữ liệu Sentinel-1 từ định dạng dB sang giá trị tuyến tính, và đảm bảo đồng nhất hóa về hệ quy chiếu (EPSG:32648) và độ phân giải (10m).
+
+\textbf{Trích xuất đặc trưng:} Từ Sentinel-2, trích xuất 4 kênh phổ quan trọng (B4-Red, B8-NIR, B11-SWIR1, B12-SWIR2) và tính toán 3 chỉ số thực vật (NDVI, NBR, NDMI) cho cả hai thời kỳ. Từ Sentinel-1, trích xuất 2 kênh phân cực (VV, VH) cho cả hai thời kỳ. Tính toán giá trị biến đổi (delta) giữa hai thời kỳ cho tất cả các đặc trưng. Tổng cộng có 27 đặc trưng: 21 từ Sentinel-2 (7 kênh/chỉ số × 3 thời điểm) và 6 từ Sentinel-1 (2 kênh × 3 thời điểm).
+
+\textbf{Thu thập dữ liệu thực địa:} Sử dụng phương pháp lấy mẫu phân tầng ngẫu nhiên để thu thập tối thiểu 2,500 điểm mẫu, đảm bảo phân bố cân bằng cho 4 lớp phân loại (Rừng ổn định, Mất rừng, Phi rừng, Phục hồi rừng). Mỗi điểm mẫu được xác định nhãn thông qua phân tích ảnh độ phân giải cao trên Google Earth Pro, kết hợp với dữ liệu quy hoạch lâm nghiệp và kiến thức chuyên gia.
+
+Kết quả mong đợi của nội dung này là một bộ dữ liệu hoàn chỉnh gồm khoảng 2,600 điểm mẫu với 27 đặc trưng cho mỗi điểm, đủ để huấn luyện và đánh giá mô hình CNN. Dữ liệu được lưu trữ dưới định dạng GeoTIFF cho các raster đặc trưng và CSV cho các điểm mẫu kèm nhãn.
+
+\section*{Nội dung 2: Thiết kế và tối ưu hóa kiến trúc CNN}
+
+Nội dung này tập trung vào việc thiết kế một kiến trúc CNN phù hợp với đặc thù của bài toán và quy mô dữ liệu. Các công việc cụ thể bao gồm:
+
+\textbf{Thiết kế kiến trúc cơ bản:} Xây dựng kiến trúc CNN với các lớp tích chập để trích xuất đặc trưng không gian, lớp Global Average Pooling để giảm chiều dữ liệu, và các lớp kết nối đầy đủ cho phân loại. Kiến trúc được thiết kế nhẹ (dưới 50,000 tham số) để phù hợp với bộ dữ liệu nhỏ và tránh quá khớp.
+
+\textbf{Áp dụng kỹ thuật điều chuẩn:} Tích hợp Batch Normalization sau mỗi lớp tích chập để ổn định quá trình huấn luyện, sử dụng Dropout với tỷ lệ cao (60--70\%) để ngăn ngừa quá khớp, và áp dụng phân rã trọng số (weight decay) trong thuật toán tối ưu.
+
+\textbf{Lựa chọn kích thước patch:} Thử nghiệm với các kích thước patch khác nhau (1×1, 3×3, 5×5, 7×7, 9×9) để xác định kích thước tối ưu. Tiêu chí đánh giá bao gồm độ chính xác phân loại, số lượng tham số mô hình, và thời gian huấn luyện/dự đoán.
+
+\textbf{Tối ưu hóa siêu tham số:} Sử dụng kiểm định chéo 5 phần (5-Fold Cross Validation) để tìm kiếm các siêu tham số tối ưu, bao gồm: số lượng bộ lọc (filters) trong mỗi lớp tích chập, tốc độ học (learning rate), kích thước lô (batch size), tỷ lệ Dropout, và hệ số phân rã trọng số.
+
+Kết quả mong đợi là một kiến trúc CNN tối ưu với độ chính xác trên tập kiểm định đạt ít nhất 95\%, thời gian huấn luyện hợp lý (dưới 30 phút trên GPU), và khả năng tổng quát hóa tốt (độ lệch chuẩn accuracy giữa các fold nhỏ hơn 1\%).
+
+\section*{Nội dung 3: Đánh giá hiệu quả tích hợp đa nguồn}
+
+Nội dung này nhằm kiểm chứng giả thuyết về hiệu quả của việc kết hợp dữ liệu Sentinel-1 và Sentinel-2. Phương pháp nghiên cứu loại trừ (ablation study) được áp dụng với các kịch bản sau:
+
+\textbf{Kịch bản 1 - Chỉ Sentinel-2:} Huấn luyện mô hình chỉ với 21 đặc trưng từ Sentinel-2 (4 kênh phổ + 3 chỉ số thực vật, mỗi kênh/chỉ số có 3 giá trị: trước, sau, delta).
+
+\textbf{Kịch bản 2 - Chỉ Sentinel-1:} Huấn luyện mô hình chỉ với 6 đặc trưng từ Sentinel-1 (2 kênh phân cực VV và VH, mỗi kênh có 3 giá trị: trước, sau, delta).
+
+\textbf{Kịch bản 3 - Kết hợp Sentinel-1 + Sentinel-2:} Huấn luyện mô hình với đầy đủ 27 đặc trưng từ cả hai nguồn.
+
+Các chỉ số đánh giá bao gồm: Overall Accuracy, Producer's Accuracy và User's Accuracy cho từng lớp, F1-score cho từng lớp, và ma trận nhầm lẫn (confusion matrix) để phân tích chi tiết các lỗi phân loại.
+
+So sánh kết quả giữa ba kịch bản sẽ cho phép định lượng được mức độ cải thiện độ chính xác khi tích hợp đa nguồn, xác định nguồn dữ liệu nào đóng vai trò chính và nguồn nào có vai trò bổ sung, và hiểu rõ hơn về cơ chế mà mỗi nguồn dữ liệu đóng góp vào việc phân loại các lớp khác nhau.
+
+\section*{Nội dung 4: Áp dụng mô hình cho phân loại toàn vùng}
+
+Nội dung cuối cùng tập trung vào việc triển khai mô hình đã tối ưu hóa để tạo bản đồ biến động rừng cho toàn bộ khu vực nghiên cứu. Các công việc cụ thể bao gồm:
+
+\textbf{Chuẩn bị dữ liệu dự đoán:} Chia dữ liệu raster toàn vùng (khoảng 16 triệu điểm ảnh) thành các lô nhỏ để xử lý tuần tự, tránh tràn bộ nhớ. Áp dụng cùng quy trình chuẩn hóa như đã sử dụng cho dữ liệu huấn luyện.
+
+\textbf{Dự đoán và tạo bản đồ:} Sử dụng mô hình CNN đã huấn luyện để dự đoán nhãn cho mỗi điểm ảnh. Áp dụng kỹ thuật mixed precision (FP16) để tăng tốc độ xử lý. Xuất kết quả dưới dạng GeoTIFF với hệ quy chiếu EPSG:32648 và độ phân giải 10m.
+
+\textbf{Hậu xử lý và phân tích:} Áp dụng bộ lọc majority (nếu cần) để làm mịn kết quả và loại bỏ nhiễu điểm đơn lẻ. Tính toán thống kê diện tích cho từng lớp biến động. Phân tích không gian để xác định các điểm nóng (hotspot) mất rừng. Tạo bản đồ trực quan hóa kết quả với chú giải rõ ràng.
+
+\textbf{Đánh giá độ tin cậy:} So sánh kết quả với dữ liệu tham khảo (nếu có), phân tích mẫu ngẫu nhiên các vùng phân loại để kiểm tra tính hợp lý, và đánh giá tính nhất quán không gian của kết quả phân loại.
+
+Kết quả mong đợi là bản đồ biến động rừng độ phân giải 10m cho toàn bộ 162,469 ha khu vực nghiên cứu, với báo cáo thống kê chi tiết về diện tích và phân bố không gian của từng loại biến động. Bản đồ này có thể được sử dụng trực tiếp bởi các cơ quan quản lý lâm nghiệp để hỗ trợ công tác giám sát và ra quyết định.
+
+Thông qua việc hoàn thành bốn nội dung trên, đồ án kỳ vọng sẽ đạt được mục tiêu nghiên cứu đã đề ra, đồng thời đóng góp vào kho kiến thức về ứng dụng học sâu trong giám sát tài nguyên rừng tại Việt Nam.

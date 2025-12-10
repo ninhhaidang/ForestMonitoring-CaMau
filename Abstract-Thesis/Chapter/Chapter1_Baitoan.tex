@@ -1,0 +1,87 @@
+\chapter{Bài toán}
+
+\section{Đặt vấn đề}
+
+Rừng đóng vai trò thiết yếu trong việc duy trì sự cân bằng sinh thái toàn cầu, điều hòa khí hậu thông qua hấp thụ CO₂, bảo tồn đa dạng sinh học và cung cấp sinh kế cho hàng triệu người. Tuy nhiên, tình trạng mất rừng đang diễn ra với tốc độ báo động trên toàn cầu, đặc biệt tại các quốc gia đang phát triển. Theo báo cáo ``Global Forest Resources Assessment 2020'' của FAO, thế giới đã mất khoảng 178 triệu ha rừng trong giai đoạn 1990--2020, tương đương với diện tích của Libya.
+
+Các nguyên nhân chính dẫn đến mất rừng bao gồm: chuyển đổi đất rừng sang nông nghiệp và chăn nuôi, khai thác gỗ bất hợp pháp, cháy rừng do biến đổi khí hậu và hoạt động của con người, cũng như mở rộng đô thị hóa. Hậu quả của việc mất rừng không chỉ dừng lại ở mất đi nguồn tài nguyên, mà còn gây ra biến đổi khí hậu nghiêm trọng do giảm khả năng hấp thụ CO₂, suy giảm đa dạng sinh học khi môi trường sống của nhiều loài bị phá hủy, gia tăng rủi ro thiên tai như lũ lụt và lở đất do mất lớp phủ thực vật, và ảnh hưởng trực tiếp đến sinh kế của cộng đồng địa phương phụ thuộc vào rừng.
+
+Tại Việt Nam, mặc dù độ che phủ rừng đã tăng từ 37\% (năm 2000) lên 42\% (năm 2020) nhờ các chương trình trồng rừng, nhưng tình trạng suy thoái và mất rừng tự nhiên vẫn đáng báo động, đặc biệt tại các tỉnh ven biển và đồng bằng sông Cửu Long. Tỉnh Cà Mau, nằm ở cực Nam Tổ Quốc, sở hữu hệ sinh thái rừng ngập mặn có giá trị cao về sinh thái và kinh tế. Rừng ngập mặn đóng vai trò quan trọng trong việc chống xói mòn bờ biển, giảm thiểu tác động của bão và nước biển dâng, cung cấp nguồn sinh kế cho ngư dân địa phương, và là nơi cư trú, sinh sản của nhiều loài thủy sinh có giá trị kinh tế.
+
+Tuy nhiên, rừng ngập mặn Cà Mau đang phải đối mặt với nhiều áp lực: chuyển đổi đất rừng sang ao nuôi tôm là nguyên nhân chính gây mất rừng do lợi nhuận kinh tế cao từ nuôi trồng thủy sản; xâm nhập mặn ngày càng gia tăng do biến đổi khí hậu và nước biển dâng; khai thác gỗ và sản phẩm rừng không bền vững; và tác động của các cơn bão nhiệt đới ngày càng mạnh.
+
+Phương pháp giám sát rừng truyền thống dựa trên điều tra thực địa có nhiều hạn chế: tốn kém về thời gian và chi phí khi khảo sát diện tích lớn, khó tiếp cận các vùng rừng xa xôi hoặc địa hình phức tạp, tần suất cập nhật thông tin thấp (thường 3--5 năm/lần), và khó phát hiện kịp thời các biến động nhỏ lẻ nhưng tích lũy dần theo thời gian.
+
+Công nghệ viễn thám vệ tinh cung cấp giải pháp hiệu quả, cho phép giám sát liên tục, diện rộng với chi phí hợp lý. Chương trình Copernicus của Liên minh Châu Âu cung cấp dữ liệu miễn phí từ hai vệ tinh bổ sung nhau: Sentinel-1 với ra-đa khẩu độ tổng hợp (SAR) băng C hoạt động trong mọi điều kiện thời tiết, ngày đêm, không bị ảnh hưởng bởi mây; và Sentinel-2 với ảnh quang học đa phổ 13 kênh ở độ phân giải 10--60m, cung cấp thông tin chi tiết về đặc tính phổ của thực vật. Cả hai vệ tinh đều có chu kỳ quay trở lại ngắn (5--6 ngày) và độ phân giải không gian cao (10m), phù hợp cho giám sát rừng nhiệt đới.
+
+Trong những năm gần đây, trí tuệ nhân tạo và học sâu đã đạt được những bước tiến vượt bậc trong xử lý ảnh và nhận dạng mẫu. Mạng nơ-ron tích chập (CNN) đặc biệt hiệu quả trong phân loại ảnh nhờ khả năng tự động học đặc trưng không gian từ dữ liệu thô, không cần trích xuất đặc trưng thủ công như các phương pháp học máy truyền thống. CNN đã được ứng dụng thành công trong nhiều lĩnh vực viễn thám như phân loại lớp phủ đất, phát hiện đối tượng, và giám sát biến động.
+
+Xuất phát từ nhu cầu thực tiễn về giám sát rừng hiệu quả tại tỉnh Cà Mau và xu hướng ứng dụng công nghệ trí tuệ nhân tạo tiên tiến, đồ án này lựa chọn đề tài \textbf{``Ứng dụng viễn thám và học sâu trong giám sát biến động rừng tỉnh Cà Mau''} nhằm phát triển mô hình phát hiện mất rừng với độ chính xác cao, góp phần hỗ trợ công tác quản lý và bảo vệ rừng bền vững.
+
+\section{Đối tượng và phạm vi nghiên cứu}
+
+Đối tượng nghiên cứu của đồ án là biến động rừng tại khu vực ranh giới lâm nghiệp tỉnh Cà Mau. Các trạng thái biến động rừng được phân loại thành bốn nhóm chính:
+
+\textbf{(1) Rừng ổn định:} Các vùng có lớp phủ rừng ổn định, không có biến đổi đáng kể giữa hai thời kỳ quan sát. Đây là những khu vực rừng tự nhiên hoặc rừng trồng được bảo vệ tốt, duy trì độ che phủ và sức khỏe thực vật qua thời gian.
+
+\textbf{(2) Mất rừng:} Các vùng chuyển từ trạng thái có rừng sang không có rừng trong giai đoạn nghiên cứu. Nguyên nhân có thể do chuyển đổi sang nuôi trồng thủy sản, khai thác gỗ, hoặc các hoạt động phát triển hạ tầng.
+
+\textbf{(3) Phi rừng:} Các vùng không phải rừng ở cả hai thời kỳ, bao gồm khu dân cư, đất nông nghiệp, mặt nước (sông, hồ, ao nuôi), và các loại hình sử dụng đất khác.
+
+\textbf{(4) Phục hồi rừng:} Các vùng chuyển từ trạng thái không có rừng sang có rừng, thường là kết quả của các chương trình trồng rừng, tái sinh tự nhiên, hoặc phục hồi sinh thái.
+
+Về không gian, nghiên cứu được thực hiện trên khu vực ranh giới lâm nghiệp tỉnh Cà Mau (theo địa giới hành chính mới có hiệu lực từ ngày 01/07/2025, sau khi sáp nhập tỉnh Cà Mau cũ và tỉnh Bạc Liêu) với tổng diện tích 170,179 ha (tương đương 1,701.79 km²). Khu vực này bao gồm các loại hình rừng tự nhiên và rừng trồng, trong đó chủ yếu là rừng ngập mặn và rừng phòng hộ ven biển. 
+
+Về thời gian, dữ liệu sử dụng bao gồm ảnh vệ tinh Sentinel-1 và Sentinel-2 trong giai đoạn từ tháng 01/2024 đến tháng 02/2025, cho phép phát hiện các biến động xảy ra trong khoảng thời gian khoảng 13 tháng. Việc lựa chọn hai thời điểm này dựa trên các tiêu chí: cả hai đều nằm trong mùa khô (tháng 1--3) để giảm thiểu ảnh hưởng của mây và đảm bảo tính so sánh; và khoảng cách thời gian đủ dài để phát hiện các biến động có ý nghĩa nhưng không quá dài dẫn đến biến đổi tích lũy phức tạp.
+
+Diện tích thực tế được phân loại là 162,469 ha (khoảng 95.5\% diện tích ranh giới). Phần còn lại (4.5\%) bị loại trừ do các lý do: bị mây che phủ ở một hoặc cả hai thời điểm mặc dù đã áp dụng lọc mây, dữ liệu không hợp lệ hoặc thiếu dữ liệu tại một số vùng biên, và các vùng nằm ngoài ranh giới lâm nghiệp chính thức.
+
+\section{Cơ sở lý thuyết}
+
+\subsection{Công nghệ viễn thám}
+
+Viễn thám là khoa học và nghệ thuật thu nhận thông tin về một đối tượng, khu vực hoặc hiện tượng thông qua phân tích dữ liệu được thu thập bởi một thiết bị không tiếp xúc trực tiếp với đối tượng đó. Trong giám sát rừng, công nghệ viễn thám cung cấp hai loại dữ liệu bổ sung nhau:
+
+\textbf{Viễn thám bị động (Sentinel-2):} Ảnh quang học đa phổ với 13 kênh phổ từ vùng nhìn thấy đến hồng ngoại sóng ngắn, độ phân giải không gian 10--60m tùy kênh, phụ thuộc vào ánh sáng mặt trời và bị ảnh hưởng bởi mây. Ưu điểm chính là cung cấp thông tin chi tiết về đặc tính phổ của thực vật, cho phép tính toán các chỉ số thực vật, và dễ hiểu, trực quan với con người. Hạn chế là không hoạt động ban đêm, bị ảnh hưởng nghiêm trọng bởi mây và bóng mây, và phụ thuộc vào điều kiện khí quyển.
+
+\textbf{Viễn thám chủ động (Sentinel-1):} Ra-đa khẩu độ tổng hợp (SAR) băng C với hai kênh phân cực VV và VH, độ phân giải 10m, hoạt động độc lập với ánh sáng và điều kiện thời tiết. Ưu điểm là hoạt động trong mọi điều kiện thời tiết (qua mây, mưa), hoạt động cả ngày lẫn đêm, và nhạy cảm với cấu trúc và độ ẩm bề mặt. Hạn chế là dữ liệu phức tạp, khó hiểu hơn ảnh quang học, bị ảnh hưởng bởi độ nhám bề mặt và địa hình, và có hiện tượng nhiễu đốm (speckle noise).
+
+Các chỉ số thực vật được tính từ ảnh quang học đóng vai trò quan trọng trong giám sát rừng:
+
+\textbf{NDVI (Normalized Difference Vegetation Index)} đo lường mật độ và sức khỏe thực vật dựa trên sự khác biệt giữa phản xạ cận hồng ngoại (thực vật khỏe phản xạ cao) và ánh sáng đỏ (thực vật hấp thụ mạnh). Công thức: NDVI = (NIR - Red) / (NIR + Red), với giá trị từ -1 đến +1; giá trị cao (0.6--0.9) chỉ thị thực vật dày đặc, khỏe mạnh.
+
+\textbf{NBR (Normalized Burn Ratio)} được thiết kế để phát hiện vùng cháy rừng, nhưng cũng rất nhạy với biến động rừng do khai thác. Công thức: NBR = (NIR - SWIR2) / (NIR + SWIR2); sự giảm mạnh giá trị NBR chỉ ra mất rừng hoặc suy thoái.
+
+\textbf{NDMI (Normalized Difference Moisture Index)} phản ánh hàm lượng nước trong tán lá và độ ẩm thực vật, hữu ích trong phát hiện stress thực vật sớm. Công thức: NDMI = (NIR - SWIR1) / (NIR + SWIR1); giá trị cao chỉ thị thực vật có độ ẩm tốt.
+
+Việc tích hợp dữ liệu đa nguồn (SAR + quang học) đã được chứng minh trong nhiều nghiên cứu là có khả năng tăng độ chính xác phân loại 5--15\% so với sử dụng đơn nguồn, do hai loại dữ liệu cung cấp thông tin bổ sung nhau về cả đặc tính quang phổ và cấu trúc của thực vật.
+
+\subsection{Mạng nơ-ron tích chập (CNN)}
+
+Mạng nơ-ron tích chập là một kiến trúc học sâu được thiết kế đặc biệt cho xử lý dữ liệu dạng lưới như ảnh. CNN có khả năng tự động học các đặc trưng phân cấp từ dữ liệu thô, từ các đặc trưng cơ bản (cạnh, góc) ở các lớp đầu đến các đặc trưng phức tạp hơn (kết cấu, hình dạng) ở các lớp sau.
+
+Các thành phần chính của CNN bao gồm:
+
+\textbf{Lớp tích chập (Convolutional Layer)} thực hiện phép tích chập giữa đầu vào và các bộ lọc học được, trích xuất đặc trưng không gian cục bộ. Mỗi bộ lọc tìm kiếm một loại đặc trưng cụ thể (ví dụ: cạnh ngang, cạnh dọc, kết cấu).
+
+\textbf{Lớp gộp (Pooling Layer)} giảm chiều không gian của dữ liệu, làm giảm số lượng tham số và tính toán, đồng thời tăng tính bất biến đối với phép dịch chuyển nhỏ. Phương pháp phổ biến là Max Pooling (lấy giá trị lớn nhất) hoặc Average Pooling (lấy giá trị trung bình).
+
+\textbf{Chuẩn hóa theo lô (Batch Normalization)} chuẩn hóa đầu ra của mỗi lớp về phân phối chuẩn, giúp ổn định và tăng tốc quá trình huấn luyện, cho phép sử dụng tốc độ học cao hơn, và có tác dụng điều chuẩn nhẹ.
+
+\textbf{Dropout} là kỹ thuật điều chuẩn tắt ngẫu nhiên một tỷ lệ các nơ-ron trong quá trình huấn luyện, giúp ngăn ngừa quá khớp bằng cách buộc mạng học các đặc trưng phân tán hơn, và cải thiện khả năng tổng quát hóa của mô hình.
+
+\textbf{Hàm kích hoạt} đưa tính phi tuyến vào mô hình. ReLU (Rectified Linear Unit) là hàm kích hoạt phổ biến nhất với công thức f(x) = max(0, x), giúp giảm thiểu vấn đề triệt tiêu gradient và tính toán nhanh.
+
+So với các phương pháp học máy truyền thống (Random Forest, SVM), CNN có ưu điểm: tự động học đặc trưng từ dữ liệu thô, không cần thiết kế thủ công; khai thác tốt cấu trúc không gian của ảnh; và đạt độ chính xác cao hơn khi có đủ dữ liệu huấn luyện. Nhược điểm là cần lượng dữ liệu huấn luyện lớn, tốn tài nguyên tính toán (GPU), và khó giải thích (mô hình hộp đen).
+
+Trong bài toán phân loại ảnh viễn thám, thay vì phân loại từng điểm ảnh đơn lẻ, phương pháp phân loại dựa trên patch (vùng lân cận) được sử dụng rộng rãi. Một patch kích thước n×n (ví dụ 3×3, 5×5) được trích xuất xung quanh mỗi điểm ảnh cần phân loại, cung cấp thông tin ngữ cảnh không gian. Ưu điểm của phương pháp này là khai thác thông tin từ các điểm ảnh lân cận, giúp mô hình hiểu được ngữ cảnh không gian; giảm nhiễu do xem xét vùng rộng hơn thay vì điểm đơn lẻ; và phù hợp với kiến trúc CNN được thiết kế cho dữ liệu không gian 2D.
+
+\subsection{Các nghiên cứu liên quan}
+
+Trên thế giới, nhiều nghiên cứu đã ứng dụng học máy và học sâu trong giám sát rừng. Hansen và cộng sự (2013) sử dụng Decision Tree trên dữ liệu Landsat 30m để tạo bản đồ mất rừng toàn cầu, đạt độ chính xác khoảng 85\%. Kussul và cộng sự (2017) áp dụng CNN cho phân loại lớp phủ đất từ Sentinel-2, đạt 94.5\% accuracy. Hu và cộng sự (2020) kết hợp Sentinel-1 và Sentinel-2 với mô hình CNN, đạt 92\% trong phân loại rừng.
+
+Tại Việt Nam, hầu hết các nghiên cứu vẫn sử dụng phương pháp học máy truyền thống. Nguyen và cộng sự (2020) sử dụng Random Forest và SVM trên dữ liệu Landsat để giám sát rừng U Minh Hạ, đạt 91.2\% accuracy. Các nghiên cứu về ứng dụng CNN cho giám sát rừng tại Việt Nam còn rất hạn chế, đặc biệt là cho hệ sinh thái rừng ngập mặn.
+
+Khoảng trống nghiên cứu hiện tại bao gồm: thiếu nghiên cứu ứng dụng CNN cho rừng ngập mặn Việt Nam với đặc thù sinh thái riêng biệt; thiếu kiến trúc CNN được tối ưu hóa cho bộ dữ liệu nhỏ (2,000--5,000 mẫu) phổ biến trong các nghiên cứu địa phương; chưa có đánh giá hệ thống về hiệu quả tích hợp Sentinel-1 và Sentinel-2 trong bối cảnh rừng nhiệt đới Việt Nam; và thiếu các nghiên cứu so sánh giữa học sâu và học máy truyền thống trên cùng bộ dữ liệu.
+
+Đồ án này góp phần lấp đầy các khoảng trống trên bằng cách phát triển kiến trúc CNN phù hợp cho bộ dữ liệu nhỏ, đánh giá hệ thống hiệu quả tích hợp đa nguồn dữ liệu, và ứng dụng cụ thể cho rừng ngập mặn Cà Mau --- một hệ sinh thái quan trọng nhưng chưa được nghiên cứu nhiều bằng công nghệ học sâu.

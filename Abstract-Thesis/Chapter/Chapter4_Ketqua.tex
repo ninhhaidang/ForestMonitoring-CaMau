@@ -1,0 +1,174 @@
+\chapter{Kết quả}
+
+\section{Lựa chọn kích thước patch tối ưu}
+
+Thử nghiệm được thực hiện với 5 kích thước patch khác nhau để xác định cấu hình tối ưu. Kết quả được tổng hợp trong Bảng~\ref{tab:patch_size_comparison}.
+
+\begin{table}[H]
+\centering
+\caption{So sánh hiệu suất với các kích thước patch khác nhau}
+\label{tab:patch_size_comparison}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Patch Size} & \textbf{Accuracy (\%)} & \textbf{Số tham số} & \textbf{Thời gian (s/epoch)} \\
+\hline
+1×1 & 97.34 & 12,324 & 8.2 \\
+\hline
+\textbf{3×3} & \textbf{98.86} & \textbf{36,676} & \textbf{12.5} \\
+\hline
+5×5 & 98.67 & 95,812 & 18.7 \\
+\hline
+7×7 & 98.29 & 184,548 & 28.3 \\
+\hline
+9×9 & 97.91 & 303,284 & 42.1 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Phân tích kết quả:}
+
+Patch 1×1 đạt 97.34\%, thấp hơn do thiếu thông tin ngữ cảnh không gian từ các điểm ảnh lân cận. Mặc dù có ít tham số nhất và thời gian huấn luyện nhanh, nhưng độ chính xác chưa đạt mục tiêu.
+
+Patch 3×3 đạt accuracy cao nhất (98.86\%) với số lượng tham số hợp lý (36,676). Kích thước này cung cấp đủ thông tin ngữ cảnh (vùng 30m × 30m) mà không gây quá khớp. Thời gian huấn luyện chấp nhận được (12.5 giây/epoch).
+
+Các patch lớn hơn (5×5, 7×7, 9×9) có accuracy thấp hơn mặc dù số tham số tăng đáng kể. Nguyên nhân là:  chứa nhiễu từ các điểm ảnh xa trung tâm, tăng nguy cơ quá khớp do tỷ lệ tham số/mẫu cao, và thời gian huấn luyện tăng đáng kể.
+
+\textbf{Kết luận:} Patch 3×3 được lựa chọn làm cấu hình tối ưu cho các thử nghiệm tiếp theo.
+
+\section{Nghiên cứu loại trừ nguồn dữ liệu}
+
+Nghiên cứu loại trừ có hệ thống được thực hiện để đánh giá đóng góp của từng nguồn dữ liệu. Ba kịch bản được thử nghiệm với kết quả trong Bảng~\ref{tab:ablation_study}.
+
+\begin{table}[H]
+\centering
+\caption{Kết quả nghiên cứu loại trừ nguồn dữ liệu}
+\label{tab:ablation_study}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Kịch bản} & \textbf{Số đặc trưng} & \textbf{Accuracy (\%)} & \textbf{Cải thiện} \\
+\hline
+Chỉ Sentinel-2 & 21 & 93.42 & Baseline \\
+\hline
+Chỉ Sentinel-1 & 6 & 73.38 & -20.04\% \\
+\hline
+\textbf{S1 + S2} & \textbf{27} & \textbf{98.86} & \textbf{+5.44\%} \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Phân tích chi tiết:}
+
+\textbf{Kịch bản 1 - Chỉ Sentinel-2 (93.42\%):} Dữ liệu quang học đóng vai trò chủ đạo trong phân loại. Các chỉ số thực vật (NDVI, NBR, NDMI) rất nhạy với sự thay đổi thực vật. Tuy nhiên, vẫn còn nhầm lẫn giữa các lớp có đặc trưng quang phổ tương đồng.
+
+\textbf{Kịch bản 2 - Chỉ Sentinel-1 (73.38\%):} Accuracy thấp cho thấy dữ liệu ra-đa đơn thuần không đủ để phân loại chính xác. Tuy nhiên, Sentinel-1 vẫn cung cấp thông tin bổ sung về cấu trúc và độ ẩm bề mặt.
+
+\textbf{Kịch bản 3 - Tích hợp S1+S2 (98.86\%):} Kết hợp hai nguồn cải thiện accuracy 5.44 điểm phần trăm so với chỉ Sentinel-2. Điều này chứng minh:
+\begin{itemize}
+    \item Sentinel-1 và Sentinel-2 có tính bổ sung cao
+    \item Sentinel-2 đóng vai trò chính, Sentinel-1 bổ sung thông tin cấu trúc
+    \item Tích hợp đa nguồn giúp phân biệt tốt hơn các lớp có quang phổ tương đồng
+\end{itemize}
+
+\section{Kết quả phân loại và đánh giá}
+
+\subsection{Hiệu suất trên tập kiểm tra}
+
+Mô hình được đánh giá trên tập kiểm tra cố định (526 mẫu, 20\% dữ liệu). Kết quả chi tiết được trình bày trong Bảng~\ref{tab:classification_report}.
+
+\begin{table}[H]
+\centering
+\caption{Báo cáo phân loại chi tiết trên tập kiểm tra}
+\label{tab:classification_report}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Lớp} & \textbf{Precision (\%)} & \textbf{Recall (\%)} & \textbf{F1-score (\%)} & \textbf{Support} \\
+\hline
+Rừng ổn định & 98.48 & 97.73 & 98.10 & 132 \\
+\hline
+Mất rừng & 97.73 & 96.97 & 97.35 & 132 \\
+\hline
+Phi rừng & 100.00 & 100.00 & 100.00 & 132 \\
+\hline
+Phục hồi rừng & 100.00 & 100.00 & 100.00 & 130 \\
+\hline
+\textbf{Macro avg} & \textbf{99.05} & \textbf{98.67} & \textbf{98.86} & \textbf{526} \\
+\hline
+\textbf{Weighted avg} & \textbf{99.05} & \textbf{98.86} & \textbf{98.86} & \textbf{526} \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Nhận xét:} Lớp Phi rừng và Phục hồi rừng đạt 100\% trên tất cả các chỉ số, cho thấy mô hình phân biệt rất tốt các lớp này. Lớp Rừng ổn định và Mất rừng có độ chính xác cao (>96\%) nhưng vẫn có một ít nhầm lẫn do đặc trưng quang phổ tương đồng tại vùng ranh giới.
+
+\subsection{Độ ổn định qua kiểm định chéo}
+
+Kiểm định chéo 5 phần cho kết quả: Accuracy trung bình 98.48\% với độ lệch chuẩn 0.36\%. Độ lệch chuẩn nhỏ (<1\%) chứng minh mô hình có độ ổn định cao, không phụ thuộc vào cách chia dữ liệu.
+
+\subsection{Kết quả phân loại toàn vùng}
+
+Mô hình được áp dụng để phân loại 162,469 ha với kết quả được trình bày trong Bảng~\ref{tab:area_statistics} và Hình~\ref{fig:classification_map}.
+
+\begin{table}[H]
+\centering
+\caption{Thống kê diện tích phân loại toàn vùng}
+\label{tab:area_statistics}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Lớp biến động} & \textbf{Diện tích (ha)} & \textbf{Tỷ lệ (\%)} \\
+\hline
+Rừng ổn định & 120,717 & 74.30 \\
+\hline
+Mất rừng & 7,282 & 4.48 \\
+\hline
+Phi rừng & 29,529 & 18.17 \\
+\hline
+Phục hồi rừng & 4,941 & 3.04 \\
+\hline
+\textbf{Tổng} & \textbf{162,469} & \textbf{100.00} \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{chapter3/Classification.png}
+\caption{Bản đồ phân loại biến động rừng toàn vùng tỉnh Cà Mau}
+\label{fig:classification_map}
+\end{figure}
+
+\textbf{Phân tích kết quả:}
+
+Rừng ổn định chiếm tỷ lệ lớn nhất (74.30\%, 120,717 ha), chủ yếu tập trung ở Vườn Quốc gia Mũi Cà Mau và các khu rừng phòng hộ ven biển được quản lý tốt.
+
+Mất rừng chiếm 4.48\% (7,282 ha), phân tán chủ yếu ở các vùng tiếp giáp với ao nuôi tôm. Nguyên nhân chính là chuyển đổi sang nuôi trồng thủy sản do lợi nhuận kinh tế cao.
+
+Phi rừng chiếm 18.17\% (29,529 ha), bao gồm khu dân cư, đất nông nghiệp, và ao nuôi trồng thủy sản hiện hữu.
+
+Phục hồi rừng chiếm 3.04\% (4,941 ha), chủ yếu là kết quả của các chương trình trồng rừng và phục hồi sinh thái.
+
+Mất rừng ròng trong giai đoạn nghiên cứu (13 tháng) là khoảng 1.44\% (2,341 ha = 7,282 - 4,941 ha).
+
+\section{So sánh với các nghiên cứu trước}
+
+Bảng~\ref{tab:comparison} so sánh kết quả nghiên cứu này với các nghiên cứu tương tự trên thế giới.
+
+\begin{table}[H]
+\centering
+\caption{So sánh với các nghiên cứu trước về giám sát rừng}
+\label{tab:comparison}
+\begin{tabular}{|l|l|c|c|}
+\hline
+\textbf{Nghiên cứu} & \textbf{Phương pháp} & \textbf{Dữ liệu} & \textbf{Accuracy (\%)} \\
+\hline
+Hansen et al. (2013) & Decision Tree & Landsat 30m & ~85 \\
+\hline
+Ortega et al. (2020) & U-Net & Landsat 30m & ~94 \\
+\hline
+Fayaz et al. (2024) & U-Net overview & Landsat 30m & 94-97 \\
+\hline
+\textbf{Nghiên cứu này} & \textbf{CNN} & \textbf{S1+S2 10m} & \textbf{98.86} \\
+\hline
+\end{tabular}
+\end{table}
+
+Mô hình CNN kết hợp Sentinel-1/2 của nghiên cứu này đạt accuracy 98.86\%, vượt trội so với các nghiên cứu trước đây. Lý do chính: (1) Tích hợp đa nguồn dữ liệu (SAR + quang học), (2) Độ phân giải không gian cao hơn (10m vs 30m), (3) Kiến trúc CNN được tối ưu hóa cho bài toán cụ thể.

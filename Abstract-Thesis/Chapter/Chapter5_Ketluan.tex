@@ -1,0 +1,65 @@
+\chapter{Kết luận}
+
+\section{Những kết quả đạt được}
+
+Đồ án đã hoàn thành đầy đủ bốn nội dung nghiên cứu đề ra với kết quả vượt kỳ vọng ban đầu.
+
+\textbf{Về xây dựng bộ dữ liệu huấn luyện:} Bộ dữ liệu gồm 2,630 điểm mẫu với 27 đặc trưng được xây dựng thành công. Dữ liệu được thu thập và xử lý thông qua nền tảng Google Earth Engine, bao gồm 21 đặc trưng từ Sentinel-2 (4 kênh phổ quang học + 3 chỉ số thực vật) và 6 đặc trưng từ Sentinel-1 (2 kênh phân cực ra-đa), mỗi đặc trưng được tính cho hai thời kỳ và giá trị delta. Bộ dữ liệu thực địa được phân bố cân bằng cho 4 lớp phân loại, đảm bảo tính đại diện cho toàn vùng nghiên cứu.
+
+\textbf{Về thiết kế kiến trúc CNN:} Kiến trúc CNN với 36,676 tham số được thiết kế phù hợp với bộ dữ liệu quy mô vừa phải. Mô hình sử dụng các kỹ thuật điều chuẩn hiệu quả bao gồm Batch Normalization, Dropout 70\%, và phân rã trọng số để ngăn ngừa quá khớp. Thông qua nghiên cứu loại trừ có hệ thống, kích thước patch 3×3 được xác định là tối ưu, đạt accuracy 98.86\% với số lượng tham số hợp lý. Phương pháp kiểm định chéo 5 phần cho kết quả CV accuracy 98.48\% ± 0.36\%, chứng minh mô hình có độ ổn định cao và không bị quá khớp.
+
+\textbf{Về đánh giá tích hợp đa nguồn:} Nghiên cứu loại trừ toàn diện chứng minh việc kết hợp Sentinel-1 và Sentinel-2 cải thiện accuracy 5.44 điểm phần trăm so với chỉ sử dụng Sentinel-2 đơn lẻ (từ 93.42\% lên 98.86\%). Kết quả này khẳng định giả thuyết nghiên cứu rằng dữ liệu ra-đa và quang học có tính bổ sung cao. Sentinel-2 đóng vai trò chủ đạo cung cấp thông tin quang phổ chi tiết về thực vật, trong khi Sentinel-1 bổ sung thông tin về cấu trúc và độ ẩm bề mặt, đặc biệt hữu ích trong điều kiện có mây che phủ.
+
+\textbf{Về áp dụng mô hình toàn vùng:} Mô hình được triển khai thành công để phân loại 162,469 ha (95.5\% diện tích ranh giới lâm nghiệp), với kết quả chi tiết: Rừng ổn định 120,717 ha (74.30\%), Mất rừng 7,282 ha (4.48\%), Phi rừng 29,529 ha (18.17\%), và Phục hồi rừng 4,941 ha (3.04\%). Diện tích mất rừng ròng trong giai đoạn nghiên cứu là 2,341 ha (khoảng 1.44\%). Bản đồ phân loại với độ phân giải 10m cung cấp thông tin chi tiết về phân bố không gian các loại biến động, hỗ trợ trực tiếp công tác quản lý rừng.
+
+\section{Đóng góp của đồ án}
+
+\subsection{Đóng góp về phương pháp luận}
+
+Đồ án đề xuất quy trình tích hợp dữ liệu đa nguồn kết hợp hiệu quả dữ liệu ra-đa Sentinel-1 và quang học Sentinel-2, khai thác ưu điểm bổ sung của từng nguồn. Kết quả thực nghiệm chứng minh sự kết hợp này cải thiện accuracy 5.44\% so với chỉ sử dụng Sentinel-2 đơn lẻ.
+
+Đồ án thiết kế kiến trúc CNN với 36,676 tham số phù hợp cho bộ dữ liệu nhỏ (khoảng 2,600 mẫu), tránh hiện tượng quá khớp thông qua các kỹ thuật điều chuẩn hợp lý. Thông qua nghiên cứu loại trừ có hệ thống, kích thước patch 3×3 được xác định là tối ưu cho dữ liệu Sentinel 10m.
+
+Đồ án đề xuất cấu trúc vector đặc trưng 27 chiều tổng hợp thông tin từ hai nguồn dữ liệu và ba thời điểm (trước, sau, delta), cung cấp đầy đủ thông tin về biến động rừng.
+
+\subsection{Đóng góp về ứng dụng thực tiễn}
+
+Đồ án tạo ra bản đồ phân loại biến động rừng với độ chính xác cao (98.86\%) cho toàn bộ vùng nghiên cứu 162,469 ha, định lượng được 7,282 ha mất rừng và 4,941 ha phục hồi rừng trong giai đoạn 13 tháng.
+
+Quy trình được thiết kế module hóa, có thể áp dụng cho các khu vực rừng ngập mặn khác với điều chỉnh tối thiểu. Mô hình giúp giảm đáng kể thời gian và chi phí so với phương pháp điều tra thực địa truyền thống.
+
+Kết quả nghiên cứu cung cấp công cụ hỗ trợ quan trọng cho các cơ quan quản lý lâm nghiệp trong công tác giám sát và bảo vệ rừng tại tỉnh Cà Mau, cho phép phát hiện sớm các hoạt động mất rừng bất hợp pháp.
+
+\subsection{Đóng góp về kết quả khoa học}
+
+Mô hình đạt hiệu suất vượt trội (98.86\% accuracy, 99.98\% ROC-AUC) so với các nghiên cứu tương tự: Hansen và cộng sự (2013) đạt khoảng 85\% với Decision Tree, Ortega và cộng sự (2020) đạt khoảng 94\% với U-Net, và Fayaz và cộng sự (2024) đạt 94--97\% trong tổng quan về U-Net.
+
+Phân tích cho thấy lỗi phân loại chủ yếu xảy ra giữa lớp ``Rừng ổn định'' và ``Mất rừng'' do sự tương đồng đặc trưng quang phổ tại vùng ranh giới. Các lớp ``Phi rừng'' và ``Phục hồi rừng'' được phân loại hoàn hảo (100\% precision và recall).
+
+Kết quả nghiên cứu loại trừ khẳng định Sentinel-2 đóng góp chính (93.42\% accuracy) trong khi Sentinel-1 có vai trò bổ sung quan trọng (cải thiện thêm 5.44\%).
+
+\section{Hạn chế và hướng phát triển}
+
+\subsection{Những hạn chế còn tồn tại}
+
+\textbf{Về hiệu suất xử lý:} Thời gian dự đoán toàn bộ raster còn dài (khoảng 14.83 phút cho 16.2 triệu điểm ảnh), chưa đáp ứng được yêu cầu xử lý thời gian thực. Điều này hạn chế khả năng ứng dụng trong các hệ thống cảnh báo sớm cần phản hồi nhanh.
+
+\textbf{Về khả năng giải thích:} Khả năng giải thích của mô hình còn hạn chế do tính chất ``hộp đen'' của CNN. Khó xác định được chính xác các đặc trưng nào đóng góp quan trọng nhất vào quyết định phân loại, gây khó khăn trong việc giải thích kết quả cho các nhà quản lý không chuyên về AI.
+
+\textbf{Về quy mô dữ liệu:} Quy mô dữ liệu thực địa còn nhỏ với chỉ 2,630 điểm. Chưa có khảo sát thực địa độc lập để kiểm chứng kết quả phân loại trên toàn vùng, do hạn chế về thời gian, chi phí và khả năng tiếp cận các khu vực xa xôi.
+
+\textbf{Về phân tích thời gian:} Phân tích chỉ dừng lại ở hai thời điểm, chưa khai thác được chuỗi thời gian đầy đủ. Không phát hiện được các biến động theo mùa hoặc xu hướng dài hạn, cũng như chưa có khả năng dự báo biến động trong tương lai.
+
+\subsection{Hướng phát triển tiếp theo}
+
+\textbf{Mở rộng phân tích đa thời gian:} Sử dụng chuỗi thời gian dài hạn (5--10 năm) thay vì chỉ phân tích 2 thời điểm để phát hiện xu hướng và các mô hình biến động theo mùa. Áp dụng các mô hình chuỗi thời gian (LSTM, Transformer) để khai thác đặc trưng thời gian và dự báo biến động tương lai.
+
+\textbf{Cải thiện mô hình:} Thử nghiệm học chuyển giao (transfer learning) từ các mô hình đã huấn luyện trên dữ liệu lớn (ImageNet, pretrained models) để cải thiện hiệu năng với dữ liệu hạn chế. Áp dụng kỹ thuật ensemble (kết hợp nhiều mô hình) để tăng độ chính xác và độ ổn định. Nghiên cứu các kiến trúc tiên tiến hơn như Vision Transformer, ResNet để so sánh hiệu năng.
+
+\textbf{Mở rộng ứng dụng:} Áp dụng mô hình cho các tỉnh khác trong vùng Đồng bằng sông Cửu Long (Bạc Liêu, Kiên Giang, An Giang) để đánh giá khả năng tổng quát hóa. Tích hợp kết quả với hệ thống thông tin địa lý của Tổng cục Lâm nghiệp và các sở tài nguyên môi trường địa phương. Phát triển ứng dụng web hoặc mobile app cho phép cập nhật và truy vấn kết quả dễ dàng.
+
+\textbf{Nâng cao độ tin cậy:} Tổ chức khảo sát thực địa để thu thập dữ liệu ground-truth độc lập, kiểm chứng kết quả phân loại. Mở rộng bộ dữ liệu huấn luyện lên 5,000--10,000 mẫu để cải thiện khả năng tổng quát hóa. Thu thập thêm dữ liệu cho nhiều thời điểm khác nhau để huấn luyện mô hình chuỗi thời gian.
+
+\textbf{Tăng cường khả năng giải thích:} Áp dụng các kỹ thuật Explainable AI như Grad-CAM, SHAP để hiểu rõ hơn về cách mô hình ra quyết định. Phân tích importance của từng đặc trưng để xác định các yếu tố quan trọng nhất trong phát hiện biến động rừng.
+
+Với những hướng phát triển này, nghiên cứu có thể tiếp tục được hoàn thiện và mở rộng, góp phần quan trọng hơn nữa vào công tác giám sát và bảo vệ tài nguyên rừng tại Việt Nam, đặc biệt là các hệ sinh thái rừng ngập mặn ven biển đang chịu nhiều áp lực từ biến đổi khí hậu và hoạt động của con người.
