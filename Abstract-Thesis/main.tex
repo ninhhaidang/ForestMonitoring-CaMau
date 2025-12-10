@@ -1,4 +1,4 @@
-\documentclass[a4paper,13pt]{report}
+\documentclass[a4paper,13pt]{article}
 
 % --------------------------------------------------------------------
 % Compile instructions:
@@ -118,16 +118,14 @@
 % Tùy chỉnh các phần khác
 \usepackage{scrextend, enumerate, float, afterpage, sectsty, tocloft, calc, listings}
 
-% Thêm dấu chấm (...) cho chapter trong mục lục
-\renewcommand{\cftchapdotsep}{\cftdotsep}
+% Thêm dấu chấm (...) cho section trong mục lục
+\renewcommand{\cftsecdotsep}{\cftdotsep}
 
-% Định dạng tiêu đề chương, mục (phải đặt SAU sectsty và tocloft)
+% Định dạng tiêu đề section (phải đặt SAU sectsty và tocloft)
 \usepackage{titlesec}
-\titleformat{\chapter}[block]{\centering\normalfont\fontsize{13pt}{16pt}\selectfont\bfseries}{CHƯƠNG \thechapter.}{0.5em}{\MakeUppercase}
-\titleformat{name=\chapter,numberless}[block]{\centering\normalfont\fontsize{13pt}{16pt}\selectfont\bfseries}{}{0pt}{\MakeUppercase}
-\titlespacing*{\chapter}{0pt}{-20pt}{10pt}
-\titlespacing{\section}{0pt}{12pt}{6pt}
-\titlespacing{\subsection}{0pt}{12pt}{6pt}
+\titleformat{\section}[block]{\normalfont\fontsize{13pt}{16pt}\selectfont\bfseries}{\thesection.}{0.5em}{\MakeUppercase}
+\titleformat{name=\section,numberless}[block]{\normalfont\fontsize{13pt}{16pt}\selectfont\bfseries}{}{0pt}{\MakeUppercase}
+\titlespacing{\section}{0pt}{20pt}{10pt}
 
 % Định dạng chung cho các tiêu đề không đánh số: chữ hoa, 13pt, đậm, căn giữa
 \newcommand{\unnumberedchapter}[1]{%
@@ -165,14 +163,8 @@
 \renewcommand{\bibsection}{}
 \makeatother
 
-% Định dạng lại các tiêu đề section và subsection (dùng sectsty)
-% Không dùng \chapterfont vì titlesec đã định dạng chapter
-\sectionfont{\fontsize{13pt}{16pt}\selectfont\bfseries}
-\subsectionfont{\fontsize{13pt}{16pt}\selectfont\bfseries}
-
-% Thêm dấu chấm sau số section và subsection (1.1. thay vì 1.1)
-\renewcommand{\thesection}{\thechapter.\arabic{section}.}
-\renewcommand{\thesubsection}{\thechapter.\arabic{section}.\arabic{subsection}.}
+% Định dạng đánh số section
+\renewcommand{\thesection}{\arabic{section}}
 
 % Điều chỉnh khoảng cách giữa các đoạn
 \usepackage{indentfirst}
@@ -187,8 +179,7 @@
 \renewcommand{\baselinestretch}{1.3}
 
 % Tùy chỉnh mục lục
-\renewcommand{\cftchappresnum}{Chương }
-\AtBeginDocument{\addtolength\cftchapnumwidth{\widthof{\bfseries Chương }}}
+% (Không sử dụng chapter trong article class)
 
 % Thêm tiền tố "Hình" vào danh mục hình ảnh
 \renewcommand{\cftfigpresnum}{Hình }
@@ -206,17 +197,24 @@
 \newcommand{\argmax}{\arg\!\max}
 
 \begin{document}
-% Bìa
-\input{Cover/Sub_cover}\newpage\cleardoublepage
+% Đảm bảo thụt đầu dòng 1cm cho mọi đoạn văn (kể cả đoạn đầu tiên sau tiêu đề)
+\setlength{\parindent}{1cm}
 
-% Đánh số trang kiểu Ả Rập
+% Bìa (không đánh số trang)
+\thispagestyle{empty}
+\input{Cover/Sub_cover}
+\newpage
+
+% Đánh số trang kiểu Ả Rập bắt đầu từ trang 1
 \pagenumbering{arabic}
+\setcounter{page}{1}
 \setcounter{secnumdepth}{2}
-% Chương nội dung
-\input{Chapter/Chapter1_Baitoan}\newpage\cleardoublepage
-\input{Chapter/Chapter2_Muctieu}\newpage\cleardoublepage
-\input{Chapter/Chapter3_Phuongphap}\newpage\cleardoublepage
-\input{Chapter/Chapter4_Ketqua}\newpage\cleardoublepage
-\input{Chapter/Chapter5_Ketluan}\newpage\cleardoublepage
+
+% Các section nội dung (không ngắt trang giữa các section)
+\input{Chapter/Chapter1_Baitoan}
+\input{Chapter/Chapter2_Muctieu}
+\input{Chapter/Chapter3_Phuongphap}
+\input{Chapter/Chapter4_Ketqua}
+\input{Chapter/Chapter5_Ketluan}
 
 \end{document}

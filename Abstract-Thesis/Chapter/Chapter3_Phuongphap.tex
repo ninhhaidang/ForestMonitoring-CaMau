@@ -1,150 +1,27 @@
-\chapter{Phương pháp}
+\section{Dữ liệu và phương pháp nghiên cứu}
 
-\section{Quy trình nghiên cứu tổng quan}
-
-Quy trình nghiên cứu được minh họa trong Hình~\ref{fig:methodology-flowchart}, bao gồm năm giai đoạn chính được thực hiện tuần tự và có liên hệ chặt chẽ với nhau.
+Quy trình nghiên cứu được minh họa trong Hình~\ref{fig:methodology-flowchart}, bao gồm năm giai đoạn chính: thu thập dữ liệu, tiền xử lý, xây dựng bộ dữ liệu huấn luyện, thiết kế và huấn luyện mô hình CNN, và áp dụng mô hình cho phân loại toàn vùng.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.85\textwidth]{chapter2/flowchart.png}
-\caption{Sơ đồ quy trình phương pháp nghiên cứu phát hiện biến động rừng}
+\includegraphics[width=0.8\textwidth]{chapter2/flowchart.png}
+\caption{Sơ đồ quy trình phương pháp nghiên cứu}
 \label{fig:methodology-flowchart}
 \end{figure}
 
-\section{Dữ liệu và tiền xử lý}
+Nghiên cứu sử dụng dữ liệu từ hai nguồn chính được thu thập qua Google Earth Engine. Sentinel-2 Level-2A Surface Reflectance cung cấp 4 kênh phổ quang học: B4 (Red, 665nm), B8 (NIR, 842nm), B11 (SWIR1, 1610nm) và B12 (SWIR2, 2190nm), tất cả ở độ phân giải 10m. Từ các kênh này, ba chỉ số thực vật được tính toán: NDVI = (NIR - Red) / (NIR + Red) đo mật độ thực vật, NBR = (NIR - SWIR2) / (NIR + SWIR2) phát hiện biến động rừng, và NDMI = (NIR - SWIR1) / (NIR + SWIR1) đo độ ẩm thực vật. Sentinel-1 GRD cung cấp dữ liệu ra-đa với hai kênh phân cực VV và VH ở độ phân giải 10m, hoạt động độc lập với thời tiết và ánh sáng. Dữ liệu được thu thập cho hai thời kỳ: tháng 01/2024 (kỳ trước) và tháng 02/2025 (kỳ sau).
 
-\subsection{Thu thập dữ liệu Sentinel}
+Tổng cộng 27 đặc trưng được xây dựng: 21 từ Sentinel-2 (7 kênh/chỉ số × 3 thời điểm) và 6 từ Sentinel-1 (2 kênh × 3 thời điểm). Ba thời điểm bao gồm: kỳ trước (T1), kỳ sau (T2), và delta ($\Delta$ = T2 - T1). Giá trị delta đóng vai trò quan trọng trong phát hiện biến động; ví dụ khi rừng bị chặt phá, $\Delta$NDVI sẽ giảm mạnh. Với mỗi điểm mẫu, một patch 3×3 điểm ảnh (30m × 30m) được trích xuất để cung cấp thông tin ngữ cảnh không gian.
 
-Nghiên cứu sử dụng dữ liệu từ hai nguồn chính: Sentinel-2 Level-2A Surface Reflectance và Sentinel-1 GRD (Ground Range Detected). Dữ liệu được thu thập thông qua nền tảng Google Earth Engine --- một hệ thống điện toán đám mây cho phép truy cập và xử lý khối lượng lớn dữ liệu viễn thám một cách hiệu quả.
+Bộ dữ liệu thực địa gồm 2,630 điểm được thu thập bằng phương pháp lấy mẫu phân tầng ngẫu nhiên, phân bố cân bằng cho 4 lớp: Rừng ổn định (660), Mất rừng (660), Phi rừng (660), và Phục hồi rừng (650). Dữ liệu được chuẩn hóa Z-score và chia theo tỷ lệ 80/20 cho huấn luyện/kiểm tra, với kiểm định chéo 5 phần trên tập huấn luyện.
 
-Sentinel-2 cung cấp 4 kênh phổ quang học: B4 (Red, 665nm), B8 (NIR, 842nm), B11 (SWIR1, 1610nm) và B12 (SWIR2, 2190nm), tất cả đều ở độ phân giải 10m. Từ các kênh này, ba chỉ số thực vật được tính toán:
-
-\begin{itemize}
-    \item NDVI = (NIR - Red) / (NIR + Red) --- đo mật độ thực vật
-    \item NBR = (NIR - SWIR2) / (NIR + SWIR2) --- phát hiện biến động rừng
-    \item NDMI = (NIR - SWIR1) / (NIR + SWIR1) --- đo độ ẩm thực vật
-\end{itemize}
-
-Sentinel-1 cung cấp dữ liệu ra-đa với hai kênh phân cực VV và VH ở độ phân giải 10m, hoạt động độc lập với thời tiết và ánh sáng.
-
-Dữ liệu được thu thập cho hai thời kỳ: tháng 01/2024 (kỳ trước) và tháng 02/2025 (kỳ sau), cả hai đều trong mùa khô để giảm ảnh hưởng của mây. Bảng~\ref{tab:data_overview} tổng kết thông tin dữ liệu sử dụng.
-
-\begin{table}[H]
-\centering
-\caption{Tổng quan dữ liệu sử dụng trong nghiên cứu}
-\label{tab:data_overview}
-\begin{tabular}{|l|c|c|c|}
-\hline
-\textbf{Nguồn dữ liệu} & \textbf{Độ phân giải} & \textbf{Thời điểm} & \textbf{Số đặc trưng} \\
-\hline
-Sentinel-2 kỳ trước & 10m & 30/01/2024 & 7 kênh \\
-\hline
-Sentinel-2 kỳ sau & 10m & 28/02/2025 & 7 kênh \\
-\hline
-Sentinel-1 kỳ trước & 10m & 04/02/2024 & 2 kênh \\
-\hline
-Sentinel-1 kỳ sau & 10m & 22/02/2025 & 2 kênh \\
-\hline
-\textbf{Tổng số đặc trưng} & & & \textbf{27} \\
-\hline
-\end{tabular}
-\end{table}
-
-\subsection{Trích xuất đặc trưng}
-
-Tổng cộng 27 đặc trưng được xây dựng từ hai nguồn dữ liệu: 21 đặc trưng từ Sentinel-2 (7 kênh/chỉ số × 3 thời điểm) và 6 đặc trưng từ Sentinel-1 (2 kênh × 3 thời điểm). Ba thời điểm bao gồm: Kỳ trước (T1), Kỳ sau (T2), và Delta ($\Delta$ = T2 - T1).
-
-Giá trị delta đóng vai trò quan trọng trong việc phát hiện biến động. Ví dụ, khi rừng bị chặt phá, $\Delta$NDVI sẽ giảm mạnh (âm lớn), trong khi $\Delta$VV và $\Delta$VH thay đổi do mất lớp phủ thực vật.
-
-Với mỗi điểm thực địa, một patch kích thước 3×3 điểm ảnh (30m × 30m) được trích xuất, cung cấp thông tin ngữ cảnh không gian xung quanh điểm ảnh trung tâm. Kết quả là mỗi mẫu có kích thước (3, 3, 27).
-
-\subsection{Chuẩn bị dữ liệu huấn luyện}
-
-Bộ dữ liệu thực địa gồm 2,630 điểm được thu thập bằng phương pháp lấy mẫu phân tầng ngẫu nhiên, đảm bảo phân bố cân bằng cho 4 lớp: Rừng ổn định (660 điểm), Mất rừng (660 điểm), Phi rừng (660 điểm), và Phục hồi rừng (650 điểm).
-
-Dữ liệu được chuẩn hóa Z-score theo công thức: $x_{normalized} = \frac{x - \mu}{\sigma}$, trong đó $\mu$ và $\sigma$ được tính trên tập huấn luyện và áp dụng cho tất cả các tập khác.
-
-Chiến lược chia dữ liệu: tách 20\% (526 mẫu) làm tập kiểm tra cố định, áp dụng kiểm định chéo 5 phần trên 80\% còn lại (2,104 mẫu) để tìm siêu tham số tối ưu, sau đó huấn luyện mô hình cuối cùng trên toàn bộ 80\% và đánh giá trên 20\% tập kiểm tra.
-
-\section{Kiến trúc mô hình CNN}
-
-Kiến trúc CNN được thiết kế đặc biệt cho bộ dữ liệu quy mô vừa phải, được minh họa trong Hình~\ref{fig:cnn_architecture}.
+Kiến trúc CNN được thiết kế đặc biệt cho bộ dữ liệu quy mô vừa phải, minh họa trong Hình~\ref{fig:cnn_architecture}. Mô hình gồm: đầu vào tensor (N, 27, 3, 3); khối tích chập thứ nhất với 64 bộ lọc 3×3, Batch Norm, ReLU, Dropout2D 70\%; khối tích chập thứ hai với 32 bộ lọc 3×3, Batch Norm, ReLU, Dropout2D 70\%; Global Average Pooling; và lớp kết nối đầy đủ 32→64→4. Tổng số tham số: 36,676.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.8\textwidth]{chapter2/CNN-architecture.png}
-\caption{Kiến trúc mạng nơ-ron tích chập được sử dụng trong nghiên cứu}
+\includegraphics[width=0.75\textwidth]{chapter2/CNN-architecture.png}
+\caption{Kiến trúc mạng nơ-ron tích chập}
 \label{fig:cnn_architecture}
 \end{figure}
 
-Mô hình bao gồm các thành phần chính:
-
-\textbf{Đầu vào:} Tensor kích thước (N, 27, 3, 3) với N là batch size, 27 là số kênh đặc trưng, 3×3 là kích thước không gian của patch.
-
-\textbf{Khối tích chập 1:} 64 bộ lọc 3×3 → Batch Norm → ReLU → Dropout2D (70\%). Đầu ra: (N, 64, 3, 3).
-
-\textbf{Khối tích chập 2:} 32 bộ lọc 3×3 → Batch Norm → ReLU → Dropout2D (70\%). Đầu ra: (N, 32, 3, 3).
-
-\textbf{Global Average Pooling:} Tính trung bình trên toàn bộ vùng không gian, chuyển (N, 32, 3, 3) thành (N, 32).
-
-\textbf{Lớp kết nối đầy đủ:} 32 → 64 (với Batch Norm, ReLU, Dropout 70\%) → 4 (đầu ra).
-
-Tổng số tham số: 36,676, được phân bổ như trong Bảng~\ref{tab:model_params}.
-
-\begin{table}[H]
-\centering
-\caption{Chi tiết số tham số của mô hình CNN}
-\label{tab:model_params}
-\begin{tabular}{|l|c|}
-\hline
-\textbf{Thành phần} & \textbf{Số tham số} \\
-\hline
-Khối tích chập 1 (Conv + BN) & 15,680 \\
-\hline
-Khối tích chập 2 (Conv + BN) & 18,496 \\
-\hline
-Lớp kết nối đầy đủ 1 (FC + BN) & 2,240 \\
-\hline
-Lớp đầu ra & 260 \\
-\hline
-\textbf{Tổng cộng} & \textbf{36,676} \\
-\hline
-\end{tabular}
-\end{table}
-
-\section{Huấn luyện và đánh giá}
-
-Mô hình được huấn luyện với cấu hình siêu tham số được trình bày trong Bảng~\ref{tab:hyperparams}.
-
-\begin{table}[H]
-\centering
-\caption{Cấu hình siêu tham số huấn luyện}
-\label{tab:hyperparams}
-\begin{tabular}{|l|c|l|}
-\hline
-\textbf{Tham số} & \textbf{Giá trị} & \textbf{Mô tả} \\
-\hline
-epochs & 200 & Số vòng lặp tối đa \\
-\hline
-batch\_size & 64 & Số mẫu mỗi lô \\
-\hline
-learning\_rate & 0.001 & Tốc độ học ban đầu \\
-\hline
-weight\_decay & $10^{-3}$ & Hệ số phân rã trọng số \\
-\hline
-dropout\_rate & 0.7 & Tỷ lệ Dropout \\
-\hline
-early\_stopping & 15 epochs & Patience dừng sớm \\
-\hline
-\end{tabular}
-\end{table}
-
-Thuật toán tối ưu AdamW được sử dụng kết hợp với ReduceLROnPlateau (giảm learning rate khi validation loss không cải thiện) và Early Stopping (dừng huấn luyện nếu không cải thiện sau 15 epochs).
-
-Quy trình huấn luyện gồm 4 giai đoạn: (1) Khởi tạo trọng số theo phương pháp Kaiming/He, (2) Kiểm định chéo 5 phần trên 80\% dữ liệu, (3) Huấn luyện mô hình cuối cùng trên toàn bộ 80\%, và (4) Đánh giá trên 20\% tập kiểm tra.
-
-\section{Áp dụng mô hình phân loại toàn vùng}
-
-Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn bộ 162,469 ha (khoảng 16.2 triệu điểm ảnh). Quy trình dự đoán được thực hiện theo lô với kích thước 10,000 điểm ảnh/lô, sử dụng mixed precision (FP16) để tăng tốc và giảm bộ nhớ.
-
-Kết quả được xuất ra dưới dạng GeoTIFF với hệ quy chiếu EPSG:32648 và độ phân giải 10m, sẵn sàng tích hợp với các hệ thống GIS.
+Mô hình được huấn luyện với AdamW optimizer, learning rate 0.001, weight decay $10^{-3}$, batch size 64, tối đa 200 epochs với early stopping (patience 15). Trọng số được khởi tạo theo phương pháp Kaiming/He. Sau huấn luyện, mô hình được áp dụng để phân loại toàn bộ 16.2 triệu điểm ảnh theo lô 10,000 điểm, sử dụng mixed precision FP16. Kết quả xuất dạng GeoTIFF với hệ quy chiếu EPSG:32648.
