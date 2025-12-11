@@ -1,0 +1,219 @@
+% ==============================================================================
+% TEMPLATE BÁO CÁO KHOA HỌC - ĐẠI HỌC QUỐC GIA HÀ NỘI
+% Sử dụng XeLaTeX để biên dịch
+% ==============================================================================
+%
+% QUY CÁCH BÁO CÁO KHOA HỌC
+% ------------------------------------------------------------------------------
+% I. Báo cáo khoa học đề tài nghiên cứu khoa học của sinh viên
+%
+% 1. Báo cáo khoa học đề tài là cơ sở để hội đồng đánh giá kết quả thực hiện
+%    đề tài nghiên cứu khoa học của sinh viên. Báo cáo khoa học phải phản ánh
+%    đầy đủ nội dung, kết quả thực hiện đề tài và phải được đóng thành quyển.
+%
+% 2. Hình thức của báo cáo khoa học đề tài:
+%    2.1. Khổ giấy A4 (210 x 297 mm); đóng bìa mica.
+%    2.2. Số trang tối đa là 80 trang (không tính mục lục, tài liệu tham khảo
+%         và phụ lục); phông chữ Times New Roman, cỡ chữ 13; paragraph 1,3-1,5
+%         line; lề trái 3 cm; lề trên, lề dưới, lề phải 2 cm.
+%    2.3. Số thứ tự của trang ở chính giữa trang, phía trên.
+%    2.4. Tài liệu tham khảo và phụ lục (nếu có): tối đa là 40 trang; Tên các
+%         tác giả nước ngoài nêu trong báo cáo khoa học phải viết theo đúng
+%         ngôn ngữ trong tài liệu nguyên bản được trích dẫn.
+%    2.5. Không gạch dưới các từ, câu trong báo cáo khoa học; không viết lời
+%         cám ơn và không được ký tên.
+%    2.6. Ngôn ngữ sử dụng trong báo cáo khoa học: Tiếng Việt hoặc tiếng Anh.
+%         Nếu sử dụng ngôn ngữ khác thì yêu cầu phải có bản dịch ra tiếng Việt.
+%
+% 3. Cấu trúc báo cáo khoa học: (Chi tiết xem trong từng file tương ứng)
+%    3.1. Bìa báo cáo             -> covers/main-cover.tex, covers/sub-cover.tex
+%    3.2. Mục lục                 -> (tự động tạo)
+%    3.3. Danh mục bảng biểu      -> (tự động tạo)
+%    3.4. Danh mục từ viết tắt    -> chapters/glossary.tex
+%    3.5. Mở đầu                  -> chapters/preface.tex
+%    3.6. Kết quả nghiên cứu      -> chapters/chapter1/, chapter2/, chapter3/
+%    3.7. Kết luận và kiến nghị   -> chapters/conclusion.tex
+%    3.8. Tài liệu tham khảo      -> references.bib
+%    3.9. Phụ lục                 -> (trong file này)
+%
+% ==============================================================================
+
+\documentclass[13pt,a4paper]{report}
+
+% ==============================================================================
+% PACKAGES
+% ==============================================================================
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setdefaultlanguage{vietnamese}
+
+% Font Times New Roman
+\setmainfont{Times New Roman}
+
+% Geometry: lề trái 3cm, lề trên/dưới/phải 2cm
+\usepackage[
+    a4paper,
+    left=3cm,
+    right=2cm,
+    top=2cm,
+    bottom=2cm
+]{geometry}
+
+% Line spacing 1.3-1.5
+\usepackage{setspace}
+\setstretch{1.3}
+
+% Số trang ở giữa, phía trên
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+% Gói hỗ trợ
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+
+% Khung viền cho trang bìa
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+% Hyperlinks
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=blue
+}
+
+% Tài liệu tham khảo
+\usepackage[
+    backend=biber,
+    style=numeric,
+    sorting=none
+]{biblatex}
+\addbibresource{references.bib}
+
+% Mục lục
+\usepackage{tocloft}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\contentsname}{MỤC LỤC}
+\renewcommand{\listtablename}{DANH MỤC BẢNG BIỂU}
+\renewcommand{\listfigurename}{DANH MỤC HÌNH VẼ}
+
+% Định dạng chapter, section
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+    {\normalfont\Large\bfseries\centering}
+    {CHƯƠNG \thechapter}
+    {0pt}
+    {\Large\MakeUppercase}
+\titlespacing*{\chapter}{0pt}{-20pt}{20pt}
+
+\titleformat{\section}
+    {\normalfont\large\bfseries}
+    {\thesection.}
+    {1em}
+    {}
+
+\titleformat{\subsection}
+    {\normalfont\normalsize\bfseries}
+    {\thesubsection.}
+    {1em}
+    {}
+
+\titleformat{\subsubsection}
+    {\normalfont\normalsize\bfseries\itshape}
+    {\thesubsubsection.}
+    {1em}
+    {}
+
+% Caption cho bảng và hình
+\captionsetup[table]{labelsep=period, name=Bảng}
+\captionsetup[figure]{labelsep=period, name=Hình}
+
+% ==============================================================================
+% THÔNG TIN ĐỀ TÀI (CHỈNH SỬA TẠI ĐÂY)
+% ==============================================================================
+\newcommand{\TenTruong}{TRƯỜNG ĐẠI HỌC CÔNG NGHỆ}
+\newcommand{\TenDeTai}{TÊN ĐỀ TÀI NGHIÊN CỨU}
+\newcommand{\LinhVuc}{Công nghệ thông tin}
+\newcommand{\NamThucHien}{2025}
+\newcommand{\TenSinhVien}{Nguyễn Văn A}
+\newcommand{\MaSinhVien}{21021234}
+\newcommand{\TenKhoa}{Khoa Công nghệ thông tin}
+\newcommand{\NguoiHuongDan}{TS. Nguyễn Văn B}
+
+% ==============================================================================
+% BẮT ĐẦU TÀI LIỆU
+% ==============================================================================
+\begin{document}
+
+% 3.1. Bìa báo cáo
+\input{covers/main-cover}
+\input{covers/sub-cover}
+
+% 3.2. Mục lục
+\pagenumbering{roman}
+\tableofcontents
+\clearpage
+
+% 3.3. Danh mục bảng biểu
+\listoftables
+\addcontentsline{toc}{chapter}{Danh mục bảng biểu}
+\clearpage
+
+% Danh mục hình vẽ
+\listoffigures
+\addcontentsline{toc}{chapter}{Danh mục hình vẽ}
+\clearpage
+
+% 3.4. Danh mục từ viết tắt
+\input{chapters/glossary}
+\clearpage
+
+% NỘI DUNG CHÍNH
+\pagenumbering{arabic}
+
+% 3.5. Mở đầu
+\input{chapters/preface}
+\clearpage
+
+% 3.6. Kết quả nghiên cứu
+\input{chapters/chapter1/chapter1}
+\input{chapters/chapter2/chapter2}
+\input{chapters/chapter3/chapter3}
+% \input{chapters/chapter4/chapter4}
+
+% 3.7. Kết luận và kiến nghị
+\input{chapters/conclusion}
+\clearpage
+
+% 3.8. Tài liệu tham khảo
+\chapter*{TÀI LIỆU THAM KHẢO}
+\addcontentsline{toc}{chapter}{Tài liệu tham khảo}
+\printbibliography[heading=none]
+\clearpage
+
+% 3.9. Phụ lục (nếu có)
+% Bao gồm các bảng biểu, sơ đồ, hình vẽ, bảng liệt kê các tư liệu...
+% để minh họa cho báo cáo khoa học đề tài.
+\appendix
+\chapter*{PHỤ LỤC}
+\addcontentsline{toc}{chapter}{Phụ lục}
+
+\section*{Phụ lục A: Bảng dữ liệu chi tiết}
+% Nội dung phụ lục A
+
+\section*{Phụ lục B: Mã nguồn chương trình}
+% Nội dung phụ lục B
+
+\end{document}
