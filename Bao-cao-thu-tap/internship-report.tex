@@ -1,0 +1,270 @@
+\documentclass[a4paper,13pt]{report}
+
+% --------------------------------------------------------------------
+% Compile instructions:
+% - To compile with XeLaTeX (recommended for Times New Roman and Unicode):
+%     latexmk -pdfxe internship-report.tex
+%   or
+%     xelatex internship-report.tex
+%
+% - To compile with LuaLaTeX, use:
+%     latexmk -pdflua internship-report.tex
+%
+% - To compile with pdfLaTeX (default behaviour):
+%     latexmk -pdf internship-report.tex
+%   (This uses Latin Modern and T5 encoding for Vietnamese.)
+% --------------------------------------------------------------------
+
+% Encoding and Vietnamese support
+% This file supports both pdfLaTeX and XeLaTeX/LuaLaTeX. The default
+% behaviour below keeps the existing pdfLaTeX setup (Latin Modern + T5
+% encoding for Vietnamese). If you switch to XeLaTeX/LuaLaTeX, the
+% document will use system fonts via `fontspec` (set to Times New Roman).
+\usepackage{iftex}
+\ifPDFTeX
+	% pdfLaTeX: keep older encoding packages and Latin Modern.
+	\usepackage[utf8]{inputenc} % keep for pdfLaTeX; not used with XeLaTeX
+	\usepackage[T5]{fontenc}    % T5 encoding (Vietnamese) - required for vntex/vietnam
+	\usepackage[utf8]{vietnam}  % Vietnamese support (vntex)
+	% If you want a Times-like font with pdfLaTeX you can enable the
+	% following packages, but note: T5 encoding support and some
+	% Vietnamese glyphs may not be complete with these fonts. Test the
+	% output before enabling.
+	% \usepackage{newtxtext,newtxmath} % Times-like fonts (for pdfLaTeX)
+\else
+	% XeLaTeX/LuaLaTeX: use fontspec and polyglossia for Unicode & Vietnamese
+	% NOTE: If your source uses TeX accent macros (e.g., `\h{a}` or `\'a`)
+	% instead of raw Unicode characters, you may need to either (A) keep
+	% the `vietnam` package loaded or (B) convert source files to Unicode
+	% characters for Vietnamese. Loading both `polyglossia` and `vietnam`
+	% may cause conflicts; test carefully.
+	\usepackage{fontspec}
+	\usepackage{polyglossia}
+	% If your source contains TeX accent macros rather than raw Unicode
+	% characters (e.g. `\h{a}`), uncomment the following line to load
+	% the `vietnam` package which defines such macros. Keep in mind
+	% that `vietnam` is designed for T5 encoding and may sometimes
+	% overlap with `polyglossia` macros.
+	\usepackage[utf8]{vietnam}
+	\setmainlanguage{vietnamese}
+	% Set Times New Roman as the main font. You can change the name if
+	% your OS has a differently named Times family (e.g., "Times").
+	\setmainfont{Times New Roman}[
+		Ligatures=TeX,
+		Script=Latin
+	]
+	% If you want math fonts to match Times, you can add e.g.:
+	% \usepackage{unicode-math}
+	% \setmathfont{TeX Gyre Termes Math}
+	% Optional: specify sans/mono fonts to better match system defaults
+	\setsansfont{Arial}
+	\setmonofont{Courier New}
+\fi
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{textcomp}
+
+% Note: If you prefer to compile with XeLaTeX or LuaLaTeX (recommended for Unicode):
+%  - remove or comment out the `inputenc` and `fontenc` lines above
+%  - uncomment the fontspec lines below and set an appropriate system font
+%  - compile with: `latexmk -pdfxe internship-report.tex` or `latexmk -pdflua internship-report.tex`
+%
+% %%% XeLaTeX / LuaTeX example (uncomment when using XeLaTeX/LuaTeX):
+% \usepackage{fontspec}
+% \setmainfont{Times New Roman}
+% \usepackage{polyglossia}
+% \setmainlanguage{vietnamese}
+
+% set font, font size and spacing
+% If compiling with pdfLaTeX, keep Latin Modern for T5 coverage. For
+% XeLaTeX/LuaLaTeX the fontspec package (above) will set Times.
+\ifPDFTeX
+	\usepackage{lmodern}
+\fi
+\usepackage{microtype} % micro-typography
+\usepackage{scrextend}
+\changefontsizes{13pt}
+\renewcommand{\baselinestretch}{1.3}
+
+% Hình ảnh và đồ họa
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows, positioning, arrows.meta, calc, fit}
+% PGFPlots: required for axis environment and plotting
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{fillbetween}
+% Pie chart support
+\usepackage{pgf-pie}
+% Disable thousand separators by default for axis tick labels (e.g., 1990 shows as 1990, not 1,990)
+\pgfplotsset{every axis/.append style={xticklabel style={/pgf/number format/1000 sep={}}}}
+
+% Định dạng bảng và caption
+\usepackage{array}
+\usepackage{booktabs}
+% Combine caption options to avoid duplicate package load and enable sub-captions
+\usepackage[justification=centering,font=small]{caption}
+% Sub-figures support (provides the `subfigure` environment used in chapters)
+\usepackage{subcaption}
+\usepackage{makecell}
+\usepackage{multirow}
+
+% Điều chỉnh lề và layout trang
+\usepackage[left=3cm,right=2cm,top=2.5cm,bottom=3cm]{geometry}
+
+% Hyperlinks và danh mục
+\usepackage[unicode, breaklinks=true, hidelinks]{hyperref}
+\usepackage{xurl} % Cho phép URL tự động xuống dòng
+
+% Tùy chỉnh các phần khác
+\usepackage{scrextend, enumerate, float, afterpage, sectsty, tocloft, calc, listings}
+
+% Thêm dấu chấm (...) cho chapter trong mục lục
+\renewcommand{\cftchapdotsep}{\cftdotsep}
+
+% Định dạng tiêu đề chương, mục (phải đặt SAU sectsty và tocloft)
+\usepackage{titlesec}
+\titleformat{\chapter}[block]{\centering\normalfont\fontsize{13pt}{16pt}\selectfont\bfseries}{CHƯƠNG \thechapter.}{0.5em}{\MakeUppercase}
+\titleformat{name=\chapter,numberless}[block]{\centering\normalfont\fontsize{13pt}{16pt}\selectfont\bfseries}{}{0pt}{\MakeUppercase}
+\titlespacing*{\chapter}{0pt}{-20pt}{10pt}
+\titlespacing{\section}{0pt}{12pt}{6pt}
+\titlespacing{\subsection}{0pt}{12pt}{6pt}
+
+% Định dạng chung cho các tiêu đề không đánh số: chữ hoa, 13pt, đậm, căn giữa
+\newcommand{\unnumberedchapter}[1]{%
+  \vspace*{-20pt}%
+  \begin{center}
+    {\fontsize{13pt}{16pt}\selectfont\textbf{\MakeUppercase{#1}}}
+  \end{center}
+  \vspace{10pt}%
+}
+
+
+\usepackage{pdflscape} % Gói giúp xoay trang ngang trong PDF
+\usepackage{graphicx}
+\usepackage{float} % Để cố định vị trí bảng
+\graphicspath{{img/}{img/chapter1/}{img/chapter2/}{img/chapter3/}}
+\usepackage{longtable} % Nếu bảng dài
+\usepackage{lscape} % Để hỗ trợ xoay trang (tuỳ chọn)
+
+% Gói hỗ trợ thuật toán
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\usepackage{optidef}
+
+% Điều chỉnh các thuật toán
+\SetAlgorithmName{Thuật toán}{Thuật toán}{Danh sách các Thuật toán}
+\SetKwInput{KwIn}{Đầu vào}
+\SetKwInput{KwOut}{Đầu ra}
+
+% Định dạng danh mục tài liệu tham khảo
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{multibib}
+\newcites{vi,en}{{},{}}
+
+% Loại bỏ chapter header của multibib
+\makeatletter
+\renewcommand{\bibsection}{}
+\makeatother
+
+% Định dạng lại các tiêu đề section và subsection (dùng sectsty)
+% Không dùng \chapterfont vì titlesec đã định dạng chapter
+\sectionfont{\fontsize{13pt}{16pt}\selectfont\bfseries}
+\subsectionfont{\fontsize{13pt}{16pt}\selectfont\bfseries}
+
+% Thêm dấu chấm sau số section và subsection (1.1. thay vì 1.1)
+\renewcommand{\thesection}{\thechapter.\arabic{section}.}
+\renewcommand{\thesubsection}{\thechapter.\arabic{section}.\arabic{subsection}.}
+
+% Điều chỉnh khoảng cách giữa các đoạn
+\usepackage{indentfirst}
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{1cm}
+
+% Tùy chỉnh chú thích
+\usepackage{perpage} 
+\MakePerPage{footnote}
+
+% Khoảng cách dòng
+\renewcommand{\baselinestretch}{1.3}
+
+% Tùy chỉnh mục lục
+\renewcommand{\cftchappresnum}{Chương }
+\AtBeginDocument{\addtolength\cftchapnumwidth{\widthof{\bfseries Chương }}}
+
+% Thêm tiền tố "Hình" vào danh mục hình ảnh
+\renewcommand{\cftfigpresnum}{Hình }
+\setlength{\cftfignumwidth}{4.5em}
+
+% Thêm tiền tố "Bảng" vào danh mục bảng
+\renewcommand{\cfttabpresnum}{Bảng }
+\setlength{\cfttabnumwidth}{4.5em}
+
+% Thiết lập tiêu đề và tác giả
+\title{Ứng dụng viễn thám và học sâu trong giám sát biến động rừng tỉnh Cà Mau}
+\author{Ninh Hải Đăng} 
+
+
+\newcommand{\argmax}{\arg\!\max}
+
+\begin{document}
+% Bìa chính và các phần đầu
+\input{cover}\newpage\cleardoublepage
+
+% Chuyển sang đánh số trang kiểu La Mã
+\pagenumbering{roman} 
+\input{chapters/abstract_vi}\newpage\cleardoublepage
+\input{chapters/assurance}\newpage\cleardoublepage
+\input{chapters/acknowledgement}\newpage\cleardoublepage
+
+% Mục lục, danh sách hình ảnh, bảng, thuật toán
+\phantomsection
+\addcontentsline{toc}{chapter}{MỤC LỤC}
+\unnumberedchapter{MỤC LỤC}
+\makeatletter\@starttoc{toc}\makeatother
+\newpage\cleardoublepage
+
+\phantomsection
+\addcontentsline{toc}{chapter}{DANH MỤC HÌNH ẢNH}
+\unnumberedchapter{DANH MỤC HÌNH ẢNH}
+\makeatletter\@starttoc{lof}\makeatother
+\cleardoublepage
+
+\phantomsection
+\addcontentsline{toc}{chapter}{DANH MỤC BẢNG}
+\unnumberedchapter{DANH MỤC BẢNG}
+\makeatletter\@starttoc{lot}\makeatother
+\cleardoublepage
+
+% Thuật ngữ
+\input{chapters/glossary}\newpage\cleardoublepage
+
+% Chuyển sang đánh số trang kiểu Ả Rập từ MỞ ĐẦU (theo quy định)
+\pagenumbering{arabic}
+
+% Phần mở đầu
+\input{chapters/preface}\newpage\cleardoublepage
+
+\setcounter{secnumdepth}{2}
+% Chương nội dung
+\input{chapters/chapter1/chapter1}\newpage\cleardoublepage
+\input{chapters/chapter2/chapter2}\newpage\cleardoublepage
+\input{chapters/chapter3/chapter3}\newpage\cleardoublepage
+\input{chapters/conclusions}\newpage\cleardoublepage
+
+% Tài liệu tham khảo
+\phantomsection
+\addcontentsline{toc}{chapter}{TÀI LIỆU THAM KHẢO}
+\unnumberedchapter{TÀI LIỆU THAM KHẢO}
+
+% Tài liệu tiếng Việt
+\nocitevi{*}
+\bibliographystylevi{vnuvi}
+{\renewcommand{\chapter}[2]{}\bibliographyvi{references_vi}}
+
+\vspace{1em}
+
+% Tài liệu tiếng Anh
+\nociteen{*}
+\bibliographystyleen{vnu}
+{\renewcommand{\chapter}[2]{}\bibliographyen{references_en}}
+
+\end{document}

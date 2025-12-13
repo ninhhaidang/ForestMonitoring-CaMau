@@ -38,7 +38,11 @@
 %
 % ==============================================================================
 
-\documentclass[13pt,a4paper]{report}
+\documentclass[a4paper]{report}
+
+% Cỡ chữ 13pt
+\usepackage{scrextend}
+\changefontsizes{13pt}
 
 % ==============================================================================
 % PACKAGES
@@ -46,6 +50,10 @@
 \usepackage{fontspec}
 \usepackage{polyglossia}
 \setdefaultlanguage{vietnamese}
+
+% Toán học
+\usepackage{amsmath}
+\usepackage{amssymb}
 
 % Font Times New Roman
 \setmainfont{Times New Roman}
@@ -65,6 +73,7 @@
 
 % Số trang ở giữa, phía trên
 \usepackage{fancyhdr}
+\setlength{\headheight}{15.6pt}
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[C]{\thepage}
@@ -84,6 +93,11 @@
 % Khung viền cho trang bìa
 \usepackage{tikz}
 \usetikzlibrary{calc}
+
+% Biểu đồ
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{pgf-pie}
 
 % Hyperlinks
 \usepackage{hyperref}
@@ -161,8 +175,14 @@
 \input{covers/main-cover}
 \input{covers/sub-cover}
 
+% Tóm tắt
+\input{chapters/abstract}
+\clearpage
+
 % 3.2. Mục lục
 \pagenumbering{roman}
+\phantomsection
+\addcontentsline{toc}{chapter}{Mục lục}
 \tableofcontents
 \clearpage
 
@@ -203,17 +223,17 @@
 \printbibliography[heading=none]
 \clearpage
 
-% 3.9. Phụ lục (nếu có)
-% Bao gồm các bảng biểu, sơ đồ, hình vẽ, bảng liệt kê các tư liệu...
-% để minh họa cho báo cáo khoa học đề tài.
-\appendix
-\chapter*{PHỤ LỤC}
-\addcontentsline{toc}{chapter}{Phụ lục}
+% % 3.9. Phụ lục (nếu có)
+% % Bao gồm các bảng biểu, sơ đồ, hình vẽ, bảng liệt kê các tư liệu...
+% % để minh họa cho báo cáo khoa học đề tài.
+% \appendix
+% \chapter*{PHỤ LỤC}
+% \addcontentsline{toc}{chapter}{Phụ lục}
 
-\section*{Phụ lục A: Bảng dữ liệu chi tiết}
-% Nội dung phụ lục A
+% \section*{Phụ lục A: Bảng dữ liệu chi tiết}
+% % Nội dung phụ lục A
 
-\section*{Phụ lục B: Mã nguồn chương trình}
-% Nội dung phụ lục B
+% \section*{Phụ lục B: Mã nguồn chương trình}
+% % Nội dung phụ lục B
 
 \end{document}
