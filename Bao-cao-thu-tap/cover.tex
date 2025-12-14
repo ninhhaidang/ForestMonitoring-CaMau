@@ -1,67 +1,55 @@
-% Cover Vietnamese 1
-
-% Cover english
-\pagenumbering{gobble}
-\begin{center}
-	\begin{tikzpicture}[overlay,remember picture]
-	    \draw [line width=3pt,rounded corners=0pt,
-	        ]
-	        ($ (current page.north west) + (25mm,-25mm) $)
-	        rectangle
-	        ($ (current page.south east) + (-15mm,25mm) $);
-	    \draw [line width=1pt,rounded corners=0pt]
-	        ($ (current page.north west) + (26.5mm,-26.5mm) $)
-	        rectangle
-	        ($ (current page.south east) + (-16.5mm,26.5mm) $);
-	\end{tikzpicture}
-	\\[1mm]
-	{\fontsize{12pt}{14pt}\selectfont\textbf{ĐẠI HỌC QUỐC GIA HÀ NỘI\\TRƯỜNG ĐẠI HỌC CÔNG NGHỆ}}\\[1cm]
-	\includegraphics[width=0.2\linewidth]{img/uet}\\[0.3cm]
-	{\fontsize{14pt}{16pt}\selectfont\textbf{Ninh Hải Đăng}}
-	\\[2cm]
-
-	{\fontsize{18pt}{22pt}\selectfont\textbf{ỨNG DỤNG VIỄN THÁM VÀ HỌC SÂU TRONG \\ GIÁM SÁT BIẾN ĐỘNG RỪNG TỈNH CÀ MAU}}
-	\\[2.6cm]
-	{\fontsize{14pt}{16pt}\selectfont\textbf{ĐỒ ÁN TỐT NGHIỆP ĐẠI HỌC HỆ CHÍNH QUY
-			\\[2mm]
-			Ngành: Công nghệ Hàng không Vũ trụ}}
-
-	\vfill
-	{\fontsize{12pt}{14pt}\selectfont\textbf{HÀ NỘI - 2025}}
-	\vspace{10mm}
-\end{center}
+\begin{titlepage}
+\begin{tikzpicture}[overlay,remember picture]
+    \draw [line width=3pt,rounded corners=0pt]
+        ($ (current page.north west) + (25mm,-25mm) $)
+        rectangle
+        ($ (current page.south east) + (-15mm,25mm) $);
+    \draw [line width=1pt,rounded corners=0pt]
+        ($ (current page.north west) + (26.5mm,-26.5mm) $)
+        rectangle
+        ($ (current page.south east) + (-16.5mm,26.5mm) $);
+\end{tikzpicture}
 
 \begin{center}
-	\begin{tikzpicture}[overlay,remember picture]
-	\draw [line width=3pt,rounded corners=0pt]
-	($ (current page.north west) + (25mm,-25mm) $)
-	rectangle
-	($ (current page.south east) + (-15mm,25mm) $);
-	\draw [line width=1pt,rounded corners=0pt]
-	($ (current page.north west) + (26.5mm,-26.5mm) $)
-	rectangle
-	($ (current page.south east) + (-16.5mm,26.5mm) $);
-	\end{tikzpicture}
-	\\[1mm]
-	{\fontsize{12pt}{14pt}\selectfont\textbf{ĐẠI HỌC QUỐC GIA HÀ NỘI\\TRƯỜNG ĐẠI HỌC CÔNG NGHỆ}}
-	\\[1cm]
-	\includegraphics[width=0.2\linewidth]{img/uet}
-	\\[0.3cm]
-	{\fontsize{14pt}{16pt}\selectfont\textbf{Ninh Hải Đăng}}
-	\\[2cm]
+% ===== PHẦN TRƯỜNG =====
+\textbf{ĐẠI HỌC QUỐC GIA HÀ NỘI}\\
+\textbf{TRƯỜNG ĐẠI HỌC CÔNG NGHỆ}
 
-	{\fontsize{18pt}{22pt}\selectfont\textbf{ỨNG DỤNG VIỄN THÁM VÀ HỌC SÂU TRONG \\ GIÁM SÁT BIẾN ĐỘNG RỪNG TỈNH CÀ MAU}}
-	\\[1.5cm]
-{\fontsize{14pt}{16pt}\selectfont\textbf{ĐỒ ÁN TỐT NGHIỆP ĐẠI HỌC HỆ CHÍNH QUY
-		\\[2mm]
-	Ngành: Công nghệ Hàng không Vũ trụ}}
-\end{center}
-\vspace{1mm}
-\hspace*{12mm}{\fontsize{14pt}{16pt}\selectfont\textbf{Cán bộ hướng dẫn: TS. Hà Minh Cường}}
-\\[2.5cm]
-\hspace*{12mm}{\fontsize{14pt}{16pt}\selectfont\textbf{Cán bộ đồng hướng dẫn: ThS. Hoàng Tích Phúc}}
+\vspace{5mm}
+
+% Logo trường - lớn hơn vì đây là báo cáo nộp cho trường
+\includegraphics[width=0.15\linewidth]{img/uet.png}
+
+\vspace{5mm}
+
+% ===== TIÊU ĐỀ =====
+\textbf{\Large BÁO CÁO THỰC TẬP TỐT NGHIỆP}
+
+\vspace{8mm}
+
+\textbf{\LARGE NGHIÊN CỨU VÀ PHÁT TRIỂN MÔ HÌNH HỌC SÂU TRONG GIÁM SÁT BIẾN ĐỘNG RỪNG TỈNH CÀ MAU SỬ DỤNG DỮ LIỆU VIỄN THÁM ĐA NGUỒN}
+
+\vspace{10mm}
+
+% ===== THÔNG TIN SINH VIÊN VÀ GIẢNG VIÊN =====
+\begin{flushleft}
+\hspace{30mm}\begin{tabular}{@{}l@{\hspace{3mm}}l@{}}
+\textbf{Sinh viên thực hiện:} & Ninh Hải Đăng\\[2mm]
+\textbf{Mã sinh viên:} & 21021411\\[2mm]
+\textbf{Lớp:} & QH2021-CQ-S-AE\\[4mm]
+\multicolumn{2}{@{}l@{}}{\textbf{Đơn vị thực tập:}}\\[2mm]
+\multicolumn{2}{@{}l@{}}{\hspace{5mm}\textbf{CÔNG TY TNHH TƯ VẤN VÀ PHÁT TRIỂN ĐỒNG XANH}}\\[1mm]
+\multicolumn{2}{@{}l@{}}{\textbf{Cán bộ hướng dẫn:}}\\[2mm]
+& - TS. Hoàng Việt Anh\\[1mm]
+& - ThS. Vũ Văn Thái
+\end{tabular}
+\end{flushleft}
+
 \vfill
-\begin{center}
-		{\fontsize{12pt}{14pt}\selectfont\textbf{HÀ NỘI - 2025}}
-	\vspace{4mm}
-\end{center}
+
+% Thời gian
+\textbf{Hà Nội, tháng 12 năm 2025}
+
+\vspace{8mm}
+
+\end{center}\end{titlepage}

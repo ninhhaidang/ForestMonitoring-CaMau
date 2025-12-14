@@ -1,0 +1,57 @@
+\unnumberedchapter{III. NỘI DUNG THỰC TẬP}
+
+\section*{Mục đích thực tập}
+
+Nghiên cứu và phát triển mô hình học sâu trong giám sát biến động rừng sử dụng dữ liệu viễn thám đa nguồn, nhằm áp dụng công nghệ trí tuệ nhân tạo và viễn thám vào bài toán thực tiễn về bảo vệ và quản lý tài nguyên rừng tại Việt Nam.
+
+\section*{Các nội dung đã tham gia trong quá trình thực tập}
+
+Trong quá trình thực tập tại Công ty TNHH Tư vấn và Phát triển Đồng Xanh, em đã tham gia thực hiện các nội dung sau:
+
+\begin{enumerate}
+    \item \textbf{Nghiên cứu tổng quan về vấn đề biến động rừng:}
+    \begin{itemize}
+        \item Tìm hiểu tình hình mất rừng toàn cầu và Việt Nam
+        \item Nghiên cứu vai trò của rừng ngập mặn tại tỉnh Cà Mau
+        \item Tìm hiểu các phương pháp giám sát rừng truyền thống và hiện đại
+    \end{itemize}
+
+    \item \textbf{Nghiên cứu công nghệ viễn thám và học sâu:}
+    \begin{itemize}
+        \item Nghiên cứu về vệ tinh Sentinel-1 (dữ liệu radar SAR) và Sentinel-2 (dữ liệu quang học)
+        \item Tìm hiểu các chỉ số thực vật (NDVI, NBR, NDMI)
+        \item Nghiên cứu kiến trúc mạng nơ-ron tích chập (CNN) và ứng dụng trong phân loại ảnh viễn thám
+        \item Tổng quan các nghiên cứu liên quan về giám sát rừng bằng deep learning
+    \end{itemize}
+
+    \item \textbf{Thu thập và xử lý dữ liệu:}
+    \begin{itemize}
+        \item Thu thập dữ liệu Sentinel-1 và Sentinel-2 trên nền tảng Google Earth Engine
+        \item Tiền xử lý dữ liệu: lọc mây, chọn thời điểm mùa khô, tính toán các chỉ số thực vật
+        \item Tạo bộ dữ liệu mẫu với 2,630 điểm ground truth thuộc 4 lớp: Rừng ổn định, Mất rừng, Phi rừng, Phục hồi rừng
+        \item Trích xuất 27 đặc trưng từ hai nguồn dữ liệu
+    \end{itemize}
+
+    \item \textbf{Phát triển mô hình học sâu:}
+    \begin{itemize}
+        \item Thiết kế kiến trúc mạng CNN với 36,676 tham số
+        \item Thực hiện cross-validation 5-fold để tối ưu siêu tham số
+        \item Huấn luyện mô hình trên tập dữ liệu huấn luyện (80\%)
+        \item Đánh giá mô hình trên tập kiểm tra (20\%)
+    \end{itemize}
+
+    \item \textbf{Đánh giá và triển khai:}
+    \begin{itemize}
+        \item Phân tích kết quả: độ chính xác 98.86\%, ROC-AUC 99.98\%
+        \item Áp dụng mô hình phân loại toàn bộ vùng nghiên cứu (162,469 ha)
+        \item Phát hiện 7,282 ha mất rừng (4.48\%) và 4,941 ha phục hồi rừng (3.04\%)
+        \item Phát triển ứng dụng web hiển thị kết quả trên Google Earth Engine
+    \end{itemize}
+
+    \item \textbf{Viết báo cáo và tài liệu:}
+    \begin{itemize}
+        \item Viết báo cáo chi tiết về toàn bộ quá trình nghiên cứu
+        \item Tổng hợp tài liệu tham khảo và trích dẫn khoa học
+        \item Chuẩn bị các biểu đồ, bảng số liệu, và hình ảnh minh họa
+    \end{itemize}
+\end{enumerate}

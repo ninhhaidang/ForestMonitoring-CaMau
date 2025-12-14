@@ -1,0 +1,54 @@
+\section*{3. Các sản phẩm khác}
+
+Ngoài báo cáo nghiên cứu chi tiết, quá trình thực tập đã tạo ra các sản phẩm cụ thể sau:
+
+\subsection*{3.1. Mô hình học sâu CNN}
+
+\begin{itemize}
+    \item Kiến trúc: Mạng nơ-ron tích chập (CNN) với 36,676 tham số
+    \item Input: Patch 3×3 pixel với 27 kênh đặc trưng
+    \item Output: Phân loại 4 lớp (Rừng ổn định, Mất rừng, Phi rừng, Phục hồi rừng)
+    \item Độ chính xác: 98.86\% trên tập kiểm tra
+    \item ROC-AUC score: 99.98\%
+    \item Cross-validation: 98.48\% ± 0.36\%
+\end{itemize}
+
+\subsection*{3.2. Bản đồ biến động rừng tỉnh Cà Mau}
+
+\begin{itemize}
+    \item Vùng nghiên cứu: Toàn bộ ranh giới lâm nghiệp tỉnh Cà Mau mới sau quyết định sáp nhập tỉnh Cà Mau với tỉnh Bạc Liêu cũ theo Nghị quyết số 1278/NQ-UBTVQH15 ngày 24/10/2024, có hiệu lực từ 01/07/2025 (162,469 ha)
+    \item Thời kỳ phân tích: Tháng 1/2024 - Tháng 2/2025
+    \item Độ phân giải không gian: 10m
+    \item Kết quả phát hiện:
+    \begin{itemize}
+        \item Diện tích mất rừng: 7,282 ha (4.48\% tổng diện tích)
+        \item Diện tích phục hồi rừng: 4,941 ha (3.04\% tổng diện tích)
+        \item Rừng ổn định và khu vực không phải rừng
+    \end{itemize}
+    \item Format: GeoTIFF, hệ tọa độ EPSG:32648 (UTM Zone 48N)
+\end{itemize}
+
+\subsection*{3.3. Ứng dụng web hiển thị kết quả trên Google Earth Engine}
+
+\begin{itemize}
+    \item URL: \url{https://ee-bonglantrungmuoi.projects.earthengine.app/view/giam-sat-bien-dong-rung-ca-mau}
+    \item Tính năng:
+    \begin{itemize}
+        \item Hiển thị bản đồ biến động rừng tương tác
+        \item Phân biệt màu sắc cho 4 lớp biến động
+        \item Cho phép người dùng phóng to/thu nhỏ, di chuyển bản đồ
+        \item Hiển thị thông tin metadata và chú giải
+    \end{itemize}
+    \item Công nghệ: Google Earth Engine Apps, JavaScript API
+    \item Truy cập: Công khai, không yêu cầu đăng nhập
+\end{itemize}
+
+\subsection*{3.4. Mã nguồn và tài liệu}
+
+\begin{itemize}
+    \item Mã nguồn tiền xử lý dữ liệu S1/S2 trên Google Earth Engine (JavaScript)
+    \item Mã nguồn huấn luyện mô hình CNN (Python, PyTorch)
+    \item Scripts phân loại và xuất kết quả
+    \item Tài liệu hướng dẫn sử dụng
+    \item Báo cáo kỹ thuật chi tiết (tài liệu này)
+\end{itemize}

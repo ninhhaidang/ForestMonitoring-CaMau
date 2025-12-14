@@ -206,16 +206,13 @@
 \newcommand{\argmax}{\arg\!\max}
 
 \begin{document}
-% Bìa chính và các phần đầu
+% Bìa
 \input{cover}\newpage\cleardoublepage
 
 % Chuyển sang đánh số trang kiểu La Mã
-\pagenumbering{roman} 
-\input{chapters/abstract_vi}\newpage\cleardoublepage
-\input{chapters/assurance}\newpage\cleardoublepage
-\input{chapters/acknowledgement}\newpage\cleardoublepage
+\pagenumbering{roman}
 
-% Mục lục, danh sách hình ảnh, bảng, thuật toán
+% Mục lục, danh sách hình ảnh, bảng
 \phantomsection
 \addcontentsline{toc}{chapter}{MỤC LỤC}
 \unnumberedchapter{MỤC LỤC}
@@ -237,18 +234,39 @@
 % Thuật ngữ
 \input{chapters/glossary}\newpage\cleardoublepage
 
-% Chuyển sang đánh số trang kiểu Ả Rập từ MỞ ĐẦU (theo quy định)
+% Lời cảm ơn
+\input{chapters/acknowledgement}\newpage\cleardoublepage
+
+% Chuyển sang đánh số trang kiểu Ả Rập
 \pagenumbering{arabic}
 
-% Phần mở đầu
-\input{chapters/preface}\newpage\cleardoublepage
+% ===== NỘI DUNG CHÍNH =====
 
+% I. TÊN ĐỀ TÀI
+\phantomsection
+\addcontentsline{toc}{chapter}{I. TÊN ĐỀ TÀI}
+\input{chapters/section-1-ten-de-tai}\newpage\cleardoublepage
+
+% II. NƠI THỰC TẬP
+\phantomsection
+\addcontentsline{toc}{chapter}{II. NƠI THỰC TẬP}
+\input{chapters/section-2-noi-thuc-tap}\newpage\cleardoublepage
+
+% III. NỘI DUNG THỰC TẬP
+\phantomsection
+\addcontentsline{toc}{chapter}{III. NỘI DUNG THỰC TẬP}
+\input{chapters/section-3-noi-dung-thuc-tap}\newpage\cleardoublepage
+
+% IV. KẾT QUẢ ĐẠT ĐƯỢC
+\phantomsection
+\addcontentsline{toc}{chapter}{IV. KẾT QUẢ ĐẠT ĐƯỢC}
+\input{chapters/section-4-ket-qua-dat-duoc}\newpage\cleardoublepage
+
+% Chương nội dung kỹ thuật
 \setcounter{secnumdepth}{2}
-% Chương nội dung
 \input{chapters/chapter1/chapter1}\newpage\cleardoublepage
 \input{chapters/chapter2/chapter2}\newpage\cleardoublepage
 \input{chapters/chapter3/chapter3}\newpage\cleardoublepage
-\input{chapters/conclusions}\newpage\cleardoublepage
 
 % Tài liệu tham khảo
 \phantomsection
