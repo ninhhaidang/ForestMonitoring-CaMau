@@ -17,14 +17,16 @@ build/
 # Data files (large files - do not commit)
 *.tif
 *.tiff
-data/processed/
-data/patches/
 
-# Raw data - ignore large satellite images but keep boundary files
+# folders not commit
 data/
-# Outputs (large files - do not commit)
 outputs/
 logs/
+Abstract-Thesis/
+VNU - Bao cao khoa hoc/
+paper/
+THESIS/
+results/
 
 # Model checkpoints (large files - do not commit)
 *.pth
