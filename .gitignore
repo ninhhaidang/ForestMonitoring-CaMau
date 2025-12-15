@@ -21,14 +21,7 @@ data/processed/
 data/patches/
 
 # Raw data - ignore large satellite images but keep boundary files
-data/raw/sentinel-1/*
-data/raw/sentinel-2/*
-data/raw/ground_truth/*.csv
-!data/raw/sentinel-1/.gitkeep
-!data/raw/sentinel-2/.gitkeep
-!data/raw/ground_truth/.gitkeep
-!data/raw/boundary/
-
+data/
 # Outputs (large files - do not commit)
 outputs/
 logs/
