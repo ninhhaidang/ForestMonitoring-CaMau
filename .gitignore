@@ -23,7 +23,7 @@ data/
 outputs/
 logs/
 Abstract-Thesis/
-VNU - Bao cao khoa hoc/
+Bao-cao-khoa-hoc/
 paper/
 THESIS/
 results/
@@ -32,14 +32,6 @@ results/
 *.pth
 *.pkl
 experiments/**/
-
-# Results folder - keep structure but ignore large output files
-results/rasters/*
-results/models/*
-results/data/*
-!results/rasters/.gitkeep
-!results/models/.gitkeep
-!results/data/.gitkeep
 
 # Plots - commit to GitHub for visualization
 # (plots are small image files, safe to commit)
@@ -113,3 +105,5 @@ test_*.py
 # LaTeX editor files
 *.synctex.gz(busy)
 *.bak
+
+*.pptx
