@@ -10,6 +10,10 @@ Phần này trình bày phương pháp nghiên cứu và quy trình tổng quan 
 \label{fig:methodology-flowchart}
 \end{figure}
 
+\subsection{Thu thập và tiền xử lý dữ liệu}
+
+Giai đoạn đầu tiên trong quy trình là thu thập và tiền xử lý dữ liệu ảnh vệ tinh. Quá trình này được thực hiện trên nền tảng Google Earth Engine, bao gồm các bước: (1) truy xuất dữ liệu Sentinel-2 và Sentinel-1 cho khu vực nghiên cứu tại hai thời điểm (tháng 01/2024 và 02/2025), (2) lọc theo không gian và thời gian, (3) loại bỏ ảnh hưởng của mây sử dụng bộ sưu tập \textit{S2\_CLOUD\_PROBABILITY}, (4) trích xuất các kênh phổ cần thiết và tính toán các chỉ số thực vật, và (5) xuất kết quả ra định dạng GeoTIFF với độ phân giải 10m. Chi tiết về tiêu chí lựa chọn ảnh, quy trình xử lý trên GEE, và cơ sở khoa học trong việc lựa chọn các kênh phổ và chỉ số thực vật đã được trình bày chi tiết trong Mục~\ref{sec:data} (Phần Dữ liệu).
+
 \subsection{Trích xuất đặc trưng}
 
 Việc kết hợp dữ liệu ra-đa khẩu độ tổng hợp và quang học đã được chứng minh là hiệu quả trong nhiều nghiên cứu phân loại lớp phủ đất \citeen{ienco2019, hu2020}. Cách tiếp cận này tận dụng ưu điểm bổ sung của hai nguồn dữ liệu: ra-đa khẩu độ tổng hợp cung cấp thông tin về cấu trúc và độ ẩm bề mặt, trong khi quang học cung cấp thông tin về đặc tính quang phổ của thực vật.
@@ -47,7 +51,7 @@ Nghiên cứu này sử dụng một kiến trúc mạng nơ-ron tích chập đ
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{chapter2/CNN-architecture.png}
-\caption{Kiến trúc mô hình mạng nơ-ron tích chậpF được sử dụng trong nghiên cứu}
+\caption{Kiến trúc mô hình CNN được sử dụng trong nghiên cứu}
 \label{fig:cnn_architecture}
 \end{figure}
 
