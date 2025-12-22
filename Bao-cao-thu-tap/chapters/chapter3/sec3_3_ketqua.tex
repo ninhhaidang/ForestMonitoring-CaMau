@@ -109,7 +109,7 @@ Trên tập kiểm tra, mô hình đạt Accuracy 98,86\%, ROC-AUC 99,98\%, vớ
         \fill[blue0] (2*\cellsize, 2*\cellsize) rectangle (3*\cellsize, 3*\cellsize);
         \fill[blue0] (3*\cellsize, 2*\cellsize) rectangle (4*\cellsize, 3*\cellsize);
 
-        % Hàng 2 (Phi rừng): 0, 0, 133, 0
+        % Hàng 2 (Phi rừng ổn định): 0, 0, 133, 0
         \fill[blue0] (0*\cellsize, 1*\cellsize) rectangle (1*\cellsize, 2*\cellsize);
         \fill[blue0] (1*\cellsize, 1*\cellsize) rectangle (2*\cellsize, 2*\cellsize);
         \fill[blue8] (2*\cellsize, 1*\cellsize) rectangle (3*\cellsize, 2*\cellsize);
@@ -148,14 +148,14 @@ Trên tập kiểm tra, mô hình đạt Accuracy 98,86\%, ROC-AUC 99,98\%, vớ
         % Nhãn cột (Dự đoán) - xoay nghiêng
         \node[font=\scriptsize, rotate=45, anchor=east] at (0.5*\cellsize, -0.2*\cellsize) {Rừng ổn định};
         \node[font=\scriptsize, rotate=45, anchor=east] at (1.5*\cellsize, -0.2*\cellsize) {Mất rừng};
-        \node[font=\scriptsize, rotate=45, anchor=east] at (2.5*\cellsize, -0.2*\cellsize) {Phi rừng};
+        \node[font=\scriptsize, rotate=45, anchor=east] at (2.5*\cellsize, -0.2*\cellsize) {Phi rừng ổn định};
         \node[font=\scriptsize, rotate=45, anchor=east] at (3.5*\cellsize, -0.2*\cellsize) {Phục hồi rừng};
         \node[font=\small\bfseries] at (2*\cellsize, -1.1*\cellsize) {Dự đoán};
 
         % Nhãn hàng (Thực tế)
         \node[font=\scriptsize, anchor=east] at (-0.1*\cellsize, 3.5*\cellsize) {Rừng ổn định};
         \node[font=\scriptsize, anchor=east] at (-0.1*\cellsize, 2.5*\cellsize) {Mất rừng};
-        \node[font=\scriptsize, anchor=east] at (-0.1*\cellsize, 1.5*\cellsize) {Phi rừng};
+        \node[font=\scriptsize, anchor=east] at (-0.1*\cellsize, 1.5*\cellsize) {Phi rừng ổn định};
         \node[font=\scriptsize, anchor=east] at (-0.1*\cellsize, 0.5*\cellsize) {Phục hồi rừng};
         \node[font=\small\bfseries, rotate=90] at (-1.5*\cellsize, 2*\cellsize) {Thực tế};
 
@@ -186,14 +186,14 @@ Trên tập kiểm tra, mô hình đạt Accuracy 98,86\%, ROC-AUC 99,98\%, vớ
 \hline
 1 - Mất rừng & 98,44\% & 96,92\% & 97,67\% & 130 & 2 FP, 4 FN \\
 \hline
-2 - Phi rừng & 100,00\% & 100,00\% & 100,00\% & 133 & 0 \\
+2 - Phi rừng ổn định & 100,00\% & 100,00\% & 100,00\% & 133 & 0 \\
 \hline
 3 - Phục hồi rừng & 100,00\% & 100,00\% & 100,00\% & 132 & 0 \\
 \hline
 \end{tabular}
 \end{table}
 
-Tổng cộng chỉ có 6/526 mẫu bị phân loại sai, tương đương tỷ lệ lỗi 1,14\%. Trong đó, hai mẫu thuộc Lớp 0 (Rừng ổn định) bị nhầm thành Lớp 1 (Mất rừng) và bốn mẫu thuộc Lớp 1 (Mất rừng) bị nhầm thành Lớp 0 (Rừng ổn định). Đánh giá chi tiết cho thấy Lớp 2 (Phi rừng) và Lớp 3 (Phục hồi rừng) được phân loại hoàn hảo với Accuracy 100\%.
+Tổng cộng chỉ có 6/526 mẫu bị phân loại sai, tương đương tỷ lệ lỗi 1,14\%. Trong đó, hai mẫu thuộc Lớp 0 (Rừng ổn định) bị nhầm thành Lớp 1 (Mất rừng) và bốn mẫu thuộc Lớp 1 (Mất rừng) bị nhầm thành Lớp 0 (Rừng ổn định). Đánh giá chi tiết cho thấy Lớp 2 (Phi rừng ổn định) và Lớp 3 (Phục hồi rừng) được phân loại hoàn hảo với Accuracy 100\%.
 
 Việc nhầm lẫn chỉ xảy ra giữa hai lớp Rừng ổn định (Lớp 0) và Mất rừng (Lớp 1) có thể được giải thích bởi một số yếu tố. Trước hết, cả hai lớp đều có sự hiện diện của rừng ở ít nhất một thời điểm, dẫn đến sự tương đồng về đặc trưng quang phổ; các khu vực rừng bị suy thoái nhẹ có thể có phổ phản xạ đặc trưng tương tự với rừng ổn định, đặc biệt khi mức độ mất rừng không rõ ràng. Bên cạnh đó, hiệu ứng biên cũng góp phần gây nhầm lẫn khi tại ranh giới giữa vùng rừng và vùng mất rừng, các điểm ảnh có thể chứa cả hai loại lớp phủ (điểm ảnh hỗn hợp), dẫn đến vector đặc trưng không điển hình cho một lớp cụ thể. Ngoài ra, một số khu vực rừng ngập mặn có thể có biến động theo mùa về mật độ tán lá, tạo ra sự thay đổi NDVI tương tự như mất rừng nhưng thực tế là biến động tự nhiên. Cuối cùng, với chỉ hai thời điểm quan sát, hạn chế về độ phân giải thời gian khiến một số biến động ngắn hạn hoặc phục hồi nhanh có thể không được ghi nhận chính xác.
 
@@ -215,7 +215,7 @@ Sau khi huấn luyện và đánh giá trên tập kiểm tra, mô hình đượ
 \hline
 1 & Mất rừng & 728.215 & 4,48\% & 7.282,15 & 72,82 \\
 \hline
-2 & Phi rừng & 2.952.854 & 18,17\% & 29.528,54 & 295,29 \\
+2 & Phi rừng ổn định & 2.952.854 & 18,17\% & 29.528,54 & 295,29 \\
 \hline
 3 & Phục hồi rừng & 494.090 & 3,04\% & 4.940,90 & 49,41 \\
 \hline
@@ -265,7 +265,7 @@ Tóm lại, mô hình thể hiện khả năng mô tả tương đối chính x�
         ]{
             74.30/Rừng ổn định (74{,}30\%),
             4.48/Mất rừng (4{,}48\%),
-            18.17/Phi rừng (18{,}17\%),
+            18.17/Phi rừng ổn định (18{,}17\%),
             3.04/Phục hồi rừng (3{,}04\%)
         }
     \end{tikzpicture}
@@ -287,80 +287,9 @@ Việc so sánh trực tiếp các chỉ số đánh giá giữa các nghiên c�
 
 Trong những năm gần đây, các kiến trúc học sâu như CNN, U-Net và ResNet đã được áp dụng rộng rãi cho bài toán phát hiện biến động rừng với kết quả vượt trội so với phương pháp học máy truyền thống. Theo tổng quan của Fayaz và cộng sự (2024), U-Net và các biến thể của nó được sử dụng trong 45\% các nghiên cứu về phát hiện mất rừng, đạt Accuracy trung bình 94--97\%. Nghiên cứu của Ortega và cộng sự (2020) trên rừng Amazon cho thấy các kiến trúc CNN (SharpMask, U-Net, ResU-Net) đều vượt trội so với thuật toán ML truyền thống cả về định lượng lẫn trực quan. Đặc biệt, việc kết hợp U-Net với ResNet (ResU-Net) giúp trích xuất đặc trưng chi tiết hơn. Ưu điểm của học sâu là tự động học đặc trưng từ dữ liệu mà không cần thiết kế thủ công, khai thác được ngữ cảnh không gian và hiệu quả cao khi có đủ dữ liệu huấn luyện; tuy nhiên, nhược điểm là yêu cầu lượng dữ liệu huấn luyện lớn, tính chất ``hộp đen'' khó giải thích, chi phí tính toán cao và hiệu suất giảm đáng kể khi kích thước mẫu nhỏ.
 
-Bảng~\ref{tab:comparison} tổng hợp kết quả so sánh giữa nghiên cứu này với các công trình tiêu biểu.
+Nghiên cứu cũng thực hiện so sánh định tính với sản phẩm Giám sát rừng toàn cầu (Global Forest Watch - GFW) dựa trên công trình của Hansen và cộng sự \citeen{hansen2013}, được cập nhật liên tục bởi Potapov và cộng sự \citeen{potapov2022}.
 
-\begin{table}[H]
-\centering
-\caption{So sánh với các nghiên cứu trong tài liệu}
-\label{tab:comparison}
-\begin{tabular}{|l|l|l|c|c|}
-\hline
-\textbf{Nghiên cứu} & \textbf{Phương pháp} & \textbf{Dữ liệu} & \textbf{Accuracy} & \textbf{ROC-AUC} \\
-\hline
-Hansen và cs. (2013) & Decision Trees & Landsat 30m & $\sim$85\% & - \\
-\hline
-Ortega và cs. (2020) & U-Net, ResU-Net & Landsat 30m & $\sim$94\% & - \\
-\hline
-Fayaz và cs. (2024) & U-Net (tổng quan) & Đa nguồn & 94--97\% & - \\
-\hline
-\textbf{Nghiên cứu này} & \textbf{CNN (custom)} & \textbf{S1/S2 10m} & \textbf{98,86\%} & \textbf{99,98\%} \\
-\hline
-\end{tabular}
-\end{table}
+So sánh với sản phẩm GFW, phương pháp đề xuất trong nghiên cứu này có một số ưu điểm và hạn chế. Về ưu điểm, độ phân giải không gian cao hơn (10m so với 30m của Landsat) đặc biệt có ý nghĩa với rừng ngập mặn Cà Mau, nơi các ao nuôi tôm và kênh mương thường có kích thước nhỏ, giúp phát hiện chi tiết hơn các vùng biến động quy mô vừa và nhỏ. Việc kết hợp đa nguồn dữ liệu (Sentinel-1 và Sentinel-2) cung cấp thông tin bổ sung giữa ra-đa và quang học, đặc biệt hữu ích trong điều kiện mây che phủ thường xuyên ở vùng nhiệt đới. Phương pháp CNN học sâu có khả năng tự động học các đặc trưng phức tạp từ dữ liệu, vượt trội hơn Decision Trees trong việc phân loại các lớp biến động. Hơn nữa, phương pháp có thể được cập nhật theo yêu cầu với tần suất linh hoạt tùy theo nhu cầu giám sát cụ thể của địa phương.
 
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-            ybar,
-            width=0.9\textwidth,
-            height=7cm,
-            ylabel={Accuracy (\%)},
-            symbolic x coords={Hansen (2013), Ortega (2020), Fayaz (2024), Nghiên cứu này},
-            xtick=data,
-            xticklabel style={rotate=15, anchor=east, font=\small},
-            ymin=80,
-            ymax=102,
-            bar width=25pt,
-            nodes near coords,
-            nodes near coords align={vertical},
-            every node near coord/.append style={font=\scriptsize},
-            enlarge x limits=0.15,
-        ]
-        \addplot[fill=teal!60] coordinates {
-            (Hansen (2013), 85)
-            (Ortega (2020), 94)
-            (Fayaz (2024), 95.5)
-            (Nghiên cứu này, 98.86)
-        };
-        \end{axis}
-    \end{tikzpicture}
-    \caption{So sánh Accuracy với các nghiên cứu trước đó}
-    \label{fig:literature_comparison}
-\end{figure}
-
-Kết quả của nghiên cứu này đạt Accuracy cao hơn so với các công trình trước đó \citeen{stehman2019}. Hiệu suất này có thể được giải thích bởi độ phân giải không gian cao hơn (10m so với 30m) giúp phát hiện biến động chi tiết hơn, sự kết hợp dữ liệu đa nguồn (ra-đa và quang học) bổ sung cho nhau trong điều kiện nhiều mây của vùng nhiệt đới, kiến trúc CNN được thiết kế phù hợp với bộ dữ liệu nhỏ thông qua kỹ thuật điều chuẩn (Dropout 70\%, chuẩn hóa theo lô), cùng với bộ dữ liệu thực địa chất lượng cao được thu thập và kiểm tra kỹ lưỡng.
-
-Nghiên cứu cũng thực hiện so sánh định tính với sản phẩm Giám sát rừng toàn cầu (Global Forest Watch - GFW) dựa trên công trình của Hansen và cộng sự đã đề cập ở trên, được cập nhật liên tục bởi Potapov và cộng sự \citeen{potapov2022}.
-
-\begin{table}[H]
-\centering
-\caption{So sánh kết quả với Giám sát rừng toàn cầu (GFW)}
-\label{tab:gfw_comparison}
-\begin{tabular}{|l|c|c|l|}
-\hline
-\textbf{Chỉ tiêu} & \textbf{Nghiên cứu này} & \textbf{GFW (tham khảo)} & \textbf{Ghi chú} \\
-\hline
-Độ phân giải & 10m & 30m & Nghiên cứu này chi tiết hơn \\
-\hline
-Nguồn dữ liệu & S1/S2 & Landsat & Đa nguồn và đơn nguồn \\
-\hline
-Phương pháp & CNN & Decision Trees & Học sâu và học máy \\
-\hline
-Cập nhật & Theo yêu cầu & Hàng năm & Linh hoạt hơn \\
-\hline
-\end{tabular}
-\end{table}
-
-Bảng~\ref{tab:gfw_comparison} tổng hợp các khác biệt chính giữa phương pháp đề xuất và GFW. Độ phân giải cao hơn của Sentinel (10m) đặc biệt có ý nghĩa với rừng ngập mặn Cà Mau, nơi các ao nuôi tôm và kênh mương thường có kích thước nhỏ. Tuy nhiên, GFW vẫn có ưu thế về tính nhất quán toàn cầu, lịch sử dữ liệu dài (từ năm 2000) và khả năng cập nhật tự động hàng năm --- những yếu tố quan trọng cho việc giám sát dài hạn ở quy mô lớn.
+Tuy nhiên, GFW vẫn có những ưu thế vượt trội về tính nhất quán toàn cầu với phương pháp thống nhất trên mọi khu vực, lịch sử dữ liệu dài từ năm 2000 cho phép phân tích xu hướng dài hạn, và khả năng cập nhật tự động hàng năm mà không cần can thiệp thủ công --- những yếu tố quan trọng cho việc giám sát dài hạn ở quy mô lớn. Do đó, hai phương pháp có thể được sử dụng bổ sung cho nhau: GFW phù hợp cho giám sát xu hướng toàn cầu và dài hạn, trong khi phương pháp đề xuất phù hợp hơn cho giám sát chi tiết ở quy mô khu vực với yêu cầu độ chính xác cao.
 

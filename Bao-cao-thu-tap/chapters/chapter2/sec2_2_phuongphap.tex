@@ -94,6 +94,12 @@ Lớp đầu ra & 260 & $64 \times 4 + 4$ \\
 
 Trong công thức tính tham số, số hạng đầu tiên biểu diễn tham số của lớp tích chập hoặc kết nối đầy đủ (kênh đầu vào $\times$ kích thước bộ lọc $\times$ kênh đầu ra, cộng với bias), trong khi số hạng thứ hai biểu diễn tham số của chuẩn hóa theo lô (mỗi kênh có 2 tham số: hệ số co giãn $\gamma$ và hệ số dịch chuyển $\beta$). Ví dụ, khối tích chập 1 có $27 \times 3 \times 3 \times 64 = 15{,}552$ tham số cho lớp Conv2D và $64 \times 2 = 128$ tham số cho BatchNorm2D.
 
+\subsection{Cấu hình phần cứng và phần mềm}
+
+Môi trường thí nghiệm sử dụng phần cứng với CPU Intel Xeon E-2334 (4 nhân, 8 luồng), GPU NVIDIA GeForce RTX 4080 (16GB VRAM), bộ nhớ RAM 64GB và bộ nhớ lưu trữ 1TB SSD. Về phần mềm, hệ điều hành được sử dụng là Windows 10 Pro, môi trường Python 3.11 cùng PyTorch 2.5 có hỗ trợ CUDA 12.1 để huấn luyện mô hình, rasterio 1.4 (GDAL 3.6) cho xử lý dữ liệu không gian và các thư viện khoa học dữ liệu như NumPy, scikit-learn và pandas.
+
+PyTorch được lựa chọn làm framework học sâu chính cho nghiên cứu này vì một số lý do. Thứ nhất, PyTorch sử dụng cơ chế đồ thị tính toán động (dynamic computational graph), cho phép xây dựng và sửa đổi kiến trúc mô hình một cách linh hoạt trong quá trình thử nghiệm. Thứ hai, cú pháp của PyTorch gần gũi với Python thuần túy, giúp việc triển khai và gỡ lỗi mô hình trở nên trực quan hơn. Thứ ba, PyTorch được hỗ trợ bởi cộng đồng nghiên cứu rộng lớn với nhiều mô hình tiền huấn luyện và thư viện mở rộng như torchvision, torchaudio. Cuối cùng, khả năng tích hợp tốt với CUDA cho phép tận dụng hiệu quả GPU trong quá trình huấn luyện và suy luận.
+
 \subsection{Huấn luyện mô hình}
 
 Với bộ dữ liệu gồm 2,630 mẫu và mô hình có 36,676 tham số, tỷ lệ mẫu trên tham số là 72:1 --- tỷ lệ này thấp hơn ngưỡng khuyến nghị thông thường (100:1 đến 1000:1) cho mô hình học sâu \citeen{goodfellow2016}, do đó tăng nguy cơ quá khớp. Để ngăn chặn hiện tượng quá khớp --- khi mô hình ghi nhớ dữ liệu huấn luyện thay vì học các quy luật tổng quát --- nghiên cứu áp dụng ba kỹ thuật điều chuẩn: chuẩn hóa theo lô \citeen{ioffe2015} sau mỗi lớp mạng, Dropout với tỷ lệ 70\% \citeen{srivastava2014}, và phân rã trọng số với hệ số $10^{-3}$. Bảng~\ref{tab:hyperparams} trình bày các siêu tham số huấn luyện.
@@ -125,9 +131,13 @@ Nghiên cứu sử dụng thuật toán tối ưu AdamW \citeen{loshchilov2019} 
 
 Quy trình huấn luyện gồm bốn giai đoạn. Giai đoạn thứ nhất, khởi tạo trọng số theo phương pháp Kaiming/He \citeen{he2015}. Giai đoạn thứ hai, thực hiện kiểm định chéo 5 phần (5-Fold Cross Validation) trên 80\% dữ liệu (2,104 mẫu) để đánh giá độ ổn định của mô hình; trong đó dữ liệu được chia thành 5 phần bằng nhau, mô hình được huấn luyện 5 lần với mỗi lần sử dụng 4 phần làm tập huấn luyện và 1 phần làm tập kiểm định. Giai đoạn thứ ba, huấn luyện mô hình cuối cùng trên toàn bộ 80\% dữ liệu. Giai đoạn thứ tư, đánh giá mô hình trên 20\% tập kiểm tra cố định (526 mẫu) --- tập dữ liệu không được sử dụng trong quá trình huấn luyện.
 
+Sau khi hoàn tất huấn luyện, mô hình tốt nhất (có validation loss thấp nhất) được lưu lại dưới dạng checkpoint sử dụng thư viện PyTorch. Checkpoint chứa các thành phần quan trọng bao gồm: (1) \textit{model\_state\_dict} --- trọng số của tất cả các lớp trong mạng nơ-ron, (2) \textit{optimizer\_state\_dict} --- trạng thái của thuật toán tối ưu AdamW, (3) các chỉ số hiệu suất tốt nhất (\textit{best\_val\_loss}, \textit{best\_val\_acc}), và (4) lịch sử huấn luyện (\textit{history}) ghi lại giá trị loss và accuracy qua từng epoch. Mô hình được lưu dưới định dạng \texttt{.pth} tại đường dẫn \texttt{results/models/cnn\_final\_model.pth}. Bên cạnh đó, các tham số chuẩn hóa (mean và std) được lưu riêng để đảm bảo dữ liệu mới trong giai đoạn dự đoán được chuẩn hóa theo cùng phân phối với tập huấn luyện.
+
 \subsection{Áp dụng mô hình}
 
-Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn bộ vùng nghiên cứu với khoảng 16.2 triệu điểm ảnh hợp lệ, tương đương diện tích 162,468 ha. Quy trình dự đoán được thực hiện như sau.
+Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn bộ vùng nghiên cứu với khoảng 16.2 triệu điểm ảnh hợp lệ, tương đương diện tích 162,468 ha. Trước khi thực hiện dự đoán, mô hình đã lưu cần được tải lại vào bộ nhớ. Quá trình này bao gồm: (1) khởi tạo kiến trúc mô hình CNN với cùng cấu hình đã sử dụng trong huấn luyện, (2) tải checkpoint từ file \texttt{.pth} sử dụng hàm \texttt{torch.load()}, (3) nạp trọng số từ \textit{model\_state\_dict} vào mô hình thông qua phương thức \texttt{load\_state\_dict()}, và (4) chuyển mô hình sang chế độ đánh giá (\texttt{eval()}) để vô hiệu hóa các lớp Dropout và BatchNorm. Mô hình sau đó được chuyển sang GPU (nếu có) để tăng tốc độ tính toán.
+
+Quy trình dự đoán được thực hiện như sau.
 
 Đầu tiên, dữ liệu đặc trưng gồm 27 kênh được tải vào bộ nhớ. Với mỗi điểm ảnh cần phân loại, một vùng lân cận kích thước 3×3 được trích xuất, chứa thông tin của điểm ảnh trung tâm và 8 điểm ảnh xung quanh. Đối với các điểm ảnh ở biên, kỹ thuật phản chiếu (mirror padding) được sử dụng để tạo đủ ngữ cảnh 3×3 --- kỹ thuật này sao chép các điểm ảnh gần biên theo cách đối xứng để mở rộng vùng dữ liệu, ví dụ chuỗi [a, b, c] ở biên trái được mở rộng thành [b, a, b, c]. Mỗi patch sau đó được chuẩn hóa Z-score sử dụng các tham số (mean, std) đã tính từ tập huấn luyện.
 
