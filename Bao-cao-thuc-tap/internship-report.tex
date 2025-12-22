@@ -212,27 +212,12 @@
 % Chuyển sang đánh số trang kiểu La Mã
 \pagenumbering{roman}
 
-% Mục lục, danh sách hình ảnh, bảng
+% Mục lục
 \phantomsection
 \addcontentsline{toc}{chapter}{MỤC LỤC}
 \unnumberedchapter{MỤC LỤC}
 \makeatletter\@starttoc{toc}\makeatother
 \newpage\cleardoublepage
-
-\phantomsection
-\addcontentsline{toc}{chapter}{DANH MỤC HÌNH ẢNH}
-\unnumberedchapter{DANH MỤC HÌNH ẢNH}
-\makeatletter\@starttoc{lof}\makeatother
-\cleardoublepage
-
-\phantomsection
-\addcontentsline{toc}{chapter}{DANH MỤC BẢNG}
-\unnumberedchapter{DANH MỤC BẢNG}
-\makeatletter\@starttoc{lot}\makeatother
-\cleardoublepage
-
-% Thuật ngữ
-\input{chapters/glossary}\newpage\cleardoublepage
 
 % Lời cảm ơn
 \input{chapters/acknowledgement}\newpage\cleardoublepage
@@ -261,12 +246,6 @@
 \phantomsection
 \addcontentsline{toc}{chapter}{IV. KẾT QUẢ ĐẠT ĐƯỢC}
 \input{chapters/section-4-ket-qua-dat-duoc}\newpage\cleardoublepage
-
-% Chương nội dung kỹ thuật
-\setcounter{secnumdepth}{2}
-\input{chapters/chapter1/chapter1}\newpage\cleardoublepage
-\input{chapters/chapter2/chapter2}\newpage\cleardoublepage
-\input{chapters/chapter3/chapter3}\newpage\cleardoublepage
 
 % Tài liệu tham khảo
 \phantomsection

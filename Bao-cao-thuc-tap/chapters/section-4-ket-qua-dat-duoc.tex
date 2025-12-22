@@ -2,40 +2,11 @@
 
 Qua quá trình thực tập 3 tháng tại Công ty TNHH Tư vấn và Phát triển Đồng Xanh, em đã đạt được các kết quả sau:
 
-\section*{1. Nghiên cứu đề bài, thu thập tài liệu}
+% Subsection 1: Nghiên cứu đề bài, thu thập tài liệu
+\input{chapters/subsection-4-1-nghien-cuu-de-bai}
 
-Em đã tiến hành nghiên cứu toàn diện về bài toán giám sát biến động rừng, bao gồm cơ sở lý thuyết về rừng và biến động rừng, công nghệ viễn thám, học sâu, và các nghiên cứu liên quan. Nội dung chi tiết được trình bày trong \textbf{Chương 1}.
-
-Các nội dung chính đã nghiên cứu:
-\begin{itemize}
-    \item Tình hình mất rừng toàn cầu và Việt Nam, vai trò của rừng ngập mặn
-    \item Nguyên lý viễn thám, vệ tinh Sentinel-1/2, các chỉ số thực vật
-    \item Mạng nơ-ron tích chập (CNN), các kỹ thuật tối ưu và regularization
-    \item Tổng quan các nghiên cứu về giám sát rừng sử dụng học sâu và dữ liệu viễn thám
-\end{itemize}
-
-\section*{2. Viết báo cáo chi tiết nội dung đã tiến hành trong quá trình thực tập}
-
-Em đã thực hiện toàn bộ quy trình nghiên cứu từ thu thập dữ liệu, xây dựng phương pháp, đến triển khai và đánh giá mô hình. Nội dung chi tiết được trình bày trong \textbf{Chương 2} và \textbf{Chương 3}.
-
-\textbf{Chương 2} trình bày về cơ sở dữ liệu và phương pháp nghiên cứu:
-\begin{itemize}
-    \item Thu thập và tiền xử lý dữ liệu Sentinel-1 SAR và Sentinel-2 quang học
-    \item Xây dựng bộ dữ liệu mẫu với 2,630 điểm ground truth
-    \item Trích xuất 27 đặc trưng từ hai nguồn dữ liệu đa nguồn
-    \item Thiết kế kiến trúc mạng CNN với kích thước patch 3×3
-    \item Chiến lược huấn luyện với cross-validation 5-fold
-\end{itemize}
-
-\textbf{Chương 3} trình bày kết quả thực nghiệm:
-\begin{itemize}
-    \item Thiết lập môi trường thực nghiệm và siêu tham số
-    \item Kết quả cross-validation: độ chính xác 98.48\% ± 0.36\%
-    \item Kết quả kiểm tra cuối cùng: độ chính xác 98.86\%, ROC-AUC 99.98\%
-    \item Phân loại toàn bộ vùng nghiên cứu 162,469 ha
-    \item Phát hiện 7,282 ha mất rừng và 4,941 ha phục hồi rừng
-    \item So sánh hiệu quả của dữ liệu đa nguồn (cải thiện 5.44\% so với chỉ dùng Sentinel-2)
-\end{itemize}
+% Subsection 2: Viết báo cáo chi tiết nội dung đã tiến hành
+\input{chapters/subsection-4-2-bao-cao-chi-tiet}
 
 % Subsection cho các sản phẩm
 \input{chapters/subsection-4-3-san-pham}

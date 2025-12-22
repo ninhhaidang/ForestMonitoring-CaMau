@@ -4,51 +4,16 @@ Ngoài báo cáo nghiên cứu chi tiết, quá trình thực tập đã tạo r
 
 \subsection*{3.1. Mô hình học sâu CNN}
 
-\begin{itemize}
-    \item Kiến trúc: Mạng nơ-ron tích chập (CNN) với 36,676 tham số
-    \item Input: Patch 3×3 pixel với 27 kênh đặc trưng
-    \item Output: Phân loại 4 lớp (Rừng ổn định, Mất rừng, Phi rừng, Phục hồi rừng)
-    \item Độ chính xác: 98.86\% trên tập kiểm tra
-    \item ROC-AUC score: 99.98\%
-    \item Cross-validation: 98.48\% ± 0.36\%
-\end{itemize}
+Mô hình mạng nơ-ron tích chập (CNN) được xây dựng với 36,676 tham số, nhận đầu vào là patch 3×3 pixel với 27 kênh đặc trưng và xuất ra phân loại 4 lớp gồm Rừng ổn định, Mất rừng, Phi rừng, và Phục hồi rừng. Mô hình đạt độ chính xác 98.86\% trên tập kiểm tra, ROC-AUC score đạt 99.98\%, và kết quả cross-validation cho thấy độ chính xác 98.48\% ± 0.36\%.
 
 \subsection*{3.2. Bản đồ biến động rừng tỉnh Cà Mau}
 
-\begin{itemize}
-    \item Vùng nghiên cứu: Toàn bộ ranh giới lâm nghiệp tỉnh Cà Mau mới sau quyết định sáp nhập tỉnh Cà Mau với tỉnh Bạc Liêu cũ theo Nghị quyết số 1278/NQ-UBTVQH15 ngày 24/10/2024, có hiệu lực từ 01/07/2025 (162,469 ha)
-    \item Thời kỳ phân tích: Tháng 1/2024 - Tháng 2/2025
-    \item Độ phân giải không gian: 10m
-    \item Kết quả phát hiện:
-    \begin{itemize}
-        \item Diện tích mất rừng: 7,282 ha (4.48\% tổng diện tích)
-        \item Diện tích phục hồi rừng: 4,941 ha (3.04\% tổng diện tích)
-        \item Rừng ổn định và khu vực không phải rừng
-    \end{itemize}
-    \item Format: GeoTIFF, hệ tọa độ EPSG:32648 (UTM Zone 48N)
-\end{itemize}
+Bản đồ phân tích biến động rừng được thực hiện trên toàn bộ ranh giới lâm nghiệp tỉnh Cà Mau mới sau quyết định sáp nhập tỉnh Cà Mau với tỉnh Bạc Liêu cũ theo Nghị quyết số 1278/NQ-UBTVQH15 ngày 24/10/2024, có hiệu lực từ 01/07/2025 (162,469 ha). Thời kỳ phân tích từ tháng 1/2024 đến tháng 2/2025 với độ phân giải không gian 10m. Kết quả phát hiện diện tích mất rừng là 7,282 ha (4.48\% tổng diện tích); diện tích phục hồi rừng là 4,941 ha (3.04\% tổng diện tích); và các khu vực rừng ổn định cùng khu vực không phải rừng. Dữ liệu được lưu trữ dưới format GeoTIFF với hệ tọa độ EPSG:32648 (UTM Zone 48N).
 
 \subsection*{3.3. Ứng dụng web hiển thị kết quả trên Google Earth Engine}
 
-\begin{itemize}
-    \item URL: \url{https://ee-bonglantrungmuoi.projects.earthengine.app/view/giam-sat-bien-dong-rung-ca-mau}
-    \item Tính năng:
-    \begin{itemize}
-        \item Hiển thị bản đồ biến động rừng tương tác
-        \item Phân biệt màu sắc cho 4 lớp biến động
-        \item Cho phép người dùng phóng to/thu nhỏ, di chuyển bản đồ
-        \item Hiển thị thông tin metadata và chú giải
-    \end{itemize}
-    \item Công nghệ: Google Earth Engine Apps, JavaScript API
-    \item Truy cập: Công khai, không yêu cầu đăng nhập
-\end{itemize}
+Ứng dụng web được triển khai tại URL \url{https://ee-bonglantrungmuoi.projects.earthengine.app/view/giam-sat-bien-dong-rung-ca-mau} với các tính năng bao gồm: (1) hiển thị bản đồ biến động rừng tương tác; (2) phân biệt màu sắc cho 4 lớp biến động; (3) cho phép người dùng phóng to/thu nhỏ, di chuyển bản đồ; (4) hiển thị thông tin metadata và chú giải. Ứng dụng được phát triển bằng Google Earth Engine Apps và JavaScript API, có thể truy cập công khai không yêu cầu đăng nhập.
 
 \subsection*{3.4. Mã nguồn và tài liệu}
 
-\begin{itemize}
-    \item Mã nguồn tiền xử lý dữ liệu S1/S2 trên Google Earth Engine (JavaScript)
-    \item Mã nguồn huấn luyện mô hình CNN (Python, PyTorch)
-    \item Scripts phân loại và xuất kết quả
-    \item Tài liệu hướng dẫn sử dụng
-    \item Báo cáo kỹ thuật chi tiết (tài liệu này)
-\end{itemize}
+Sản phẩm bao gồm mã nguồn tiền xử lý dữ liệu S1/S2 trên Google Earth Engine (JavaScript); mã nguồn huấn luyện mô hình CNN (Python, PyTorch); scripts phân loại và xuất kết quả; tài liệu hướng dẫn sử dụng; và báo cáo kỹ thuật chi tiết (tài liệu này).

@@ -8,53 +8,17 @@ Nghiên cứu và phát triển mô hình học sâu trong giám sát biến đ�
 
 Trong quá trình thực tập tại Công ty TNHH Tư vấn và Phát triển Đồng Xanh, em đã tham gia thực hiện các nội dung sau:
 
-\begin{enumerate}
-    \item \textbf{Nghiên cứu tổng quan về vấn đề biến động rừng:}
-    \begin{itemize}
-        \item Tìm hiểu tình hình mất rừng toàn cầu và Việt Nam
-        \item Nghiên cứu vai trò của rừng ngập mặn tại tỉnh Cà Mau
-        \item Tìm hiểu các phương pháp giám sát rừng truyền thống và hiện đại
-    \end{itemize}
+(1) \textbf{Nghiên cứu tổng quan về vấn đề biến động rừng:} Tìm hiểu tình hình mất rừng toàn cầu và Việt Nam, nghiên cứu vai trò của rừng ngập mặn tại tỉnh Cà Mau, và tìm hiểu các phương pháp giám sát rừng truyền thống và hiện đại.
 
-    \item \textbf{Nghiên cứu công nghệ viễn thám và học sâu:}
-    \begin{itemize}
-        \item Nghiên cứu về vệ tinh Sentinel-1 (dữ liệu radar SAR) và Sentinel-2 (dữ liệu quang học)
-        \item Tìm hiểu các chỉ số thực vật (NDVI, NBR, NDMI)
-        \item Nghiên cứu kiến trúc mạng nơ-ron tích chập (CNN) và ứng dụng trong phân loại ảnh viễn thám
-        \item Tổng quan các nghiên cứu liên quan về giám sát rừng bằng deep learning
-    \end{itemize}
+(2) \textbf{Nghiên cứu công nghệ viễn thám và học sâu:} Nghiên cứu về vệ tinh Sentinel-1 (dữ liệu radar SAR) và Sentinel-2 (dữ liệu quang học), tìm hiểu các chỉ số thực vật (NDVI, NBR, NDMI), nghiên cứu kiến trúc mạng nơ-ron tích chập (CNN) và ứng dụng trong phân loại ảnh viễn thám, cũng như tổng quan các nghiên cứu liên quan về giám sát rừng bằng deep learning.
 
-    \item \textbf{Thu thập và xử lý dữ liệu:}
-    \begin{itemize}
-        \item Thu thập dữ liệu Sentinel-1 và Sentinel-2 trên nền tảng Google Earth Engine
-        \item Tiền xử lý dữ liệu: lọc mây, chọn thời điểm mùa khô, tính toán các chỉ số thực vật
-        \item Tạo bộ dữ liệu mẫu với 2,630 điểm ground truth thuộc 4 lớp: Rừng ổn định, Mất rừng, Phi rừng, Phục hồi rừng
-        \item Trích xuất 27 đặc trưng từ hai nguồn dữ liệu
-    \end{itemize}
+(3) \textbf{Thu thập và xử lý dữ liệu:} Thu thập dữ liệu Sentinel-1 và Sentinel-2 trên nền tảng Google Earth Engine; tiền xử lý dữ liệu bao gồm lọc mây, chọn thời điểm mùa khô, tính toán các chỉ số thực vật; tạo bộ dữ liệu mẫu với 2,630 điểm ground truth thuộc 4 lớp (Rừng ổn định, Mất rừng, Phi rừng, Phục hồi rừng); và trích xuất 27 đặc trưng từ hai nguồn dữ liệu.
 
-    \item \textbf{Phát triển mô hình học sâu:}
-    \begin{itemize}
-        \item Thiết kế kiến trúc mạng CNN với 36,676 tham số
-        \item Thực hiện cross-validation 5-fold để tối ưu siêu tham số
-        \item Huấn luyện mô hình trên tập dữ liệu huấn luyện (80\%)
-        \item Đánh giá mô hình trên tập kiểm tra (20\%)
-    \end{itemize}
+(4) \textbf{Phát triển mô hình học sâu:} Thiết kế kiến trúc mạng CNN với 36,676 tham số, thực hiện cross-validation 5-fold để tối ưu siêu tham số, huấn luyện mô hình trên tập dữ liệu huấn luyện (80\%), và đánh giá mô hình trên tập kiểm tra (20\%).
 
-    \item \textbf{Đánh giá và triển khai:}
-    \begin{itemize}
-        \item Phân tích kết quả: độ chính xác 98.86\%, ROC-AUC 99.98\%
-        \item Áp dụng mô hình phân loại toàn bộ vùng nghiên cứu (162,469 ha)
-        \item Phát hiện 7,282 ha mất rừng (4.48\%) và 4,941 ha phục hồi rừng (3.04\%)
-        \item Phát triển ứng dụng web hiển thị kết quả trên Google Earth Engine
-    \end{itemize}
+(5) \textbf{Đánh giá và triển khai:} Phân tích kết quả với độ chính xác 98.86\% và ROC-AUC 99.98\%; áp dụng mô hình phân loại toàn bộ vùng nghiên cứu (162,469 ha); phát hiện 7,282 ha mất rừng (4.48\%) và 4,941 ha phục hồi rừng (3.04\%); và phát triển ứng dụng web hiển thị kết quả trên Google Earth Engine.
 
-    \item \textbf{Viết báo cáo và tài liệu:}
-    \begin{itemize}
-        \item Viết báo cáo chi tiết về toàn bộ quá trình nghiên cứu
-        \item Tổng hợp tài liệu tham khảo và trích dẫn khoa học
-        \item Chuẩn bị các biểu đồ, bảng số liệu, và hình ảnh minh họa
-    \end{itemize}
-\end{enumerate}
+(6) \textbf{Viết báo cáo và tài liệu:} Viết báo cáo chi tiết về toàn bộ quá trình nghiên cứu, tổng hợp tài liệu tham khảo và trích dẫn khoa học, cũng như chuẩn bị các biểu đồ, bảng số liệu, và hình ảnh minh họa.
 
 \section*{Khu vực nghiên cứu}
 
