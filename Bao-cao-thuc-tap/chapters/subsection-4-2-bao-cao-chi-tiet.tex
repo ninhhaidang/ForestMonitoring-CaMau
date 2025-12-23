@@ -16,7 +16,18 @@ Thay vì đưa trực tiếp ảnh thô vào mô hình, nghiên cứu đã tiế
     \label{fig:pairplot_delta}
 \end{figure}
 
+Kết quả phân tích phân bố cho thấy các chỉ số thực vật delta ($\Delta$NDVI, $\Delta$NBR, $\Delta$NDMI) thể hiện khả năng phân biệt vượt trội giữa các lớp biến động, trong khi các kênh ra-đa ($\Delta$VV, $\Delta$VH) có sự chồng chéo đáng kể nhưng vẫn mang lại thông tin bổ sung giá trị trong điều kiện mây che phủ.
+
 \subsection{Phương pháp nghiên cứu}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{img/flowchart.png}
+    \caption{Sơ đồ quy trình tổng quát của nghiên cứu}
+    \label{fig:flowchart}
+\end{figure}
+
+Quy trình nghiên cứu tổng thể được thiết kế gồm năm giai đoạn chính: (1) Thu thập và tiền xử lý dữ liệu vệ tinh đa nguồn, (2) Trích xuất hệ đặc trưng tối ưu, (3) Xây dựng bộ dữ liệu mẫu huấn luyện, (4) Huấn luyện và tinh chỉnh mô hình học sâu, và (5) Áp dụng mô hình để thành lập bản đồ biến động rừng.
 
 Quy trình chuẩn bị dữ liệu huấn luyện được thực hiện cẩn trọng để đảm bảo tính đại diện và khách quan. Dữ liệu thực địa gồm 2.630 điểm mẫu được thu thập và dán nhãn thủ công cho bốn lớp đối tượng: Rừng ổn định, Mất rừng, Phi rừng và Phục hồi rừng. Các điểm mẫu này được phân bố đều trên toàn vùng nghiên cứu để tránh thiên lệch không gian.
 
@@ -41,18 +52,31 @@ Quy trình chuẩn bị dữ liệu huấn luyện được thực hiện cẩn 
 \end{tabular}
 \end{table}
 
+Bộ dữ liệu thực địa bao gồm 2.630 điểm mẫu được biên tập kỹ lưỡng, với sự phân bố tương đối cân bằng giữa bốn lớp đối tượng nghiên cứu. Việc đảm bảo cân bằng dữ liệu đóng vai trò quan trọng trong việc hạn chế hiện tượng thiên lệch (bias) của mô hình về phía các lớp chiếm đa số.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{chapter3/samples.png}
-\caption{Bản đồ phân bố không gian các điểm dữ liệu thực địa trên khu vực nghiên cứu tỉnh Cà Mau}
+\caption{Bản đồ phân bố các điểm dữ liệu thực địa trên khu vực nghiên cứu tỉnh Cà Mau}
 \label{fig:ground_truth_map}
 \end{figure}
 
-Để khai thác thông tin ngữ cảnh không gian, thay vì phân loại từng điểm ảnh độc lập, nghiên cứu sử dụng phương pháp trích xuất các ô (patch) kích thước $3 \times 3$ điểm ảnh xung quanh mỗi điểm mẫu. Như vậy, mỗi mẫu dữ liệu đầu vào là một khối tensor có kích thước $(27, 3, 3)$. Trước khi đưa vào mô hình, toàn bộ dữ liệu được chuẩn hóa theo phương pháp Z-score (trừ đi trung bình và chia cho độ lệch chuẩn) để đưa các đặc trưng về cùng một thang đo, giúp quá trình tối ưu hóa hội tụ nhanh hơn.
+Mạng lưới điểm mẫu được thiết lập phân tán rộng khắp trên toàn bộ phạm vi địa lý của khu vực nghiên cứu, bao gồm các vùng sinh thái đặc trưng khác nhau. Chiến lược lấy mẫu này đảm bảo tính đại diện về mặt không gian cho các loại hình biến động rừng, tăng cường khả năng tổng quát hóa của mô hình.
 
-Dữ liệu được chia thành hai tập độc lập: tập huấn luyện/kiểm định (80\%) và tập kiểm tra (20\%). Việc phân chia được thực hiện theo phương pháp phân tầng (stratified sampling) để đảm bảo tỷ lệ các lớp trong mỗi tập con tương đương với tập dữ liệu gốc. Tập kiểm tra được giữ hoàn toàn riêng biệt và chỉ được sử dụng một lần duy nhất để đánh giá hiệu năng cuối cùng của mô hình.
+Để khai thác thông tin ngữ cảnh không gian, thay vì phân loại từng điểm ảnh độc lập, nghiên cứu sử dụng phương pháp trích xuất các ô kích thước $3 \times 3$ điểm ảnh xung quanh mỗi điểm mẫu. Như vậy, mỗi mẫu dữ liệu đầu vào là một khối tensor có kích thước $(27, 3, 3)$. Trước khi đưa vào mô hình, toàn bộ dữ liệu được chuẩn hóa theo phương pháp Z-score để đưa các đặc trưng về cùng một thang đo, giúp quá trình tối ưu hóa hội tụ nhanh hơn.
 
-Nghiên cứu đề xuất một kiến trúc mạng nơ-ron tích chập (CNN) được thiết kế riêng (custom architecture) cho bài toán này, tối ưu hóa sự cân bằng giữa độ chính xác và chi phí tính toán. Kiến trúc mạng bao gồm các thành phần chính sau:
+Dữ liệu được chia thành hai tập độc lập: tập huấn luyện/kiểm định (80\%) và tập kiểm tra (20\%). Việc phân chia được thực hiện theo phương pháp phân tầng để đảm bảo tỷ lệ các lớp trong mỗi tập con tương đương với tập dữ liệu gốc. Tập kiểm tra được giữ hoàn toàn riêng biệt và chỉ được sử dụng một lần duy nhất để đánh giá hiệu năng cuối cùng của mô hình.
+
+Nghiên cứu đề xuất một kiến trúc mạng nơ-ron tích chập được thiết kế riêng cho bài toán này, tối ưu hóa sự cân bằng giữa độ chính xác và chi phí tính toán. Kiến trúc mạng bao gồm các thành phần chính sau:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{img/cnn_architecture.png}
+    \caption{Sơ đồ kiến trúc mạng CNN đề xuất}
+    \label{fig:cnn_architecture}
+\end{figure}
+
+Kiến trúc mạng nơ-ron tích chập (CNN) đề xuất được thiết kế tối ưu cho dữ liệu viễn thám độ phân giải trung bình, kết hợp các kỹ thuật hiện đại như Global Average Pooling và Dropout để kiểm soát hiện tượng quá khớp (overfitting) trên tập dữ liệu mẫu hạn chế, đồng thời đảm bảo hiệu suất tính toán.
 
 Khối tích chập đầu tiên bao gồm lớp tích chập (Convolution) với 64 bộ lọc kích thước $3 \times 3$, tiếp theo là lớp chuẩn hóa theo lô (Batch Normalization) và hàm kích hoạt ReLU. Lớp tích chập này có nhiệm vụ trích xuất các đặc trưng không gian và quang phổ sơ cấp từ dữ liệu đầu vào. Ngay sau đó là lớp Dropout 2D với tỷ lệ 0.7, giúp ngắt ngẫu nhiên các kết nối để ngăn ngừa hiện tượng quá khớp (overfitting) - một vấn đề thường gặp khi huấn luyện mạng sâu trên tập dữ liệu nhỏ.
 
@@ -82,6 +106,8 @@ Trước khi huấn luyện mô hình cuối cùng, một loạt các thí nghi�
 \hline
 \end{tabular}
 \end{table}
+
+Các thực nghiệm đánh giá kích thước cửa sổ trượt (patch size) cho thấy kích thước 3x3 điểm ảnh đạt hiệu suất phân loại tối ưu (Accuracy 98,86\%). Kết quả này chỉ ra rằng ngữ cảnh không gian cục bộ trong phạm vi 30m x 30m là phù hợp nhất để đặc tả các đối tượng rừng ngập mặn vốn có tính phân mảnh cao tại khu vực nghiên cứu, trong khi các kích thước lớn hơn có xu hướng bị nhiễu từ các đối tượng lân cận.
 
 \begin{figure}[H]
     \centering
@@ -114,6 +140,8 @@ Trước khi huấn luyện mô hình cuối cùng, một loạt các thí nghi�
     \label{fig:patch_size_comparison}
 \end{figure}
 
+Biểu đồ so sánh độ chính xác xác nhận xu hướng giảm dần của hiệu suất khi kích thước patch tăng lên hoặc giảm xuống so với kích thước tối ưu 3x3. Điều này củng cố lựa chọn kích thước đầu vào cho mô hình, cân bằng giữa việc nắm bắt thông tin ngữ cảnh và duy trì độ chi tiết của đối tượng.
+
 Nghiên cứu cũng tiến hành đánh giá vai trò của từng nguồn dữ liệu thông qua phương pháp loại trừ (ablation study). Kết quả chỉ ra rằng nếu chỉ sử dụng đơn lẻ dữ liệu quang học Sentinel-2, độ chính xác chỉ đạt 93,42\%. Khi kết hợp thêm dữ liệu radar Sentinel-1, độ chính xác tăng vọt lên 98,86\%. Điều này khẳng định giả thuyết ban đầu rằng sự kết hợp dữ liệu đa nguồn mang lại thông tin bổ sung quan trọng: tín hiệu quang học phản ánh đặc tính sinh học của lá cây, trong khi tín hiệu radar phản ánh cấu trúc vật lý của thân và tán rừng.
 
 \begin{table}[H]
@@ -134,6 +162,8 @@ Chỉ Sentinel-1 (trước + sau + delta) & 6 & 83,27\% & 91,45\% \\
 \hline
 \end{tabular}
 \end{table}
+
+Phân tích định lượng vai trò của từng nguồn dữ liệu khẳng định tính ưu việt của phương pháp đa nguồn. Sự kết hợp giữa thông tin quang phổ từ Sentinel-2 và thông tin cấu trúc từ Sentinel-1 giúp cải thiện đáng kể độ chính xác phân loại, đặc biệt trong việc giảm thiểu sự nhầm lẫn giữa các đối tượng có đặc điểm phổ tương tự.
 
 \begin{figure}[H]
     \centering
@@ -166,6 +196,8 @@ Chỉ Sentinel-1 (trước + sau + delta) & 6 & 83,27\% & 91,45\% \\
     \label{fig:data_sources_comparison}
 \end{figure}
 
+Kết quả so sánh trực quan minh họa rõ lợi ích của việc tích hợp dữ liệu. Nhóm đặc trưng kết hợp (S1+S2) đạt được sự ổn định cao nhất và vượt trội hơn hẳn so với các trường hợp chỉ sử dụng một nguồn dữ liệu duy nhất, khẳng định giả thuyết về tính bổ sung giữa hai loại cảm biến.
+
 Quá trình huấn luyện sử dụng chiến lược kiểm định chéo 5 phần (5-fold cross-validation) để đảm bảo độ tin cậy. Kết quả trung bình cho thấy độ chính xác ổn định ở mức 98,86\% với độ lệch chuẩn rất thấp, chứng tỏ mô hình không phụ thuộc vào cách chia dữ liệu.
 
 \begin{figure}[H]
@@ -174,6 +206,8 @@ Quá trình huấn luyện sử dụng chiến lược kiểm định chéo 5 ph
 \caption{Diễn biến loss và accuracy trong quá trình huấn luyện mô hình cuối cùng}
 \label{fig:final_training}
 \end{figure}
+
+Diễn biến của hàm mất mát (loss) và độ chính xác (accuracy) trong quá trình huấn luyện cho thấy mô hình hội tụ ổn định sau khoảng 70 epoch. Không quan sát thấy dấu hiệu của hiện tượng quá khớp nghiêm trọng, chứng tỏ các kỹ thuật điều chuẩn (regularization) đã được áp dụng hiệu quả.
 
 Trên tập kiểm tra độc lập, mô hình đạt độ chính xác toàn cục (Overall Accuracy) là 98,86\% và chỉ số ROC-AUC đạt 99,98\%. Phân tích chi tiết qua ma trận nhầm lẫn (Confusion Matrix) cho thấy mô hình phân loại gần như tuyệt đối chính xác các lớp Phi rừng và Phục hồi rừng (độ chính xác 100\%). Một số ít sự nhầm lẫn (tỷ lệ lỗi khoảng 1.1\%) xảy ra giữa lớp Rừng ổn định và Mất rừng.
 
@@ -257,6 +291,8 @@ Trên tập kiểm tra độc lập, mô hình đạt độ chính xác toàn c�
     \label{fig:confusion_heatmap}
 \end{figure}
 
+Kết quả đánh giá trên tập kiểm tra độc lập cho thấy mô hình đạt độ tin cậy cao với tỷ lệ phân loại sai thấp (1,14\%). Các sai số chủ yếu tập trung vào việc phân biệt giữa lớp Rừng ổn định và Mất rừng, nguyên nhân có thể do sự tương đồng về đặc trưng phổ tại các khu vực rừng suy thoái nhẹ hoặc các điểm ảnh hỗn hợp tại vùng biên.
+
 Nguyên nhân chủ yếu do các khu vực rừng bị suy thoái nhẹ hoặc mới trồng lại có đặc điểm phổ và cấu trúc chưa rõ ràng, nằm ở ranh giới giữa hai trạng thái này. Tuy nhiên, tỷ lệ lỗi này là hoàn toàn chấp nhận được trong bài toán giám sát diện rộng.
 
 Mô hình đã huấn luyện được áp dụng để phân loại toàn bộ khu vực quy hoạch lâm nghiệp tỉnh Cà Mau với diện tích hơn 162.000 ha. Bản đồ kết quả cho thấy diện tích rừng ổn định chiếm phần lớn (khoảng 74,3\%), tập trung chủ yếu ở các khu vực rừng phòng hộ và Vườn Quốc gia Mũi Cà Mau. Diện tích mất rừng được phát hiện khoảng 7.282 ha (tương đương 4,48\%), phân bố rải rác và thường gắn liền với các khu vực ven biển hoặc xen kẽ trong các vùng nuôi trồng thủy sản. Ngược lại, diện tích rừng phục hồi đạt khoảng 4.941 ha (3,04\%).
@@ -268,6 +304,8 @@ Mô hình đã huấn luyện được áp dụng để phân loại toàn bộ 
     \label{fig:classification_map}
 \end{figure}
 
+Bản đồ biến động rừng phản ánh cấu trúc không gian của lớp phủ, với diện tích rừng ổn định tập trung chủ yếu tại các khu vực Vườn Quốc gia và rừng phòng hộ. Ngược lại, các điểm nóng mất rừng phân bố phân tán, thường gắn liền với các khu vực tiếp giáp với hoạt động nuôi trồng thủy sản và ven biển.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.95\textwidth]{img/chapter3/VQG_Mui_Ca_Mau.png}
@@ -275,7 +313,9 @@ Mô hình đã huấn luyện được áp dụng để phân loại toàn bộ 
     \label{fig:vqg_mui_ca_mau}
 \end{figure}
 
-Kết quả này cho thấy một xu hướng biến động phức tạp: mặc dù có sự mất mát rừng do các nguyên nhân tự nhiên (sạt lở) và nhân sinh (chuyển đổi mục đích sử dụng), nhưng cũng có những tín hiệu tích cực từ việc phục hồi rừng.
+Tại khu vực trọng điểm Vườn Quốc gia Mũi Cà Mau, kết quả phân loại thể hiện chi tiết các biến động quy mô nhỏ. Mô hình nhận diện chính xác các khu vực mất rừng dọc theo hệ thống kênh mương và bờ bao, cũng như ghi nhận sự phục hồi tự nhiên của thảm thực vật tại các bãi bồi ven biển.
+
+Kết quả này cho thấy một xu hướng biến động phức tạp: mặc dù có sự mất mát rừng do các nguyên nhân tự nhiên và nhân sinh (chuyển đổi mục đích sử dụng), nhưng cũng có những tín hiệu tích cực từ việc phục hồi rừng.
 
 \begin{figure}[H]
     \centering
@@ -299,6 +339,8 @@ Kết quả này cho thấy một xu hướng biến động phức tạp: mặc
     \caption{Tỷ lệ diện tích các lớp phân loại}
     \label{fig:pie_chart}
 \end{figure}
+
+Thống kê diện tích cho thấy xu hướng suy giảm ròng của tài nguyên rừng trong giai đoạn nghiên cứu, với tỷ lệ mất rừng (4,48\%) cao hơn so với tỷ lệ phục hồi (3,04\%). Sự chênh lệch này đặt ra yêu cầu cấp thiết về các biện pháp quản lý và bảo vệ rừng chặt chẽ hơn.
 
 Bản đồ biến động độ phân giải 10m cung cấp cái nhìn chi tiết chưa từng có, cho phép các nhà quản lý xác định chính xác vị trí các điểm nóng về phá rừng cũng như đánh giá hiệu quả của các dự án trồng rừng. So sánh với các nghiên cứu khác cho thấy phương pháp đề xuất có độ chính xác cạnh tranh cao.
 
@@ -332,4 +374,6 @@ Bản đồ biến động độ phân giải 10m cung cấp cái nhìn chi ti�
     \caption{So sánh Accuracy với các nghiên cứu trước đó}
     \label{fig:literature_comparison}
 \end{figure}
+
+So sánh tương quan với các nghiên cứu trước đây cho thấy phương pháp đề xuất đạt độ chính xác vượt trội (98,86\%). Sự cải thiện này chủ yếu đến từ việc khai thác dữ liệu ảnh vệ tinh độ phân giải cao (10m) kết hợp với kiến trúc học sâu được tối ưu hóa cho điều kiện địa phương, khắc phục được các hạn chế của các sản phẩm toàn cầu có độ phân giải thấp.
 
