@@ -1,0 +1,58 @@
+\unnumberedchapter{PHẦN 2: KHÁI QUÁT BÁO CÁO THỰC TẬP}
+
+\section{Giới thiệu chung}
+\subsection{Tên đề tài}
+\textbf{Tên đề tài (Tiếng Việt):} Giám sát biến động rừng tỉnh Cà Mau sử dụng dữ liệu viễn thám và mạng nơ ron nhân tạo.
+
+\subsection{Đơn vị thực tập}
+\begin{itemize}
+    \item \textbf{Tên đơn vị thực tập:} Công ty TNHH Tư vấn và Phát triển Đồng Xanh (Green Field Development - GFD)
+    \item \textbf{Địa chỉ:} 14 Trần Hưng Đạo, Phường Phan Chu Trinh, Quận Hoàn Kiếm, Thành phố Hà Nội
+    \item \textbf{Lĩnh vực hoạt động:} Công ty chuyên về tư vấn và phát triển các giải pháp công nghệ trong lĩnh vực quản lý tài nguyên thiên nhiên, nông nghiệp bền vững và giám sát môi trường. Công ty là đối tác của Chi cục Kiểm lâm tỉnh Cà Mau trong các dự án giám sát và quản lý tài nguyên rừng.
+    \item \textbf{Giám sát viên/Người hướng dẫn:} ThS. Nguyễn Văn A - Giám đốc Dự án Giám sát Rừng
+    \item \textbf{Nhiệm vụ được giao:} Nghiên cứu và phát triển mô hình học sâu để giám sát biến động rừng tỉnh Cà Mau sử dụng dữ liệu viễn thám đa nguồn (Sentinel-1 và Sentinel-2).
+    \item \textbf{Thời gian thực tập:} 3 tháng (từ ngày 15/9/2024 đến ngày 15/12/2024)
+\end{itemize}
+
+\section{Khái quát nội dung thực tập}
+\subsection{Mục đích thực tập}
+Nghiên cứu và phát triển mô hình học sâu trong giám sát biến động rừng sử dụng dữ liệu viễn thám đa nguồn, nhằm áp dụng công nghệ trí tuệ nhân tạo và viễn thám vào bài toán thực tiễn về bảo vệ và quản lý tài nguyên rừng tại Việt Nam.
+
+\subsection{Các nội dung đã tham gia}
+Trong quá trình thực tập tại Công ty TNHH Tư vấn và Phát triển Đồng Xanh, em đã tham gia thực hiện các nội dung sau:
+
+(1) \textbf{Nghiên cứu tổng quan về vấn đề biến động rừng:} Tìm hiểu tình hình mất rừng toàn cầu và Việt Nam, nghiên cứu vai trò của rừng ngập mặn tại tỉnh Cà Mau, và tìm hiểu các phương pháp giám sát rừng truyền thống và hiện đại.
+
+(2) \textbf{Nghiên cứu công nghệ viễn thám và học sâu:} Nghiên cứu về vệ tinh Sentinel-1 (dữ liệu radar SAR) và Sentinel-2 (dữ liệu quang học), tìm hiểu các chỉ số thực vật (NDVI, NBR, NDMI), nghiên cứu kiến trúc mạng nơ-ron tích chập (CNN) và ứng dụng trong phân loại ảnh viễn thám.
+
+(3) \textbf{Thu thập và xử lý dữ liệu:} Thu thập dữ liệu Sentinel-1 và Sentinel-2 trên nền tảng Google Earth Engine; tiền xử lý dữ liệu bao gồm lọc mây, tính toán các chỉ số thực vật; tạo bộ dữ liệu mẫu với 2,630 điểm ground truth thuộc 4 lớp; và trích xuất 27 đặc trưng.
+
+(4) \textbf{Phát triển mô hình học sâu:} Thiết kế kiến trúc mạng CNN với 36,676 tham số, thực hiện cross-validation 5-fold để tối ưu siêu tham số, huấn luyện và đánh giá mô hình.
+
+(5) \textbf{Đánh giá và triển khai:} Phân tích kết quả với độ chính xác cao; áp dụng mô hình phân loại toàn bộ vùng nghiên cứu (162,469 ha); và phát triển ứng dụng web hiển thị kết quả.
+
+(6) \textbf{Viết báo cáo và tài liệu:} Viết báo cáo chi tiết, tổng hợp tài liệu tham khảo, chuẩn bị biểu đồ và hình ảnh minh họa.
+
+\section{Kết quả đạt được}
+Đồ án đã hoàn thành các mục tiêu đề ra với kết quả đạt được ở mức độ cao:
+\begin{itemize}
+    \item \textbf{Xây dựng bộ dữ liệu chất lượng:} Thu thập và xử lý thành công dữ liệu Sentinel-1 và Sentinel-2 đa thời gian (01/2024 và 02/2025), trích xuất 27 đặc trưng và 2.630 điểm ground truth phân bố cân bằng cho 4 lớp.
+    \item \textbf{Mô hình tối ưu:} Xây dựng thành công kiến trúc CNN với 36.676 tham số, patch size 3x3 tối ưu, đạt accuracy 98.86\% và ROC-AUC 99.98\% trên tập kiểm tra.
+    \item \textbf{Hiệu quả dữ liệu đa nguồn:} Chứng minh việc kết hợp Sentinel-1 và Sentinel-2 cải thiện accuracy 5.44\% so với chỉ dùng Sentinel-2.
+    \item \textbf{Sản phẩm thực tiễn:} Bản đồ biến động rừng toàn tỉnh Cà Mau (162.469 ha) và ứng dụng web Google Earth Engine trực quan hóa kết quả.
+    \item \textbf{Kết quả thống kê:} Phát hiện 7.282 ha mất rừng (4.48\%) và 4.941 ha phục hồi rừng (3.04\%).
+\end{itemize}
+
+\section{Kinh nghiệm rút ra}
+Qua quá trình thực hiện đồ án và đối mặt với các thách thức, em đã rút ra được những bài học kinh nghiệm quý báu:
+
+\begin{itemize}
+    \item \textbf{Về dữ liệu thực địa:} Tầm quan trọng của việc kiểm chứng thực địa (ground-truthing) để đánh giá độ tin cậy của mô hình. Dữ liệu ground truth chất lượng cao là yếu tố quyết định đến hiệu suất của mô hình học máy.
+    \item \textbf{Về tối ưu hóa tính toán:} Kinh nghiệm xử lý dữ liệu lớn (Big Data) trong viễn thám. Việc dự đoán trên toàn vùng nghiên cứu rộng lớn đòi hỏi phải tối ưu hóa code, sử dụng xử lý theo lô (batch processing) và quản lý bộ nhớ hiệu quả.
+    \item \textbf{Về mô hình hóa:} Sự cân bằng (trade-off) giữa độ phức tạp của mô hình và khả năng tổng quát hóa (generalization), đặc biệt khi làm việc với bộ dữ liệu nhỏ. Các kỹ thuật như Dropout và Data Augmentation là rất cần thiết.
+    \item \textbf{Về giải thích mô hình:} Nhận thức rõ về hạn chế "hộp đen" của Deep Learning và sự cần thiết của các phương pháp XAI (Explainable AI) để tăng tính minh bạch và thuyết phục của kết quả.
+\end{itemize}
+
+\section{Kết luận}
+Đồ án đã xây dựng thành công quy trình giám sát biến động rừng tỉnh Cà Mau sử dụng công nghệ viễn thám đa nguồn kết hợp với mô hình học sâu CNN. Kết quả nghiên cứu khẳng định tính ưu việt của việc kết hợp dữ liệu Sentinel-1 và Sentinel-2 cũng như hiệu quả của mô hình CNN được thiết kế tối ưu. Sản phẩm của đồ án gồm bản đồ biến động rừng và ứng dụng web có giá trị thực tiễn cao, hỗ trợ đắc lực cho công tác quản lý và bảo vệ rừng. Tuy nhiên, nghiên cứu cũng mở ra các hướng phát triển tiếp theo về mở rộng chuỗi thời gian, tăng cường kiểm chứng thực địa và áp dụng các mô hình tiên tiến hơn để khắc phục những hạn chế còn tồn tại.
+\newpage
