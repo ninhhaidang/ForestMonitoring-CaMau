@@ -25,7 +25,7 @@ Chương trình Copernicus của Liên minh Châu Âu là hệ thống quan sát
 
 Sentinel-1 là vệ tinh mang cảm biến ra-đa khẩu độ tổng hợp hoạt động ở băng tần C với tần số 5.405 GHz (bước sóng 5.55 cm). Trong chế độ IW, Sentinel-1 thu nhận dữ liệu ở hai chế độ phân cực VV và VH với độ phân giải không gian 10m và độ rộng dải quét 250 km \citeen{esa2024s1}. Nguyên lý hoạt động của ra-đa dựa trên việc phát xung sóng vi ba và ghi nhận tín hiệu tán xạ ngược từ bề mặt. Cường độ tán xạ ngược phụ thuộc vào độ nhám bề mặt, hằng số điện môi và cấu trúc đối tượng. Đối với thảm thực vật, phân cực VV nhạy với tán xạ bề mặt liên quan đến độ ẩm đất, trong khi VH nhạy với tán xạ thể tích từ cấu trúc tán lá \citeen{torres2012}. Ưu điểm của ra-đa là khả năng xuyên qua mây và hoạt động độc lập với điều kiện chiếu sáng.
 
-Sentinel-2 mang cảm biến quang học đa phổ thu nhận ảnh ở 13 dải phổ từ vùng nhìn thấy đến hồng ngoại sóng ngắn (443--2190 nm). Độ phân giải không gian thay đổi theo dải phổ: 10m cho các dải B2, B3, B4, B8; 20m cho B5, B6, B7, B8a, B11, B12; và 60m cho B1, B9, B10 \citeen{esa2024s2}. Với 13 dải phổ bao phủ nhiều vùng bước sóng khác nhau, có thể phân biệt các loại lớp phủ đất dựa trên đặc tính phản xạ riêng biệt của từng đối tượng \citeen{khatami2016}. Dữ liệu đa phổ này đặc biệt phù hợp để tính toán các chỉ số thực vật phục vụ giám sát biến động rừng. Bảng \ref{tab:sentinel_comparison} tổng hợp các thông số kỹ thuật chính của hai vệ tinh này.
+Sentinel-2 mang cảm biến quang học đa phổ thu nhận ảnh ở 13 dải phổ từ vùng nhìn thấy đến hồng ngoại sóng ngắn (443--2190 nm). Độ phân giải không gian thay đổi theo dải phổ: 10m cho các dải B2, B3, B4, B8; 20m cho B5, B6, B7, B8a, B11, B12; và 60m cho B1, B9, B10 \citeen{esa2024s2}. Với 13 dải phổ bao phủ nhiều vùng bước sóng khác nhau, có thể phân biệt các loại lớp phủ đất dựa trên đặc tính phản xạ riêng biệt của từng đối tượng. Dữ liệu đa phổ này đặc biệt phù hợp để tính toán các chỉ số thực vật phục vụ giám sát biến động rừng. Bảng \ref{tab:sentinel_comparison} tổng hợp các thông số kỹ thuật chính của hai vệ tinh này.
 
 \begin{table}[H]
 \centering
@@ -102,7 +102,7 @@ NDMI & (B8-B11)/(B8+B11) & [-1, 1] & Độ ẩm tán lá \\
 
 \subsection{Giám sát biến động rừng và tích hợp đa nguồn dữ liệu}
 
-Giám sát biến động rừng là quá trình xác định sự thay đổi về diện tích, cấu trúc hoặc trạng thái của rừng giữa hai hoặc nhiều thời điểm khác nhau \citeen{huang2021}. Phương pháp này dựa trên việc so sánh các đặc trưng viễn thám thu được từ các thời điểm khác nhau.
+Giám sát biến động rừng là quá trình xác định sự thay đổi về diện tích, cấu trúc hoặc trạng thái của rừng giữa hai hoặc nhiều thời điểm khác nhau. Phương pháp này dựa trên việc so sánh các đặc trưng viễn thám thu được từ các thời điểm khác nhau.
 
 Phương pháp phát hiện biến động dựa trên việc so sánh các đặc trưng giữa hai thời điểm, tính toán sự chênh lệch (delta) giữa ``các đặc trưng trước'' và ``các đặc trưng sau''. Các đặc trưng thời gian bao gồm các ``các đặc trưng trước'' thể hiện trạng thái rừng tại thời điểm $t_1$, các ``các đặc trưng sau'' thể hiện trạng thái rừng tại thời điểm $t_2$, và các ``đặc trưng delta'' biểu diễn biến đổi giữa hai thời điểm.
 

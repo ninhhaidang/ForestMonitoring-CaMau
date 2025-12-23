@@ -1,70 +1,24 @@
 \section*{2. Viết báo cáo chi tiết nội dung đã tiến hành trong quá trình thực tập}
 
-Em đã thực hiện toàn bộ quy trình nghiên cứu từ thu thập dữ liệu, xây dựng phương pháp, đến triển khai và đánh giá mô hình. Nội dung chi tiết được trình bày trong hai phần chính:
+Em đã thực hiện toàn bộ quy trình nghiên cứu từ thu thập dữ liệu, xây dựng phương pháp, đến triển khai và đánh giá mô hình. Nội dung chi tiết được trình bày theo hai khía cạnh chính: dữ liệu và phương pháp nghiên cứu, cùng với kết quả thực nghiệm.
 
-\subsection*{Phần A: Dữ liệu và Phương pháp nghiên cứu}
+\textbf{Về thu thập và tiền xử lý dữ liệu viễn thám.} Em đã thu thập và xử lý hai nguồn dữ liệu vệ tinh chính trên nền tảng Google Earth Engine. Dữ liệu Sentinel-2 (quang học) sử dụng sản phẩm S2\_SR\_HARMONIZED (Surface Reflectance Level-2A) với độ phân giải 10m tại hai thời điểm 30/01/2024 (T1 - kỳ trước) và 28/02/2025 (T2 - kỳ sau). Các kênh phổ được sử dụng bao gồm B4 (Red), B8 (NIR), B11 (SWIR1), và B12 (SWIR2). Các chỉ số thực vật được tính toán gồm NDVI, NBR, và NDMI. Quy trình tiền xử lý bao gồm lọc mây với ngưỡng 50\%, chuyển đổi sang giá trị phản xạ, tính các chỉ số thực vật, và mosaic các tiles thành ảnh liền mạch. Dữ liệu Sentinel-1 (ra-đa) sử dụng sản phẩm S1\_GRD (Ground Range Detected) với độ phân giải 10m tại thời điểm 04/02/2024 (T1) và 22/02/2025 (T2). Dữ liệu sử dụng phân cực VV (tán xạ bề mặt/độ ẩm) và VH (tán xạ thể tích/sinh khối) ở chế độ Interferometric Wide (IW) trên quỹ đạo đi xuống. Ưu điểm của dữ liệu này là khả năng xuyên qua mây và hoạt động cả ngày đêm. Dữ liệu đầu ra được xuất dưới định dạng GeoTIFF với hệ quy chiếu EPSG:32648 (UTM Zone 48N).
 
-\subsubsection*{A.1. Thu thập và tiền xử lý dữ liệu viễn thám}
+\textbf{Về bộ dữ liệu thực địa và trích xuất đặc trưng.} Công ty GFD đã cung cấp 2.630 điểm ground truth được thu thập qua khảo sát drone và số hóa trên QGIS, phân bố cân bằng theo 4 lớp: (1) Lớp 0 - Rừng ổn định với 656 điểm (24,9\%) là các vùng có rừng ở cả 2 kỳ; (2) Lớp 1 - Mất rừng với 650 điểm (24,7\%) là các vùng rừng chuyển thành không rừng; (3) Lớp 2 - Phi rừng ổn định với 664 điểm (25,3\%) là các vùng không rừng ở cả 2 kỳ; (4) Lớp 3 - Phục hồi rừng với 660 điểm (25,1\%) là các vùng không rừng chuyển thành rừng. Mỗi điểm dữ liệu được trích xuất dưới dạng patch 3×3 pixel (30m × 30m) với 27 kênh đặc trưng: (1) 21 đặc trưng từ Sentinel-2 bao gồm 4 band quang phổ (B4, B8, B11, B12) cộng 3 chỉ số (NDVI, NBR, NDMI), mỗi loại có 3 giá trị (T1, T2, và Δ = T2 - T1); (2) 6 đặc trưng từ Sentinel-1 bao gồm 2 phân cực (VV, VH), mỗi loại có 3 giá trị (T1, T2, Δ). Phân tích cho thấy các đặc trưng Delta (ΔNDVI, ΔNBR, ΔNDMI) có khả năng phân tách tốt nhất giữa các lớp: Mất rừng có giá trị âm (suy giảm thực vật), Phục hồi rừng có giá trị dương (gia tăng sinh khối), trong khi Rừng ổn định và Phi rừng tập trung quanh 0.
 
-Em đã thu thập và xử lý hai nguồn dữ liệu vệ tinh chính trên nền tảng Google Earth Engine:
+\textbf{Về kiến trúc mô hình CNN.} Em đã thiết kế một mạng CNN nhẹ với 36.676 tham số, phù hợp với bộ dữ liệu nhỏ (2.630 mẫu). Kiến trúc gồm: (1) Input là patch 3×3 pixel × 27 channels; (2) Conv1 gồm 64 filters với kernel 3×3, BatchNorm, ReLU và Dropout2D 70\% với tổng 15.680 tham số; (3) Conv2 gồm 32 filters với kernel 3×3, BatchNorm, ReLU và Dropout2D 70\% với tổng 18.496 tham số; (4) GAP (Global Average Pooling) chuyển đổi thành vector 32 chiều; (5) FC1 chuyển từ 32 sang 64 chiều với BatchNorm, ReLU và Dropout 70\% với tổng 2.240 tham số; (6) FC2 chuyển từ 64 sang 4 chiều (Output) với 260 tham số. Lý do thiết kế như sau: Số filter giảm dần (64→32) thay vì tăng để tránh quá khớp với dữ liệu nhỏ; Dropout 70\% (cao hơn mức thông thường 20--50\%) để cân bằng tỷ lệ mẫu/tham số thấp (72:1); Chỉ 2 lớp tích chập vì đủ cho patch 3×3 mà không quá phức tạp; Global Average Pooling thay vì Fully Connected truyền thống để giảm tham số.
 
-\textbf{Dữ liệu Sentinel-2 (quang học):} Sản phẩm S2\_SR\_HARMONIZED (Surface Reflectance Level-2A) với độ phân giải 10m tại hai thời điểm 30/01/2024 (T1 - kỳ trước) và 28/02/2025 (T2 - kỳ sau). Các kênh phổ được sử dụng bao gồm B4 (Red), B8 (NIR), B11 (SWIR1), và B12 (SWIR2). Các chỉ số thực vật được tính toán gồm NDVI, NBR, và NDMI. Quy trình tiền xử lý bao gồm lọc mây với ngưỡng 50\%, chuyển đổi sang giá trị phản xạ, tính các chỉ số thực vật, và mosaic các tiles thành ảnh liền mạch.
+\textbf{Về chuẩn bị dữ liệu và chiến lược huấn luyện.} Em áp dụng Z-score normalization với tham số (μ, σ) tính từ tập huấn luyện, sau đó áp dụng cho tập kiểm định và kiểm tra để đảm bảo tính nhất quán. Dữ liệu được chia thành 80\% (2.104 mẫu) cho huấn luyện và kiểm định với 5-Fold Cross Validation, và 20\% (526 mẫu) cho tập kiểm tra cuối cùng (không dùng trong huấn luyện). Tỷ lệ lớp được bảo tồn trong cả tập huấn luyện và kiểm tra. Các siêu tham số huấn luyện bao gồm: Epochs tối đa 200; Batch size 64; Learning rate khởi tạo 0,001; Optimizer AdamW với weight decay $10^{-3}$; Dropout rate 70\%; Early stopping với patience 15 epochs; Learning rate scheduler ReduceLROnPlateau. Quy trình huấn luyện thực hiện như sau: (1) Khởi tạo trọng số với Kaiming/He cho Conv và Xavier cho FC; (2) Thực hiện 5-Fold Cross Validation trên 80\% dữ liệu để đánh giá độ ổn định; (3) Huấn luyện cuối cùng trên toàn bộ 80\% với siêu tham số tối ưu; (4) Đánh giá trên 20\% tập kiểm tra cố định.
 
-\textbf{Dữ liệu Sentinel-1 (ra-đa):} Sản phẩm S1\_GRD (Ground Range Detected) với độ phân giải 10m tại thời điểm 04/02/2024 (T1) và 22/02/2025 (T2). Dữ liệu sử dụng phân cực VV (tán xạ bề mặt/độ ẩm) và VH (tán xạ thể tích/sinh khối) ở chế độ Interferometric Wide (IW) trên quỹ đạo đi xuống. Ưu điểm của dữ liệu này là khả năng xuyên qua mây và hoạt động cả ngày đêm.
+\textbf{Về áp dụng mô hình phân loại toàn vùng.} Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn bộ vùng nghiên cứu với phạm vi khoảng 16,2 triệu pixel (162.468 ha) khu vực quy hoạch lâm nghiệp Cà Mau. Quy trình thực hiện như sau: Với mỗi pixel, trích xuất patch 3×3 lân cận (mirror padding cho pixel biên), chuẩn hóa Z-score, đưa qua CNN, và chọn lớp có xác suất cao nhất (argmax). Quá trình được tối ưu hóa bằng cách xử lý theo lô 10.000 pixel và sử dụng mixed precision (FP16) để giảm bộ nhớ GPU. Output được lưu dưới dạng GeoTIFF (EPSG:32648, 10m).
 
-Dữ liệu đầu ra được xuất dưới định dạng GeoTIFF với hệ quy chiếu EPSG:32648 (UTM Zone 48N).
+\textbf{Về thiết lập và thử nghiệm mô hình.} Em đã thử nghiệm 4 kích thước patch khác nhau để đánh giá ảnh hưởng của ngữ cảnh không gian: (1) 1×1 đạt 98,23\% accuracy và 99,78\% ROC-AUC; (2) 3×3 đạt 98,86\% accuracy và 99,98\% ROC-AUC (tối ưu); (3) 5×5 đạt 98,67\% accuracy và 99,89\% ROC-AUC; (4) 7×7 đạt 98,29\% accuracy và 99,86\% ROC-AUC. Patch 3×3 cho kết quả tốt nhất do cân bằng giữa ngữ cảnh không gian và tránh nhiễu từ điểm lân cận xa. Các thử nghiệm về ảnh hưởng của nguồn dữ liệu bao gồm: (1) Chỉ S2 (delta) đạt 87,65\% accuracy; (2) S2 đầy đủ (T1+T2+Δ) đạt 93,42\% accuracy; (3) Chỉ S1 đạt 83,27\% accuracy; (4) S1 + S2 (tất cả) đạt 98,86\% accuracy và 99,98\% ROC-AUC (tối ưu). Kết hợp S1+S2 cải thiện 5,44\% so với chỉ dùng S2, chứng minh lợi ích của dữ liệu đa nguồn.
 
-\subsubsection*{A.2. Bộ dữ liệu thực địa và trích xuất đặc trưng}
+\textbf{Về kết quả Cross-Validation và đánh giá cuối cùng.} Kết quả 5-Fold Cross Validation cho thấy Accuracy trung bình đạt 98,48\% với độ lệch chuẩn ±0,36\% (dao động 98,10\%--99,05\%). Epoch tối ưu trung bình là 71 epoch với validation loss 0,0532. Kết quả ổn định cho thấy mô hình không bị quá khớp nhờ Dropout 70\% hiệu quả. Kết quả trên tập test cuối cùng (526 mẫu) cho thấy mô hình đạt Accuracy 98,86\% và ROC-AUC 99,98\%. Precision, Recall và F1-Score đều đạt 98,86\% (macro average).
 
-\textbf{Dữ liệu ground truth:} Công ty GFD đã cung cấp 2.630 điểm thực địa được thu thập qua khảo sát drone và số hóa trên QGIS, phân bố cân bằng theo 4 lớp: (1) Lớp 0 - Rừng ổn định với 656 điểm (24,9\%) là các vùng có rừng ở cả 2 kỳ; (2) Lớp 1 - Mất rừng với 650 điểm (24,7\%) là các vùng rừng chuyển thành không rừng; (3) Lớp 2 - Phi rừng ổn định với 664 điểm (25,3\%) là các vùng không rừng ở cả 2 kỳ; (4) Lớp 3 - Phục hồi rừng với 660 điểm (25,1\%) là các vùng không rừng chuyển thành rừng.
+\textbf{Về phân tích ma trận nhầm lẫn.} Tổng số lỗi: 6/526 mẫu (tỷ lệ lỗi 1,14\%). Chi tiết từng lớp như sau: Lớp 0 (Rừng ổn định) đạt Precision 96,99\%, Recall 98,47\%, F1 97,73\% với 2 False Positive và 2 False Negative (nhầm với Mất rừng). Lớp 1 (Mất rừng) đạt Precision 98,44\%, Recall 96,92\%, F1 97,67\% với 2 False Positive và 4 False Negative (nhầm với Rừng ổn định). Lớp 2 (Phi rừng ổn định) và Lớp 3 (Phục hồi rừng) đều đạt Precision, Recall, F1-Score 100\% mà không có lỗi phân loại. Nguyên nhân nhầm lẫn giữa Lớp 0 và Lớp 1 có thể do cả hai lớp đều có rừng ở ít nhất một thời điểm nên có sự tương đồng về phổ. Rừng suy thoái nhẹ có thể có phổ tương tự rừng ổn định. Ngoài ra, hiệu ứng biên (pixel hỗn hợp tại ranh giới) và biến động theo mùa của rừng ngập mặn cũng góp phần vào sự nhầm lẫn.
 
-\textbf{Trích xuất đặc trưng (27 features):} Mỗi điểm dữ liệu được trích xuất dưới dạng patch 3×3 pixel (30m × 30m) với 27 kênh đặc trưng: (1) 21 đặc trưng từ Sentinel-2 bao gồm 4 band quang phổ (B4, B8, B11, B12) cộng 3 chỉ số (NDVI, NBR, NDMI), mỗi loại có 3 giá trị (T1, T2, và Δ = T2 - T1); (2) 6 đặc trưng từ Sentinel-1 bao gồm 2 phân cực (VV, VH), mỗi loại có 3 giá trị (T1, T2, Δ).
-
-Phân tích cho thấy các đặc trưng Delta (ΔNDVI, ΔNBR, ΔNDMI) có khả năng phân tách tốt nhất giữa các lớp: Mất rừng có giá trị âm (suy giảm thực vật), Phục hồi rừng có giá trị dương (gia tăng sinh khối), trong khi Rừng ổn định và Phi rừng tập trung quanh 0.
-
-\subsubsection*{A.3. Kiến trúc mô hình CNN}
-
-Em đã thiết kế một mạng CNN nhẹ với 36.676 tham số, phù hợp với bộ dữ liệu nhỏ (2.630 mẫu). Kiến trúc gồm: (1) Input là patch 3×3 pixel × 27 channels; (2) Conv1 gồm 64 filters với kernel 3×3, BatchNorm, ReLU và Dropout2D 70\% với tổng 15.680 tham số; (3) Conv2 gồm 32 filters với kernel 3×3, BatchNorm, ReLU và Dropout2D 70\% với tổng 18.496 tham số; (4) GAP (Global Average Pooling) chuyển đổi thành vector 32 chiều; (5) FC1 chuyển từ 32 sang 64 chiều với BatchNorm, ReLU và Dropout 70\% với tổng 2.240 tham số; (6) FC2 chuyển từ 64 sang 4 chiều (Output) với 260 tham số.
-
-\textbf{Lý do thiết kế:} Số filter giảm dần (64→32) thay vì tăng để tránh quá khớp với dữ liệu nhỏ; Dropout 70\% (cao hơn mức thông thường 20--50\%) để cân bằng tỷ lệ mẫu/tham số thấp (72:1); Chỉ 2 lớp tích chập vì đủ cho patch 3×3 mà không quá phức tạp; Global Average Pooling thay vì Fully Connected truyền thống để giảm tham số.
-
-\subsubsection*{A.4. Chuẩn bị dữ liệu và chiến lược huấn luyện}
-
-\textbf{Chuẩn hóa dữ liệu:} Áp dụng Z-score normalization với tham số (μ, σ) tính từ tập huấn luyện, sau đó áp dụng cho tập kiểm định và kiểm tra để đảm bảo tính nhất quán.
-
-\textbf{Phân chia dữ liệu:} Dữ liệu được chia thành 80\% (2.104 mẫu) cho huấn luyện và kiểm định với 5-Fold Cross Validation, và 20\% (526 mẫu) cho tập kiểm tra cuối cùng (không dùng trong huấn luyện). Tỷ lệ lớp được bảo tồn trong cả tập huấn luyện và kiểm tra.
-
-\textbf{Siêu tham số huấn luyện:} Các siêu tham số bao gồm: Epochs tối đa 200; Batch size 64; Learning rate khởi tạo 0,001; Optimizer AdamW với weight decay $10^{-3}$; Dropout rate 70\%; Early stopping với patience 15 epochs; Learning rate scheduler ReduceLROnPlateau.
-
-\textbf{Quy trình huấn luyện:} (1) Khởi tạo trọng số với Kaiming/He cho Conv và Xavier cho FC; (2) Thực hiện 5-Fold Cross Validation trên 80\% dữ liệu để đánh giá độ ổn định; (3) Huấn luyện cuối cùng trên toàn bộ 80\% với siêu tham số tối ưu; (4) Đánh giá trên 20\% tập kiểm tra cố định.
-
-\subsubsection*{A.5. Áp dụng mô hình phân loại toàn vùng}
-
-Sau khi huấn luyện, mô hình được áp dụng để phân loại toàn bộ vùng nghiên cứu với phạm vi khoảng 16,2 triệu pixel (162.468 ha) khu vực quy hoạch lâm nghiệp Cà Mau. Quy trình thực hiện như sau: Với mỗi pixel, trích xuất patch 3×3 lân cận (mirror padding cho pixel biên), chuẩn hóa Z-score, đưa qua CNN, và chọn lớp có xác suất cao nhất (argmax). Quá trình được tối ưu hóa bằng cách xử lý theo lô 10.000 pixel và sử dụng mixed precision (FP16) để giảm bộ nhớ GPU. Output được lưu dưới dạng GeoTIFF (EPSG:32648, 10m).
-
-\subsection*{Phần B: Kết quả thực nghiệm}
-
-\subsubsection*{B.1. Thiết lập và thử nghiệm mô hình}
-
-\textbf{Ảnh hưởng của kích thước patch:} Em đã thử nghiệm 4 kích thước patch khác nhau: (1) 1×1 đạt 98,23\% accuracy và 99,78\% ROC-AUC; (2) 3×3 đạt 98,86\% accuracy và 99,98\% ROC-AUC (tối ưu); (3) 5×5 đạt 98,67\% accuracy và 99,89\% ROC-AUC; (4) 7×7 đạt 98,29\% accuracy và 99,86\% ROC-AUC. Patch 3×3 cho kết quả tốt nhất do cân bằng giữa ngữ cảnh không gian và tránh nhiễu từ điểm lân cận xa.
-
-\textbf{Ảnh hưởng của nguồn dữ liệu:} Các thử nghiệm bao gồm: (1) Chỉ S2 (delta) đạt 87,65\% accuracy; (2) S2 đầy đủ (T1+T2+Δ) đạt 93,42\% accuracy; (3) Chỉ S1 đạt 83,27\% accuracy; (4) S1 + S2 (tất cả) đạt 98,86\% accuracy và 99,98\% ROC-AUC (tối ưu). Kết hợp S1+S2 cải thiện 5,44\% so với chỉ dùng S2, chứng minh lợi ích của dữ liệu đa nguồn.
-
-\subsubsection*{B.2. Kết quả Cross-Validation và đánh giá cuối cùng}
-
-\textbf{Kết quả 5-Fold Cross Validation:} Accuracy trung bình đạt 98,48\% với độ lệch chuẩn ±0,36\% (dao động 98,10\%--99,05\%). Epoch tối ưu trung bình là 71 epoch với validation loss 0,0532. Kết quả ổn định cho thấy mô hình không bị quá khớp nhờ Dropout 70\% hiệu quả.
-
-\textbf{Kết quả trên tập test cuối cùng (526 mẫu):} Mô hình đạt Accuracy 98,86\% và ROC-AUC 99,98\%. Precision, Recall và F1-Score đều đạt 98,86\% (macro average).
-
-\subsubsection*{B.3. Phân tích ma trận nhầm lẫn}
-
-Tổng số lỗi: 6/526 mẫu (tỷ lệ lỗi 1,14\%). Chi tiết từng lớp như sau: Lớp 0 (Rừng ổn định) đạt Precision 96,99\%, Recall 98,47\%, F1 97,73\% với 2 False Positive và 2 False Negative (nhầm với Mất rừng). Lớp 1 (Mất rừng) đạt Precision 98,44\%, Recall 96,92\%, F1 97,67\% với 2 False Positive và 4 False Negative (nhầm với Rừng ổn định). Lớp 2 (Phi rừng ổn định) và Lớp 3 (Phục hồi rừng) đều đạt Precision, Recall, F1-Score 100\% mà không có lỗi phân loại.
-
-\textbf{Nguyên nhân nhầm lẫn giữa Lớp 0 và Lớp 1:} Cả hai lớp đều có rừng ở ít nhất một thời điểm nên có sự tương đồng về phổ. Rừng suy thoái nhẹ có thể có phổ tương tự rừng ổn định. Ngoài ra, hiệu ứng biên (pixel hỗn hợp tại ranh giới) và biến động theo mùa của rừng ngập mặn cũng góp phần vào sự nhầm lẫn.
-
-\subsubsection*{B.4. Bản đồ biến động rừng và thống kê diện tích}
-
-Mô hình đã được áp dụng phân loại toàn bộ 162.468,50 ha khu vực quy hoạch lâm nghiệp tỉnh Cà Mau. Kết quả thống kê diện tích:
+\textbf{Về bản đồ biến động rừng và thống kê diện tích.} Mô hình đã được áp dụng phân loại toàn bộ 162.468,50 ha khu vực quy hoạch lâm nghiệp tỉnh Cà Mau. Kết quả thống kê diện tích:
 
 \begin{table}[H]
 \centering
@@ -83,14 +37,6 @@ Phục hồi rừng & 4.940,90 & 3,04 & 494.090 \\
 \caption{Thống kê diện tích biến động rừng tỉnh Cà Mau (01/2024 - 02/2025)}
 \end{table}
 
-\textbf{Nhận xét chính:} Rừng ổn định chiếm 3/4 diện tích (120.716,91 ha), cho thấy phần lớn diện tích rừng được bảo tồn tốt; Mất rừng là 7.282,15 ha (4,48\%), tập trung ven ao nuôi tôm và kênh mương; Phục hồi rừng là 4.940,90 ha (3,04\%), chủ yếu ven bờ ao và biên giới biển; Mất rừng ròng là 2.341,25 ha (1,44\%), tương đương chênh lệch giữa mất rừng và phục hồi.
+Nhận xét chính: Rừng ổn định chiếm 3/4 diện tích (120.716,91 ha), cho thấy phần lớn diện tích rừng được bảo tồn tốt; Mất rừng là 7.282,15 ha (4,48\%), tập trung ven ao nuôi tôm và kênh mương; Phục hồi rừng là 4.940,90 ha (3,04\%), chủ yếu ven bờ ao và biên giới biển; Mất rừng ròng là 2.341,25 ha (1,44\%), tương đương chênh lệch giữa mất rừng và phục hồi. Bản đồ chi tiết cho thấy mất rừng (màu đỏ) tập trung ở các khu vực ven ao nuôi và kênh mương, phản ánh hoạt động sản xuất thực tế. Phục hồi rừng (màu xanh lam) rải rác ven bờ ao và biên giới biển, cho thấy khả năng tái sinh tự nhiên.
 
-Bản đồ chi tiết cho thấy mất rừng (màu đỏ) tập trung ở các khu vực ven ao nuôi và kênh mương, phản ánh hoạt động sản xuất thực tế. Phục hồi rừng (màu xanh lam) rải rác ven bờ ao và biên giới biển, cho thấy khả năng tái sinh tự nhiên.
-
-\subsubsection*{B.5. So sánh với các nghiên cứu khác}
-
-So với Global Forest Watch (Hansen et al., 2013) - công cụ giám sát rừng toàn cầu: GFW đạt Accuracy khoảng 85\%, sử dụng Landsat 30m với Decision Trees ở quy mô toàn cầu; trong khi nghiên cứu này đạt Accuracy 98,86\%, sử dụng Sentinel 10m với CNN ở quy mô khu vực.
-
-\textbf{Ưu điểm của phương pháp đề xuất:} Độ phân giải cao hơn (10m so với 30m) giúp phát hiện chi tiết ao nuôi và kênh mương; Đa nguồn dữ liệu (S1+S2) giúp khắc phục vấn đề mây và cung cấp thông tin bổ sung; CNN học sâu có khả năng tự động học đặc trưng phức tạp.
-
-Hai phương pháp bổ sung nhau: GFW phù hợp cho giám sát toàn cầu dài hạn với tính nhất quán cao; phương pháp đề xuất phù hợp cho giám sát chi tiết ở quy mô khu vực với độ chính xác cao hơn.
+\textbf{Về so sánh với các nghiên cứu khác.} So với Global Forest Watch (Hansen et al., 2013) - công cụ giám sát rừng toàn cầu: GFW đạt Accuracy khoảng 85\%, sử dụng Landsat 30m với Decision Trees ở quy mô toàn cầu; trong khi nghiên cứu này đạt Accuracy 98,86\%, sử dụng Sentinel 10m với CNN ở quy mô khu vực. Ưu điểm của phương pháp đề xuất bao gồm: Độ phân giải cao hơn (10m so với 30m) giúp phát hiện chi tiết ao nuôi và kênh mương; Đa nguồn dữ liệu (S1+S2) giúp khắc phục vấn đề mây và cung cấp thông tin bổ sung; CNN học sâu có khả năng tự động học đặc trưng phức tạp. Hai phương pháp bổ sung nhau: GFW phù hợp cho giám sát toàn cầu dài hạn với tính nhất quán cao; phương pháp đề xuất phù hợp cho giám sát chi tiết ở quy mô khu vực với độ chính xác cao hơn.

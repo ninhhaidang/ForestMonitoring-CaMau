@@ -2,18 +2,10 @@
 
 Trong quá trình thực hiện đề tài, em đã gặp một số khó khăn sau:
 
-\subsection*{4.1. Thiếu dữ liệu kiểm chứng kết quả phân loại}
+\textbf{Thứ nhất, về kiểm chứng kết quả phân loại.} Dữ liệu ground truth đã được Công ty GFD thu thập qua khảo sát drone và số hóa trên QGIS, tuy nhiên trong khuôn khổ thực tập chưa có cơ hội tổ chức thêm chuyến khảo sát thực địa để kiểm chứng kết quả phân loại trên toàn vùng nghiên cứu. Do đó, chưa có so sánh trực tiếp giữa bản đồ biến động do mô hình tạo ra với số liệu đo đạc tại hiện trường, dẫn đến hạn chế trong việc đánh giá độ tin cậy tuyệt đối của kết quả phân loại trong điều kiện thực tế.
 
-Dữ liệu ground truth đã được Công ty GFD thu thập qua khảo sát drone và số hóa trên QGIS, tuy nhiên trong khuôn khổ thực tập chưa có cơ hội tổ chức thêm chuyến khảo sát thực địa để kiểm chứng kết quả phân loại trên toàn vùng nghiên cứu. Do đó, chưa có so sánh trực tiếp giữa bản đồ biến động do mô hình tạo ra với số liệu đo đạc tại hiện trường, dẫn đến hạn chế trong việc đánh giá độ tin cậy tuyệt đối của kết quả phân loại trong điều kiện thực tế.
+\textbf{Thứ hai, về thời gian xử lý và tính toán.} Quá trình huấn luyện mô hình với nhiều thử nghiệm siêu tham số mất nhiều thời gian, trong khi dự đoán cho toàn bộ vùng nghiên cứu (162,469 ha) với độ phân giải 10m đòi hỏi tài nguyên tính toán lớn. Thời gian xử lý dữ liệu và chạy mô hình trên toàn vùng nghiên cứu kéo dài do giới hạn về phần cứng.
 
-\subsection*{4.2. Thời gian xử lý và tính toán}
+\textbf{Thứ ba, về hạn chế của dữ liệu.} Số lượng mẫu huấn luyện (2,630 điểm) tương đối nhỏ cho bài toán deep learning; chỉ phân tích 2 thời điểm (1/2024 và 2/2025), chưa xây dựng được chuỗi thời gian dài hạn; và dữ liệu Sentinel-2 bị ảnh hưởng bởi mây mù trong một số thời điểm.
 
-Quá trình huấn luyện mô hình với nhiều thử nghiệm siêu tham số mất nhiều thời gian, trong khi dự đoán cho toàn bộ vùng nghiên cứu (162,469 ha) với độ phân giải 10m đòi hỏi tài nguyên tính toán lớn. Thời gian xử lý dữ liệu và chạy mô hình trên toàn vùng nghiên cứu kéo dài do giới hạn về phần cứng.
-
-\subsection*{4.3. Hạn chế của dữ liệu}
-
-Số lượng mẫu huấn luyện (2,630 điểm) tương đối nhỏ cho bài toán deep learning; chỉ phân tích 2 thời điểm (1/2024 và 2/2025), chưa xây dựng được chuỗi thời gian dài hạn; và dữ liệu Sentinel-2 bị ảnh hưởng bởi mây mù trong một số thời điểm.
-
-\subsection*{4.4. Tính giải thích của mô hình}
-
-Mô hình CNN là "black-box", khó giải thích cụ thể tại sao một pixel được phân loại vào lớp nào. Chưa có phân tích sâu về importance của từng đặc trưng trong quá trình phân loại, dẫn đến khó khăn trong việc truyền đạt kết quả cho những người không chuyên về deep learning.
+\textbf{Thứ tư, về tính giải thích của mô hình.} Mô hình CNN là "black-box", khó giải thích cụ thể tại sao một pixel được phân loại vào lớp nào. Chưa có phân tích sâu về importance của từng đặc trưng trong quá trình phân loại, dẫn đến khó khăn trong việc truyền đạt kết quả cho những người không chuyên về deep learning.
