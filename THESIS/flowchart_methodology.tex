@@ -1,0 +1,233 @@
+% Flowchart: Quy trình phương pháp nghiên cứu
+% TODO: Chèn sơ đồ flowchart tự vẽ vào đây
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9425\textwidth]{img/chapter2/flowchart.png}
+\caption{Sơ đồ quy trình phương pháp nghiên cứu phát hiện biến động rừng}
+\label{fig:methodology-flowchart}
+\end{figure}
+
+% ============================================================================
+% FLOWCHART CŨ (ĐÃ COMMENT) - Giữ lại để tham khảo
+% ============================================================================
+% \begin{figure}[H]
+% \centering
+% \resizebox{0.95\textwidth}{!}{%
+% \begin{tikzpicture}[
+%     % Khối xử lý (hình chữ nhật)
+%     process/.style={
+%         rectangle,
+%         draw=black!70, line width=0.5pt,
+%         fill=white,
+%         minimum width=1.8cm,
+%         minimum height=0.7cm,
+%         inner sep=2pt,
+%         align=center,
+%         font=\footnotesize\linespread{0.9}\selectfont
+%     },
+%     % Khối dữ liệu đầu vào/ra (hình bình hành)
+%     io/.style={
+%         trapezium,
+%         trapezium left angle=70,
+%         trapezium right angle=110,
+%         draw=black!70, line width=0.5pt,
+%         fill=gray!12,
+%         minimum width=1.6cm,
+%         minimum height=0.6cm,
+%         inner sep=2pt,
+%         align=center,
+%         font=\footnotesize\linespread{0.9}\selectfont,
+%         trapezium stretches body
+%     },
+%     % Khối output (hình chữ nhật bo góc)
+%     output/.style={
+%         rectangle, rounded corners=5pt,
+%         draw=black!70, line width=0.5pt,
+%         fill=green!12,
+%         minimum width=1.8cm,
+%         minimum height=0.7cm,
+%         inner sep=2pt,
+%         align=center,
+%         font=\footnotesize\linespread{0.9}\selectfont
+%     },
+%     % Khối quyết định (hình thoi)
+%     decision/.style={
+%         diamond,
+%         draw=black!70, line width=0.5pt,
+%         fill=yellow!15,
+%         minimum width=0.9cm,
+%         minimum height=0.7cm,
+%         inner sep=1pt,
+%         align=center,
+%         font=\footnotesize,
+%         aspect=2
+%     },
+%     % Tiêu đề giai đoạn
+%     phasetitle/.style={
+%         rectangle, rounded corners=3pt,
+%         fill=#1,
+%         minimum width=6.5cm,
+%         minimum height=0.6cm,
+%         align=center,
+%         font=\footnotesize\bfseries,
+%         text=white
+%     },
+%     % Tiêu đề giai đoạn rộng (full width)
+%     phasetitlewide/.style={
+%         rectangle, rounded corners=3pt,
+%         fill=#1,
+%         minimum width=14cm,
+%         minimum height=0.6cm,
+%         align=center,
+%         font=\footnotesize\bfseries,
+%         text=white
+%     },
+%     % Khối cơ sở dữ liệu (hình trụ)
+%     database/.style={
+%         cylinder,
+%         cylinder uses custom fill,
+%         cylinder body fill=blue!10,
+%         cylinder end fill=blue!20,
+%         draw=black!70, line width=0.5pt,
+%         minimum width=1.2cm,
+%         minimum height=0.9cm,
+%         shape border rotate=90,
+%         aspect=0.3,
+%         align=center,
+%         font=\footnotesize\linespread{0.9}\selectfont
+%     },
+%     % Mũi tên
+%     arrow/.style={-{Stealth[length=1.5mm]}, line width=0.4pt},
+%     thickarrow/.style={-{Stealth[length=2.5mm]}, line width=1.2pt, color=black!60}
+% ]
+% 
+% % ==================== HÀNG 1: PHASE 1 (FULL WIDTH) ====================
+% 
+% % --- KHUNG PHASE 1: THU THẬP & TIỀN XỬ LÝ ---
+% \fill[blue!8, rounded corners=4pt] (-8.5, 0.6) rectangle (8.5, -4.4);
+% \draw[blue!70, line width=1.3pt, rounded corners=4pt] (-8.5, 0.6) rectangle (8.5, -4.4);
+% 
+% \node[phasetitlewide=blue!70] at (0, 0) {1. THU THẬP \& TIỀN XỬ LÝ DỮ LIỆU};
+% 
+% % Phần bên trái: GEE + Tiền xử lý (căn giữa theo chiều dọc giữa S2 và S1)
+% \node[database] (gee) at (-6.5, -1.5) {GEE};
+% \node[process] (preproc) at (-3, -1.5) {Lọc mây\\Chuẩn hóa\\Tính chỉ số};
+% \node[io] (s2) at (1.0, -1.0) {Sentinel-2\\7 kênh};
+% \node[io] (s1) at (1.0, -2.0) {Sentinel-1\\2 kênh};
+% 
+% % Phần bên phải: Dữ liệu đầu ra (4 khoảng cách bằng nhau)
+% \node[io] (img_s2) at (5, -1.0) {Ảnh S2 $(T_1, T_2)$};
+% \node[io] (img_s1) at (5, -2.0) {Ảnh S1 $(T_1, T_2)$};
+% % Dữ liệu mẫu thẳng cột, ở dưới cùng
+% \node[database, minimum width=1cm, minimum height=0.5cm, aspect=0.2] (samples) at (5, -3.45) {Dữ liệu mẫu\\2.630};
+% 
+% % Arrows
+% \draw[arrow] (gee) -- (preproc);
+% \draw[arrow] (preproc) -- (s2);
+% \draw[arrow] (preproc) -- (s1);
+% \draw[arrow] (s2) -- (img_s2);
+% \draw[arrow] (s1) -- (img_s1);
+% 
+% % ==================== HÀNG 2: PHASE 2, 3 ====================
+% 
+% % --- KHUNG PHASE 2: TRÍCH XUẤT ĐẶC TRƯNG (bên phải) ---
+% \fill[green!8, rounded corners=4pt] (0.5, -5.4) rectangle (8.5, -10.4);
+% \draw[green!60!black, line width=1.3pt, rounded corners=4pt] (0.5, -5.4) rectangle (8.5, -10.4);
+% 
+% \node[phasetitle=green!60!black] at (4.5, -6) {2. TRÍCH XUẤT ĐẶC TRƯNG};
+% % S2: 7 before + 7 after + 7 delta = 21
+% \node[process] (p3a) at (2.5, -7.4) {S2: $T_1 + T_2 + \Delta$\\$7 \times 3 = 21$ kênh};
+% % S1: 2 before + 2 after + 2 delta = 6
+% \node[process] (p3b) at (2.5, -9.2) {S1: $T_1 + T_2 + \Delta$\\$2 \times 3 = 6$ kênh};
+% % Ghép kênh (process) -> 27 kênh (io - dữ liệu đầu ra)
+% \node[process] (p3c) at (5, -8.3) {Ghép kênh};
+% \node[io] (o3) at (7.5, -8.3) {27 kênh};
+% \draw[arrow] (p3a.east) -- (p3a.east -| p3c.north) -- (p3c.north);
+% \draw[arrow] (p3b.east) -- (p3b.east -| p3c.south) -- (p3c.south);
+% \draw[arrow] (p3c) -- (o3);
+% 
+% % --- KHUNG PHASE 3: CHUẨN BỊ MẪU (bên trái) ---
+% \fill[orange!8, rounded corners=4pt] (-8.5, -5.4) rectangle (-0.5, -10.4);
+% \draw[orange!80, line width=1.3pt, rounded corners=4pt] (-8.5, -5.4) rectangle (-0.5, -10.4);
+% 
+% \node[phasetitle=orange!80] at (-4.5, -6) {3. CHUẨN BỊ MẪU};
+% % Hàng trên: 3 process cùng hàng
+% \node[process] (p4a) at (-7.2, -7.5) {Chuyển đổi\\tọa độ};
+% \node[process] (p4b) at (-4.5, -7.5) {Trích mảnh\\$3 \times 3$};
+% \node[process] (p4c) at (-1.8, -7.5) {Chuẩn hóa\\Z-score};
+% % Hàng dưới: Tập dữ liệu
+% \node[io] (o4) at (-4.5, -9.3) {Tập dữ liệu\\$N \times 3^2 \times 27$};
+% \draw[arrow] (p4a) -- (p4b);
+% \draw[arrow] (p4b) -- (p4c);
+% \draw[arrow] (p4c.south) -- ++(0,-0.5) -| (o4.north);
+% 
+% % --- MŨI TÊN Phase 2 -> Phase 3 ---
+% \draw[thickarrow] (0.4, -8) -- (-0.4, -8);
+% 
+% % ==================== HÀNG 3: PHASE 4, 5 ====================
+% 
+% % --- KHUNG PHASE 4: HUẤN LUYỆN ---
+% \fill[red!8, rounded corners=4pt] (-8.5, -11.4) rectangle (-0.5, -20);
+% \draw[red!70, line width=1.3pt, rounded corners=4pt] (-8.5, -11.4) rectangle (-0.5, -20);
+% 
+% \node[phasetitle=red!70] at (-4.5, -12) {4. HUẤN LUYỆN MÔ HÌNH};
+% % Hàng 1: Phân chia
+% \node[process] (p5a) at (-4.5, -13.2) {Phân chia phân tầng};
+% % Hàng 2: Train | Test
+% \node[io] (d5a) at (-6.3, -14.5) {Train 80\%};
+% \node[io] (d5b) at (-2.2, -14.5) {Test 20\%};
+% % Hàng 3: 5-Fold CV
+% \node[process] (p5c) at (-6.3, -15.8) {5-Fold CV + CNN};
+% % Hàng 4: Hội tụ?
+% \node[decision] (dec) at (-6.3, -17.1) {Hội tụ?};
+% % Hàng 5: Mô hình (database - file .pth lưu trữ) | Đánh giá
+% \node[database] (o5) at (-4.5, -18.3) {Mô hình};
+% \node[process] (eval) at (-2.2, -17.1) {Đánh giá};
+% % Arrows - Train flow
+% \draw[arrow] (p5a) -| (d5a);
+% \draw[arrow] (p5a) -| (d5b);
+% \draw[arrow] (d5a) -- (p5c);
+% \draw[arrow] (p5c) -- (dec);
+% \draw[arrow] (dec.south) -- node[right, font=\tiny] {Có} (o5.north);
+% \draw[arrow] (dec.west) -- ++(-0.5,0) |- node[pos=0.25, left, font=\tiny] {Chưa} (p5c.west);
+% % Arrows - Test flow (đánh giá)
+% \draw[arrow] (d5b) -- (eval);
+% \draw[arrow] (o5.east) -| (eval.south);
+% 
+% % --- KHUNG PHASE 5: DỰ ĐOÁN ---
+% \fill[teal!8, rounded corners=4pt] (0.5, -11.4) rectangle (8.5, -20);
+% \draw[teal!70, line width=1.3pt, rounded corners=4pt] (0.5, -11.4) rectangle (8.5, -20);
+% 
+% \node[phasetitle=teal!70] at (4.5, -12) {5. DỰ ĐOÁN};
+% % Hàng 1: Ảnh mới
+% \node[io] (d6) at (4.5, -13.3) {Ảnh mới $(T'_1, T'_2)$};
+% % Hàng 2: Trích xuất đặc trưng
+% \node[process] (p6a) at (4.5, -14.8) {Trích xuất đặc trưng};
+% % Hàng 3: Cửa sổ trượt
+% \node[process] (p6b) at (4.5, -16.3) {Cửa sổ trượt};
+% % Hàng 4: Dự đoán theo lô
+% \node[process] (p6c) at (2.5, -17.8) {Dự đoán\\theo lô};
+% \node[output] (o6) at (6.5, -17.8) {Bản đồ\\phân loại};
+% % Arrows
+% \draw[arrow] (d6) -- (p6a);
+% \draw[arrow] (p6a) -- (p6b);
+% \draw[arrow] (p6b) -| (p6c);
+% \draw[arrow] (p6b) -| (o6);
+% \draw[arrow] (p6c) -- (o6);
+% 
+% % --- MŨI TÊN Phase 4 -> Phase 5 ---
+% \draw[thickarrow] (-0.4, -15.2) -- (0.4, -15.2);
+% 
+% % ==================== MŨI TÊN GIỮA CÁC HÀNG ====================
+% % Phase 1 -> Phase 2 (Phase 2 bây giờ ở bên phải)
+% \draw[thickarrow] (0, -4.5) -- (0, -4.9) -- (4.5, -4.9) -- (4.5, -5.3);
+% 
+% % Phase 3 -> Phase 4 (Phase 3 bây giờ ở bên trái)
+% \draw[thickarrow] (-4.5, -10.5) -- (-4.5, -10.9) -- (-4.5, -11.3);
+% 
+% \end{tikzpicture}
+% }
+% \caption{Sơ đồ quy trình phương pháp nghiên cứu phát hiện biến động rừng}
+% \label{fig:methodology-flowchart}
+% \end{figure}

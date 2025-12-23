@@ -1,58 +1,28 @@
 \unnumberedchapter{PHẦN 2: KHÁI QUÁT BÁO CÁO THỰC TẬP}
 
 \section{Giới thiệu chung}
-\subsection{Tên đề tài}
-\textbf{Tên đề tài (Tiếng Việt):} Giám sát biến động rừng tỉnh Cà Mau sử dụng dữ liệu viễn thám và mạng nơ ron nhân tạo.
+Nằm ở cực Nam của Tổ quốc, tỉnh Cà Mau sở hữu hệ sinh thái rừng ngập mặn đặc thù và vô cùng quan trọng đối với sự cân bằng môi trường cũng như đời sống kinh tế xã hội của vùng Đồng bằng sông Cửu Long. Tuy nhiên, trước áp lực của biến đổi khí hậu, nước biển dâng và các hoạt động kinh tế như nuôi trồng thủy sản, diện tích rừng tại đây đang đứng trước nguy cơ suy giảm nghiêm trọng. Việc giám sát biến động tài nguyên rừng theo phương pháp truyền thống thường tốn kém nhiều thời gian, công sức và khó triển khai trên diện rộng. Trong bối cảnh đó, sự phát triển mạnh mẽ của công nghệ viễn thám và trí tuệ nhân tạo, đặc biệt là các mô hình học sâu, đã mở ra hướng đi mới đầy tiềm năng cho công tác quản lý và bảo vệ rừng. Xuất phát từ thực tiễn cấp thiết này, báo cáo thực tập tập trung vào đề tài ``Giám sát biến động rừng tỉnh Cà Mau sử dụng dữ liệu viễn thám và mạng nơ-ron nhân tạo'', với mục tiêu ứng dụng công nghệ hiện đại để giải quyết bài toán môi trường tại địa phương.
 
-\subsection{Đơn vị thực tập}
-\begin{itemize}
-    \item \textbf{Tên đơn vị thực tập:} Công ty TNHH Tư vấn và Phát triển Đồng Xanh (Green Field Development - GFD)
-    \item \textbf{Địa chỉ:} 14 Trần Hưng Đạo, Phường Phan Chu Trinh, Quận Hoàn Kiếm, Thành phố Hà Nội
-    \item \textbf{Lĩnh vực hoạt động:} Công ty chuyên về tư vấn và phát triển các giải pháp công nghệ trong lĩnh vực quản lý tài nguyên thiên nhiên, nông nghiệp bền vững và giám sát môi trường. Công ty là đối tác của Chi cục Kiểm lâm tỉnh Cà Mau trong các dự án giám sát và quản lý tài nguyên rừng.
-    \item \textbf{Giám sát viên/Người hướng dẫn:} ThS. Nguyễn Văn A - Giám đốc Dự án Giám sát Rừng
-    \item \textbf{Nhiệm vụ được giao:} Nghiên cứu và phát triển mô hình học sâu để giám sát biến động rừng tỉnh Cà Mau sử dụng dữ liệu viễn thám đa nguồn (Sentinel-1 và Sentinel-2).
-    \item \textbf{Thời gian thực tập:} 3 tháng (từ ngày 15/9/2024 đến ngày 15/12/2024)
-\end{itemize}
+Quá trình thực tập được thực hiện tại Công ty TNHH Tư vấn và Phát triển Đồng Xanh dưới sự hướng dẫn của TS. Hoàng Việt Anh. Đây là đơn vị có nhiều kinh nghiệm trong lĩnh vực tư vấn giải pháp công nghệ quản lý tài nguyên và là đối tác chiến lược của Chi cục Kiểm lâm tỉnh Cà Mau. Trong thời gian ba tháng thực tập, em đã trực tiếp tham gia vào dự án xây dựng hệ thống giám sát rừng tự động, từ khâu thu thập dữ liệu vệ tinh đa nguồn, xử lý ảnh, đến thiết kế và huấn luyện các mô hình học sâu tiên tiến.
+
+\subsection{Giới thiệu đơn vị thực tập}
+Công ty TNHH Tư vấn và Phát triển Đồng Xanh (GFD) là doanh nghiệp tiên phong trong lĩnh vực công nghệ và kỹ thuật, chuyên sâu về các giải pháp GIS (Hệ thống Thông tin Địa lý), Viễn thám và Tư vấn quản lý tài nguyên thiên nhiên. Với hơn 15 năm hình thành và phát triển, GFD đã khẳng định vị thế vững chắc thông qua việc triển khai thành công hơn 100 dự án GIS và 300 dự án tư vấn cho các khách hàng lớn trong nước (Bộ Nông nghiệp và Phát triển Nông thôn, Bộ Tài nguyên và Môi trường) và các tổ chức quốc tế (World Bank, ADB, JICA, USAID). Quy trình sản xuất phần mềm và quản lý an toàn thông tin của công ty tuân thủ nghiêm ngặt các tiêu chuẩn quốc tế ISO 9001:2015 và ISO 27001:2022.
+
+Lĩnh vực hoạt động cốt lõi của GFD bao gồm phát triển các giải pháp phần mềm GIS và Viễn thám toàn diện, cung cấp chuỗi dịch vụ khép kín từ khảo sát thực địa, số hóa dữ liệu đến thiết kế phần mềm trên đa nền tảng dựa trên các công nghệ hiện đại như Open Source GIS, điện toán đám mây và các giải pháp thương mại từ ESRI, Bentley; đồng thời, công ty còn cung cấp các dịch vụ tư vấn chuyên sâu về quản lý tài nguyên thiên nhiên như quản lý rừng bền vững, bảo tồn đa dạng sinh học, đo đạc carbon lâm nghiệp và đánh giá thiệt hại thiên tai, luôn đảm bảo tuân thủ hệ thống pháp luật hiện hành và đáp ứng các yêu cầu khắt khe của các tổ chức quốc tế.
 
 \section{Khái quát nội dung thực tập}
-\subsection{Mục đích thực tập}
-Nghiên cứu và phát triển mô hình học sâu trong giám sát biến động rừng sử dụng dữ liệu viễn thám đa nguồn, nhằm áp dụng công nghệ trí tuệ nhân tạo và viễn thám vào bài toán thực tiễn về bảo vệ và quản lý tài nguyên rừng tại Việt Nam.
+Nội dung thực tập tập trung vào việc nghiên cứu và giải quyết bài toán phát hiện mất rừng và phục hồi rừng thông qua phân tích ảnh vệ tinh. Cụ thể, em đã tiến hành nghiên cứu cơ sở lý thuyết vềviễn thám, đặc điểm phổ của các đối tượng rừng ngập mặn, cũng như các kiến trúc mạng nơ-ron tích chập (CNN). Dựa trên nền tảng lý thuyết đó, quá trình thực nghiệm được triển khai với việc thu thập dữ liệu ảnh vệ tinh Sentinel-1 và Sentinel-2 trên nền tảng Google Earth Engine. Việc kết hợp dữ liệu quang học và dữ liệu radar (SAR) được xem là chìa khóa để khắc phục hạn chế về mây che phủ thường xuyên tại khu vực nhiệt đới, đồng thời cung cấp thêm thông tin về cấu trúc bề mặt và độ ẩm của thảm thực vật.
 
-\subsection{Các nội dung đã tham gia}
-Trong quá trình thực tập tại Công ty TNHH Tư vấn và Phát triển Đồng Xanh, em đã tham gia thực hiện các nội dung sau:
-
-(1) \textbf{Nghiên cứu tổng quan về vấn đề biến động rừng:} Tìm hiểu tình hình mất rừng toàn cầu và Việt Nam, nghiên cứu vai trò của rừng ngập mặn tại tỉnh Cà Mau, và tìm hiểu các phương pháp giám sát rừng truyền thống và hiện đại.
-
-(2) \textbf{Nghiên cứu công nghệ viễn thám và học sâu:} Nghiên cứu về vệ tinh Sentinel-1 (dữ liệu radar SAR) và Sentinel-2 (dữ liệu quang học), tìm hiểu các chỉ số thực vật (NDVI, NBR, NDMI), nghiên cứu kiến trúc mạng nơ-ron tích chập (CNN) và ứng dụng trong phân loại ảnh viễn thám.
-
-(3) \textbf{Thu thập và xử lý dữ liệu:} Thu thập dữ liệu Sentinel-1 và Sentinel-2 trên nền tảng Google Earth Engine; tiền xử lý dữ liệu bao gồm lọc mây, tính toán các chỉ số thực vật; tạo bộ dữ liệu mẫu với 2,630 điểm ground truth thuộc 4 lớp; và trích xuất 27 đặc trưng.
-
-(4) \textbf{Phát triển mô hình học sâu:} Thiết kế kiến trúc mạng CNN với 36,676 tham số, thực hiện cross-validation 5-fold để tối ưu siêu tham số, huấn luyện và đánh giá mô hình.
-
-(5) \textbf{Đánh giá và triển khai:} Phân tích kết quả với độ chính xác cao; áp dụng mô hình phân loại toàn bộ vùng nghiên cứu (162,469 ha); và phát triển ứng dụng web hiển thị kết quả.
-
-(6) \textbf{Viết báo cáo và tài liệu:} Viết báo cáo chi tiết, tổng hợp tài liệu tham khảo, chuẩn bị biểu đồ và hình ảnh minh họa.
+Sau khi xây dựng được bộ dữ liệu huấn luyện chất lượng cao với các nhãn được kiểm chứng, em đã thiết kế và tối ưu hóa một kiến trúc mạng CNN chuyên biệt, phù hợp với quy mô dữ liệu và đặc thù bài toán. Mô hình được huấn luyện để phân loại bốn trạng thái biến động chính gồm rừng ổn định, mất rừng, phi rừng và phục hồi rừng. Quá trình đánh giá mô hình được thực hiện nghiêm ngặt thông qua kỹ thuật kiểm định chéo (cross-validation) để đảm bảo độ tin cậy và khả năng tổng quát hóa của kết quả. Cuối cùng, mô hình tối ưu đã được áp dụng để phân loại toàn bộ khu vực quy hoạch lâm nghiệp của tỉnh Cà Mau, tạo ra bản đồ biến động rừng chi tiết và trực quan.
 
 \section{Kết quả đạt được}
-Đồ án đã hoàn thành các mục tiêu đề ra với kết quả đạt được ở mức độ cao:
-\begin{itemize}
-    \item \textbf{Xây dựng bộ dữ liệu chất lượng:} Thu thập và xử lý thành công dữ liệu Sentinel-1 và Sentinel-2 đa thời gian (01/2024 và 02/2025), trích xuất 27 đặc trưng và 2.630 điểm ground truth phân bố cân bằng cho 4 lớp.
-    \item \textbf{Mô hình tối ưu:} Xây dựng thành công kiến trúc CNN với 36.676 tham số, patch size 3x3 tối ưu, đạt accuracy 98.86\% và ROC-AUC 99.98\% trên tập kiểm tra.
-    \item \textbf{Hiệu quả dữ liệu đa nguồn:} Chứng minh việc kết hợp Sentinel-1 và Sentinel-2 cải thiện accuracy 5.44\% so với chỉ dùng Sentinel-2.
-    \item \textbf{Sản phẩm thực tiễn:} Bản đồ biến động rừng toàn tỉnh Cà Mau (162.469 ha) và ứng dụng web Google Earth Engine trực quan hóa kết quả.
-    \item \textbf{Kết quả thống kê:} Phát hiện 7.282 ha mất rừng (4.48\%) và 4.941 ha phục hồi rừng (3.04\%).
-\end{itemize}
+Kết quả thực tập đã đạt được những thành tựu đáng kể cả về mặt khoa học và ứng dụng thực tiễn. Nghiên cứu đã chứng minh hiệu quả vượt trội của việc tích hợp dữ liệu đa nguồn Sentinel-1 và Sentinel-2 so với việc chỉ sử dụng đơn lẻ dữ liệu quang học. Mô hình đề xuất đạt độ chính xác ấn tượng lên tới 98,86\% trên tập dữ liệu kiểm tra độc lập, với chỉ số ROC-AUC đạt 99,98\%. Điều này khẳng định khả năng phân biệt chính xác các đối tượng rừng và biến động rừng của thuật toán đã phát triển.
+
+Về mặt sản phẩm, báo cáo đã xây dựng thành công bản đồ hiện trạng và biến động rừng tỉnh Cà Mau giai đoạn 2024-2025 với độ phân giải 10m. Kết quả phân tích không gian cho thấy bức tranh tổng thể về tài nguyên rừng của tỉnh, trong đó phát hiện khoảng 7.282 ha rừng bị mất và 4.941 ha rừng được phục hồi. Bên cạnh đó, một ứng dụng web trực tuyến trên nền tảng Google Earth Engine cũng được phát triển, cho phép người dùng truy cập, tương tác và khai thác dữ liệu bản đồ một cách dễ dàng và thuận tiện.
 
 \section{Kinh nghiệm rút ra}
-Qua quá trình thực hiện đồ án và đối mặt với các thách thức, em đã rút ra được những bài học kinh nghiệm quý báu:
-
-\begin{itemize}
-    \item \textbf{Về dữ liệu thực địa:} Tầm quan trọng của việc kiểm chứng thực địa (ground-truthing) để đánh giá độ tin cậy của mô hình. Dữ liệu ground truth chất lượng cao là yếu tố quyết định đến hiệu suất của mô hình học máy.
-    \item \textbf{Về tối ưu hóa tính toán:} Kinh nghiệm xử lý dữ liệu lớn (Big Data) trong viễn thám. Việc dự đoán trên toàn vùng nghiên cứu rộng lớn đòi hỏi phải tối ưu hóa code, sử dụng xử lý theo lô (batch processing) và quản lý bộ nhớ hiệu quả.
-    \item \textbf{Về mô hình hóa:} Sự cân bằng (trade-off) giữa độ phức tạp của mô hình và khả năng tổng quát hóa (generalization), đặc biệt khi làm việc với bộ dữ liệu nhỏ. Các kỹ thuật như Dropout và Data Augmentation là rất cần thiết.
-    \item \textbf{Về giải thích mô hình:} Nhận thức rõ về hạn chế "hộp đen" của Deep Learning và sự cần thiết của các phương pháp XAI (Explainable AI) để tăng tính minh bạch và thuyết phục của kết quả.
-\end{itemize}
+Quá trình thực tập không chỉ mang lại kiến thức chuyên môn mà còn giúp tác giả tích lũy nhiều kinh nghiệm quý báu. Bài học lớn nhất là tầm quan trọng của việc xử lý và làm sạch dữ liệu. Trong các bài toán học sâu, chất lượng dữ liệu đầu vào quyết định phần lớn hiệu suất của mô hình. Việc hiểu rõ đặc điểm vật lý của ảnh viễn thám và thực hiện các bước tiền xử lý kỹ lưỡng là yếu tố then chốt để đạt được kết quả cao. Ngoài ra, kỹ năng tối ưu hóa mã nguồn và quản lý tài nguyên tính toán cũng được rèn luyện khi phải làm việc với lượng dữ liệu lớn trên quy mô toàn tỉnh. Cuối cùng, khả năng phân tích và biện giải kết quả từ "hộp đen" của mô hình học sâu giúp tác giả hiểu sâu sắc hơn về cơ chế hoạt động của thuật toán và đưa ra những cải tiến phù hợp.
 
 \section{Kết luận}
-Đồ án đã xây dựng thành công quy trình giám sát biến động rừng tỉnh Cà Mau sử dụng công nghệ viễn thám đa nguồn kết hợp với mô hình học sâu CNN. Kết quả nghiên cứu khẳng định tính ưu việt của việc kết hợp dữ liệu Sentinel-1 và Sentinel-2 cũng như hiệu quả của mô hình CNN được thiết kế tối ưu. Sản phẩm của đồ án gồm bản đồ biến động rừng và ứng dụng web có giá trị thực tiễn cao, hỗ trợ đắc lực cho công tác quản lý và bảo vệ rừng. Tuy nhiên, nghiên cứu cũng mở ra các hướng phát triển tiếp theo về mở rộng chuỗi thời gian, tăng cường kiểm chứng thực địa và áp dụng các mô hình tiên tiến hơn để khắc phục những hạn chế còn tồn tại.
+Chương trình thực tập đã hoàn thành tốt các mục tiêu đề ra, góp phần đưa ra một giải pháp công nghệ hiệu quả cho công tác giám sát rừng tại Cà Mau. Phương pháp tiếp cận kết hợp viễn thám đa nguồn và học sâu đã chứng minh được tính ưu việt và khả năng ứng dụng thực tiễn cao. Những kết quả đạt được không chỉ có giá trị học thuật mà còn là công cụ hỗ trợ đắc lực cho các nhà quản lý trong việc ra quyết định bảo vệ và phát triển rừng bền vững. Mặc dù vẫn còn một số hạn chế nhất định cần tiếp tục nghiên cứu, nhưng thành công bước đầu này là tiền đề vững chắc cho các hướng phát triển tiếp theo, mở rộng phạm vi ứng dụng sang các khu vực khác và nâng cao hơn nữa độ chính xác của hệ thống giám sát.
 \newpage

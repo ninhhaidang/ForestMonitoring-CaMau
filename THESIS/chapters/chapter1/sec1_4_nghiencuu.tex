@@ -1,0 +1,73 @@
+\section{Các nghiên cứu liên quan}
+
+Giám sát biến động rừng đã trải qua nhiều giai đoạn phát triển, từ các phương pháp thủ công truyền thống đến các kỹ thuật học sâu hiện đại. Phần này trình bày quá trình phát triển của các phương pháp theo thời gian, tổng hợp các nghiên cứu tiêu biểu trên thế giới và tại Việt Nam, làm cơ sở cho việc xác định khoảng trống nghiên cứu và định hướng đồ án.
+
+\subsection{Sự phát triển của các phương pháp giám sát biến động rừng}
+
+Trước khi có công nghệ viễn thám, giám sát rừng chủ yếu dựa vào khảo sát thực địa trực tiếp. Nhân viên kiểm lâm đi thực địa để đo đạc, ghi nhận trạng thái rừng và lập bản đồ thủ công. Phương pháp này có độ chính xác cao tại từng điểm khảo sát nhưng tốn kém về thời gian và nhân lực, không khả thi cho giám sát diện rộng và khó cập nhật thường xuyên.
+
+Từ giữa thế kỷ 20, ảnh hàng không (Aerial Photography) bắt đầu được sử dụng để lập bản đồ rừng. Các chuyên gia giải đoán ảnh hàng không bằng mắt thường để xác định ranh giới rừng và phát hiện thay đổi. Phương pháp này cho phép quan sát diện tích lớn hơn khảo sát thực địa nhưng vẫn phụ thuộc nhiều vào kinh nghiệm của người giải đoán và chi phí bay chụp cao.
+
+Với sự ra đời của vệ tinh Landsat năm 1972, lần đầu tiên có thể quan sát bề mặt Trái Đất một cách hệ thống từ không gian. Giai đoạn đầu, việc phân tích ảnh vệ tinh chủ yếu dựa vào giải đoán trực quan - chuyên gia nhìn ảnh và vẽ ranh giới các vùng đất khác nhau. Các phương pháp phân loại dựa trên ngưỡng như phân ngưỡng chỉ số thực vật NDVI được sử dụng rộng rãi trong thập niên 1980--1990.
+
+Từ thập niên 1990, các thuật toán phân loại thống kê bắt đầu được áp dụng rộng rãi. Maximum Likelihood Classification (MLC) giả định dữ liệu tuân theo phân phối Gaussian và phân loại điểm ảnh dựa trên xác suất. Phân loại không giám sát như K-means và ISODATA không yêu cầu dữ liệu huấn luyện có nhãn, thay vào đó tự động nhóm các điểm ảnh có đặc trưng phổ tương tự thành các cụm \citeen{jensen2015}.
+
+Bước tiến quan trọng trong học máy cho viễn thám đến từ phương pháp Random Forest. Ho \citeen{ho1995} đề xuất ý tưởng random decision forests năm 1995, sau đó Breiman \citeen{breiman2001} phát triển và hoàn thiện thành thuật toán Random Forest năm 2001. Thuật toán này cải thiện cây quyết định đơn lẻ bằng cách kết hợp nhiều cây quyết định và nhanh chóng trở thành phương pháp phổ biến nhất trong phân loại ảnh viễn thám. Cùng thời kỳ, Cortes và Vapnik \citeen{cortes1995} giới thiệu Support Vector Machine (SVM) năm 1995. SVM chứng minh hiệu quả vượt trội so với MLC trong phân loại ảnh viễn thám, đặc biệt khi làm việc với dữ liệu đa chiều và bộ mẫu huấn luyện nhỏ.
+
+Từ năm 2012, với sự thành công của AlexNet trong cuộc thi ImageNet, học sâu bắt đầu cách mạng hóa thị giác máy tính và nhanh chóng được áp dụng vào viễn thám. Zhu và cộng sự \citeen{zhu2017} tổng hợp các ứng dụng của học sâu trong viễn thám và chỉ ra tiềm năng to lớn của CNN trong phân loại ảnh vệ tinh. Kiến trúc U-Net với cấu trúc mã hóa-giải mã, ban đầu cho phân đoạn ảnh y sinh, sau đó được áp dụng rộng rãi trong viễn thám nhờ khả năng phân đoạn hiệu quả \citeen{ronneberger2015}.
+
+\begin{table}[H]
+\centering
+\caption{So sánh các phương pháp giám sát biến động rừng qua các giai đoạn}
+\label{tab:method_evolution}
+\begin{tabular}{|l|c|l|l|}
+\hline
+\textbf{Giai đoạn} & \textbf{Thời kỳ} & \textbf{Phương pháp tiêu biểu} & \textbf{Đặc điểm} \\
+\hline
+Truyền thống & Trước 1970 & Khảo sát thực địa & Chính xác nhưng tốn kém \\
+\hline
+Viễn thám đầu & 1970--1990 & Giải đoán trực quan & Chủ quan, khó tái lập \\
+\hline
+ML truyền thống & 1990--2012 & MLC, Decision Tree, RF & Khách quan, tự động hóa \\
+\hline
+Học sâu & 2012--nay & CNN, U-Net & Học đặc trưng tự động \\
+\hline
+Tích hợp & 2015--nay & CNN + SAR + Optical & Bổ sung, tăng độ tin cậy \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Tổng quan nghiên cứu và khoảng trống nghiên cứu}
+
+Trên thế giới, nhiều công trình nghiên cứu đã được thực hiện trong lĩnh vực giám sát biến động rừng sử dụng viễn thám và học máy. Hansen và cộng sự \citeen{hansen2013} (Đại học Maryland, Hoa Kỳ) đã công bố nghiên cứu đột phá trên tạp chí Science, sử dụng thuật toán Cây quyết định để phân tích toàn bộ kho ảnh Landsat giai đoạn 2000--2012, tạo ra bộ dữ liệu Global Forest Change --- bản đồ mất rừng toàn cầu đầu tiên ở độ phân giải 30m; nghiên cứu phát hiện thế giới đã mất 2,3 triệu km² rừng trong 12 năm, đạt overall accuracy khoảng 85\%. Reiche và cộng sự \citeen{reiche2018} (Đại học Wageningen, Hà Lan) đề xuất phương pháp phát hiện mất rừng cận thời gian thực bằng cách kết hợp chuỗi thời gian Sentinel-1, ALOS-2 PALSAR-2 và Landsat-7/8 sử dụng tiếp cận xác suất Bayesian; thử nghiệm tại rừng nhiệt đới khô Bolivia cho thấy phương pháp kết hợp phát hiện mất rừng với độ trễ trung bình 31 ngày, nhanh hơn 7 ngày so với chỉ dùng Sentinel-1 và 6 tuần so với chỉ dùng Landsat, đạt overall accuracy 93,8\%. Hu và cộng sự \citeen{hu2020} nghiên cứu tại Madagascar cho thấy việc kết hợp dữ liệu Sentinel-1 và Sentinel-2 cải thiện accuracy từ 87\% (chỉ dùng quang học) lên 92\% (kết hợp cả hai), chứng minh lợi ích của tích hợp đa nguồn dữ liệu.
+
+Về ứng dụng học sâu trong viễn thám, Zhang và cộng sự \citeen{zhang2016} (Đại học Vũ Hán, Trung Quốc) công bố bài tổng quan kỹ thuật trên IEEE Geoscience and Remote Sensing Magazine, giới thiệu các kiến trúc CNN phổ biến (AlexNet, VGGNet, ResNet) và tiềm năng ứng dụng trong xử lý ảnh viễn thám, đặt nền móng lý thuyết cho các nghiên cứu sau này. Kussul và cộng sự \citeen{kussul2017} (Viện Nghiên cứu Không gian Ukraine) đề xuất kiến trúc CNN đa cấp cho phân loại cây trồng từ ảnh Sentinel-2 đa thời gian tại khu vực thử nghiệm JECAM (28,000 km²) ở Ukraine; kết quả cho thấy CNN 2D đạt overall accuracy 94,5\%, vượt trội đáng kể so với Random Forest và MLP, đặc biệt trong phân biệt các loại cây trồng mùa hè. Hethcoat và cộng sự \citeen{hethcoat2019} (Đại học Sheffield, Anh) áp dụng học máy để phát hiện khai thác gỗ chọn lọc tại rừng Amazon từ dữ liệu Landsat và Sentinel, đạt accuracy 94,3\%; nghiên cứu này mở ra hướng ứng dụng phát hiện suy thoái rừng ở quy mô nhỏ. Karra và cộng sự \citeen{karra2021} (ESRI/Impact Observatory) phát triển mô hình U-Net được huấn luyện trên hơn 5 tỷ điểm ảnh Sentinel-2 có nhãn thủ công từ hơn 20.000 điểm trên toàn cầu, tạo ra bản đồ sử dụng đất toàn cầu ở độ phân giải 10m với overall accuracy 85\%. Bảng \ref{tab:related_works_world} tổng hợp các nghiên cứu tiêu biểu trên thế giới.
+
+\begin{table}[H]
+\centering
+\caption{Tổng hợp các nghiên cứu tiêu biểu trên thế giới}
+\label{tab:related_works_world}
+\begin{tabular}{|l|c|l|l|l|c|}
+\hline
+\textbf{Tác giả} & \textbf{Năm} & \textbf{Phương pháp} & \textbf{Dữ liệu} & \textbf{Khu vực} & \textbf{Accuracy} \\
+\hline
+Hansen và cs. & 2013 & Decision Tree & Landsat & Toàn cầu & $\sim$85\% \\
+\hline
+Kussul và cs. & 2017 & CNN 2D & Sentinel-2 & Ukraine & 94,5\% \\
+\hline
+Reiche và cs. & 2018 & Bayesian fusion & S1+Landsat & Bolivia & 93,8\% \\
+\hline
+Hethcoat và cs. & 2019 & ML & Landsat+S1 & Amazon & 94,3\% \\
+\hline
+Hu và cs. & 2020 & ML fusion & S1+S2 & Madagascar & 92\% \\
+\hline
+Karra và cs. & 2021 & U-Net & Sentinel-2 & Toàn cầu & 85\% \\
+\hline
+\end{tabular}
+\end{table}
+
+Tại Việt Nam, các nghiên cứu ứng dụng viễn thám và học máy trong giám sát rừng đã có những bước phát triển đáng kể trong những năm gần đây. Nguyen và cộng sự \citeen{nguyen2020} (hợp tác giữa Việt Nam, Phần Lan và Hoa Kỳ) so sánh bốn phương pháp phân loại (Logistic Regression, k-NN, Random Forest và SVM) trên 446 ảnh Sentinel-2 đa thời gian (2017--2018) cho khu vực Đắk Nông (6.516 km²) --- tỉnh có tài nguyên rừng tự nhiên phong phú nhất Việt Nam; kết quả cho thấy Random Forest và SVM đạt overall accuracy cao nhất (khoảng 91,2\%), đồng thời việc bổ sung dữ liệu mùa xuân cải thiện accuracy thêm 2,9--4,8\%. Pham và cộng sự \citeen{pham2016} (Đại học Waikato, New Zealand và ĐHQG TP.HCM) đề xuất phương pháp phân loại dựa trên đối tượng (OBIA) kết hợp ảnh QuickBird, dữ liệu LiDAR mật độ thấp và các chỉ số địa hình GIS (độ dốc, chỉ số ẩm địa hình) để nhận dạng loài cây bản địa; nghiên cứu sử dụng Random Forest để xác định biến quan trọng và SVM để phân loại, chứng minh việc kết hợp LiDAR và dữ liệu phổ cải thiện đáng kể độ chính xác phân loại cây đơn lẻ, đặt nền móng cho các nghiên cứu tích hợp đa nguồn dữ liệu. Vo và cộng sự \citeen{vo2020} (Đại học Cần Thơ) khai thác nền tảng Google Earth Engine để phân tích toàn bộ kho ảnh Landsat-7 và Landsat-8 giai đoạn 2001--2019 cho huyện Ngọc Hiển, Cà Mau; nghiên cứu áp dụng phương pháp tối ưu hóa thời gian sau phân loại để tạo bản đồ sử dụng đất hàng năm liên tục không có khoảng trống dữ liệu, phát hiện biến động ròng của rừng ngập mặn là $-$0,01\%/năm và xác định các điểm nóng mất rừng theo không gian. Tuy nhiên, phần lớn các nghiên cứu tại Việt Nam vẫn tập trung vào các phương pháp học máy truyền thống (Random Forest, SVM) hoặc sử dụng ảnh quang học đơn thuần; việc ứng dụng học sâu (CNN) kết hợp với dữ liệu đa nguồn (ra-đa + quang học) cho giám sát rừng tại Việt Nam còn rất hạn chế.
+
+Qua tổng quan tài liệu, một số khoảng trống nghiên cứu nổi bật được xác định. Thứ nhất, phần lớn các công trình nghiên cứu về học sâu trong giám sát rừng tập trung ở các vùng rừng nhiệt đới Amazon, Congo hay Indonesia, trong khi còn rất ít nghiên cứu áp dụng CNN cho rừng Việt Nam, đặc biệt là hệ sinh thái rừng ngập mặn Cà Mau. Thứ hai, CNN thường yêu cầu tập dữ liệu lớn với hàng trăm nghìn mẫu huấn luyện, nhưng có ít công trình nghiên cứu về kiến trúc CNN tối ưu cho các bộ dữ liệu nhỏ trong viễn thám với khoảng 2.000--5.000 mẫu. Thứ ba, việc tích hợp dữ liệu ra-đa khẩu độ tổng hợp và quang học trong bối cảnh học sâu vẫn còn nhiều thách thức, đồng thời còn thiếu các khảo sát tối ưu hóa mô hình trong kiến trúc CNN cho loại dữ liệu kết hợp này.
+
+Xuất phát từ những khoảng trống nghiên cứu đã nêu, đồ án này hướng đến việc phát triển kiến trúc CNN lightweight phù hợp cho bộ dữ liệu nhỏ, tích hợp dữ liệu đa nguồn (Sentinel-1 và Sentinel-2) ở cấp độ đặc trưng, và ứng dụng thực tế cho giám sát biến động rừng tại khu vực quy hoạch lâm nghiệp tỉnh Cà Mau. Nghiên cứu kế thừa xu hướng kết hợp học sâu với dữ liệu đa nguồn để tận dụng ưu điểm của cả dữ liệu ra-đa khẩu độ tổng hợp và quang học.
