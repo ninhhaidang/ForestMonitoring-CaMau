@@ -22,24 +22,19 @@ Sentinel-2 là vệ tinh quang học (viễn thám bị động), hoạt động
 \begin{equation}
 NDVI = \frac{NIR - Red}{NIR + Red}
 \end{equation}
-trong đó NIR là phản xạ ở kênh hồng ngoại gần và Red là phản xạ ở kênh đỏ. NDVI phản ánh mật độ và sức khỏe của diệp lục. Bên cạnh đó, chỉ số cháy chuẩn hóa (NBR) và chỉ số độ ẩm chuẩn hóa (NDMI) cũng được sử dụng để phát hiện các dấu hiệu suy thoái rừng và thay đổi hàm lượng nước trong tán lá.
+trong đó NIR là phản xạ ở kênh hồng ngoại gần và Red là phản xạ ở kênh đỏ. NDVI phản ánh mật độ và sức khỏe của diệp lục.
 
-\begin{table}[H]
-\centering
-\caption{Tổng hợp các chỉ số thực vật sử dụng trong nghiên cứu}
-\label{tab:vegetation_indices}
-\begin{tabular}{|l|c|l|l|}
-\hline
-\textbf{Chỉ số} & \textbf{Công thức} & \textbf{Phạm vi} & \textbf{Ý nghĩa} \\
-\hline
-NDVI & (B8-B4)/(B8+B4) & [-1, 1] & Mật độ, sức khỏe thực vật \\
-\hline
-NBR & (B8-B12)/(B8+B12) & [-1, 1] & Phát hiện cháy/mất rừng \\
-\hline
-NDMI & (B8-B11)/(B8+B11) & [-1, 1] & Độ ẩm tán lá \\
-\hline
-\end{tabular}
-\end{table}
+Bên cạnh đó, chỉ số cháy chuẩn hóa (NBR) cũng được sử dụng để phát hiện các dấu hiệu suy thoái rừng, được tính bằng công thức:
+\begin{equation}
+NBR = \frac{NIR - SWIR2}{NIR + SWIR2}
+\end{equation}
+trong đó SWIR2 là phản xạ ở kênh hồng ngoại sóng ngắn 2 (B12).
+
+Chỉ số độ ẩm chuẩn hóa (NDMI) phản ánh hàm lượng nước trong tán lá, được tính như sau:
+\begin{equation}
+NDMI = \frac{NIR - SWIR1}{NIR + SWIR1}
+\end{equation}
+trong đó SWIR1 là phản xạ ở kênh hồng ngoại sóng ngắn 1 (B11).
 
 Tuy nhiên, hạn chế lớn nhất của viễn thám quang học là sự phụ thuộc vào điều kiện thời tiết, đặc biệt là mây che phủ thường xuyên ở các vùng nhiệt đới. Để khắc phục điều này, dữ liệu từ vệ tinh Sentinel-1 sử dụng công nghệ radar khẩu độ tổng hợp (SAR) được tích hợp. Đây là hệ thống viễn thám chủ động, tự phát ra sóng vô tuyến băng C và ghi nhận tín hiệu tán xạ ngược. Do sử dụng sóng vi ba có bước sóng dài, tín hiệu radar có khả năng xuyên qua mây và hoạt động cả ngày lẫn đêm. Trong chế độ giao thoa kế (Interferometric Wide - IW), Sentinel-1 cung cấp dữ liệu ở hai kênh phân cực VV và VH. Phân cực VH đặc biệt nhạy cảm với cấu trúc thể tích của tán lá rừng, trong khi phân cực VV phản ánh độ nhám và độ ẩm bề mặt. Việc kết hợp dữ liệu quang học và radar cho phép khai thác ưu điểm của cả hai loại cảm biến, nâng cao độ tin cậy của việc phát hiện biến động rừng.
 
@@ -71,13 +66,13 @@ Thông tin thu nhận & Cấu trúc, độ ẩm, độ nhám & Phản xạ phổ
 \end{table}
 
 \subsection{Học sâu và Mạng nơ-ron tích chập}
-Trong kỷ nguyên số, học sâu đã tạo ra cuộc cách mạng trong lĩnh vực thị giác máy tính và xử lý ảnh. Mạng nơ-ron tích chập (Convolutional Neural Network - CNN) là kiến trúc mạng nơ-ron chuyên biệt cho dữ liệu dạng lưới như hình ảnh, được xem là công cụ mạnh mẽ nhất hiện nay để phân loại ảnh viễn thám.
+Trong kỷ nguyên số, học sâu đã tạo ra cuộc cách mạng trong lĩnh vực thị giác máy tính và xử lý ảnh. Mạng nơ-ron tích chập là kiến trúc mạng nơ-ron chuyên biệt cho dữ liệu dạng lưới như hình ảnh, được xem là công cụ mạnh mẽ nhất hiện nay để phân loại ảnh viễn thám.
 
 Khác với các phương pháp học máy truyền thống yêu cầu trích xuất đặc trưng thủ công, CNN có khả năng tự động học các đặc trưng từ mức thấp đến mức cao thông qua các lớp tích chập. Thành phần cốt lõi của CNN là phép toán tích chập 2D, được mô tả bởi công thức:
 \begin{equation}
 (I * K)(i, j) = \sum_m \sum_n I(i+m, j+n) \times K(m, n)
 \end{equation}
-trong đó $I$ là ảnh đầu vào và $K$ là hạt nhân (kernel) học được. Các kernel này trượt qua toàn bộ ảnh để phát hiện các đặc trưng cục bộ như cạnh, góc, kết cấu bề mặt. Thông qua việc xếp chồng nhiều lớp tích chập, mạng có thể học được các mẫu phức tạp hơn mang tính trừu tượng.
+trong đó $I$ là ảnh đầu vào và $K$ là kernel. Các kernel này trượt qua toàn bộ ảnh để phát hiện các đặc trưng cục bộ như cạnh, góc, kết cấu bề mặt. Thông qua việc xếp chồng nhiều lớp tích chập, mạng có thể học được các mẫu phức tạp mang tính trừu tượng.
 
 Bên cạnh các lớp tích chập, kiến trúc CNN còn bao gồm các hàm kích hoạt phi tuyến như ReLU (Rectified Linear Unit) giúp mô hình có khả năng học các mối quan hệ phi tuyến tính phức tạp trong dữ liệu. Các lớp gộp (Pooling), điển hình là Max Pooling hoặc Global Average Pooling, được sử dụng để giảm chiều dữ liệu, giảm số lượng tham số cần tính toán và tăng tính bất biến của mô hình đối với các biến đổi nhỏ của đối tượng.
 
@@ -90,5 +85,5 @@ trong đó $y_i$ là nhãn thực tế và $\hat{y}_i$ là xác suất dự đo�
 \subsection{Tổng quan tình hình nghiên cứu}
 Lĩnh vực giám sát rừng bằng viễn thám đã trải qua một quá trình phát triển dài từ các phương pháp giải đoán thủ công, đến các thuật toán học máy cơ bản như Rừng ngẫu nhiên (Random Forest) hay Support Vector Machine (SVM). Các nghiên cứu kinh điển như của Hansen và cộng sự (2013) đã xây dựng bản đồ mất rừng toàn cầu dựa trên dữ liệu Landsat. Tuy nhiên, trong những năm gần đây, xu hướng nghiên cứu đã chuyển dịch mạnh mẽ sang ứng dụng học sâu.
 
-Nhiều công trình nghiên cứu trên thế giới đã chứng minh tính ưu việt của CNN so với các phương pháp truyền thống trong việc phân loại sử dụng đất và phát hiện biến động. Ví dụ, các nghiên cứu tại khu vực Amazon hay Indonesia đã áp dụng thành công mô hình U-Net hay ResNet để phát hiện chặt phá rừng với độ chính xác rất cao. Tại Việt Nam, các nghiên cứu ứng dụng viễn thám giám sát rừng cũng đang phát triển, tuy nhiên phần lớn vẫn dựa trên các phương pháp học máy truyền thống và sử dụng đơn nguồn dữ liệu quang học. Việc ứng dụng các mô hình học sâu hiện đại kết hợp dữ liệu đa nguồn Sentinel-1 và Sentinel-2 cho đối tượng rừng ngập mặn Cà Mau vẫn là một hướng đi mới mẻ và đầy tiềm năng, hứa hẹn mang lại những đột phá về độ chính xác và hiệu quả giám sát.
+Nhiều công trình nghiên cứu trên thế giới đã chứng minh tính ưu việt của CNN so với các phương pháp truyền thống trong việc phân loại sử dụng đất và phát hiện biến động. Ví dụ, các nghiên cứu tại khu vực Amazon hay Indonesia đã áp dụng thành công mô hình U-Net hay ResNet để phát hiện chặt phá rừng với độ chính xác rất cao. Tại Việt Nam, các nghiên cứu ứng dụng viễn thám giám sát rừng cũng đang phát triển, tuy nhiên phần lớn vẫn dựa trên các phương pháp học máy truyền thống và sử dụng đơn nguồn dữ liệu quang học. Việc ứng dụng các mô hình học sâu hiện đại kết hợp dữ liệu đa nguồn Sentinel-1 và Sentinel-2 cho đối tượng rừng ngập mặn Cà Mau vẫn là một hướng đi mới mẻ, tiềm năng và hứa hẹn mang lại những đột phá về độ chính xác và hiệu quả giám sát.
 

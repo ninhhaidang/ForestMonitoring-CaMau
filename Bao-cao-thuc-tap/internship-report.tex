@@ -123,7 +123,7 @@
 
 % Định dạng tiêu đề chương, mục (phải đặt SAU sectsty và tocloft)
 \usepackage{titlesec}
-\titleformat{\chapter}[block]{\centering\normalfont\fontsize{13pt}{16pt}\selectfont\bfseries}{CHƯƠNG \thechapter.}{0.5em}{\MakeUppercase}
+\titleformat{\chapter}[block]{\centering\normalfont\fontsize{13pt}{16pt}\selectfont\bfseries}{PHẦN \thechapter.}{0.5em}{\MakeUppercase}
 \titleformat{name=\chapter,numberless}[block]{\centering\normalfont\fontsize{13pt}{16pt}\selectfont\bfseries}{}{0pt}{\MakeUppercase}
 \titlespacing*{\chapter}{0pt}{-20pt}{10pt}
 \titlespacing{\section}{0pt}{12pt}{6pt}
@@ -228,18 +228,15 @@
 % ===== NỘI DUNG CHÍNH =====
 
 % Phần 1: Nhận xét và xác nhận
-\phantomsection
-\addcontentsline{toc}{chapter}{PHẦN 1: NHẬN XÉT VÀ XÁC NHẬN}
+\chapter{NHẬN XÉT VÀ XÁC NHẬN}
 \input{chapters/part1-nhan-xet}\newpage\cleardoublepage
 
 % Phần 2: Khái quát báo cáo thực tập
-\phantomsection
-\addcontentsline{toc}{chapter}{PHẦN 2: KHÁI QUÁT BÁO CÁO THỰC TẬP}
+\chapter{KHÁI QUÁT BÁO CÁO THỰC TẬP}
 \input{chapters/part2-khai-quat}\newpage\cleardoublepage
 
 % Phần 3: Báo cáo chi tiết kết quả đạt được
-\phantomsection
-\addcontentsline{toc}{chapter}{PHẦN 3: BÁO CÁO CHI TIẾT KẾT QUẢ ĐẠT ĐƯỢC}
+\chapter{BÁO CÁO CHI TIẾT KẾT QUẢ ĐẠT ĐƯỢC}
 \input{chapters/part3-bao-cao-chi-tiet}\newpage\cleardoublepage
 
 % Tài liệu tham khảo

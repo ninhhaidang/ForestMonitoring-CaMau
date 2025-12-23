@@ -1,21 +1,12 @@
 \section{Báo cáo chi tiết nội dung nghiên cứu và thực hiện}
 
 \subsection{Dữ liệu nghiên cứu}
-Dữ liệu đóng vai trò quyết định trong các bài toán điều khiển bằng dữ liệu (data-driven), đặc biệt là với các mô hình học sâu. Để xây dựng hệ thống giám sát biến động rừng tỉnh Cà Mau, nghiên cứu này đã thiết lập một quy trình thu thập và xử lý dữ liệu nghiêm ngặt từ các nguồn vệ tinh miễn phí nhưng chất lượng cao của Chương trình Copernicus.
+Dữ liệu đóng vai trò quyết định trong các mô hình học sâu. Để xây dựng hệ thống giám sát biến động rừng tỉnh Cà Mau, nghiên cứu này đã thiết lập một quy trình thu thập và xử lý dữ liệu nghiêm ngặt từ các nguồn vệ tinh miễn phí nhưng chất lượng cao của Chương trình Copernicus.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\textwidth]{img/chapter3/LULC-Ca-Mau.png}
-    \caption{Bản đồ lớp phủ bề mặt khu vực tỉnh Cà Mau}
-    \label{fig:camau_lulc}
-\end{figure}
-
-\subsubsection{Thu thập và tiền xử lý ảnh vệ tinh}
 Nguồn dữ liệu chính được sử dụng bao gồm ảnh quang học từ vệ tinh Sentinel-2 và ảnh radar khẩu độ tổng hợp (SAR) từ vệ tinh Sentinel-1. Đối với Sentinel-2, nghiên cứu lựa chọn sản phẩm cấp độ L2A (Surface Reflectance) đã được hiệu chỉnh khí quyển để loại bỏ ảnh hưởng của sương mù và khí dung, đảm bảo giá trị phản xạ bề mặt chính xác. Các ảnh được thu thập trong giai đoạn mùa khô, cụ thể là tháng 01/2024 (kỳ trước) và tháng 02/2025 (kỳ sau), nhằm giảm thiểu tối đa sự che phủ của mây và đảm bảo tính tương đồng về điều kiện chiếu sáng giữa hai thời điểm. Toàn bộ quy trình truy xuất được thực hiện trên nền tảng điện toán đám mây Google Earth Engine (GEE), cho phép lọc và xử lý khối lượng lớn dữ liệu một cách hiệu quả. Các ảnh Sentinel-2 sau khi lọc mây với ngưỡng xác suất 50\% đã được dùng để tính toán các chỉ số thực vật quan trọng.
 
 Song song đó, dữ liệu Sentinel-1 được thu thập ở chế độ Interferometric Wide (IW) với hai kênh phân cực VV và VH. Dữ liệu này được tiền xử lý các bước tiêu chuẩn gồm hiệu chỉnh quỹ đạo, khử nhiễu nhiệt, hiệu chỉnh bức xạ và hiệu chỉnh địa hình để tạo ra ảnh tán xạ ngược (backscatter) có đơn vị dB. Ưu điểm vượt trội của dữ liệu radar là khả năng xuyên thấu qua mây, cung cấp thông tin liên tục về cấu trúc bề mặt ngay cả khi dữ liệu quang học bị gián đoạn.
 
-\subsubsection{Trích xuất đặc trưng}
 Thay vì đưa trực tiếp ảnh thô vào mô hình, nghiên cứu đã tiến hành trích xuất một tập hợp các đặc trưng giàu thông tin nhằm nâng cao khả năng phân loại của mô hình. Tổng cộng 27 đặc trưng đã được xây dựng cho mỗi điểm ảnh. Từ dữ liệu Sentinel-2, bốn kênh phổ cơ bản gồm Blue (B2), Green (B3), Red (B4) và Near-Infrared (B8) cùng hai kênh hồng ngoại sóng ngắn (SWIR) được sử dụng. Bên cạnh đó, ba chỉ số thực vật chuyên biệt được tính toán gồm NDVI (chỉ số thực vật chuẩn hóa) phản ánh mật độ xanh, NBR (tỷ số cháy chuẩn hóa) nhạy cảm với sự mất mát sinh khối, và NDMI (chỉ số độ ẩm) phản ánh hàm lượng nước trong lá. Từ dữ liệu Sentinel-1, hai kênh phân cực VV và VH cung cấp thông tin về độ nhám và cấu trúc thể tích của tán rừng. Đặc biệt, để nắm bắt thông tin về sự thay đổi, nghiên cứu đã tính toán giá trị chênh lệch (delta) của tất cả các đặc trưng này giữa hai thời điểm nghiên cứu. Như vậy, vector đặc trưng đầu vào cho mô hình bao gồm giá trị tại thời điểm trước, thời điểm sau và giá trị thay đổi của cả dữ liệu quang học và radar.
 
 \begin{figure}[H]
@@ -27,7 +18,6 @@ Thay vì đưa trực tiếp ảnh thô vào mô hình, nghiên cứu đã tiế
 
 \subsection{Phương pháp nghiên cứu}
 
-\subsubsection{Chiến lược lấy mẫu và chuẩn bị dữ liệu}
 Quy trình chuẩn bị dữ liệu huấn luyện được thực hiện cẩn trọng để đảm bảo tính đại diện và khách quan. Dữ liệu thực địa gồm 2.630 điểm mẫu được thu thập và dán nhãn thủ công cho bốn lớp đối tượng: Rừng ổn định, Mất rừng, Phi rừng và Phục hồi rừng. Các điểm mẫu này được phân bố đều trên toàn vùng nghiên cứu để tránh thiên lệch không gian.
 
 \begin{table}[H]
@@ -62,7 +52,6 @@ Quy trình chuẩn bị dữ liệu huấn luyện được thực hiện cẩn 
 
 Dữ liệu được chia thành hai tập độc lập: tập huấn luyện/kiểm định (80\%) và tập kiểm tra (20\%). Việc phân chia được thực hiện theo phương pháp phân tầng (stratified sampling) để đảm bảo tỷ lệ các lớp trong mỗi tập con tương đương với tập dữ liệu gốc. Tập kiểm tra được giữ hoàn toàn riêng biệt và chỉ được sử dụng một lần duy nhất để đánh giá hiệu năng cuối cùng của mô hình.
 
-\subsubsection{Kiến trúc mô hình CNN đề xuất}
 Nghiên cứu đề xuất một kiến trúc mạng nơ-ron tích chập (CNN) được thiết kế riêng (custom architecture) cho bài toán này, tối ưu hóa sự cân bằng giữa độ chính xác và chi phí tính toán. Kiến trúc mạng bao gồm các thành phần chính sau:
 
 Khối tích chập đầu tiên bao gồm lớp tích chập (Convolution) với 64 bộ lọc kích thước $3 \times 3$, tiếp theo là lớp chuẩn hóa theo lô (Batch Normalization) và hàm kích hoạt ReLU. Lớp tích chập này có nhiệm vụ trích xuất các đặc trưng không gian và quang phổ sơ cấp từ dữ liệu đầu vào. Ngay sau đó là lớp Dropout 2D với tỷ lệ 0.7, giúp ngắt ngẫu nhiên các kết nối để ngăn ngừa hiện tượng quá khớp (overfitting) - một vấn đề thường gặp khi huấn luyện mạng sâu trên tập dữ liệu nhỏ.
@@ -73,7 +62,6 @@ Khối tích chập thứ hai sử dụng 32 bộ lọc để tiếp tục tinh 
 
 \subsection{Kết quả thực nghiệm và thảo luận}
 
-\subsubsection{Đánh giá ảnh hưởng của tham số và nguồn dữ liệu}
 Trước khi huấn luyện mô hình cuối cùng, một loạt các thí nghiệm đã được thực hiện để lựa chọn tham số tối ưu. Kết quả so sánh các kích thước patch khác nhau (1x1, 3x3, 5x5, 7x7) cho thấy kích thước 3x3 mang lại hiệu suất cao nhất với độ chính xác 98,86\%. Kích thước này đủ lớn để nắm bắt ngữ cảnh không gian cục bộ nhưng cũng đủ nhỏ để tránh nhiễu từ các đối tượng lân cận không liên quan.
 
 \begin{table}[H]
@@ -178,7 +166,6 @@ Chỉ Sentinel-1 (trước + sau + delta) & 6 & 83,27\% & 91,45\% \\
     \label{fig:data_sources_comparison}
 \end{figure}
 
-\subsubsection{Hiệu năng mô hình trên tập kiểm tra}
 Quá trình huấn luyện sử dụng chiến lược kiểm định chéo 5 phần (5-fold cross-validation) để đảm bảo độ tin cậy. Kết quả trung bình cho thấy độ chính xác ổn định ở mức 98,86\% với độ lệch chuẩn rất thấp, chứng tỏ mô hình không phụ thuộc vào cách chia dữ liệu.
 
 \begin{figure}[H]
@@ -272,7 +259,6 @@ Trên tập kiểm tra độc lập, mô hình đạt độ chính xác toàn c�
 
 Nguyên nhân chủ yếu do các khu vực rừng bị suy thoái nhẹ hoặc mới trồng lại có đặc điểm phổ và cấu trúc chưa rõ ràng, nằm ở ranh giới giữa hai trạng thái này. Tuy nhiên, tỷ lệ lỗi này là hoàn toàn chấp nhận được trong bài toán giám sát diện rộng.
 
-\subsubsection{Kết quả phân loại toàn tỉnh Cà Mau}
 Mô hình đã huấn luyện được áp dụng để phân loại toàn bộ khu vực quy hoạch lâm nghiệp tỉnh Cà Mau với diện tích hơn 162.000 ha. Bản đồ kết quả cho thấy diện tích rừng ổn định chiếm phần lớn (khoảng 74,3\%), tập trung chủ yếu ở các khu vực rừng phòng hộ và Vườn Quốc gia Mũi Cà Mau. Diện tích mất rừng được phát hiện khoảng 7.282 ha (tương đương 4,48\%), phân bố rải rác và thường gắn liền với các khu vực ven biển hoặc xen kẽ trong các vùng nuôi trồng thủy sản. Ngược lại, diện tích rừng phục hồi đạt khoảng 4.941 ha (3,04\%).
 
 \begin{figure}[H]
